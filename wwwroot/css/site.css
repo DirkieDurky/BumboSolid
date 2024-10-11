@@ -33,6 +33,13 @@ th, td {
     text-align: center;
 }
 
+li {
+    list-style-type: none;
+    margin: 14px;
+    text-align: right;
+    font-weight: bold;
+}
+
 .date {
     color: white;
 }
@@ -55,7 +62,7 @@ th, td {
 .prognosis-table {
     padding: 25px 10px 25px 10px;
     margin: 25px 10px 25px 10px;
-    width: 15%;
+    width: 20%;
     text-align: center;
 }
 
@@ -69,6 +76,10 @@ th, td {
 
 .btn {
     border-radius: 10px;
+}
+
+#prognosis-weekdays {
+    margin-top: 9%;
 }
 
 #prognosis-tables-spacing {
