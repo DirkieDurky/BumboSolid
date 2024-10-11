@@ -21,10 +21,56 @@ body {
   margin-bottom: 60px;
 }
 
-.scrollbar-prognosis {
-    width:150px;
-    height:150px;
-    line-height:3em;
-    overflow:auto;
-    padding:5px;
+table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 5px;
+}
+
+th, td {
+    padding: 5px;
+    background-color: lightblue;
+    text-align: center;
+}
+
+.date {
+    color: white;
+}
+
+.background-dark {
+    background-color:darkgray;
+    border-radius: 10px;
+}
+
+.background-light {
+    background-color: lightgray;
+    border-radius: 10px;
+}
+
+.background-white {
+    background-color: white;
+    border-radius: 10px;
+}
+
+.prognosis-table {
+    padding: 25px 10px 25px 10px;
+    margin: 25px 10px 25px 10px;
+    width: 15%;
+    text-align: center;
+}
+
+.prognosis-scrollbar {
+    width: 150px;
+    height: 150px;
+    line-height: 3em;
+    overflow: auto;
+    padding: 5px;
+}
+
+.btn {
+    border-radius: 10px;
+}
+
+#prognosis-tables-spacing {
+    margin-left: 5%;
 }
