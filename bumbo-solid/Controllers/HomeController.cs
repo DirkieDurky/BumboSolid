@@ -15,6 +15,7 @@ namespace bumbo_solid.Controllers
 
 		public IActionResult Index()
 		{
+            Console.WriteLine("hallow");
 			return View();
 		}
 
