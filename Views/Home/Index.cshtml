@@ -2,7 +2,236 @@
     ViewData["Title"] = "Home Page";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div class="d-flex flex-row">
+
+    <!--Prognosis list and impact buttons-->
+    <div class="p-2">
+        <button> Prognose Aanmaken </button>
+
+        <div class="scrollbar-prognosis">
+           
+        </div>
+
+        <button class=".btn	"> Normeringen Beheren </button>
+
+        <button> Feestdagen Beheren </button>
+    </div>
+
+    <!--Selected prognosis menu-->
+    <div class="p-2">
+
+        <!--Switching between prognosis-->
+        <div class="d-flex flex-row">
+            <button class="p-2"> ← Vorige Week </button>
+
+            <p> --/--/---- - --/--/---- </p>
+
+            <button class="p-2"> Volgende Week → </button>
+        </div>
+
+        <!--Info about prognosis-->
+        <div>
+            <div class="d-flex flex-row">
+				<ul class="p-2">
+					<li>Maandag</li>
+					<li>Dinsdag</li>
+					<li>Woensdag</li>
+					<li>Donderdag</li>
+					<li>Vrijdag</li>
+					<li>Zaterdag</li>
+					<li>Zondag</li>
+				</ul>
+
+                <!--Kassa-->
+                <div class="p-2">
+                    <h5>Kassa</h5>
+
+                    <hr>
+
+                    <table>
+                        <tr>
+                            <td>...</td>
+                            <td>...</td>
+                        </tr>
+                        <tr>
+                            <td>...</td>
+                            <td>...</td>
+                        </tr>
+                        <tr>
+                            <td>...</td>
+                            <td>...</td>
+                        </tr>
+                        <tr>
+                            <td>...</td>
+                            <td>...</td>
+                        </tr>
+                          <tr>
+                            <td>...</td>
+                            <td>...</td>
+                        </tr>
+                          <tr>
+                            <td>...</td>
+                            <td>...</td>
+                        </tr>
+                        <tr>
+                            <td>...</td>
+                            <td>...</td>
+                        </tr>
+                    </table>
+                </div>
+
+                <!--Vakkenvullen-->
+                <div class="p-2">
+                    <h5>Vakkenvullen</h5>
+
+                    <hr>
+
+                    <table>
+                        <tr>
+                            <td>...</td>
+                            <td>...</td>
+                        </tr>
+                        <tr>
+                            <td>...</td>
+                            <td>...</td>
+                        </tr>
+                        <tr>
+                            <td>...</td>
+                            <td>...</td>
+                        </tr>
+                        <tr>
+                            <td>...</td>
+                            <td>...</td>
+                        </tr>
+                        <tr>
+                            <td>...</td>
+                            <td>...</td>
+                        </tr>
+                        <tr>
+                            <td>...</td>
+                            <td>...</td>
+                        </tr>
+                        <tr>
+                            <td>...</td>
+                            <td>...</td>
+                        </tr>
+                    </table>
+                </div>
+
+                <!--Vers-->
+                <div class="p-2">
+                    <h5>Vers</h5>
+
+                    <hr>
+
+                    <table>
+                        <tr>
+                            <td>...</td>
+                            <td>...</td>
+                        </tr>
+                        <tr>
+                            <td>...</td>
+                            <td>...</td>
+                        </tr>
+                        <tr>
+                            <td>...</td>
+                            <td>...</td>
+                        </tr>
+                        <tr>
+                            <td>...</td>
+                            <td>...</td>
+                        </tr>
+                        <tr>
+                            <td>...</td>
+                            <td>...</td>
+                        </tr>
+                        <tr>
+                            <td>...</td>
+                            <td>...</td>
+                        </tr>
+                        <tr>
+                            <td>...</td>
+                            <td>...</td>
+                        </tr>
+                    </table>
+                </div>
+
+                <!--Externe factoren-->
+                <div class="p-2">
+                    <h5>Externe Factoren</h5>
+
+                    <hr>
+
+                    <table>
+                        <tr>
+                            <td>...</td>
+                        </tr>
+                        <tr>
+                            <td>...</td>
+                        </tr>
+                        <tr>
+                            <td>...</td>
+                        </tr>
+                        <tr>
+                            <td>...</td>
+                        </tr>
+                        <tr>
+                            <td>...</td>
+                        </tr>
+                        <tr>
+                            <td>...</td>
+                        </tr>
+                        <tr>
+                            <td>...</td>
+                        </tr>
+                    </table>
+                </div>
+
+                <!--Verwachte bezoekersdrukte-->
+                <div class="p-2">
+                    <h5>Verwachte Bezoekersdrukte</h5>
+
+                    <hr>
+
+                    <table>
+                        <tr>
+                            <td>...</td>
+                        </tr>
+                        <tr>
+                            <td>...</td>
+                        </tr>
+                        <tr>
+                            <td>...</td>
+                        </tr>
+                        <tr>
+                            <td>...</td>
+                        </tr>
+                        <tr>
+                            <td>...</td>
+                        </tr>
+                        <tr>
+                            <td>...</td>
+                        </tr>
+                        <tr>
+                            <td>...</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+
+            <div class="d-flex flex-row">
+                <div class="d-flex flex-row">
+                    <div class="p-2"></div>
+
+                    <p class="p-2">Personeel</p>
+
+                    <div class="p-2"></div>
+
+                    <p class="p-2">Personeel</p>
+                </div>
+
+                <button class="p-2"> Factoren Bewerken </button>
+            </div>
+        </div>
+    </div>
 </div>
