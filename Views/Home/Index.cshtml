@@ -5,26 +5,30 @@
 <div class="d-flex flex-row">
 
     <!--Prognosis list and impact buttons-->
-    <div class="p-2">
+    <div class="p-2" id="prognosis-list">
         <button class="btn btn-primary"> Prognose Aanmaken </button>
 
-        <div class="prognosis-scrollbar background-dark"></div>
+        <div class="background-dark" id="prognosis-scrollbar"></div>
 
         <button class="btn btn-primary"> Normeringen Beheren </button>
+
+        <div></div>
 
         <button class="btn btn-primary"> Feestdagen Beheren </button>
     </div>
 
     <!--Selected prognosis menu-->
-    <div class="p-2">
+    <div class="p-2" id="selected-prognosis-background">
 
         <!--Switching between prognosis-->
         <div class="d-flex flex-row">
-            <button class="p-2 btn btn-primary"> ← Vorige Week </button>
+            <button class="btn btn-primary"> ← Vorige Week </button>
 
-            <p class="p-2 background-dark date"> --/--/---- - --/--/---- </p>
+            <div class="background-dark" id="prognosis-date">
+                <h6> --/--/---- - --/--/---- </h6>
+            </div>
 
-            <button class="p-2 btn btn-primary"> Volgende Week → </button>
+            <button class="btn btn-primary disabled"> Volgende Week → </button>
         </div>
 
         <!--Info about prognosis-->
@@ -48,32 +52,32 @@
 
                     <table>
                         <tr>
-                            <td class="background-light">...</td>
-                            <td class="background-dark">...</td>
+                            <td class="background-light impact-unchangeable">...</td>
+                            <td class="background-dark impact-unchangeable">...</td>
                         </tr>
                         <tr>
-                            <td class="background-light">...</td>
-                            <td class="background-dark">...</td>
+                            <td class="background-light impact-unchangeable">...</td>
+                            <td class="background-dark impact-unchangeable">...</td>
                         </tr>
                         <tr>
-                            <td class="background-light">...</td>
-                            <td class="background-dark">...</td>
+                            <td class="background-light impact-unchangeable">...</td>
+                            <td class="background-dark impact-unchangeable">...</td>
                         </tr>
                         <tr>
-                            <td class="background-light">...</td>
-                            <td class="background-dark">...</td>
-                        </tr>
-                          <tr>
-                            <td class="background-light">...</td>
-                            <td class="background-dark">...</td>
-                        </tr>
-                          <tr>
-                            <td class="background-light">...</td>
-                            <td class="background-dark">...</td>
+                            <td class="background-light impact-unchangeable">...</td>
+                            <td class="background-dark impact-unchangeable">...</td>
                         </tr>
                         <tr>
-                            <td class="background-light">...</td>
-                            <td class="background-dark">...</td>
+                            <td class="background-light impact-unchangeable">...</td>
+                            <td class="background-dark impact-unchangeable">...</td>
+                        </tr>
+                        <tr>
+                            <td class="background-light impact-unchangeable">...</td>
+                            <td class="background-dark impact-unchangeable">...</td>
+                        </tr>
+                        <tr>
+                            <td class="background-light impact-unchangeable">...</td>
+                            <td class="background-dark impact-unchangeable">...</td>
                         </tr>
                     </table>
                 </div>
@@ -86,32 +90,32 @@
 
                     <table>
                         <tr>
-                            <td class="background-light">...</td>
-                            <td class="background-dark">...</td>
+                            <td class="background-light impact-unchangeable">...</td>
+                            <td class="background-dark impact-unchangeable">...</td>
                         </tr>
                         <tr>
-                            <td class="background-light">...</td>
-                            <td class="background-dark">...</td>
+                            <td class="background-light impact-unchangeable">...</td>
+                            <td class="background-dark impact-unchangeable">...</td>
                         </tr>
                         <tr>
-                            <td class="background-light">...</td>
-                            <td class="background-dark">...</td>
+                            <td class="background-light impact-unchangeable">...</td>
+                            <td class="background-dark impact-unchangeable">...</td>
                         </tr>
                         <tr>
-                            <td class="background-light">...</td>
-                            <td class="background-dark">...</td>
+                            <td class="background-light impact-unchangeable">...</td>
+                            <td class="background-dark impact-unchangeable">...</td>
                         </tr>
                         <tr>
-                            <td class="background-light">...</td>
-                            <td class="background-dark">...</td>
+                            <td class="background-light impact-unchangeable">...</td>
+                            <td class="background-dark impact-unchangeable">...</td>
                         </tr>
                         <tr>
-                            <td class="background-light">...</td>
-                            <td class="background-dark">...</td>
+                            <td class="background-light impact-unchangeable">...</td>
+                            <td class="background-dark impact-unchangeable">...</td>
                         </tr>
                         <tr>
-                            <td class="background-light">...</td>
-                            <td class="background-dark">...</td>
+                            <td class="background-light impact-unchangeable">...</td>
+                            <td class="background-dark impact-unchangeable">...</td>
                         </tr>
                     </table>
                 </div>
@@ -122,35 +126,35 @@
 
                     <hr>
 
-                    <table>
-                        <tr>
-                            <td class="background-light">...</td>
-                            <td class="background-dark">...</td>
-                        </tr>
-                        <tr>
-                            <td class="background-light">...</td>
-                            <td class="background-dark">...</td>
-                        </tr>
-                        <tr>
-                            <td class="background-light">...</td>
-                            <td class="background-dark">...</td>
-                        </tr>
-                        <tr>
-                            <td class="background-light">...</td>
-                            <td class="background-dark">...</td>
-                        </tr>
-                        <tr>
-                            <td class="background-light">...</td>
-                            <td class="background-dark">...</td>
-                        </tr>
-                        <tr>
-                            <td class="background-light">...</td>
-                            <td class="background-dark">...</td>
-                        </tr>
-                        <tr>
-                            <td class="background-light">...</td>
-                            <td class="background-dark">...</td>
-                        </tr>
+					<table>
+						<tr>
+							<td class="background-light impact-unchangeable">...</td>
+							<td class="background-dark impact-unchangeable">...</td>
+						</tr>
+						<tr>
+							<td class="background-light impact-unchangeable">...</td>
+							<td class="background-dark impact-unchangeable">...</td>
+						</tr>
+						<tr>
+							<td class="background-light impact-unchangeable">...</td>
+							<td class="background-dark impact-unchangeable">...</td>
+						</tr>
+						<tr>
+							<td class="background-light impact-unchangeable">...</td>
+							<td class="background-dark impact-unchangeable">...</td>
+						</tr>
+						<tr>
+							<td class="background-light impact-unchangeable">...</td>
+							<td class="background-dark impact-unchangeable">...</td>
+						</tr>
+						<tr>
+							<td class="background-light impact-unchangeable">...</td>
+							<td class="background-dark impact-unchangeable">...</td>
+						</tr>
+						<tr>
+							<td class="background-light impact-unchangeable">...</td>
+							<td class="background-dark impact-unchangeable">...</td>
+						</tr>
                     </table>
                 </div>
 
@@ -161,27 +165,13 @@
                     <hr>
 
                     <table>
-                        <tr>
-                            <td class="background-light">...</td>
-                        </tr>
-                        <tr>
-                            <td class="background-light">...</td>
-                        </tr>
-                        <tr>
-                            <td class="background-light">...</td>
-                        </tr>
-                        <tr>
-                            <td class="background-light">...</td>
-                        </tr>
-                        <tr>
-                            <td class="background-light">...</td>
-                        </tr>
-                        <tr>
-                            <td class="background-light">...</td>
-                        </tr>
-                        <tr>
-                            <td class="background-light">...</td>
-                        </tr>
+                        <tr> <td class="background-light impact-unchangeable">...</td> </tr>
+                        <tr> <td class="background-light impact-unchangeable">...</td> </tr>
+                        <tr> <td class="background-light impact-unchangeable">...</td> </tr>
+                        <tr> <td class="background-light impact-unchangeable">...</td> </tr>
+                        <tr> <td class="background-light impact-unchangeable">...</td> </tr>
+                        <tr> <td class="background-light impact-unchangeable">...</td> </tr>
+                        <tr> <td class="background-light impact-unchangeable">...</td> </tr>
                     </table>
                 </div>
 
@@ -192,43 +182,29 @@
                     <hr>
 
                     <table>
-                        <tr>
-                            <td class="background-light">...</td>
-                        </tr>
-                        <tr>
-                            <td class="background-light">...</td>
-                        </tr>
-                        <tr>
-                            <td class="background-light">...</td>
-                        </tr>
-                        <tr>
-                            <td class="background-light">...</td>
-                        </tr>
-                        <tr>
-                            <td class="background-light">...</td>
-                        </tr>
-                        <tr>
-                            <td class="background-light">...</td>
-                        </tr>
-                        <tr>
-                            <td class="background-light">...</td>
-                        </tr>
+                        <tr> <td class="background-light impact-unchangeable">...</td> </tr>
+                        <tr> <td class="background-light impact-unchangeable">...</td> </tr>
+                        <tr> <td class="background-light impact-unchangeable">...</td> </tr>
+                        <tr> <td class="background-light impact-unchangeable">...</td> </tr>
+                        <tr> <td class="background-light impact-unchangeable">...</td> </tr>
+                        <tr> <td class="background-light impact-unchangeable">...</td> </tr>
+                        <tr> <td class="background-light impact-unchangeable">...</td> </tr>
                     </table>
                 </div>
             </div>
 
             <div class="d-flex flex-row">
                 <div class="d-flex flex-row background-white">
-                    <div class="p-2 background-light"></div>
+                    <div class="p-2 background-light square"></div>
 
                     <p class="p-2">Personeel</p>
 
-                    <div class="p-2 background-dark"></div>
+                    <div class="p-2 background-dark square"></div>
 
                     <p class="p-2">Werkuren</p>
                 </div>
 
-                <button class="p-2 btn btn-primary"> Factoren Bewerken </button>
+                <button class="p-2 btn btn-primary" id="prognosis-factor-button"> Factoren Bewerken </button>
             </div>
         </div>
     </div>
