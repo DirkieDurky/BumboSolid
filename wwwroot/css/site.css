@@ -101,13 +101,6 @@ p {
     color: white;
 }
 
-@media (max-width: 992px) {
-    #prognosis-list {
-        width: 0px;
-        visibility: hidden;
-    }
-}
-
 #prognosis-scrollbar {
     width: 100%;
     height: 65%;
@@ -117,15 +110,8 @@ p {
     margin: 5% 5% 5% 0%;
 }
 
-@media (max-width: 800px) {
-    #prognosis-weekdays {
-        width: 0px;
-        visibility: hidden;
-    }
-}
-
 #prognosis-weekdays {
-    margin-top: 9%;
+    margin-top: 8%;
 }
 
 #prognosis-tables-spacing {
