@@ -209,26 +209,90 @@
 				</div>
 
 				<!--Manage Factors button-->
-				<button class="p-2 btn btn-primary" data-toggle="modal" data-target="#factorModal">Factoren Beheren</button>
+				<button class="p-2 btn btn-primary" id="prognosis-factor-button" data-toggle="modal" data-target="#factorModal">Factoren Beheren</button>
 
 				<!--Manage Factors pop-up modal-->
 				<div class="modal fade" id="factorModal" tabindex="-1" role="dialog" aria-labelledby="factorModalLabel" aria-hidden="true">
-					<div class="modal-dialog" role="document">
-						<div class="modal-content">
-							<div class="modal-header">
-								<h5 class="modal-title" id="factorModalLabel">Factoren Beheren</h5>
-								<button type="button" class="close" data-dismiss="modal" aria-label="Close">
-									<span aria-hidden="true">&times;</span>
-								</button>
-							</div>
+					<div class="modal-dialog modal-lg-custom" role="document">
+						<div class="modal-content background-light">
 							<div class="modal-body">
-								<!--TODO: add content-->
-								<p>Hier kunt u de factoren beheren.</p>
-								<p>lorem ipsumlorem ipsumlorem ipsumlorem ipsumlorem ipsumlorem ipsumlorem ipsumlorem ipsumlorem ipsumlorem ipsumlorem ipsumlorem ipsumlorem ipsumlorem ipsumlorem ipsumlorem ipsumlorem ipsumlorem ipsumlorem ipsumlorem ipsumlorem ipsumlorem ipsumlorem ipsumlorem ipsumlorem ipsumlorem ipsumlorem ipsumlorem ipsumlorem ipsumlorem ipsumlorem ipsumlorem ipsumlorem ipsumlorem ipsumlorem ipsumlorem ipsumlorem ipsumlorem ipsumlorem ipsumlorem ipsumlorem ipsumlorem ipsumlorem ipsumlorem ipsumlorem ipsum</p>
+								<!--content-->
+								<ul class="p-2" id="prognosis-weekdays">
+									<li>Maandag</li>
+									<li>Dinsdag</li>
+									<li>Woensdag</li>
+									<li>Donderdag</li>
+									<li>Vrijdag</li>
+									<li>Zaterdag</li>
+									<li>Zondag</li>
+								</ul>
+
+								<div class="p-2 background-white prognosis-table">
+									<h6>Schatting Bezoekersdrukte</h6>
+
+									<hr>
+
+									<table>
+										<tr><td class="background-light impact-changeable">...</td></tr>
+										<tr><td class="background-light impact-changeable">...</td></tr>
+										<tr><td class="background-light impact-changeable">...</td></tr>
+										<tr><td class="background-light impact-changeable">...</td></tr>
+										<tr><td class="background-light impact-changeable">...</td></tr>
+										<tr><td class="background-light impact-changeable">...</td></tr>
+										<tr><td class="background-light impact-changeable">...</td></tr>
+									</table>
+								</div>
+
+								<div class="p-2 background-dark prognosis-table">
+									<h6>Feestdagen</h6>
+
+									<hr>
+
+									<table>
+										<tr><td class="background-light impact-changeable">...</td></tr>
+										<tr><td class="background-light impact-changeable">...</td></tr>
+										<tr><td class="background-light impact-changeable">...</td></tr>
+										<tr><td class="background-light impact-changeable">...</td></tr>
+										<tr><td class="background-light impact-changeable">...</td></tr>
+										<tr><td class="background-light impact-changeable">...</td></tr>
+										<tr><td class="background-light impact-changeable">...</td></tr>
+									</table>
+								</div>
+
+								<div class="p-2 background-white prognosis-table">
+									<h6>Weer</h6>
+									<hr>
+									
+									<div class="factor-buttons">
+										<button type="button">...</button>
+										<button type="button">...</button>
+										<button type="button">...</button>
+										<button type="button">...</button>
+										<button type="button">...</button>
+										<button type="button">...</button>
+										<button type="button">...</button>
+									</div>
+								</div>
+
+
+								<div class="p-2 background-dark prognosis-table">
+									<h6>Overig</h6>
+									<hr>
+
+									<div class="factor-buttons">
+										<button type="button">...</button>
+										<button type="button">...</button>
+										<button type="button">...</button>
+										<button type="button">...</button>
+										<button type="button">...</button>
+										<button type="button">...</button>
+										<button type="button">...</button>
+									</div>
+								</div>
 							</div>
-							<div class="modal-footer">
-								<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-								<button type="button" class="btn btn-primary">Save Changes</button>
+							<div class="d-flex flex-row">
+								<button type="button" class="btn btn-danger save-button">Annuleren & Ongedaan Maken</button>
+								<button type="button" class="btn btn-primary save-button">Opslaan & Bijwerken</button>
 							</div>
 						</div>
 					</div>
