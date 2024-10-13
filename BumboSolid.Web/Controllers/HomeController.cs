@@ -1,8 +1,8 @@
-using bumbo_solid.Models;
+using BumboSolid.Web.Models;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
 
-namespace bumbo_solid.Controllers
+namespace BumboSolid.Web.Controllers
 {
 	public class HomeController : Controller
 	{
