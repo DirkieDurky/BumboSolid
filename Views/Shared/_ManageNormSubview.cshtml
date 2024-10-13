@@ -5,7 +5,43 @@
     </button>
 </div>
 <div class="modal-body">
-    <!-- TODO: link to form (maybe as yet another class?) -->
+    <form>
+        <div class="form-group row d-flex align-items-center" id="norm-row">
+            <!-- "Activiteit" field -->
+            <div class="col-sm-3">
+                <input type="text" class="form-control" id="activiteit" name="activiteit" placeholder="Enter activity">
+            </div>
+
+            <!-- Functie dropdown -->
+            <div class="col-sm-3">
+                <select class="form-control dropdown-better" id="functie" name="functie">
+                    <option value="Vakkenvuller">Vakkenvuller</option>
+                    <option value="Kassa">Kassa</option>
+                    <option value="Vers">Vers</option>
+                </select>
+            </div>
+
+            <!-- Duur int field and dropdown -->
+            <div class="col-sm-1">
+                <input type="number" class="form-control" id="duur-int" name="duur-int" placeholder="0">
+            </div>
+            <div class="col-sm-2">
+                <select class="form-control dropdown-better" id="duur" name="duur">
+                    <option value="seconde">Seconde</option>
+                    <option value="minuut">Minuut</option>
+                    <option value="uur">Uur</option>
+                </select>
+            </div>
+
+            <!-- "per bezoeker" checkbox -->
+            <div class="col-sm-2 d-flex align-items-center">
+                <input type="number" class="form-control grouped-padding" id="number-field" name="number-field" placeholder="0">
+                <label for="per-bezoeker" class="col-form-label grouped-padding">per bezoeker</label>
+                <input type="checkbox" id="per-bezoeker" name="per-bezoeker">
+            </div>
+            <button type="button" class="btn btn-delete btn-primary col-sm-1">X</button>
+        </div>
+    </form>
     <p>Het werkt!</p>
 </div>
 <div class="modal-footer">

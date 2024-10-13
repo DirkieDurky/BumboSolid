@@ -132,3 +132,24 @@ p {
 #prognosis-factor-button {
     margin: auto;
 }
+
+#norm-view {
+    width: 60vw;
+    margin-left: -15vw;
+}
+
+#norm-row {
+    min-width: 90%;
+}
+
+.dropdown-better {
+    width: min-content;
+}
+.grouped-padding {
+    padding-left: 5px;
+    padding-right: 5px;
+}
+
+.btn-delete {
+    width: min-content;
+}
