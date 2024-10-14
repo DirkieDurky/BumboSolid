@@ -134,11 +134,13 @@ p {
 }
 
 #norm-view {
-    width: 60vw;
-    margin-left: -15vw;
+    position: absolute;
+    margin-top: 18%;
+    margin-left: -35%;
+    min-width: 170%;
 }
 
-#norm-row {
+.norm-row {
     min-width: 90%;
 }
 
@@ -152,4 +154,14 @@ p {
 
 .btn-delete {
     width: min-content;
+    height: min-content;
+}
+
+.btn-norm {
+    width: 91%;
+    margin-left: -0.05vw;
+}
+
+.int-edit {
+    width: 30%;
 }
