@@ -56,8 +56,18 @@ p {
 }
 
 #modal-holiday-custom {
-    max-width: 50%;
-    width: 50%;
+    max-width: 50vw;
+    width: 50vw;
+}
+
+#modal-holiday-manage-custom {
+    max-width: 70vw;
+    width: 70vw;
+}
+
+#holiday-chart {
+    max-width: 63vw;
+    max-height: 60vh;
 }
 
 .modal-dialog {
@@ -78,18 +88,21 @@ p {
     background-color: darkgray;
     border-radius: 10px;
     margin: 10px;
+    border: none;
 }
 
 .background-light {
     background-color: lightgray;
     border-radius: 10px;
     margin: 10px;
+    border: none;
 }
 
 .background-white {
     background-color: white;
     border-radius: 10px;
     margin: 10px;
+    border: none;
 }
 
 .prognosis-table {
@@ -136,6 +149,10 @@ p {
     min-width: 100px;
 }
 
+.auto-margin {
+    margin: auto;
+}
+
 #prognosis-scrollbar {
     width: 100%;
     height: 55vh;
@@ -164,13 +181,35 @@ p {
     width: 100%;
 }
 
+#add-holiday-button {
+    text-align: center;
+    font-weight: bold;
+    font-style: italic;
+    font-size: 1vw;
+    color: white;
+    line-height: 1vw;
+}
+
 #prognosis-date {
     color: white;
     margin: 0% 12% 0% 12%;
     width: 23vw;
     text-align: center;
+    line-height: 50%;
 }
 
-#prognosis-factor-button {
-    margin: auto;
+#graph-impact-title {
+    transform-origin: 0 0;
+    transform: rotate(90deg);
+    margin: auto 0 auto 0;
+    text-align: center;
+    padding: 0;
+    position: relative;
+    left: 2.5vw;
+}
+
+#graph-days-title {
+    margin: auto 0 auto 0;
+    text-align: center;
+    padding: 0;
 }
