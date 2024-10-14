@@ -7,7 +7,6 @@
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 <script src="https://kit.fontawesome.com/981e782106.js" crossorigin="anonymous"></script>
 
-
 <div class="d-flex flex-row">
 
 	<!--Prognosis list and impact buttons-->
@@ -237,7 +236,213 @@
 					<p class="p-2">Werkuren</p>
 				</div>
 
-				<button class="p-2 btn btn-primary" id="prognosis-factor-button">Factoren Bewerken</button>
+				<!--Manage Factors button-->
+				<button class="p-2 btn btn-primary" id="prognosis-factor-button" data-toggle="modal" data-target="#factorModal">Factoren Beheren</button>
+
+				<!--Manage Factors pop-up modal-->
+				<div class="modal fade" id="factorModal" tabindex="-1" role="dialog" aria-labelledby="factorModalLabel" aria-hidden="true">
+					<div class="modal-dialog modal-lg-custom" role="document">
+						<div class="modal-content background-light">
+							<div class="modal-body">
+								<!--content-->
+								<ul class="p-2" id="prognosis-weekdays">
+									<li>Maandag</li>
+									<li>Dinsdag</li>
+									<li>Woensdag</li>
+									<li>Donderdag</li>
+									<li>Vrijdag</li>
+									<li>Zaterdag</li>
+									<li>Zondag</li>
+								</ul>
+
+								<div class="p-2 background-white prognosis-table">
+									<h6>Schatting Bezoekersdrukte</h6>
+
+									<hr>
+
+									<table>
+										<tr><td class="background-light impact-changeable">...</td></tr>
+										<tr><td class="background-light impact-changeable">...</td></tr>
+										<tr><td class="background-light impact-changeable">...</td></tr>
+										<tr><td class="background-light impact-changeable">...</td></tr>
+										<tr><td class="background-light impact-changeable">...</td></tr>
+										<tr><td class="background-light impact-changeable">...</td></tr>
+										<tr><td class="background-light impact-changeable">...</td></tr>
+									</table>
+								</div>
+
+								<div class="p-2 background-dark prognosis-table">
+									<h6>Feestdagen</h6>
+
+									<hr>
+
+									<table>
+										<tr><td class="background-light impact-changeable">...</td></tr>
+										<tr><td class="background-light impact-changeable">...</td></tr>
+										<tr><td class="background-light impact-changeable">...</td></tr>
+										<tr><td class="background-light impact-changeable">...</td></tr>
+										<tr><td class="background-light impact-changeable">...</td></tr>
+										<tr><td class="background-light impact-changeable">...</td></tr>
+										<tr><td class="background-light impact-changeable">...</td></tr>
+									</table>
+								</div>
+
+								<div class="p-2 background-white prognosis-table">
+									<h6>
+										Weer
+										<button type="button" data-toggle="modal" data-target="#editWeatherModal">
+											Bewerken
+										</button>
+									</h6>
+									<hr>
+									<div class="d-flex flex-column">
+
+										<!-- Weather selection -->
+										<div class="d-flex flex-row align-items-center">
+											<select class="ml-2 form-control weather-select">
+												<option value="sunny">Sunny</option>
+												<option value="cloudy">Cloudy</option>
+												<option value="rainy">Rainy</option>
+												<option value="stormy">Stormy</option>
+												<option value="snowy">Snowy</option>
+											</select>
+										</div>
+
+										<div class="d-flex flex-row align-items-center">
+											<select class="ml-2 form-control weather-select">
+												<option value="sunny">Sunny</option>
+												<option value="cloudy">Cloudy</option>
+												<option value="rainy">Rainy</option>
+												<option value="stormy">Stormy</option>
+												<option value="snowy">Snowy</option>
+											</select>
+										</div>
+
+										<div class="d-flex flex-row align-items-center">
+											<select class="ml-2 form-control weather-select">
+												<option value="sunny">Sunny</option>
+												<option value="cloudy">Cloudy</option>
+												<option value="rainy">Rainy</option>
+												<option value="stormy">Stormy</option>
+												<option value="snowy">Snowy</option>
+											</select>
+										</div>
+
+										<div class="d-flex flex-row align-items-center">
+											<select class="ml-2 form-control weather-select">
+												<option value="sunny">Sunny</option>
+												<option value="cloudy">Cloudy</option>
+												<option value="rainy">Rainy</option>
+												<option value="stormy">Stormy</option>
+												<option value="snowy">Snowy</option>
+											</select>
+										</div>
+
+										<div class="d-flex flex-row align-items-center">
+											<select class="ml-2 form-control weather-select">
+												<option value="sunny">Sunny</option>
+												<option value="cloudy">Cloudy</option>
+												<option value="rainy">Rainy</option>
+												<option value="stormy">Stormy</option>
+												<option value="snowy">Snowy</option>
+											</select>
+										</div>
+
+										<div class="d-flex flex-row align-items-center">
+											<select class="ml-2 form-control weather-select">
+												<option value="sunny">Sunny</option>
+												<option value="cloudy">Cloudy</option>
+												<option value="rainy">Rainy</option>
+												<option value="stormy">Stormy</option>
+												<option value="snowy">Snowy</option>
+											</select>
+										</div>
+
+										<div class="d-flex flex-row align-items-center">
+											<select class="ml-2 form-control weather-select">
+												<option value="sunny">Sunny</option>
+												<option value="cloudy">Cloudy</option>
+												<option value="rainy">Rainy</option>
+												<option value="stormy">Stormy</option>
+												<option value="snowy">Snowy</option>
+											</select>
+										</div>
+									</div>
+								</div>
+
+
+
+								<div class="p-2 background-dark prognosis-table">
+									<h6>Overig</h6>
+									<hr>
+
+									<div class="factor-buttons">
+										<button type="button">...</button>
+										<button type="button">...</button>
+										<button type="button">...</button>
+										<button type="button">...</button>
+										<button type="button">...</button>
+										<button type="button">...</button>
+										<button type="button">...</button>
+									</div>
+								</div>
+							</div>
+							<div class="d-flex flex-row">
+								<button type="button" class="btn btn-danger save-button">Annuleren & Ongedaan Maken</button>
+								<button type="button" class="btn btn-primary save-button">Opslaan & Bijwerken</button>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<!-- Edit Weather Percentages Modal -->
+				<div class="modal fade" id="editWeatherModal" tabindex="-1" role="dialog" aria-labelledby="editWeatherModalLabel" aria-hidden="true">
+					<div class="modal-dialog" role="document">
+						<div class="modal-content">
+							<div class="modal-body">
+								<form id="weatherPercentagesForm">
+									<div class="form-group">
+										<label>Weer Impact</label>
+										<ul class="list-group" id="weatherPercentagesList">
+											<li class="list-group-item d-flex justify-content-between align-items-center">
+												Zonnig
+												<input type="number" class="form-control ml-2" min="0" max="100" value="0" id="sunnyPercentage" aria-label="Sunny Percentage">
+												<span>%</span>
+											</li>
+											<li class="list-group-item d-flex justify-content-between align-items-center">
+												Bewolkt
+												<input type="number" class="form-control ml-2" min="0" max="100" value="0" id="cloudyPercentage" aria-label="Cloudy Percentage">
+												<span>%</span>
+											</li>
+											<li class="list-group-item d-flex justify-content-between align-items-center">
+												Regen
+												<input type="number" class="form-control ml-2" min="0" max="100" value="0" id="rainyPercentage" aria-label="Rainy Percentage">
+												<span>%</span>
+											</li>
+											<li class="list-group-item d-flex justify-content-between align-items-center">
+												Storm
+												<input type="number" class="form-control ml-2" min="0" max="100" value="0" id="stormyPercentage" aria-label="Stormy Percentage">
+												<span>%</span>
+											</li>
+											<li class="list-group-item d-flex justify-content-between align-items-center">
+												Sneeuw
+												<input type="number" class="form-control ml-2" min="0" max="100" value="0" id="snowyPercentage" aria-label="Snowy Percentage">
+												<span>%</span>
+											</li>
+										</ul>
+									</div>
+								</form>
+							</div>
+							<div class="flex-row">
+								<button type="button" class="btn btn-secondary" data-dismiss="modal">Annuleren</button>
+								<button type="button" class="btn btn-primary">Opslaan</button>
+							</div>
+
+						</div>
+					</div>
+				</div>
+
+
 			</div>
 		</div>
 	</div>

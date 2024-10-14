@@ -31,11 +31,15 @@ h6 {
     font-size: 1vw;
     font-weight: bold;
     font-style: italic;
+    min-height: 5.5vh;
+}
+
+hr {
+    min-height: 0.3vh;
 }
 
 th, td {
     padding: 5px;
-    background-color: lightblue;
     text-align: center;
 }
 
@@ -111,12 +115,51 @@ p {
     border: none;
 }
 
+.factor-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+}
+
+.factor-buttons button {
+    width: 100%;
+    padding: 5px;
+    border: none;
+    border-radius: 10px;
+    font-size: 1vw;
+    background-color: lightgray;
+    color: black;
+    cursor: pointer;
+}
+
+.save-button {
+    margin: 1vw auto 1vw auto;
+    height: 4vw;
+}
+
 .impact-changeable {
     color: black;
 }
 
 .impact-unchangeable {
     color: white;
+}
+
+.modal-lg-custom {
+    max-width: 60%;
+    width: 60%;
+}
+
+.modal-dialog {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: auto;
+    height: 100%;
+}
+
+.modal-body {
+    display: flex;
 }
 
 .save-button {
