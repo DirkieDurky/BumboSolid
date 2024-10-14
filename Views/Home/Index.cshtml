@@ -260,7 +260,12 @@
 								</div>
 
 								<div class="p-2 background-white prognosis-table">
-									<h6>Weer</h6>
+									<h6>
+										Weer
+										<button type="button" data-toggle="modal" data-target="#editWeatherModal">
+											Edit
+										</button>
+									</h6>
 									<hr>
 									<div class="d-flex flex-column">
 
@@ -361,6 +366,55 @@
 						</div>
 					</div>
 				</div>
+
+				<!-- Edit Weather Percentages Modal -->
+				<div class="modal fade" id="editWeatherModal" tabindex="-1" role="dialog" aria-labelledby="editWeatherModalLabel" aria-hidden="true">
+					<div class="modal-dialog" role="document">
+						<div class="modal-content">
+							<div class="modal-body">
+								<form id="weatherPercentagesForm">
+									<div class="form-group">
+										<label>Weather Impact</label>
+										<ul class="list-group" id="weatherPercentagesList">
+											<li class="list-group-item d-flex justify-content-between align-items-center">
+												Sunny
+												<input type="number" class="form-control ml-2" min="0" max="100" value="0" id="sunnyPercentage" aria-label="Sunny Percentage">
+												<span>%</span>
+											</li>
+											<li class="list-group-item d-flex justify-content-between align-items-center">
+												Cloudy
+												<input type="number" class="form-control ml-2" min="0" max="100" value="0" id="cloudyPercentage" aria-label="Cloudy Percentage">
+												<span>%</span>
+											</li>
+											<li class="list-group-item d-flex justify-content-between align-items-center">
+												Rainy
+												<input type="number" class="form-control ml-2" min="0" max="100" value="0" id="rainyPercentage" aria-label="Rainy Percentage">
+												<span>%</span>
+											</li>
+											<li class="list-group-item d-flex justify-content-between align-items-center">
+												Stormy
+												<input type="number" class="form-control ml-2" min="0" max="100" value="0" id="stormyPercentage" aria-label="Stormy Percentage">
+												<span>%</span>
+											</li>
+											<li class="list-group-item d-flex justify-content-between align-items-center">
+												Snowy
+												<input type="number" class="form-control ml-2" min="0" max="100" value="0" id="snowyPercentage" aria-label="Snowy Percentage">
+												<span>%</span>
+											</li>
+										</ul>
+									</div>
+								</form>
+							</div>
+							<div class="flex-row">
+								<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+								<button type="button" class="btn btn-primary">Save Changes</button>
+							</div>
+
+						</div>
+					</div>
+				</div>
+
+
 			</div>
 		</div>
 	</div>
