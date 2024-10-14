@@ -5,6 +5,7 @@
 <!-- Bootstrap JS and dependencies -->
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script src="https://kit.fontawesome.com/981e782106.js" crossorigin="anonymous"></script>
 
 <div class="d-flex flex-row">
 
@@ -12,13 +13,40 @@
 	<div class="p-2">
 		<button class="btn btn-primary">Prognose Aanmaken</button>
 
-		<div class="background-dark" id="prognosis-scrollbar"></div>
+		<div class="background-dark" id="prognosis-scrollbar">
+
+		</div>
 
 		<button class="btn btn-primary">Normeringen Beheren</button>
 
 		<div></div>
 
-		<button class="btn btn-primary">Feestdagen Beheren</button>
+		<!--Manage Holiday button-->
+		<button class="p-2 btn btn-primary" data-toggle="modal" data-target="#holidayModal">Feestdagen Beheren</button>
+
+		<!--Manage Holiday pop-up modal-->
+		<div class="modal fade" id="holidayModal" tabindex="-1" role="dialog" aria-labelledby="holidayModalLabel" aria-hidden="true">
+			<div class="modal-dialog" id="modal-holiday-custom" role="document">
+				<div class="modal-content background-light">
+					<div class="modal-body">
+						<h6 class="holiday-name-title">Feest | Dagen | Invloed</h6>
+						<div id="holidays-scrollbar">
+							<div class="d-flex flex-row">
+								<input class="p-2 form-control background-dark holiday-name" placeholder="Feest naam">
+								<input class="p-2 form-control background-dark holiday-date" placeholder="Begin dag">
+								<input class="p-2 form-control background-dark holiday-date" placeholder="Eind dag">
+								<button class="p-2 background-dark holiday-date fa-solid fa-chart-simple"></button>
+							</div>
+							<button class="btn btn-primary background-dark">+</button>
+						</div>
+					</div>
+
+					<div class="d-flex flex-row">
+						<button type="button" class="btn btn-primary save-button">Opslaan & Bijwerken</button>
+					</div>
+				</div>
+			</div>
+		</div>
 	</div>
 
 	<!--Selected prognosis menu-->

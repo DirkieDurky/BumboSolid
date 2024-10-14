@@ -29,7 +29,6 @@ table {
 
 h6 {
     font-size: 1vw;
-    margin: 5%;
     font-weight: bold;
     font-style: italic;
     min-height: 5.5vh;
@@ -53,6 +52,24 @@ li {
 
 p {
     text-align: center;
+}
+
+.fa-chart-simple {
+    width: 2vw;
+    height: 2vw;
+}
+
+#modal-holiday-custom {
+    max-width: 50%;
+    width: 50%;
+}
+
+.modal-dialog {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: auto;
+    height: 100%;
 }
 
 .square {
@@ -89,12 +106,13 @@ p {
 .btn {
     border-radius: 10px;
     width: 15vw;
-    height: 3vw;
+    height: 7vh;
     margin: 5px;
     text-align: center;
     font-weight: bold;
     font-style: italic;
     font-size: 1vw;
+    border: none;
 }
 
 .factor-buttons {
@@ -131,6 +149,7 @@ p {
     max-width: 60%;
     width: 60%;
 }
+
 .modal-dialog {
     display: flex;
     justify-content: center;
@@ -143,13 +162,37 @@ p {
     display: flex;
 }
 
+.save-button {
+    margin: 1vw auto 1vw auto;
+    height: 4vw;
+}
+
+.holiday-name {
+    height: 5vh;
+    width: 15vw;
+    min-width: 100px;
+}
+
+.holiday-date {
+    height: 5vh;
+    width: 4vw;
+    min-width: 100px;
+}
+
 #prognosis-scrollbar {
     width: 100%;
-    height: 65%;
+    height: 55vh;
     line-height: 3em;
     overflow: auto;
-    padding: 10%;
     margin: 5% 5% 5% 0%;
+}
+
+#holidays-scrollbar {
+    width: 100%;
+    height: 45vh;
+    line-height: 3em;
+    overflow: auto;
+    margin-bottom: 5vh;
 }
 
 #prognosis-weekdays {
