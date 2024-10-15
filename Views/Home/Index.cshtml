@@ -1,24 +1,33 @@
 ﻿@{
-	ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Home Page";
 }
 
 <!-- Bootstrap JS and dependencies -->
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 <script src="https://kit.fontawesome.com/981e782106.js" crossorigin="anonymous"></script>
-
 <div class="d-flex flex-row">
 
-	<!--Prognosis list and impact buttons-->
-	<div class="p-2">
-		<button class="btn btn-primary">Prognose Aanmaken</button>
+    <!--Prognosis list and impact buttons-->
+    <div class="p-2">
+        <button class="btn btn-primary">Prognose Aanmaken</button>
+      
+      <div class="background-dark" id="prognosis-scrollbar">
 
-		<div class="background-dark" id="prognosis-scrollbar">
+		  </div>
 
-		</div>
+        <button class="p-2 btn btn-primary" data-toggle="modal" data-target="#manageNormModal">Normeringen Beheren</button>
 
-		<button class="btn btn-primary">Normeringen Beheren</button>
+        <!--Manage Norms pop-up modal-->
+        <div class="modal fade" id="manageNormModal" tabindex="-1" role="dialog" aria-labelledby="manageNormModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content" id="norm-view">
+                    <partial name="_ManageNormSubview" />
+                </div>
+            </div>
+        </div>
 
+        
 		<div></div>
 
 		<!--Manage Holiday button-->

@@ -217,3 +217,36 @@ p {
 #prognosis-factor-button {
     margin: auto;
 }
+
+#norm-view {
+    position: absolute;
+    margin-top: 18%;
+    margin-left: -35%;
+    min-width: 170%;
+}
+
+.norm-row {
+    min-width: 90%;
+}
+
+.dropdown-better {
+    width: min-content;
+}
+.grouped-padding {
+    padding-left: 5px;
+    padding-right: 5px;
+}
+
+.btn-delete {
+    width: min-content;
+    height: min-content;
+}
+
+.btn-norm {
+    width: 91%;
+    margin-left: -0.05vw;
+}
+
+.int-edit {
+    width: 30%;
+}
