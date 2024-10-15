@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
-namespace bumbo_solid.Views.Shared
+namespace BumboSolid.Web.Views.Norms
 {
     public class _NormRowModel : PageModel
     {

@@ -22,7 +22,7 @@
         <div class="modal fade" id="manageNormModal" tabindex="-1" role="dialog" aria-labelledby="manageNormModalLabel" aria-hidden="true">
 			<div class="modal-dialog" id="modal-norms-manage-custom"role="document">
                 <div class="modal-content background-light" id="norm-view">
-                    <partial name="_ManageNormSubview" />
+					@Html.Partial("~/Views/Norms/Edit.cshtml")
                 </div>
             </div>
         </div>
@@ -36,7 +36,7 @@
 		<div class="modal fade" id="holidayModal" tabindex="-1" role="dialog" aria-labelledby="holidayModalLabel" aria-hidden="true">
 			<div class="modal-dialog" role="document">
 				<div class="modal-content background-light">
-					<partial name="_HolidayOverviewSubView" />
+					@Html.Partial("~/Views/Holidays/Index.cshtml")
 				</div>
 			</div>
 		</div>
@@ -45,7 +45,7 @@
 		<div class="modal fade" id="holidayManageModal" tabindex="-1" role="dialog" aria-labelledby="holidayManageModalLabel" aria-hidden="true">
 			<div class="modal-dialog" id="modal-holiday-manage-custom" role="document">
 				<div class="modal-content background-light">
-					<partial name="_HolidayManageSubView" />
+					@Html.Partial("~/Views/Holidays/Edit.cshtml")
 				</div>
 			</div>
 		</div>
@@ -245,7 +245,7 @@
 				<div class="modal fade" id="factorModal" tabindex="-1" role="dialog" aria-labelledby="factorModalLabel" aria-hidden="true">
 					<div class="modal-dialog modal-lg-custom" role="document">
 						<div class="modal-content background-light">
-							<partial name="_ManageFactorsSubView" />
+							@Html.Partial("~/Views/Factors/Edit.cshtml")
 						</div>
 					</div>
 				</div>
