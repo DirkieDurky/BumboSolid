@@ -158,10 +158,6 @@ p {
     height: 100%;
 }
 
-.modal-body {
-    display: flex;
-}
-
 .save-button {
     margin: 1vw auto 1vw auto;
     height: 4vw;
@@ -220,8 +216,6 @@ p {
 
 #norm-view {
     position: absolute;
-    margin-top: 18%;
-    margin-left: -35%;
     min-width: 170%;
 }
 
