@@ -1,10 +1,17 @@
-namespace bumbo_solid
+using BumboSolid.Data;
+using Microsoft.EntityFrameworkCore;
+
+namespace BumboSolid.Web
 {
 	public class Program
 	{
 		public static void Main(string[] args)
 		{
 			var builder = WebApplication.CreateBuilder(args);
+
+			ConfigurationManager configuration = builder.Configuration;
+
+			builder.Services.AddDbContext<BumboDbContext>(options => options.UseSqlServer(configuration.GetConnectionString("BumboDBString")));
 
 			// Add services to the container.
 			builder.Services.AddControllersWithViews();
