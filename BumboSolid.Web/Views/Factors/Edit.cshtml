@@ -1,0 +1,153 @@
+﻿<div class="modal-body d-flex flex-row">
+	<!--content-->
+	<ul class="p-2" id="prognosis-weekdays">
+		<li>Maandag</li>
+		<li>Dinsdag</li>
+		<li>Woensdag</li>
+		<li>Donderdag</li>
+		<li>Vrijdag</li>
+		<li>Zaterdag</li>
+		<li>Zondag</li>
+	</ul>
+
+	<div class="p-2 background-white prognosis-table">
+		<h6>Schatting Bezoekersdrukte</h6>
+
+		<hr>
+
+		<table>
+			<tr><td class="background-light impact-changeable">...</td></tr>
+			<tr><td class="background-light impact-changeable">...</td></tr>
+			<tr><td class="background-light impact-changeable">...</td></tr>
+			<tr><td class="background-light impact-changeable">...</td></tr>
+			<tr><td class="background-light impact-changeable">...</td></tr>
+			<tr><td class="background-light impact-changeable">...</td></tr>
+			<tr><td class="background-light impact-changeable">...</td></tr>
+		</table>
+	</div>
+
+	<div class="p-2 background-dark prognosis-table">
+		<h6>Feestdagen</h6>
+
+		<hr>
+
+		<table>
+			<tr><td class="background-light impact-changeable">...</td></tr>
+			<tr><td class="background-light impact-changeable">...</td></tr>
+			<tr><td class="background-light impact-changeable">...</td></tr>
+			<tr><td class="background-light impact-changeable">...</td></tr>
+			<tr><td class="background-light impact-changeable">...</td></tr>
+			<tr><td class="background-light impact-changeable">...</td></tr>
+			<tr><td class="background-light impact-changeable">...</td></tr>
+		</table>
+	</div>
+
+	<div class="p-2 background-white prognosis-table">
+		<h6>
+			Weer
+			<button type="button" data-toggle="modal" data-target="#editWeatherModal">Bewerken</button>
+		</h6>
+		<hr>
+		<div class="d-flex flex-column">
+
+			<!-- Weather selection -->
+			<div class="d-flex flex-row align-items-center">
+				<select class="ml-2 form-control weather-select">
+					<option value="sunny">Sunny</option>
+					<option value="cloudy">Cloudy</option>
+					<option value="rainy">Rainy</option>
+					<option value="stormy">Stormy</option>
+					<option value="snowy">Snowy</option>
+				</select>
+			</div>
+
+			<div class="d-flex flex-row align-items-center">
+				<select class="ml-2 form-control weather-select">
+					<option value="sunny">Sunny</option>
+					<option value="cloudy">Cloudy</option>
+					<option value="rainy">Rainy</option>
+					<option value="stormy">Stormy</option>
+					<option value="snowy">Snowy</option>
+				</select>
+			</div>
+
+			<div class="d-flex flex-row align-items-center">
+				<select class="ml-2 form-control weather-select">
+					<option value="sunny">Sunny</option>
+					<option value="cloudy">Cloudy</option>
+					<option value="rainy">Rainy</option>
+					<option value="stormy">Stormy</option>
+					<option value="snowy">Snowy</option>
+				</select>
+			</div>
+
+			<div class="d-flex flex-row align-items-center">
+				<select class="ml-2 form-control weather-select">
+					<option value="sunny">Sunny</option>
+					<option value="cloudy">Cloudy</option>
+					<option value="rainy">Rainy</option>
+					<option value="stormy">Stormy</option>
+					<option value="snowy">Snowy</option>
+				</select>
+			</div>
+
+			<div class="d-flex flex-row align-items-center">
+				<select class="ml-2 form-control weather-select">
+					<option value="sunny">Sunny</option>
+					<option value="cloudy">Cloudy</option>
+					<option value="rainy">Rainy</option>
+					<option value="stormy">Stormy</option>
+					<option value="snowy">Snowy</option>
+				</select>
+			</div>
+
+			<div class="d-flex flex-row align-items-center">
+				<select class="ml-2 form-control weather-select">
+					<option value="sunny">Sunny</option>
+					<option value="cloudy">Cloudy</option>
+					<option value="rainy">Rainy</option>
+					<option value="stormy">Stormy</option>
+					<option value="snowy">Snowy</option>
+				</select>
+			</div>
+
+			<div class="d-flex flex-row align-items-center">
+				<select class="ml-2 form-control weather-select">
+					<option value="sunny">Sunny</option>
+					<option value="cloudy">Cloudy</option>
+					<option value="rainy">Rainy</option>
+					<option value="stormy">Stormy</option>
+					<option value="snowy">Snowy</option>
+				</select>
+			</div>
+		</div>
+	</div>
+
+	<div class="p-2 background-dark prognosis-table">
+		<h6>Overig</h6>
+		<hr>
+
+		<div class="factor-buttons">
+			<button type="button">...</button>
+			<button type="button">...</button>
+			<button type="button">...</button>
+			<button type="button">...</button>
+			<button type="button">...</button>
+			<button type="button">...</button>
+			<button type="button">...</button>
+		</div>
+	</div>
+</div>
+<div class="d-flex flex-row">
+	<button type="button" class="btn btn-danger save-button">Annuleren & Ongedaan Maken</button>
+	<button type="button" class="btn btn-primary save-button">Opslaan & Bijwerken</button>
+</div>
+
+<!-- Edit Weather Percentages Modal -->
+<div class="modal fade" id="editWeatherModal" tabindex="-1" role="dialog" aria-labelledby="editWeatherModalLabel" aria-hidden="true">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			@Html.Partial("~/Views/Weather/Edit.cshtml")
+		</div>
+	</div>
+</div>
