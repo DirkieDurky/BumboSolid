@@ -1,5 +1,7 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
+﻿@model IEnumerable<BumboSolid.Data.Models.Prognosis>
+
+@{
+	ViewData["Title"] = "Home Page";
 }
 
 <!-- Bootstrap JS and dependencies -->
@@ -10,13 +12,37 @@
 
 <div class="d-flex flex-row">
 
-    <!--Prognosis list and impact buttons-->
-    <div class="p-2">
-        <button class="btn btn-primary">Prognose Aanmaken</button>
-      
-      <div class="background-dark" id="prognosis-scrollbar"></div>
+	<!--Prognosis list and impact buttons-->
+	<div class="p-2">
+		<button class="btn btn-primary">Prognose Aanmaken</button>
 
-        <button class="p-2 btn btn-primary" data-toggle="modal" data-target="#manageNormModal">Normeringen Beheren</button>
+		<div class="background-dark" id="prognosis-scrollbar">
+			<table class="table">
+				<tbody>
+					@foreach (var item in Model)
+					{
+						<tr>
+							<td>
+								<button class="btn btn-outline-primary btn-sm m-0">
+									@Html.DisplayFor(modelItem => item.Year) - week @Html.DisplayFor(modelItem => item.Week)
+								</button>
+							</td>
+						</tr>
+					}
+				</tbody>
+			</table>
+		</div>
+
+		<button class="p-2 btn btn-primary" data-toggle="modal" data-target="#manageNormModal">Normeringen Beheren</button>
+
+		<!--Manage Norms pop-up modal-->
+		<div class="modal fade" id="manageNormModal" tabindex="-1" role="dialog" aria-labelledby="manageNormModalLabel" aria-hidden="true">
+			<div class="modal-dialog" role="document">
+				<div class="modal-content" id="norm-view">
+					<partial name="_ManageNormSubview" />
+				</div>
+			</div>
+		</div>
 
         <!--Manage Norms pop-up modal-->
         <div class="modal fade" id="manageNormModal" tabindex="-1" role="dialog" aria-labelledby="manageNormModalLabel" aria-hidden="true">
@@ -26,7 +52,6 @@
                 </div>
             </div>
         </div>
-        
 		<div></div>
 
 		<!--Overview Holiday button-->
