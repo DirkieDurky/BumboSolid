@@ -1,14 +1,39 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using BumboSolid.Data;
+using BumboSolid.Data.Models;
+using BumboSolid.Web.Models;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace BumboSolid.Web.Controllers
 {
 	public class FeestdagenController : Controller
 	{
+		private readonly BumboDbContext _context;
+
+		public FeestdagenController(BumboDbContext context)
+		{
+			_context = context;
+		}
+
 		// GET: FeestdagenController
 		public ActionResult Index()
 		{
-			return View();
+			List<HolidayViewModel> holidayViewModels = new List<HolidayViewModel>();
+
+			foreach (Holiday holiday in _context.Holidays.Include(x => x.HolidayDays).ToList())
+			{
+				List<HolidayDay> holidayDays = holiday.HolidayDays.ToList();
+
+				DateOnly firstDay = holidayDays[0].Date;
+				DateOnly lastDay = holidayDays[holidayDays.Count()-1].Date;
+
+				HolidayViewModel holidayViewModel = new HolidayViewModel() { Holiday = holiday, FirstDay = firstDay, LastDay = lastDay };
+
+				holidayViewModels.Add(holidayViewModel);
+			}
+
+			return View(holidayViewModels);
 		}
 
 		// GET: FeestdagenController/Details/5
