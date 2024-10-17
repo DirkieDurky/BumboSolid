@@ -27,11 +27,6 @@ namespace BumboSolid.Web.Controllers
 			return View(prognosisList);
 		}
 
-		public IActionResult Privacy()
-		{
-			return View();
-		}
-
 		[ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
 		public IActionResult Error()
 		{
