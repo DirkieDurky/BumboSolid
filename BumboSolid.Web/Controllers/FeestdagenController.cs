@@ -21,7 +21,7 @@ namespace BumboSolid.Web.Controllers
 		{
 			List<HolidayViewModel> holidayViewModels = new List<HolidayViewModel>();
 
-			foreach (var holiday in _context.Holidays.Include(x => x.HolidayDays))
+			foreach (Holiday holiday in _context.Holidays.Include(x => x.HolidayDays).ToList())
 			{
 				List<HolidayDay> holidayDays = holiday.HolidayDays.ToList();
 
