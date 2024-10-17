@@ -14,7 +14,7 @@
 
 	<!--Prognosis list and impact buttons-->
 	<div class="p-2">
-		<a class="p-2 btn btn-primary" asp-controller="Prognoses" asp-action="Create">Prognose aanmaken</a>
+		<a class="p-2 btn btn-primary" asp-controller="Prognoses" asp-action="Aanmaken">Prognose Aanmaken</a>
 
 		<div class="background-dark" id="prognosis-scrollbar">
 			<table class="table">
@@ -33,37 +33,8 @@
 			</table>
 		</div>
 
-		<button class="p-2 btn btn-primary" data-toggle="modal" data-target="#manageNormModal">Normeringen Beheren</button>
-
-        <!--Manage Norms pop-up modal-->
-        <div class="modal fade" id="manageNormModal" tabindex="-1" role="dialog" aria-labelledby="manageNormModalLabel" aria-hidden="true">
-			<div class="modal-dialog" id="modal-norms-manage-custom"role="document">
-                <div class="modal-content background-light" id="norm-view">
-					@Html.Partial("~/Views/Norms/Edit.cshtml")
-                </div>
-            </div>
-        </div>
-
-		<!--Overview Holiday button-->
-		<button class="p-2 btn btn-primary" data-toggle="modal" data-target="#holidayModal">Feestdagen Beheren</button>
-
-		<!--Overview Holiday pop-up modal-->
-		<div class="modal fade" id="holidayModal" tabindex="-1" role="dialog" aria-labelledby="holidayModalLabel" aria-hidden="true">
-			<div class="modal-dialog" role="document">
-				<div class="modal-content background-light">
-					@Html.Partial("~/Views/Holidays/Index.cshtml")
-				</div>
-			</div>
-		</div>
-
-		<!--Manage Holiday pop-up modal-->
-		<div class="modal fade" id="holidayManageModal" tabindex="-1" role="dialog" aria-labelledby="holidayManageModalLabel" aria-hidden="true">
-			<div class="modal-dialog" id="modal-holiday-manage-custom" role="document">
-				<div class="modal-content background-light">
-					@Html.Partial("~/Views/Holidays/Edit.cshtml")
-				</div>
-			</div>
-		</div>
+		<a class="p-2 btn btn-primary" asp-controller="Normeringen" asp-action="Bewerken">Normeringen Beheren</a>
+		<a class="p-2 btn btn-primary" asp-controller="Feestdagen" asp-action="Index">Feestdagen Beheren</a>
 	</div>
 
 	<!--Selected prognosis menu-->
@@ -253,17 +224,8 @@
 					<p class="p-2 auto-margin">Werkuren</p>
 				</div>
 
-				<!--Manage Factors button-->
-				<button class="p-2 btn btn-primary auto-margin prognosis-index" data-toggle="modal" data-target="#factorModal">Factoren Beheren</button>
 
-				<!--Manage Factors pop-up modal-->
-				<div class="modal fade" id="factorModal" tabindex="-1" role="dialog" aria-labelledby="factorModalLabel" aria-hidden="true">
-					<div class="modal-dialog modal-lg-custom" role="document">
-						<div class="modal-content background-light">
-							@Html.Partial("~/Views/Factors/Edit.cshtml")
-						</div>
-					</div>
-				</div>
+				<a class="p-2 btn btn-primary" asp-controller="Factoren" asp-action="Bewerken">Factoren Beheren</a>
 			</div>
 		</div>
 	</div>
