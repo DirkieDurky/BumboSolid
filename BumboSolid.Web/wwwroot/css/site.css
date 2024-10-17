@@ -27,6 +27,10 @@ table {
     border-spacing: 5px;
 }
 
+.table-gray {
+    --bs-table-bg: darkgray;
+}
+
 h6 {
     font-size: 1vw;
     font-weight: bold;

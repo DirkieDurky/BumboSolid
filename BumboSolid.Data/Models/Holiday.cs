@@ -7,5 +7,5 @@ public partial class Holiday
 {
     public string Name { get; set; } = null!;
 
-    public virtual HolidayDay? HolidayDay { get; set; }
+    public virtual ICollection<HolidayDay> HolidayDays { get; set; } = new List<HolidayDay>();
 }

@@ -115,8 +115,8 @@ public partial class BumboDbContext : DbContext
                 .IsUnicode(false)
                 .HasColumnName("Holiday_Name");
 
-            entity.HasOne(d => d.HolidayNameNavigation).WithOne(p => p.HolidayDay)
-                .HasForeignKey<HolidayDay>(d => d.HolidayName)
+            entity.HasOne(d => d.HolidayNameNavigation).WithMany(p => p.HolidayDays)
+                .HasForeignKey(d => d.HolidayName)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_HolidayDay_Holiday");
         });

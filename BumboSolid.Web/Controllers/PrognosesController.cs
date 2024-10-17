@@ -4,6 +4,7 @@ using BumboSolid.Data;
 using BumboSolid.Data.Models;
 using System.Globalization;
 using BumboSolid.Web.Models;
+using System.Diagnostics;
 
 namespace BumboSolid.Web.Controllers
 {
@@ -77,15 +78,15 @@ namespace BumboSolid.Web.Controllers
 
 				//Get current day from year, week and weekday
 				DateTime startOfYear = new DateTime(newPrognosis.Year, 1, 1);
-				DateTime currentDay = calendar.AddWeeks(startOfYear, newPrognosis.Week - 1).AddDays(i - (int)startOfYear.DayOfWeek);
+				DateTime currentDay = calendar.AddWeeks(startOfYear, newPrognosis.Week - 1).AddDays(i - (int)startOfYear.DayOfWeek + 1);
 
-				var temp = _context.HolidayDays;
-				IEnumerable<HolidayDay> holidayInfo = temp.Where(d => d.Date == DateOnly.FromDateTime(currentDay));
+				var temp = _context.HolidayDays.ToList();
+				List<HolidayDay> holidayInfo = temp.Where(d => d.Date == DateOnly.FromDateTime(currentDay)).ToList();
 
 				prognosisDay.Factors.Add(new Factor()
 				{
 					PrognosisId = prognosisDay.PrognosisId,
-					Type = "feestdagen",
+					Type = "Feestdagen",
 					Weekday = prognosisDay.Weekday,
 					Impact = (short)(holidayInfo.Count() == 0 ? 0 : holidayInfo.First().Impact),
 				});
@@ -93,7 +94,7 @@ namespace BumboSolid.Web.Controllers
 				prognosisDay.Factors.Add(new Factor()
 				{
 					PrognosisId = prognosisDay.PrognosisId,
-					Type = "weer",
+					Type = "Weer",
 					Weekday = prognosisDay.Weekday,
 					Impact = 0,
 				});
@@ -101,7 +102,7 @@ namespace BumboSolid.Web.Controllers
 				prognosisDay.Factors.Add(new Factor()
 				{
 					PrognosisId = prognosisDay.PrognosisId,
-					Type = "overig",
+					Type = "Overig",
 					Weekday = prognosisDay.Weekday,
 					Impact = 0,
 				});
@@ -110,6 +111,7 @@ namespace BumboSolid.Web.Controllers
 			}
 
 			editFactorsViewModel.Prognosis = newPrognosis;
+			editFactorsViewModel.WeatherValues = _context.Weathers.ToList();
 
 			return View(editFactorsViewModel);
 		}
@@ -167,11 +169,11 @@ namespace BumboSolid.Web.Controllers
 
 		// GET: Prognoses/Bewerken/5
 		public async Task<IActionResult> Bewerken(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
+		{
+			if (id == null)
+			{
+				return NotFound();
+			}
 
 			var prognosis = await _context.Prognoses.FindAsync(id);
 			if (prognosis == null)
@@ -185,13 +187,13 @@ namespace BumboSolid.Web.Controllers
 		// To protect from overposting attacks, enable the specific properties you want to bind to.
 		// For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
 		[HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Bewerken(int id, [Bind("Id,Year,Week")] Prognosis prognosis)
-        {
-            if (id != prognosis.Id)
-            {
-                return NotFound();
-            }
+		[ValidateAntiForgeryToken]
+		public async Task<IActionResult> Bewerken(int id, [Bind("Id,Year,Week")] Prognosis prognosis)
+		{
+			if (id != prognosis.Id)
+			{
+				return NotFound();
+			}
 
 			if (ModelState.IsValid)
 			{

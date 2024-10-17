@@ -1,4 +1,5 @@
-﻿@model BumboSolid.Web.Models.EditFactorsViewModel
+﻿@using BumboSolid.Data.Models
+@model BumboSolid.Web.Models.EditFactorsViewModel
 
 @{
 	String[] daysOfTheWeek = { "Maandag", "Dinsdag", "Woensdag", "Donderdag", "Vrijdag", "Zaterdag", "Zondag" };
@@ -12,9 +13,9 @@
 	<table class="table" cellspacing="0">
 		<tr>
 			<th></th>
-			<th scope="col" class="rounded-top table-primary">Schatting Bezoekersdrukte</th>
+			<th scope="col" class="rounded-top table-gray">Schatting Bezoekersdrukte</th>
 			<th scope="col" class="rounded-top table-secondary">Feestdagen</th>
-			<th scope="col" class="rounded-top table-primary">Weer</th>
+			<th scope="col" class="rounded-top table-gray">Weer</th>
 			<th scope="col" class="rounded-top table-secondary">Overig</th>
 		</tr>
 		@for (int i = 0; i < daysOfTheWeek.Length; i++)
@@ -32,7 +33,7 @@
 						value = Model.VisitorEstimatePerDay![(byte)i];
 					}
 				}
-				<td class="table-primary"><input name="visitorEstimates" type="number" class="form-control int-edit" value="@value"></td>
+				<td class="table-gray"><input name="visitorEstimates" type="number" class="form-control int-edit" value="@value"></td>
 
 				@{
 					value = Model.Prognosis.PrognosisDays.First(x => x.Weekday == i).Factors.First(x => x.Type == "Feestdagen").Impact;
@@ -42,7 +43,16 @@
 				@{
 					value = Model.Prognosis.PrognosisDays.First(x => x.Weekday == i).Factors.First(x => x.Type == "Weer").Impact;
 				}
-				<td class="table-primary"><input name="weather" type="number" class="form-control int-edit" value="@value"></td>
+				<td class="table-gray">
+					<select name="weather" type="number" class="form-control int-edit" value="@value">
+						@{
+							foreach (Weather weatherValue in Model.WeatherValues)
+							{
+								<option value="@weatherValue.Id">@weatherValue.Impact</option>
+							}
+						}
+					</select>
+				</td>
 
 				@{
 					value = Model.Prognosis.PrognosisDays.First(x => x.Weekday == i).Factors.First(x => x.Type == "Overig").Impact;

@@ -6,5 +6,6 @@ namespace BumboSolid.Web.Models
 	{
 		public Prognosis Prognosis;
 		public Dictionary<byte, int>? VisitorEstimatePerDay = new Dictionary<byte, int>();
+		public List<Weather> WeatherValues = new List<Weather>();
 	}
 }
