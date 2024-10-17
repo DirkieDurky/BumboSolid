@@ -25,9 +25,8 @@ namespace BumboSolid.Web.Controllers
 			{
 				List<HolidayDay> holidayDays = holiday.HolidayDays.ToList();
 
-				DateOnly firstDay = holidayDays.Min(x => x.Date);
-
-				DateOnly lastDay = holidayDays.Max(x => x.Date);
+				DateOnly firstDay = holidayDays[0].Date;
+				DateOnly lastDay = holidayDays[holidayDays.Count()-1].Date;
 
 				HolidayViewModel holidayViewModel = new HolidayViewModel() { Holiday = holiday, FirstDay = firstDay, LastDay = lastDay };
 
