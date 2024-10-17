@@ -181,6 +181,38 @@ p {
     margin: 0.5vw;
 }
 
+.holiday-impact {
+    height: 50px;
+    width: 75px;
+    margin: 0.5vw;
+    text-align: center;
+}
+
+.holiday-create {
+    height: 50px;
+    width: 150px;
+    margin: 0.5vw;
+    text-align: center;
+}
+
+.remove-text-decoration {
+    text-decoration: none;
+    color: black;
+}
+
+    .remove-text-decoration:hover {
+        text-decoration: none;
+        color: black;
+    }
+
+.fa-solid {
+    vertical-align: middle;
+}
+
+.holiday-impact:hover {
+    color: black;
+}
+
 .holiday-title {
     height: 50px;
     width: 160px;

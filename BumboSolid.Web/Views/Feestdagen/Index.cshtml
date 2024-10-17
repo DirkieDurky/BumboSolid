@@ -1,18 +1,19 @@
-﻿<div class="modal-body">
+﻿
+<script src="https://kit.fontawesome.com/981e782106.js" crossorigin="anonymous"></script>
+
+<div class="d-flex flex-row">
+	<h6 class="holiday-title">Feest</h6>
+	<h6 class="holiday-title">Dagen</h6>
+	<h6 id="holiday-impact-title">Invloed</h6>
+</div>
+<div id="holidays-scrollbar">
 	<div class="d-flex flex-row">
-		<h6 class="holiday-title">Feest</h6>
-		<h6 class="holiday-title">Dagen</h6>
-		<h6 id="holiday-impact-title">Invloed</h6>
+		<input class="p-2 form-control holiday-name" placeholder="Feest naam">
+		<input class="p-2 form-control holiday-date" placeholder="Begin">
+		<input class="p-2 form-control holiday-date" placeholder="Eind">
+		<a class="p-2 holiday-impact remove-text-decoration border border-dark " asp-controller="Feestdagen" asp-action="Bewerken"><span class="fa-solid fa-chart-simple"></span></a>
 	</div>
-	<div id="holidays-scrollbar">
-		<div class="d-flex flex-row">
-			<input class="p-2 form-control background-dark holiday-name" placeholder="Feest naam">
-			<input class="p-2 form-control background-dark holiday-date" placeholder="Begin">
-			<input class="p-2 form-control background-dark holiday-date" placeholder="Eind">
-			<a class="p-2 background-dark holiday-date fa-solid fa-chart-simple" asp-controller="Feestdagen" asp-action="Bewerken"></a>
-		</div>
-		<div class="d-flex flex-row">
-			<button class="background-dark holiday-name" id="add-holiday-button">+</button>
-		</div>
+	<div class="d-flex flex-row">
+		<a class="p-2 form-control holiday-create border border-dark remove-text-decoration" asp-controller="Feestdagen" asp-action="Aanmaken">+</a>
 	</div>
 </div>
