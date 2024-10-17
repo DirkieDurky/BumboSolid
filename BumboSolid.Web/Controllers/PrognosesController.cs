@@ -121,7 +121,7 @@ namespace BumboSolid.Web.Controllers
 		// For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
 		[HttpPost]
 		[ValidateAntiForgeryToken]
-		public async Task<IActionResult> Aanmaken(Prognosis prognosis, List<int> visitorEstimates, List<int> holidays, List<int> weather, List<int> other)
+		public async Task<IActionResult> Aanmaken(Prognosis prognosis, List<int> visitorEstimates, List<int> holidays, List<int> weather, List<int> other, List<String> description)
 		{
 			if (ModelState.IsValid)
 			{
@@ -149,7 +149,8 @@ namespace BumboSolid.Web.Controllers
 						PrognosisId = prognosis.Id,
 						Type = "Weer",
 						Weekday = (byte)i,
-						Impact = (short)weather[i],
+						WeatherId = (byte)weather[i],
+						Impact = _context.Weathers.First(x=>x.Id == (byte)weather[i]).Impact,
 					});
 
 					_context.Add(new Factor()
@@ -158,6 +159,7 @@ namespace BumboSolid.Web.Controllers
 						Type = "Overig",
 						Weekday = (byte)i,
 						Impact = (short)other[i],
+						Description = description[i],
 					});
 				}
 				await _context.SaveChangesAsync();

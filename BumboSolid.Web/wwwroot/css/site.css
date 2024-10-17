@@ -22,7 +22,6 @@ body {
 }
 
 table {
-    width: 100%;
     border-collapse: separate;
     border-spacing: 5px;
 }
@@ -40,11 +39,6 @@ h6 {
 
 hr {
     min-height: 0.3vh;
-}
-
-th, td {
-    padding: 5px;
-    text-align: center;
 }
 
 li {
@@ -296,8 +290,9 @@ p {
     margin-left: -0.05vw;
 }
 
-.int-edit {
+.small-input {
     min-width: 4rem;
+    height: 2.5rem;
 }
 
 #graph-impact-title {
@@ -327,3 +322,12 @@ p {
     .table > :not(caption) > * > * {
         padding: 0.5rem 1rem;
     }
+
+th, td {
+    padding: 5px;
+    text-align: center;
+}
+
+.factor-description {
+    resize: none;
+}

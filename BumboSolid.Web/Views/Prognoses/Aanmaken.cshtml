@@ -3,7 +3,9 @@
 
 @{
 	String[] daysOfTheWeek = { "Maandag", "Dinsdag", "Woensdag", "Donderdag", "Vrijdag", "Zaterdag", "Zondag" };
+
 	String[] factorTypes = { "Feestdagen", "Weer", "Overig" };
+
 	int value;
 }
 <form asp-action="Aanmaken">
@@ -19,34 +21,44 @@
 			<th scope="col" class="rounded-top table-secondary">Overig</th>
 		</tr>
 		@for (int i = 0; i < daysOfTheWeek.Length; i++)
+
 		{
+
 			String day = daysOfTheWeek[i];
 			<tr>
 				<th scope="row">@day</th>
 				@{
 					if (Model.VisitorEstimatePerDay == null)
+
 					{
+
 						value = 0;
+
 					}
+
 					else
+
 					{
+
 						value = Model.VisitorEstimatePerDay![(byte)i];
+
 					}
 				}
-				<td class="table-gray"><input name="visitorEstimates" type="number" class="form-control int-edit" value="@value"></td>
+				<td class="table-gray"><input name="visitorEstimates" type="number" class="form-control" value="@value"></td>
 
 				@{
 					value = Model.Prognosis.PrognosisDays.First(x => x.Weekday == i).Factors.First(x => x.Type == "Feestdagen").Impact;
 				}
-				<td class="table-secondary"><input name="holidays" type="number" class="form-control int-edit" value="@value"></td>
+				<td class="table-secondary"><input name="holidays" type="number" class="form-control small-input" value="@value"></td>
 
 				@{
 					value = Model.Prognosis.PrognosisDays.First(x => x.Weekday == i).Factors.First(x => x.Type == "Weer").Impact;
 				}
 				<td class="table-gray">
-					<select name="weather" type="number" class="form-control int-edit" value="@value">
+					<select name="weather" type="number" class="form-control small-input" value="@value">
 						@{
 							foreach (Weather weatherValue in Model.WeatherValues)
+
 							{
 								<option value="@weatherValue.Id">@weatherValue.Impact</option>
 							}
@@ -57,7 +69,10 @@
 				@{
 					value = Model.Prognosis.PrognosisDays.First(x => x.Weekday == i).Factors.First(x => x.Type == "Overig").Impact;
 				}
-				<td class="table-secondary"><input name="other" type="number" class="form-control int-edit" value="@value"></td>
+				<td class="table-secondary d-flex flex-row gap-2">
+					<input name="other" type="number" class="form-control small-input" value="@value">
+					<textarea name="description" class="factor-description" rows="2" cols="25"></textarea>
+				</td>
 			</tr>
 		}
 	</table>
