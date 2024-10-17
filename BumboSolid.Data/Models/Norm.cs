@@ -19,5 +19,5 @@ public partial class Norm
 
     public bool PerVisitor { get; set; }
 
-    public virtual Function FunctionNavigation { get; set; } = null!;
+    public virtual Function? FunctionNavigation { get; set; } = null!;
 }

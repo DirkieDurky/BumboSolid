@@ -60,6 +60,10 @@ namespace BumboSolid.Web.Controllers
                     break;
             }
 
+            // Assign auto incremented Id
+            int maxId = _context.Norms.Any() ? _context.Norms.Max(n => n.Id) : 0;
+            norm.Id = maxId + 1;
+
             // Check if the model state is still valid before saving to the database
             if (ModelState.IsValid)
             {
@@ -72,10 +76,6 @@ namespace BumboSolid.Web.Controllers
             ViewBag.TimeUnits = new SelectList(new List<string> { "Seconden", "Minuten", "Uren" });
             return View(norm);
         }
-
-
-
-
 
         // POST: Normeringen/Bewerken/5
         [HttpPost]
