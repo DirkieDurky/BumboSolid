@@ -55,7 +55,7 @@
 					value = Model.Prognosis.PrognosisDays.First(x => x.Weekday == i).Factors.First(x => x.Type == "Weer").Impact;
 				}
 				<td class="table-gray">
-					<select name="weather" type="number" class="form-control small-input" value="@value">
+					<select name="weather" type="number" class="form-control small-input form-select" value="@value">
 						@{
 							foreach (Weather weatherValue in Model.WeatherValues)
 
