@@ -14,7 +14,7 @@
 
 	<!--Prognosis list and impact buttons-->
 	<div class="p-2">
-		<button class="btn btn-primary">Prognose Aanmaken</button>
+		<a class="p-2 btn btn-primary" asp-controller="Prognoses" asp-action="Create">Prognose aanmaken</a>
 
 		<div class="background-dark" id="prognosis-scrollbar">
 			<table class="table">
@@ -43,7 +43,6 @@
                 </div>
             </div>
         </div>
-		<div></div>
 
 		<!--Overview Holiday button-->
 		<button class="p-2 btn btn-primary" data-toggle="modal" data-target="#holidayModal">Feestdagen Beheren</button>

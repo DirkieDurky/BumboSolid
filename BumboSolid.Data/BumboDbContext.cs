@@ -84,11 +84,11 @@ public partial class BumboDbContext : DbContext
 
         modelBuilder.Entity<Function>(entity =>
         {
-            entity.HasKey(e => e.Name);
+            entity.HasKey(e => e.FunctionName);
 
             entity.ToTable("Function");
 
-            entity.Property(e => e.Name)
+            entity.Property(e => e.FunctionName)
                 .HasMaxLength(25)
                 .IsUnicode(false);
         });
