@@ -106,7 +106,7 @@ public partial class BumboDbContext : DbContext
 
         modelBuilder.Entity<HolidayDay>(entity =>
         {
-            entity.HasKey(e => e.HolidayName);
+            entity.HasKey(e => new { e.HolidayName, e.Date });
 
             entity.ToTable("HolidayDay");
 
