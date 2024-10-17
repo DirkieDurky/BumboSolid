@@ -1,20 +1,17 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using BumboSolid.Data;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace BumboSolid.Web.Controllers
 {
 	public class NormeringenController : Controller
 	{
-		// GET: Normeringen
-		public ActionResult Index()
-		{
-			return View();
-		}
+		private readonly BumboDbContext _context;
 
-		// GET: Normeringen/Details/5
-		public ActionResult Details(int id)
+		public NormeringenController(BumboDbContext context)
 		{
-			return View();
+			_context = context;
 		}
 
 		// GET: Normeringen/Aanmaken
@@ -41,7 +38,8 @@ namespace BumboSolid.Web.Controllers
 		// GET: Normeringen/Bewerken/5
 		public ActionResult Bewerken(int id)
 		{
-			return View();
+			var normList = _context.Norms.ToList();
+			return View(normList);
 		}
 
 		// POST: Normeringen/Bewerken/5
