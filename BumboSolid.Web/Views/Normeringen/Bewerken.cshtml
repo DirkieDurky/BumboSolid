@@ -1,4 +1,8 @@
-﻿<div class="modal-body">
+﻿@model IEnumerable<BumboSolid.Data.Models.Norm>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+<div class="modal-body">
 	<div class="d-flex flex-row">
 		<div class="col-sm-3">
 			<h6>Activiteit</h6>
@@ -16,46 +20,48 @@
 
 	<div id="norms-scrollbar">
 		<form>
-            <div class="form-group row d-flex align-items-center norm-row">
-                <!-- "Activiteit" field -->
-                <div class="col-sm-3">
-                    <input type="text" class="form-control background-dark" id="activiteit" name="activiteit" placeholder="Enter activity">
-                </div>
+			@foreach (var norm in Model)
+			{
+				<div class="form-group row align-items-center norm-row">
+					<div class="col-sm-3">
+						<input type="text" class="form-control" value="@norm.Activity" />
+					</div>
 
-                <!-- Functie dropdown -->
-                <div class="col-sm-2">
-                    <select class="form-control dropdown-better background-dark" id="functie" name="functie">
-                        <option value="Vakkenvuller">Vakkenvuller</option>
-                        <option value="Kassa">Kassa</option>
-                        <option value="Vers">Vers</option>
-                    </select>
-                </div>
+					<div class="col-sm-2">
+						<select class="form-control">
+							<option value="Vers" selected="@(norm.Function == "Vers" ? "selected" : null)">Vers</option>
+							<option value="Kassa" selected="@(norm.Function == "Kassa" ? "selected" : null)">Kassa</option>
+							<option value="Vakkenvullen" selected="@(norm.Function == "Vakkenvullen" ? "selected" : null)">Vakkenvullen</option>
+						</select>
+					</div>
 
-                <!-- Duur int field and dropdown -->
-                <div class="col-sm-3 d-flex gap-1">
-                    <input type="number" class="form-control int-edit background-dark" id="duur-int" name="duur-int" placeholder="0">
-                    <select class="form-control dropdown-better background-dark" id="duur" name="duur">
-                        <option value="seconden">Seconden</option>
-                        <option value="minuten">Minuten</option>
-                        <option value="uur">Uur</option>
-                    </select>
-                </div>
+					<div class="col-sm-1">
+						<input type="number" class="form-control" value="@norm.Duration" />
+					</div>
 
-                <!-- "per bezoeker" checkbox -->
-                <div class="col-sm-3 d-flex align-items-center gap-2">
-                    <input type="number" class="form-control int-edit background-dark" id="number-field" name="number-field" placeholder="0">
-                    <label for="per-bezoeker" class="col-form-label">per bezoeker</label>
-                    <input type="checkbox" id="per-bezoeker" name="per-bezoeker">
-                </div>
-                <div class="col-sm-1">
-                    <button type="button" class="btn btn-delete background-dark fa-solid fa-trash-can"></button>
-                </div>
-            </div>
+					<div class="col-sm-2">
+						<select class="form-control">
+							<option value="seconds">Seconds</option>
+							<option value="minutes">Minutes</option>
+							<option value="hours">Hours</option>
+						</select>
+					</div>
+
+					<div class="col-sm-3 d-flex align-items-center gap-2">
+						<input type="number" class="form-control" value="@norm.AvgDailyPerformances" />
+						<label for="per-bezoeker" class="col-form-label mx-2">per bezoeker</label>
+						<input type="checkbox" id="per-bezoeker" name="per-bezoeker" @(norm.PerVisitor ? "checked" : "") />
+					</div>
+					<div class="col-sm-1">
+						<button type="button" class="btn btn-delete fa-solid fa-trash-can"></button>
+					</div>
+				</div>
+			}
 		</form>
-		<div class="d-flex flex-row norm-row">
-			<div class="col-sm-3">
-				<button type="button" class="btn-norm background-dark" id="add-norm-button">+</button>
-			</div>
+	</div>
+	<div class="d-flex flex-row norm-row">
+		<div class="col-sm-3">
+			<button type="button" class="btn btn-primary">+</button>
 		</div>
 	</div>
 </div>
