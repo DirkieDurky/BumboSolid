@@ -52,10 +52,10 @@ namespace BumboSolid.Web.Controllers
             // Convert Duration to seconds based on the selected DurationUnit
             switch (DurationUnit.ToLower())
             {
-                case "Minuten":
+                case "minutes":
                     norm.Duration *= 60;
                     break;
-                case "Uren":
+                case "hours":
                     norm.Duration *= 3600;
                     break;
             }
