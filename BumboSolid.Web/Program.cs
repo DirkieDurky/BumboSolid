@@ -11,7 +11,12 @@ namespace BumboSolid.Web
 
 			ConfigurationManager configuration = builder.Configuration;
 
-			builder.Services.AddDbContext<BumboDbContext>(options => options.UseSqlServer(configuration.GetConnectionString("BumboDBString")));
+			builder.Services.AddDbContext<BumboDbContext>(options =>
+			{
+				options.UseSqlServer(configuration.GetConnectionString("BumboDBString"));
+				options.EnableSensitiveDataLogging();
+			});
+
 
 			// Add services to the container.
 			builder.Services.AddControllersWithViews();

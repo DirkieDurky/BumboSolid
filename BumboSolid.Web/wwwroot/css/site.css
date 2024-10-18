@@ -1,30 +1,33 @@
 html {
-  font-size: 14px;
+    font-size: 14px;
 }
 
 @media (min-width: 768px) {
-  html {
-    font-size: 16px;
-  }
+    html {
+        font-size: 16px;
+    }
 }
 
 .btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
-  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+    box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
 }
 
 html {
-  position: relative;
-  min-height: 100%;
+    position: relative;
+    min-height: 100%;
 }
 
 body {
-  margin-bottom: 60px;
+    margin-bottom: 60px;
 }
 
 table {
-    width: 100%;
     border-collapse: separate;
     border-spacing: 5px;
+}
+
+.table-gray {
+    --bs-table-bg: darkgray;
 }
 
 h6 {
@@ -36,11 +39,6 @@ h6 {
 
 hr {
     min-height: 0.3vh;
-}
-
-th, td {
-    padding: 5px;
-    text-align: center;
 }
 
 li {
@@ -111,14 +109,15 @@ p {
 
 .btn {
     border-radius: 10px;
-    width: 15vw;
-    height: 7vh;
+    min-width: 15vw;
+    min-height: 7vh;
     margin: 5px;
     text-align: center;
     font-weight: bold;
     font-style: italic;
-    font-size: 1vw;
     border: none;
+    margin: 1vw auto 1vw auto;
+    white-space: normal;
 }
 
 .factor-buttons {
@@ -127,21 +126,16 @@ p {
     gap: 7px;
 }
 
-.factor-buttons button {
-    width: 100%;
-    padding: 5px;
-    border: none;
-    border-radius: 10px;
-    font-size: 1vw;
-    background-color: lightgray;
-    color: black;
-    cursor: pointer;
-}
-
-.save-button {
-    margin: 1vw auto 1vw auto;
-    height: 4vw;
-}
+    .factor-buttons button {
+        width: 100%;
+        padding: 5px;
+        border: none;
+        border-radius: 10px;
+        font-size: 1vw;
+        background-color: lightgray;
+        color: black;
+        cursor: pointer;
+    }
 
 .impact-changeable {
     color: black;
@@ -312,6 +306,7 @@ p {
 .dropdown-better {
     width: min-content;
 }
+
 .grouped-padding {
     padding-left: 5px;
     padding-right: 5px;
@@ -327,8 +322,9 @@ p {
     margin-left: -0.05vw;
 }
 
-.int-edit {
-    width: 30%;
+.small-input {
+    min-width: 4rem;
+    height: 2.5rem;
 }
 
 #graph-impact-title {
@@ -345,4 +341,25 @@ p {
     margin: auto 0 auto 0;
     text-align: center;
     padding: 0;
+}
+
+.table {
+    border-spacing: 1rem 0;
+}
+
+    .table > tbody {
+        vertical-align: middle;
+    }
+
+    .table > :not(caption) > * > * {
+        padding: 0.5rem 1rem;
+    }
+
+th, td {
+    padding: 5px;
+    text-align: center;
+}
+
+.factor-description {
+    resize: none;
 }

@@ -1,160 +1,83 @@
-﻿@model BumboSolid.Data.Models.Prognosis
+﻿@using BumboSolid.Data.Models
+@model BumboSolid.Web.Models.EditFactorsViewModel
 
 @{
-	ViewData["Title"] = "Create";
+	String[] daysOfTheWeek = { "Maandag", "Dinsdag", "Woensdag", "Donderdag", "Vrijdag", "Zaterdag", "Zondag" };
+
+	String[] factorTypes = { "Feestdagen", "Weer", "Overig" };
+
+	int value;
 }
+<form asp-action="Aanmaken">
+	<input type="hidden" asp-for="Prognosis.Id" />
+	<input type="hidden" asp-for="Prognosis.Year" />
+	<input type="hidden" asp-for="Prognosis.Week" />
+	<table class="table" cellspacing="0">
+		<tr>
+			<th></th>
+			<th scope="col" class="rounded-top table-gray">Schatting Bezoekersdrukte</th>
+			<th scope="col" class="rounded-top table-secondary">Feestdagen</th>
+			<th scope="col" class="rounded-top table-gray">Weer</th>
+			<th scope="col" class="rounded-top table-secondary">Overig</th>
+		</tr>
+		@for (int i = 0; i < daysOfTheWeek.Length; i++)
 
-<div class="modal-body d-flex flex-row">
-	<!--content-->
-	<ul class="p-2" id="prognosis-weekdays">
-		<li>Maandag</li>
-		<li>Dinsdag</li>
-		<li>Woensdag</li>
-		<li>Donderdag</li>
-		<li>Vrijdag</li>
-		<li>Zaterdag</li>
-		<li>Zondag</li>
-	</ul>
+		{
 
-	<div class="p-2 background-white prognosis-table">
-		<h6>Schatting Bezoekersdrukte</h6>
+			String day = daysOfTheWeek[i];
+			<tr>
+				<th scope="row">@day</th>
+				@{
+					if (Model.VisitorEstimatePerDay == null)
 
-		<hr>
+					{
 
-		<table>
-			<tr><td class="background-light impact-changeable">...</td></tr>
-			<tr><td class="background-light impact-changeable">...</td></tr>
-			<tr><td class="background-light impact-changeable">...</td></tr>
-			<tr><td class="background-light impact-changeable">...</td></tr>
-			<tr><td class="background-light impact-changeable">...</td></tr>
-			<tr><td class="background-light impact-changeable">...</td></tr>
-			<tr><td class="background-light impact-changeable">...</td></tr>
-		</table>
+						value = 0;
+
+					}
+
+					else
+
+					{
+
+						value = Model.VisitorEstimatePerDay![(byte)i];
+
+					}
+				}
+				<td class="table-gray"><input name="visitorEstimates" type="number" class="form-control" value="@value"></td>
+
+				@{
+					value = Model.Prognosis.PrognosisDays.First(x => x.Weekday == i).Factors.First(x => x.Type == "Feestdagen").Impact;
+				}
+				<td class="table-secondary"><input name="holidays" type="number" class="form-control small-input" value="@value"></td>
+
+				@{
+					value = Model.Prognosis.PrognosisDays.First(x => x.Weekday == i).Factors.First(x => x.Type == "Weer").Impact;
+				}
+				<td class="table-gray">
+					<select name="weather" type="number" class="form-control small-input form-select" value="@value">
+						@{
+							foreach (Weather weatherValue in Model.WeatherValues)
+
+							{
+								<option value="@weatherValue.Id">@weatherValue.Impact</option>
+							}
+						}
+					</select>
+				</td>
+
+				@{
+					value = Model.Prognosis.PrognosisDays.First(x => x.Weekday == i).Factors.First(x => x.Type == "Overig").Impact;
+				}
+				<td class="table-secondary d-flex flex-row gap-2">
+					<input name="other" type="number" class="form-control small-input" value="@value">
+					<textarea name="description" class="factor-description" rows="2" cols="25"></textarea>
+				</td>
+			</tr>
+		}
+	</table>
+	<div class="d-flex flex-row">
+		<a class="btn btn-danger" asp-controller="Home" asp-action="Index">Annuleren & Ongedaan Maken</a>
+		<input type="submit" class="btn btn-primary" value="Opslaan & Bijwerken">
 	</div>
-
-	<div class="p-2 background-dark prognosis-table">
-		<h6>Feestdagen</h6>
-
-		<hr>
-
-		<table>
-			<tr><td class="background-light impact-changeable">...</td></tr>
-			<tr><td class="background-light impact-changeable">...</td></tr>
-			<tr><td class="background-light impact-changeable">...</td></tr>
-			<tr><td class="background-light impact-changeable">...</td></tr>
-			<tr><td class="background-light impact-changeable">...</td></tr>
-			<tr><td class="background-light impact-changeable">...</td></tr>
-			<tr><td class="background-light impact-changeable">...</td></tr>
-		</table>
-	</div>
-
-	<div class="p-2 background-white prognosis-table">
-		<h6>
-			Weer
-			<button type="button" data-toggle="modal" data-target="#editWeatherModal">
-				Bewerken
-			</button>
-		</h6>
-		<hr>
-		<div class="d-flex flex-column">
-
-			<!-- Weather selection -->
-			<div class="d-flex flex-row align-items-center">
-				<select class="ml-2 form-control weather-select">
-					<option value="sunny">Sunny</option>
-					<option value="cloudy">Cloudy</option>
-					<option value="rainy">Rainy</option>
-					<option value="stormy">Stormy</option>
-					<option value="snowy">Snowy</option>
-				</select>
-			</div>
-
-			<div class="d-flex flex-row align-items-center">
-				<select class="ml-2 form-control weather-select">
-					<option value="sunny">Sunny</option>
-					<option value="cloudy">Cloudy</option>
-					<option value="rainy">Rainy</option>
-					<option value="stormy">Stormy</option>
-					<option value="snowy">Snowy</option>
-				</select>
-			</div>
-
-			<div class="d-flex flex-row align-items-center">
-				<select class="ml-2 form-control weather-select">
-					<option value="sunny">Sunny</option>
-					<option value="cloudy">Cloudy</option>
-					<option value="rainy">Rainy</option>
-					<option value="stormy">Stormy</option>
-					<option value="snowy">Snowy</option>
-				</select>
-			</div>
-
-			<div class="d-flex flex-row align-items-center">
-				<select class="ml-2 form-control weather-select">
-					<option value="sunny">Sunny</option>
-					<option value="cloudy">Cloudy</option>
-					<option value="rainy">Rainy</option>
-					<option value="stormy">Stormy</option>
-					<option value="snowy">Snowy</option>
-				</select>
-			</div>
-
-			<div class="d-flex flex-row align-items-center">
-				<select class="ml-2 form-control weather-select">
-					<option value="sunny">Sunny</option>
-					<option value="cloudy">Cloudy</option>
-					<option value="rainy">Rainy</option>
-					<option value="stormy">Stormy</option>
-					<option value="snowy">Snowy</option>
-				</select>
-			</div>
-
-			<div class="d-flex flex-row align-items-center">
-				<select class="ml-2 form-control weather-select">
-					<option value="sunny">Sunny</option>
-					<option value="cloudy">Cloudy</option>
-					<option value="rainy">Rainy</option>
-					<option value="stormy">Stormy</option>
-					<option value="snowy">Snowy</option>
-				</select>
-			</div>
-
-			<div class="d-flex flex-row align-items-center">
-				<select class="ml-2 form-control weather-select">
-					<option value="sunny">Sunny</option>
-					<option value="cloudy">Cloudy</option>
-					<option value="rainy">Rainy</option>
-					<option value="stormy">Stormy</option>
-					<option value="snowy">Snowy</option>
-				</select>
-			</div>
-		</div>
-	</div>
-
-
-
-	<div class="p-2 background-dark prognosis-table">
-		<h6>Overig</h6>
-		<hr>
-
-		<div class="factor-buttons">
-			<button type="button">...</button>
-			<button type="button">...</button>
-			<button type="button">...</button>
-			<button type="button">...</button>
-			<button type="button">...</button>
-			<button type="button">...</button>
-			<button type="button">...</button>
-		</div>
-	</div>
-</div>
-<div class="d-flex flex-row">
-	<button type="button" class="btn btn-danger save-button">Annuleren & Ongedaan Maken</button>
-	<button type="button" class="btn btn-primary save-button">Opslaan & Bijwerken</button>
-</div>
-
-@section Scripts {
-	@{
-		await Html.RenderPartialAsync("_ValidationScriptsPartial");
-	}
-}
+</form>

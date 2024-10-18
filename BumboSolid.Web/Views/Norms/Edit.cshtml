@@ -1,0 +1,33 @@
+﻿<div class="modal-body">
+	<div class="d-flex flex-row">
+		<div class="col-sm-3">
+			<h6>Activiteit</h6>
+		</div>
+		<div class="col-sm-2">
+			<h6>Functie</h6>
+		</div>
+		<div class="col-sm-3">
+			<h6>Duur</h6>
+		</div>
+		<div class="col-sm-4">
+			<h6>Gemiddelde Uitvoeringen Per Dag</h6>
+		</div>
+	</div>
+
+	<div id="norms-scrollbar">
+		<form>
+			@Html.Partial("~/Views/Norms/EditRow.cshtml")
+			@Html.Partial("~/Views/Norms/EditRow.cshtml")
+		</form>
+		<div class="d-flex flex-row norm-row">
+			<div class="col-sm-3">
+				<button type="button" class="btn-norm background-dark" id="add-norm-button">+</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="d-flex flex-row">
+	<button type="button" class="btn btn-danger">Annuleren & Ongedaan Maken</button>
+	<button type="button" class="btn btn-primary">Opslaan & Bijwerken</button>
+</div>
