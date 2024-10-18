@@ -92,25 +92,36 @@ namespace BumboSolid.Web.Controllers
             }
         }
 
-        // GET: Normeringen/Verwijderen/5
-        public ActionResult Verwijderen(int id)
-        {
-            return View();
-        }
+		// GET: Normeringen/Verwijderen/5
+		public async Task<IActionResult> Verwijderen(int? id)
+		{
+			if (id == null)
+			{
+				return NotFound();
+			}
 
-        // POST: Normeringen/Verwijderen/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Verwijderen(int id, IFormCollection collection)
-        {
-            try
-            {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
-        }
-    }
+			var norm = await _context.Norms.FirstOrDefaultAsync(n => n.Id == id);
+			if (norm == null)
+			{
+				return NotFound();
+			}
+
+			return View(norm);
+		}
+
+		// POST: Normeringen/Verwijderen/5
+		[HttpPost, ActionName("Verwijderen")]
+		[ValidateAntiForgeryToken]
+		public async Task<IActionResult> VerwijderenConfirmed(int id)
+		{
+			var norm = await _context.Norms.FindAsync(id);
+			if (norm != null)
+			{
+				_context.Norms.Remove(norm);
+				await _context.SaveChangesAsync();
+			}
+
+			return RedirectToAction(nameof(Index));
+		}
+	}
 }
