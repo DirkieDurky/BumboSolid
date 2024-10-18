@@ -32,12 +32,24 @@
 					</div>
 
 					<div class="col-sm-1">
-						<input type="number" class="form-control" value="@norm.Duration" readonly />
+						@* Calculating the readable duration based on the selected unit *@
+						@{
+							string readableDuration = norm.Duration.ToString();
+							if (norm.Duration % 3600 == 0)
+							{
+								readableDuration = (norm.Duration / 3600).ToString();
+							}
+							else if (norm.Duration % 60 == 0)
+							{
+								readableDuration = (norm.Duration / 60).ToString();
+							}
+						}
+						<input type="number" class="form-control" value="@readableDuration" readonly />
 					</div>
 
 					<div class="col-sm-2">
 						<input type="text" class="form-control"
-							   value="@(norm.Duration % 3600 == 0 ? "Hours" : (norm.Duration % 60 == 0 ? "Minutes" : "Seconds"))" readonly />
+							   value="@(norm.Duration % 3600 == 0 ? "Uren" : (norm.Duration % 60 == 0 ? "Minuten" : "Seconden"))" readonly />
 					</div>
 
 					<div class="col-sm-2 d-flex align-items-center gap-2">

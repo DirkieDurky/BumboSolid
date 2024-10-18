@@ -36,15 +36,27 @@
                 </div>
 
                 <div class="col-sm-1">
-                    <input type="number" class="form-control" asp-for="Duration" />
+                    @* Calculating the readable duration based on the selected unit *@
+                    @{
+                        string readableDuration = Model.Duration.ToString();
+                        if (Model.Duration % 3600 == 0)
+                        {
+                            readableDuration = (Model.Duration / 3600).ToString();
+                        }
+                        else if (Model.Duration % 60 == 0)
+                        {
+                            readableDuration = (Model.Duration / 60).ToString();
+                        }
+                    }
+                    <input type="number" class="form-control" asp-for="Duration" value="@readableDuration" />
                     <span asp-validation-for="Duration" class="text-danger"></span>
                 </div>
 
                 <div class="col-sm-2">
                     <select class="form-control" id="DurationUnit" name="DurationUnit">
-                        <option value="seconds" selected="selected">Seconds</option>
-                        <option value="minutes">Minutes</option>
-                        <option value="hours">Hours</option>
+                        <option value="seconds" selected="@(Model.Duration % 60 == 0 && Model.Duration % 3600 != 0 ? "selected" : "")">Seconden</option>
+                        <option value="minutes" selected="@(Model.Duration % 60 == 0 && Model.Duration % 3600 == 0 ? "selected" : "")">Minuten</option>
+                        <option value="hours" selected="@(Model.Duration % 3600 == 0 ? "selected" : "")">Uren</option>
                     </select>
                 </div>
 
