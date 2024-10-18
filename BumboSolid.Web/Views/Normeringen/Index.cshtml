@@ -4,7 +4,7 @@
 
 <div class="modal-body">
 	<div class="d-flex flex-row">
-		<div class="col-sm-3">
+		<div class="col-sm-2">
 			<h6>Activiteit</h6>
 		</div>
 		<div class="col-sm-2">
@@ -23,7 +23,7 @@
 			@foreach (var norm in Model)
 			{
 				<div class="form-group row align-items-center norm-row">
-					<div class="col-sm-3">
+					<div class="col-sm-2">
 						<input type="text" class="form-control" value="@norm.Activity" />
 					</div>
 
@@ -47,13 +47,13 @@
 						</select>
 					</div>
 
-					<div class="col-sm-3 d-flex align-items-center gap-2">
+					<div class="col-sm-2 d-flex align-items-center gap-2">
 						<input type="number" class="form-control" value="@norm.AvgDailyPerformances" />
 						<label for="per-bezoeker" class="col-form-label mx-2">per bezoeker</label>
 						<input type="checkbox" id="per-bezoeker" name="per-bezoeker" @(norm.PerVisitor ? "checked" : "") />
 					</div>
 					<div class="col-sm-1">
-						<button type="button" class="btn btn-delete fa-solid fa-trash-can"></button>
+						@Html.ActionLink("Verwijderen", "Verwijderen", new { id = norm.Id })
 					</div>
 				</div>
 			}
