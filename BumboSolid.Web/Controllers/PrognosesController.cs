@@ -61,7 +61,7 @@ namespace BumboSolid.Web.Controllers
 			DateTime nextWeek = DateTime.Now.AddDays(7);
 			Prognosis newPrognosis = new Prognosis()
 			{
-				Id = _context.Prognoses.Max(x => x.Id) + 1,
+				Id = _context.Prognoses.Count() > 0 ? _context.Prognoses.Max(x => x.Id) + 1 : 0,
 				Year = (short)nextWeek.Year,
 				Week = (byte)calendar.GetWeekOfYear(nextWeek, ci.DateTimeFormat.CalendarWeekRule, ci.DateTimeFormat.FirstDayOfWeek),
 			};
