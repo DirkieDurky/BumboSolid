@@ -4,51 +4,53 @@
 	<h6>Feest naam</h6>
 </div>
 
-<div class="background-dark auto-margin">
-	<div class="d-flex flex-row">
-		<h6 id="graph-impact-title">Invloed</h6>
+<form asp-action="Aanmaken">
+	<div class="background-dark auto-margin">
+		<div class="d-flex flex-row">
+			<h6 id="graph-impact-title">Invloed</h6>
 
-		<canvas class="background-white" id="holiday-chart"></canvas>
+			<canvas class="background-white" id="holiday-chart"></canvas>
 
-		<!--Dit is om de graph te laten werken. Het staat nu hier maar als iemand de graph werkend wil maken zal dit waarschijnlijk ergens anders heen moeten-->
-		<!--!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!-->
-		<script>
-			const xValues = [20, 21, 22, 23, 24, 25, 26, 27];
-			const yValues = [10, 40, 50, 80, 70, 40, -20, -30];
+			<!--Dit is om de graph te laten werken. Het staat nu hier maar als iemand de graph werkend wil maken zal dit waarschijnlijk ergens anders heen moeten-->
+			<!--!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!-->
+			<script>
+				const xValues = [20, 21, 22, 23, 24, 25, 26, 27];
+				const yValues = [10, 40, 50, 80, 70, 40, -20, -30];
 
-			new Chart("holiday-chart", {
-				type: "line",
-				data: {
-					labels: xValues,
-					datasets: [{
-						fill: false,
-						lineTension: 0,
-						backgroundColor: "rgba(0,0,255,1.1)",
-						borderColor: "rgba(0,0,0,1.1)",
-						data: yValues
-					}]
-				},
-				options: {
-					legend: { display: false },
-					scales: {
-						yAxes: [{ ticks: { min: -40, max: 80 } }],
+				new Chart("holiday-chart", {
+					type: "line",
+					data: {
+						labels: xValues,
+						datasets: [{
+							fill: false,
+							lineTension: 0,
+							backgroundColor: "rgba(0,0,255,1.1)",
+							borderColor: "rgba(0,0,0,1.1)",
+							data: yValues
+						}]
+					},
+					options: {
+						legend: { display: false },
+						scales: {
+							yAxes: [{ ticks: { min: -40, max: 80 } }],
+						}
 					}
-				}
-			});
-		</script>
-		<!--!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!-->
-	</div>
+				});
+			</script>
+			<!--!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!-->
+		</div>
 
-	<h6 id="graph-days-title">Dagen</h6>
+		<h6 id="graph-days-title">Dagen</h6>
+
+		<div class="d-flex flex-row">
+			<input class="p-2 form-control background-light holiday-date" placeholder="Begin">
+			<input class="p-2 form-control background-light holiday-date" placeholder="Eind">
+			<button class="p-2 background-light holiday-date fa-solid fa-trash-can"></button>
+		</div>
+	</div>
 
 	<div class="d-flex flex-row">
-		<input class="p-2 form-control background-light holiday-date" placeholder="Begin">
-		<input class="p-2 form-control background-light holiday-date" placeholder="Eind">
-		<button class="p-2 background-light holiday-date fa-solid fa-trash-can"></button>
+		<a class="btn btn-danger" asp-action="Index">Annuleren & Ongedaan Maken</a>
+		<input type="submit" class="btn btn-primary" value="Opslaan & Bijwerken">
 	</div>
-</div>
-
-<div class="d-flex flex-row">
-	<button type="button" class="btn btn-danger">Annuleren & Ongedaan Maken</button>
-	<button type="button" class="btn btn-primary">Opslaan & Bijwerken</button>
-</div>
+</form>
