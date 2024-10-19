@@ -118,6 +118,7 @@ p {
     border: none;
     margin: 1vw auto 1vw auto;
     white-space: normal;
+    line-height: 5vh;
 }
 
 .factor-buttons {
