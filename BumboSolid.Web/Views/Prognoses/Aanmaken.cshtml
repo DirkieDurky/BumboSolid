@@ -79,7 +79,13 @@
 					value = Model.Prognosis.PrognosisDays.First(x => x.Weekday == i).Factors.First(x => x.Type == "Overig").Impact;
 				}
 				<td class="table-secondary">
-					<button type="button" class="table-button">@value</button>
+					<button name="other" type="button" class="table-button">@value</button>
+					<!--
+					hidden inputs containing the data submitted to the method, the second
+					input is empty and has to still be filled with the description of an excess factor
+					-->
+					<input name="other" type="hidden" value="@value" />
+					<input name="description" type="hidden" />
 				</td>
 
 				<td class="table-gray">
