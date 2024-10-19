@@ -146,6 +146,10 @@ p {
     color: white;
 }
 
+.impact-unchangeable-dark {
+    color: grey;
+}
+
 .modal-lg-custom {
     max-width: 60%;
     width: 60%;
@@ -363,4 +367,9 @@ th, td {
 
 .factor-description {
     resize: none;
+}
+
+.table-button {
+    border-radius: 10px;
+    min-width: 3vw;
 }
