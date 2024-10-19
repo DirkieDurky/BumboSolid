@@ -15,7 +15,7 @@
 				<input class="p-2 form-control holiday-name" placeholder="Feest naam" value="@holiday.Holiday.Name">
 				<input class="p-2 form-control holiday-date" placeholder="Begin" value="@holiday.FirstDay.Day-@holiday.FirstDay.Month">
 				<input class="p-2 form-control holiday-date" placeholder="Eind" value="@holiday.LastDay.Day-@holiday.LastDay.Month">
-				<a class="p-2 holiday-impact remove-text-decoration" asp-controller="Feestdagen" asp-action="Bewerken"><span class="fa-solid fa-chart-simple"></span></a>
+				<a class="p-2 holiday-impact remove-text-decoration" asp-controller="Feestdagen" asp-action="Bewerken" asp-route-id=@holiday.Holiday.Name><span class="fa-solid fa-chart-simple"></span></a>
 			</div>
 		}
 	</form>

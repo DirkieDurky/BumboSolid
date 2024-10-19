@@ -64,9 +64,24 @@ namespace BumboSolid.Web.Controllers
 		}
 
 		// GET: FeestdagenController/Bewerken/5
-		public ActionResult Bewerken(int id)
+		public ActionResult Bewerken(String id)
 		{
-			return View();
+			HolidayViewModel holiday = new HolidayViewModel();
+
+            foreach(Holiday h in _context.Holidays.Include(x => x.HolidayDays).ToList())
+			{
+				if (id.Equals(h.Name))
+				{
+					List<HolidayDay> holidayDays = h.HolidayDays.ToList();
+
+					holiday.Holiday = h;
+					holiday.FirstDay = holidayDays[0].Date;
+					holiday.LastDay = holidayDays[holidayDays.Count() - 1].Date;
+
+					break;
+				}
+			}
+			return View(holiday);
 		}
 
 		// POST: FeestdagenController/Bewerken/5
