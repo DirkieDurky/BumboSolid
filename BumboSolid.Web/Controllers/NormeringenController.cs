@@ -49,16 +49,39 @@ namespace BumboSolid.Web.Controllers
 
             norm.FunctionNavigation = selectedFunction;
 
+            // Define the maximum allowable duration in seconds
+            const int maxIntValue = int.MaxValue;
+            int calculatedDuration = norm.Duration;
+
             // Convert Duration to seconds based on the selected DurationUnit
             switch (DurationUnit.ToLower())
             {
                 case "minutes":
-                    norm.Duration *= 60;
+                    // Check for potential overflow
+                    if (calculatedDuration > maxIntValue / 60)
+                    {
+                        ModelState.AddModelError("Duration", "Duur is een te groot getal na het converteren naar seconden.");
+                        ViewBag.Function = new SelectList(_context.Functions.Select(f => f.Name).ToList());
+                        ViewBag.TimeUnits = new SelectList(new List<string> { "Seconden", "Minuten", "Uren" });
+                        return View(norm);
+                    }
+                    calculatedDuration *= 60;
                     break;
+
                 case "hours":
-                    norm.Duration *= 3600;
+                    // Check for potential overflow
+                    if (calculatedDuration > maxIntValue / 3600)
+                    {
+                        ModelState.AddModelError("Duration", "Duur is een te groot getal na het converteren naar seconden.");
+                        ViewBag.Function = new SelectList(_context.Functions.Select(f => f.Name).ToList());
+                        ViewBag.TimeUnits = new SelectList(new List<string> { "Seconden", "Minuten", "Uren" });
+                        return View(norm);
+                    }
+                    calculatedDuration *= 3600;
                     break;
             }
+
+            norm.Duration = calculatedDuration;
 
             // Assign auto incremented Id
             int maxId = _context.Norms.Any() ? _context.Norms.Max(n => n.Id) : 0;
@@ -77,30 +100,30 @@ namespace BumboSolid.Web.Controllers
             return View(norm);
         }
 
-		// GET: Normeringen/Bewerken/5
-		public async Task<IActionResult> Bewerken(int? id)
-		{
-			if (id == null)
-			{
-				return NotFound();
-			}
+        // GET: Normeringen/Bewerken/5
+        public async Task<IActionResult> Bewerken(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
 
-			var norm = await _context.Norms.FindAsync(id);
-			if (norm == null)
-			{
-				return NotFound();
-			}
+            var norm = await _context.Norms.FindAsync(id);
+            if (norm == null)
+            {
+                return NotFound();
+            }
 
-			ViewBag.Function = new SelectList(new List<string> { "Vers", "Kassa", "Vakkenvullen" }, norm.Function);
-			ViewBag.TimeUnits = new SelectList(new List<string> { "Seconden", "Minuten", "Uren" });
+            ViewBag.Function = new SelectList(new List<string> { "Vers", "Kassa", "Vakkenvullen" }, norm.Function);
+            ViewBag.TimeUnits = new SelectList(new List<string> { "Seconden", "Minuten", "Uren" });
 
-			return View(norm);
-		}
+            return View(norm);
+        }
 
-		// POST: Normeringen/Bewerken/5
-		[HttpPost]
-		[ValidateAntiForgeryToken]
-		public async Task<IActionResult> Bewerken(int id, Norm norm, string DurationUnit)
+        // POST: Normeringen/Bewerken/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Bewerken(int id, Norm norm, string DurationUnit)
         {
             if (id != norm.Id)
             {
@@ -122,7 +145,7 @@ namespace BumboSolid.Web.Controllers
                             // Check for potential overflow
                             if (calculatedDuration > maxIntValue / 60)
                             {
-                                ModelState.AddModelError("Duration", "Duration is too large after conversion to seconds.");
+                                ModelState.AddModelError("Duration", "Duur is een te groot getal na het converteren naar minuten.");
                                 ViewBag.Function = new SelectList(new List<string> { "Vers", "Kassa", "Vakkenvullen" }, norm.Function);
                                 ViewBag.TimeUnits = new SelectList(new List<string> { "Seconden", "Minuten", "Uren" });
                                 return View(norm);
@@ -134,7 +157,7 @@ namespace BumboSolid.Web.Controllers
                             // Check for potential overflow
                             if (calculatedDuration > maxIntValue / 3600)
                             {
-                                ModelState.AddModelError("Duration", "Duration is too large after conversion to seconds.");
+                                ModelState.AddModelError("Duration", "Duur is een te groot getal na het converteren naar seconden.");
                                 ViewBag.Function = new SelectList(new List<string> { "Vers", "Kassa", "Vakkenvullen" }, norm.Function);
                                 ViewBag.TimeUnits = new SelectList(new List<string> { "Seconden", "Minuten", "Uren" });
                                 return View(norm);
@@ -170,34 +193,34 @@ namespace BumboSolid.Web.Controllers
 
         // GET: Normeringen/Verwijderen/5
         public async Task<IActionResult> Verwijderen(int? id)
-		{
-			if (id == null)
-			{
-				return NotFound();
-			}
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
 
-			var norm = await _context.Norms.FirstOrDefaultAsync(n => n.Id == id);
-			if (norm == null)
-			{
-				return NotFound();
-			}
+            var norm = await _context.Norms.FirstOrDefaultAsync(n => n.Id == id);
+            if (norm == null)
+            {
+                return NotFound();
+            }
 
-			return View(norm);
-		}
+            return View(norm);
+        }
 
-		// POST: Normeringen/Verwijderen/5
-		[HttpPost, ActionName("Verwijderen")]
-		[ValidateAntiForgeryToken]
-		public async Task<IActionResult> VerwijderenConfirmed(int id)
-		{
-			var norm = await _context.Norms.FindAsync(id);
-			if (norm != null)
-			{
-				_context.Norms.Remove(norm);
-				await _context.SaveChangesAsync();
-			}
+        // POST: Normeringen/Verwijderen/5
+        [HttpPost, ActionName("Verwijderen")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> VerwijderenConfirmed(int id)
+        {
+            var norm = await _context.Norms.FindAsync(id);
+            if (norm != null)
+            {
+                _context.Norms.Remove(norm);
+                await _context.SaveChangesAsync();
+            }
 
-			return RedirectToAction(nameof(Index));
-		}
-	}
+            return RedirectToAction(nameof(Index));
+        }
+    }
 }
