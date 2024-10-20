@@ -1,4 +1,4 @@
-﻿@model BumboSolid.Web.Models.HolidayViewModel
+﻿@model BumboSolid.Web.Models.HolidayManageViewModel
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
 <script src="https://kit.fontawesome.com/981e782106.js" crossorigin="anonymous"></script>
@@ -8,17 +8,15 @@
 </div>
 
 <div class="d-flex flex-row">
-	<div class="background-dark auto-margin">
+	<div>
 		<div class="d-flex flex-row">
 			<h6 id="graph-impact-title">Invloed</h6>
 
-			<canvas class="background-white" id="holiday-chart"></canvas>
+			<canvas id="holiday-chart"></canvas>
 
-			<!--Dit is om de graph te laten werken. Het staat nu hier maar als iemand de graph werkend wil maken zal dit waarschijnlijk ergens anders heen moeten-->
-			<!--!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!-->
 			<script>
-				const xValues = ["@Model.Holiday.HolidayDays.ToList()[0].Date", 21, 22, 23, 24, 25, 26, 27];
-				const yValues = [10, 40, 50, 80, 70, 40, -20, -30];
+				const xValues = @Html.Raw(Json.Serialize(Model.xValues))
+				const yValues = @Html.Raw(Json.Serialize(Model.yValues))
 
 				new Chart("holiday-chart", {
 					type: "line",
@@ -35,24 +33,23 @@
 					options: {
 						legend: { display: false },
 						scales: {
-							yAxes: [{ ticks: { min: -40, max: 80 } }],
+							yAxes: [{ ticks: { min: @Model.LowestImpact, max: @Model.HighestImpact } }],
 						}
 					}
 				});
 			</script>
-			<!--!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!-->
 		</div>
 
 		<h6 id="graph-days-title">Dagen</h6>
 
 		<div class="d-flex flex-row">
-			<input class="p-2 form-control background-light holiday-date" placeholder="Begin" value="@Model.FirstDay.Day-@Model.FirstDay.Month">
-			<input class="p-2 form-control background-light holiday-date" placeholder="Eind" value="@Model.LastDay.Day-@Model.LastDay.Month">
-			<button class="p-2 background-light holiday-date fa-solid fa-trash-can"></button>
+			<input class="p-2 form-control holiday-date" placeholder="Begin" value="@Model.FirstDay.Day-@Model.FirstDay.Month">
+			<input class="p-2 form-control holiday-date" placeholder="Eind" value="@Model.LastDay.Day-@Model.LastDay.Month">
+			<a class="p-2 holiday-date remove-text-decoration"><span class="fa-solid fa-trash-can"></span></a>
 		</div>
 	</div>
 
-	<div>
+	<div id="holidays-scrollbar">
 		<form>
 			@foreach (var holidayDay in Model.Holiday.HolidayDays.ToList())
 			{

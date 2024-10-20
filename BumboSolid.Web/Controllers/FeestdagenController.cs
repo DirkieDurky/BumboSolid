@@ -66,7 +66,7 @@ namespace BumboSolid.Web.Controllers
 		// GET: FeestdagenController/Bewerken/5
 		public ActionResult Bewerken(String id)
 		{
-			HolidayViewModel holiday = new HolidayViewModel();
+			HolidayManageViewModel holiday = new HolidayManageViewModel();
 
             foreach(Holiday h in _context.Holidays.Include(x => x.HolidayDays).ToList())
 			{
@@ -77,6 +77,22 @@ namespace BumboSolid.Web.Controllers
 					holiday.Holiday = h;
 					holiday.FirstDay = holidayDays[0].Date;
 					holiday.LastDay = holidayDays[holidayDays.Count() - 1].Date;
+
+					if (holidayDays.Count > 1)
+					{
+						foreach (HolidayDay holidayDay in holidayDays)
+						{
+							holiday.xValues.Add(holidayDay.Date.Day + "-" + holidayDay.Date.Month);
+							holiday.yValues.Add(holidayDay.Impact);
+
+							if (holiday.HighestImpact < holidayDay.Impact) holiday.HighestImpact = holidayDay.Impact;
+							else if (holiday.LowestImpact > holidayDay.Impact) holiday.LowestImpact = holidayDay.Impact;
+						}
+					} else
+					{
+						holiday.HighestImpact = 0;
+						holiday.LowestImpact = 0;
+					}
 
 					break;
 				}
