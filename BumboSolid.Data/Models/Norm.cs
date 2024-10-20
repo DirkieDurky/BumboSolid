@@ -10,15 +10,15 @@ public partial class Norm
     public int Id { get; set; }
 
     [StringLength(50)]
-    [RegularExpression("^[a-zA-Z0-9]*$", ErrorMessage = "Activity can only contain alphanumeric characters.")]
+    [RegularExpression("^[a-zA-Z0-9]*$")]
     public string Activity { get; set; } = null!;
 
     public string Function { get; set; } = null!;
 
-    [Range(1, int.MaxValue, ErrorMessage = "Duration must be a value between 1 and 2147483647.")]
+    [Range(1, int.MaxValue)]
     public int Duration { get; set; }
 
-    [Range(1, byte.MaxValue, ErrorMessage = "Average Daily Performances must be a value between 1 and 255.")]
+    [Range(1, byte.MaxValue)]
     public byte AvgDailyPerformances { get; set; }
 
     public bool PerVisitor { get; set; }
