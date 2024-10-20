@@ -122,7 +122,7 @@ namespace BumboSolid.Web.Controllers
                             // Check for potential overflow
                             if (calculatedDuration > maxIntValue / 60)
                             {
-                                ModelState.AddModelError("Duration", "Duration is too large after conversion to seconds.");
+                                ModelState.AddModelError("Duration", "Duur is een te groot getal na het converteren naar minuten.");
                                 ViewBag.Function = new SelectList(new List<string> { "Vers", "Kassa", "Vakkenvullen" }, norm.Function);
                                 ViewBag.TimeUnits = new SelectList(new List<string> { "Seconden", "Minuten", "Uren" });
                                 return View(norm);
@@ -134,7 +134,7 @@ namespace BumboSolid.Web.Controllers
                             // Check for potential overflow
                             if (calculatedDuration > maxIntValue / 3600)
                             {
-                                ModelState.AddModelError("Duration", "Duration is too large after conversion to seconds.");
+                                ModelState.AddModelError("Duration", "Duur is een te groot getal na het converteren naar seconden.");
                                 ViewBag.Function = new SelectList(new List<string> { "Vers", "Kassa", "Vakkenvullen" }, norm.Function);
                                 ViewBag.TimeUnits = new SelectList(new List<string> { "Seconden", "Minuten", "Uren" });
                                 return View(norm);
