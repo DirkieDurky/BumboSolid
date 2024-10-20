@@ -118,6 +118,7 @@ p {
     border: none;
     margin: 1vw auto 1vw auto;
     white-space: normal;
+    line-height: 5vh;
 }
 
 .factor-buttons {
@@ -143,6 +144,10 @@ p {
 
 .impact-unchangeable {
     color: white;
+}
+
+.impact-unchangeable-dark {
+    color: grey;
 }
 
 .modal-lg-custom {
@@ -363,4 +368,9 @@ th, td {
 
 .factor-description {
     resize: none;
+}
+
+.table-button {
+    border-radius: 10px;
+    min-width: 3vw;
 }

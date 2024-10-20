@@ -17,8 +17,17 @@
 			<th></th>
 			<th scope="col" class="rounded-top table-gray">Schatting Bezoekersdrukte</th>
 			<th scope="col" class="rounded-top table-secondary">Feestdagen</th>
-			<th scope="col" class="rounded-top table-gray">Weer</th>
+			<th scope="col" class="rounded-top table-gray">
+				<button type="button">
+					Weer
+					<img src="~/images/pencil-square.svg" alt="Edit Icon" width="16" height="16" />
+				</button>
+			</th>
 			<th scope="col" class="rounded-top table-secondary">Overig</th>
+			<th scope="col" class="rounded-top table-gray">Totale Schatting Bezoekersdrukte</th>
+			<th scope="col" class="rounded-top table-secondary">Activiteit</th>
+			<th scope="col" class="rounded-top table-gray">Functie</th>
+			<th scope="col" class="rounded-top table-secondary">Duur en hoeveelheid</th>
 		</tr>
 		@for (int i = 0; i < daysOfTheWeek.Length; i++)
 
@@ -69,15 +78,36 @@
 				@{
 					value = Model.Prognosis.PrognosisDays.First(x => x.Weekday == i).Factors.First(x => x.Type == "Overig").Impact;
 				}
-				<td class="table-secondary d-flex flex-row gap-2">
-					<input name="other" type="number" class="form-control small-input" value="@value">
-					<textarea name="description" class="factor-description" rows="2" cols="25"></textarea>
+				<td class="table-secondary">
+					<button name="other" type="button" class="table-button">@value</button>
+					<!--
+					hidden inputs containing the data submitted to the method, the second
+					input is empty and has to still be filled with the description of an excess factor
+					-->
+					<input name="other" type="hidden" value="@value" />
+					<input name="description" type="hidden" />
+				</td>
+
+				<td class="table-gray">
+					<p class="background-light impact-unchangeable-dark">...</p>
+				</td>
+
+				<td class="table-secondary">
+					<p class="background-light impact-unchangeable-dark">...</p>
+				</td>
+
+				<td class="table-gray">
+					<p class="background-light impact-unchangeable-dark">...</p>
+				</td>
+
+				<td class="table-secondary">
+					<p class="background-light impact-unchangeable-dark">...</p>
 				</td>
 			</tr>
 		}
 	</table>
 	<div class="d-flex flex-row">
-		<a class="btn btn-danger" asp-controller="Home" asp-action="Index">Annuleren & Ongedaan Maken</a>
-		<input type="submit" class="btn btn-primary" value="Opslaan & Bijwerken">
+		<a class="btn btn-danger" asp-controller="Home" asp-action="Index">Prognose Afbreken</a>
+		<input type="submit" class="btn btn-primary" value="Prognose Berekenen">
 	</div>
 </form>

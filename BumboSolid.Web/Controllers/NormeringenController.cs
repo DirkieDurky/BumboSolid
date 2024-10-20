@@ -77,40 +77,127 @@ namespace BumboSolid.Web.Controllers
             return View(norm);
         }
 
-        // POST: Normeringen/Bewerken/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Bewerken(int id, IFormCollection collection)
+		// GET: Normeringen/Bewerken/5
+		public async Task<IActionResult> Bewerken(int? id)
+		{
+			if (id == null)
+			{
+				return NotFound();
+			}
+
+			var norm = await _context.Norms.FindAsync(id);
+			if (norm == null)
+			{
+				return NotFound();
+			}
+
+			ViewBag.Function = new SelectList(new List<string> { "Vers", "Kassa", "Vakkenvullen" }, norm.Function);
+			ViewBag.TimeUnits = new SelectList(new List<string> { "Seconden", "Minuten", "Uren" });
+
+			return View(norm);
+		}
+
+		// POST: Normeringen/Bewerken/5
+		[HttpPost]
+		[ValidateAntiForgeryToken]
+		public async Task<IActionResult> Bewerken(int id, Norm norm, string DurationUnit)
         {
-            try
+            if (id != norm.Id)
             {
+                return NotFound();
+            }
+
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    // Define the maximum allowable duration in seconds
+                    const int maxIntValue = int.MaxValue;
+                    int calculatedDuration = norm.Duration;
+
+                    // Convert Duration to seconds based on the selected DurationUnit
+                    switch (DurationUnit.ToLower())
+                    {
+                        case "minutes":
+                            // Check for potential overflow
+                            if (calculatedDuration > maxIntValue / 60)
+                            {
+                                ModelState.AddModelError("Duration", "Duration is too large after conversion to seconds.");
+                                ViewBag.Function = new SelectList(new List<string> { "Vers", "Kassa", "Vakkenvullen" }, norm.Function);
+                                ViewBag.TimeUnits = new SelectList(new List<string> { "Seconden", "Minuten", "Uren" });
+                                return View(norm);
+                            }
+                            calculatedDuration *= 60;
+                            break;
+
+                        case "hours":
+                            // Check for potential overflow
+                            if (calculatedDuration > maxIntValue / 3600)
+                            {
+                                ModelState.AddModelError("Duration", "Duration is too large after conversion to seconds.");
+                                ViewBag.Function = new SelectList(new List<string> { "Vers", "Kassa", "Vakkenvullen" }, norm.Function);
+                                ViewBag.TimeUnits = new SelectList(new List<string> { "Seconden", "Minuten", "Uren" });
+                                return View(norm);
+                            }
+                            calculatedDuration *= 3600;
+                            break;
+                    }
+
+                    norm.Duration = calculatedDuration;
+
+                    _context.Update(norm);
+                    await _context.SaveChangesAsync();
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    if (!_context.Norms.Any(e => e.Id == norm.Id))
+                    {
+                        return NotFound();
+                    }
+                    else
+                    {
+                        throw;
+                    }
+                }
                 return RedirectToAction(nameof(Index));
             }
-            catch
-            {
-                return View();
-            }
+
+            ViewBag.Function = new SelectList(new List<string> { "Vers", "Kassa", "Vakkenvullen" }, norm.Function);
+            ViewBag.TimeUnits = new SelectList(new List<string> { "Seconden", "Minuten", "Uren" });
+            return View(norm);
         }
+
 
         // GET: Normeringen/Verwijderen/5
-        public ActionResult Verwijderen(int id)
-        {
-            return View();
-        }
+        public async Task<IActionResult> Verwijderen(int? id)
+		{
+			if (id == null)
+			{
+				return NotFound();
+			}
 
-        // POST: Normeringen/Verwijderen/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Verwijderen(int id, IFormCollection collection)
-        {
-            try
-            {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
-        }
-    }
+			var norm = await _context.Norms.FirstOrDefaultAsync(n => n.Id == id);
+			if (norm == null)
+			{
+				return NotFound();
+			}
+
+			return View(norm);
+		}
+
+		// POST: Normeringen/Verwijderen/5
+		[HttpPost, ActionName("Verwijderen")]
+		[ValidateAntiForgeryToken]
+		public async Task<IActionResult> VerwijderenConfirmed(int id)
+		{
+			var norm = await _context.Norms.FindAsync(id);
+			if (norm != null)
+			{
+				_context.Norms.Remove(norm);
+				await _context.SaveChangesAsync();
+			}
+
+			return RedirectToAction(nameof(Index));
+		}
+	}
 }
