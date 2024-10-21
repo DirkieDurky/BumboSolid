@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("BumboSolid")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+6321fe7f107d480ead5dec342b5a56866d0e318e")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+c89c3ab8e4f8d4a266556d82e7e00d89d6e66297")]
 [assembly: System.Reflection.AssemblyProductAttribute("BumboSolid")]
 [assembly: System.Reflection.AssemblyTitleAttribute("BumboSolid")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
