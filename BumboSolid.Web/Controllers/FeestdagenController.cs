@@ -28,7 +28,7 @@ namespace BumboSolid.Web.Controllers
 				DateOnly firstDay = holidayDays[0].Date;
 				DateOnly lastDay = holidayDays[holidayDays.Count()-1].Date;
 
-				HolidayViewModel holidayViewModel = new HolidayViewModel() { Holiday = holiday, FirstDay = firstDay, LastDay = lastDay };
+				HolidayViewModel holidayViewModel = new HolidayViewModel() { Name = holiday.Name, FirstDay = firstDay, LastDay = lastDay };
 
 				holidayViewModels.Add(holidayViewModel);
 			}
@@ -116,24 +116,41 @@ namespace BumboSolid.Web.Controllers
 		}
 
 		// GET: FeestdagenController/Verwijderen/5
-		public ActionResult Verwijderen(int id)
+		public async Task<IActionResult> Verwijderen(String Name)
 		{
-			return View();
+			if (Name == null)
+			{
+				return NotFound();
+			}
+
+			var holiday = await _context.Holidays.FirstOrDefaultAsync(h => h.Name == Name);
+			if (holiday == null)
+			{
+				return NotFound();
+			}
+
+			return View(holiday);
 		}
 
-		// POST: FeestdagenController/Verwijderen/5
-		[HttpPost]
-		[ValidateAntiForgeryToken]
-		public ActionResult Verwijderen(int id, IFormCollection collection)
-		{
-			try
-			{
-				return RedirectToAction(nameof(Index));
-			}
-			catch
-			{
-				return View();
-			}
-		}
+        // POST: FeestdagenController/Verwijderen/5
+        [HttpPost, ActionName("Verwijderen")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> VerwijderenConfirmed(String Name)
+        {
+            var holiday = await _context.Holidays.Include(h => h.HolidayDays).FirstOrDefaultAsync(h => h.Name == Name);
+
+            if (holiday != null)
+            {
+                foreach (HolidayDay holidayDay in holiday.HolidayDays)
+                {
+                    _context.HolidayDays.Remove(holidayDay);
+                }
+
+                _context.Holidays.Remove(holiday);
+                await _context.SaveChangesAsync();
+
+            }
+            return RedirectToAction(nameof(Index));
+        }
 	}
 }
