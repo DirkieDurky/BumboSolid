@@ -30,7 +30,7 @@ namespace BumboSolid.Web.Controllers
 
 				HolidayViewModel holidayViewModel = new HolidayViewModel() { Name = holiday.Name, FirstDay = firstDay, LastDay = lastDay };
 
-				holidayViewModels.Add(holidayViewModel);
+                holidayViewModels.Add(holidayViewModel);
 			}
 
 			return View(holidayViewModels);
@@ -45,23 +45,55 @@ namespace BumboSolid.Web.Controllers
 		// GET: FeestdagenController/Aanmaken
 		public ActionResult Aanmaken()
 		{
-			return View();
-		}
+            return View(new HolidayViewModel());
+        }
 
 		// POST: FeestdagenController/Aanmaken
 		[HttpPost]
 		[ValidateAntiForgeryToken]
-		public ActionResult Aanmaken(IFormCollection collection)
-		{
-			try
+        public ActionResult Aanmaken(HolidayViewModel holidayViewModel)
+        {
+            Holiday holiday = new Holiday();
+            holiday.Name = holidayViewModel.Name;
+
+			// Making sure that the Holiday does not already exist
+			foreach (Holiday h in _context.Holidays)
 			{
-				return RedirectToAction(nameof(Index));
+				if (h.Name.Equals(holiday.Name))
+				{
+					ModelState.AddModelError("Name", "Er bestaat al een feestdag met deze naam");
+					return View(holidayViewModel);
+				}
 			}
-			catch
-			{
-				return View();
-			}
-		}
+
+            // Making sure that LastDay is not before FirstDay
+            if (holidayViewModel.LastDay.DayNumber < holidayViewModel.FirstDay.DayNumber)
+            {
+                ModelState.AddModelError("LastDay", "De laatste dag moet hetzelfde of later zijn dan de eerste dag");
+                return View(holidayViewModel);
+            }
+
+            // Adding HolidayDay for every day the holiday is active
+            for (int i = 0; i <= holidayViewModel.LastDay.DayNumber - holidayViewModel.FirstDay.DayNumber; i++)
+            {
+                HolidayDay holidayDay = new HolidayDay();
+                holidayDay.HolidayName = holidayViewModel.Name;
+                holidayDay.Date = holidayViewModel.FirstDay.AddDays(i);
+                holidayDay.Impact = 0;
+                holidayDay.HolidayNameNavigation = holiday;
+                holiday.HolidayDays.Add(holidayDay);
+            }
+
+            // Check if the model state is still valid before saving to the database
+            if (ModelState.IsValid)
+            {
+                _context.Holidays.Add(holiday);
+                _context.SaveChanges();
+                return RedirectToAction(nameof(Index));
+            }
+
+            return View(holidayViewModel);
+        }
 
 		// GET: FeestdagenController/Bewerken/5
 		public ActionResult Bewerken(String id)
