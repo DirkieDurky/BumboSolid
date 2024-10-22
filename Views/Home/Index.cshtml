@@ -1,8 +1,232 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
+﻿@model IEnumerable<BumboSolid.Data.Models.Prognosis>
+
+@{
+	ViewData["Title"] = "Home Page";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<!-- Bootstrap JS and dependencies -->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script src="https://kit.fontawesome.com/981e782106.js" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
+
+<div class="d-flex flex-row">
+
+	<!--Prognosis list and impact buttons-->
+	<div class="p-2">
+		<a class="p-2 btn btn-primary" asp-controller="Prognoses" asp-action="Aanmaken">Prognose Aanmaken</a>
+
+		<div class="background-dark" id="prognosis-scrollbar">
+			<table class="table">
+				<tbody>
+					@foreach (var item in Model)
+					{
+						<tr>
+							<td>
+								<button class="btn btn-outline-primary btn-sm m-0">
+									@Html.DisplayFor(modelItem => item.Year) - week @Html.DisplayFor(modelItem => item.Week)
+								</button>
+							</td>
+						</tr>
+					}
+				</tbody>
+			</table>
+		</div>
+
+		<a class="p-2 btn btn-primary" asp-controller="Normeringen" asp-action="Index">Normeringen Beheren</a>
+		<a class="p-2 btn btn-primary" asp-controller="Feestdagen" asp-action="Index">Feestdagen Beheren</a>
+	</div>
+
+	<!--Selected prognosis menu-->
+	<div class="p-2" id="selected-prognosis-background">
+
+		<!--Switching between prognosis-->
+		<div class="d-flex flex-row">
+			<button class="btn btn-primary">← Vorige Week</button>
+
+			<div class="background-dark" id="prognosis-date-box">
+				<h6 id="prognosis-date">--/--/---- - --/--/----</h6>
+			</div>
+
+			<button class="btn btn-primary disabled">Volgende Week →</button>
+		</div>
+
+		<!--Info about prognosis-->
+		<div class="background-dark">
+			<div class="d-flex flex-row">
+				<ul class="p-2" id="prognosis-weekdays">
+					<li>Maandag</li>
+					<li>Dinsdag</li>
+					<li>Woensdag</li>
+					<li>Donderdag</li>
+					<li>Vrijdag</li>
+					<li>Zaterdag</li>
+					<li>Zondag</li>
+				</ul>
+
+				<!--Cashier-->
+				<div class="p-2 background-white prognosis-table">
+					<h6>Kassa</h6>
+
+					<hr>
+
+					<table>
+						<tr>
+							<td class="background-light impact-unchangeable">...</td>
+							<td class="background-dark impact-unchangeable">...</td>
+						</tr>
+						<tr>
+							<td class="background-light impact-unchangeable">...</td>
+							<td class="background-dark impact-unchangeable">...</td>
+						</tr>
+						<tr>
+							<td class="background-light impact-unchangeable">...</td>
+							<td class="background-dark impact-unchangeable">...</td>
+						</tr>
+						<tr>
+							<td class="background-light impact-unchangeable">...</td>
+							<td class="background-dark impact-unchangeable">...</td>
+						</tr>
+						<tr>
+							<td class="background-light impact-unchangeable">...</td>
+							<td class="background-dark impact-unchangeable">...</td>
+						</tr>
+						<tr>
+							<td class="background-light impact-unchangeable">...</td>
+							<td class="background-dark impact-unchangeable">...</td>
+						</tr>
+						<tr>
+							<td class="background-light impact-unchangeable">...</td>
+							<td class="background-dark impact-unchangeable">...</td>
+						</tr>
+					</table>
+				</div>
+
+				<!--Stocker-->
+				<div class="p-2 background-white prognosis-table">
+					<h6>Vakkenvullen</h6>
+
+					<hr>
+
+					<table>
+						<tr>
+							<td class="background-light impact-unchangeable">...</td>
+							<td class="background-dark impact-unchangeable">...</td>
+						</tr>
+						<tr>
+							<td class="background-light impact-unchangeable">...</td>
+							<td class="background-dark impact-unchangeable">...</td>
+						</tr>
+						<tr>
+							<td class="background-light impact-unchangeable">...</td>
+							<td class="background-dark impact-unchangeable">...</td>
+						</tr>
+						<tr>
+							<td class="background-light impact-unchangeable">...</td>
+							<td class="background-dark impact-unchangeable">...</td>
+						</tr>
+						<tr>
+							<td class="background-light impact-unchangeable">...</td>
+							<td class="background-dark impact-unchangeable">...</td>
+						</tr>
+						<tr>
+							<td class="background-light impact-unchangeable">...</td>
+							<td class="background-dark impact-unchangeable">...</td>
+						</tr>
+						<tr>
+							<td class="background-light impact-unchangeable">...</td>
+							<td class="background-dark impact-unchangeable">...</td>
+						</tr>
+					</table>
+				</div>
+
+				<!--Fresh-->
+				<div class="p-2 background-white prognosis-table">
+					<h6>Vers</h6>
+
+					<hr>
+
+					<table>
+						<tr>
+							<td class="background-light impact-unchangeable">...</td>
+							<td class="background-dark impact-unchangeable">...</td>
+						</tr>
+						<tr>
+							<td class="background-light impact-unchangeable">...</td>
+							<td class="background-dark impact-unchangeable">...</td>
+						</tr>
+						<tr>
+							<td class="background-light impact-unchangeable">...</td>
+							<td class="background-dark impact-unchangeable">...</td>
+						</tr>
+						<tr>
+							<td class="background-light impact-unchangeable">...</td>
+							<td class="background-dark impact-unchangeable">...</td>
+						</tr>
+						<tr>
+							<td class="background-light impact-unchangeable">...</td>
+							<td class="background-dark impact-unchangeable">...</td>
+						</tr>
+						<tr>
+							<td class="background-light impact-unchangeable">...</td>
+							<td class="background-dark impact-unchangeable">...</td>
+						</tr>
+						<tr>
+							<td class="background-light impact-unchangeable">...</td>
+							<td class="background-dark impact-unchangeable">...</td>
+						</tr>
+					</table>
+				</div>
+
+				<!--External factors-->
+				<div class="p-2 background-white prognosis-table" id="prognosis-tables-spacing">
+					<h6>Externe Factoren</h6>
+
+					<hr>
+
+					<table>
+						<tr><td class="background-light impact-unchangeable">...</td></tr>
+						<tr><td class="background-light impact-unchangeable">...</td></tr>
+						<tr><td class="background-light impact-unchangeable">...</td></tr>
+						<tr><td class="background-light impact-unchangeable">...</td></tr>
+						<tr><td class="background-light impact-unchangeable">...</td></tr>
+						<tr><td class="background-light impact-unchangeable">...</td></tr>
+						<tr><td class="background-light impact-unchangeable">...</td></tr>
+					</table>
+				</div>
+
+				<!--Expected visitors-->
+				<div class="p-2 background-white prognosis-table">
+					<h6>Verwachte Bezoekersdrukte</h6>
+
+					<hr>
+
+					<table>
+						<tr><td class="background-light impact-unchangeable">...</td></tr>
+						<tr><td class="background-light impact-unchangeable">...</td></tr>
+						<tr><td class="background-light impact-unchangeable">...</td></tr>
+						<tr><td class="background-light impact-unchangeable">...</td></tr>
+						<tr><td class="background-light impact-unchangeable">...</td></tr>
+						<tr><td class="background-light impact-unchangeable">...</td></tr>
+						<tr><td class="background-light impact-unchangeable">...</td></tr>
+					</table>
+				</div>
+			</div>
+
+			<div class="d-flex flex-row">
+				<div class="d-flex flex-row background-white auto-margin prognosis-index">
+					<div class="p-2 background-light square auto-margin"></div>
+
+					<p class="p-2 auto-margin">Personeel</p>
+
+					<div class="p-2 background-dark square auto-margin"></div>
+
+					<p class="p-2 auto-margin">Werkuren</p>
+				</div>
+
+
+				<a class="p-2 btn btn-primary" asp-controller="Factoren" asp-action="Bewerken">Factoren Beheren</a>
+			</div>
+		</div>
+	</div>
 </div>

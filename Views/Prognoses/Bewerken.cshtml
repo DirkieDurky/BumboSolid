@@ -1,4 +1,4 @@
-﻿@model BumboSolid.Data.Models.Weather
+﻿@model BumboSolid.Data.Models.Prognosis
 
 @{
     ViewData["Title"] = "Edit";
@@ -6,7 +6,7 @@
 
 <h1>Edit</h1>
 
-<h4>Weather</h4>
+<h4>Prognosis</h4>
 <hr />
 <div class="row">
     <div class="col-md-4">
@@ -14,9 +14,14 @@
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="Id" />
             <div class="form-group">
-                <label asp-for="Impact" class="control-label"></label>
-                <input asp-for="Impact" class="form-control" />
-                <span asp-validation-for="Impact" class="text-danger"></span>
+                <label asp-for="Year" class="control-label"></label>
+                <input asp-for="Year" class="form-control" />
+                <span asp-validation-for="Year" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Week" class="control-label"></label>
+                <input asp-for="Week" class="form-control" />
+                <span asp-validation-for="Week" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <input type="submit" value="Save" class="btn btn-primary" />
