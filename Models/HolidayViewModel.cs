@@ -5,6 +5,7 @@ namespace BumboSolid.Web.Models
 {
 	public class HolidayViewModel
 	{
+    
         [StringLength(25)]
         [RegularExpression("^[a-zA-Z0-9]*$", ErrorMessage = "Alleen alfanumerieke tekens zijn toegestaan.")]
         public String Name { get; set; }
