@@ -56,6 +56,16 @@ namespace BumboSolid.Web.Controllers
             Holiday holiday = new Holiday();
             holiday.Name = holidayViewModel.Name;
 
+			// Making sure that the Holiday does not already exist
+			foreach (Holiday h in _context.Holidays)
+			{
+				if (h.Name.Equals(holiday.Name))
+				{
+					ModelState.AddModelError("Name", "Er bestaat al een feestdag met deze naam");
+					return View(holidayViewModel);
+				}
+			}
+
             // Making sure that LastDay is not before FirstDay
             if (holidayViewModel.LastDay.DayNumber < holidayViewModel.FirstDay.DayNumber)
             {
