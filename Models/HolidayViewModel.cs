@@ -4,7 +4,7 @@ namespace BumboSolid.Web.Models
 {
 	public class HolidayViewModel
 	{
-		public Holiday Holiday { get; set; }
+		public String Name { get; set; }
 
 		public DateOnly FirstDay { get; set; }
 
