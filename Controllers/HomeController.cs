@@ -19,12 +19,14 @@ namespace BumboSolid.Web.Controllers
 
 		public IActionResult Index()
 		{
-			var prognosisList = _context.Prognoses
-				.OrderByDescending(p => p.Year)
-				.ThenByDescending(p => p.Week)
-				.ToList();
+            var prognosisList = _context.Prognoses
+                .Include(p => p.PrognosisDays)
+                    .ThenInclude(pd => pd.Factors)
+                .OrderByDescending(p => p.Year)
+                .ThenByDescending(p => p.Week)
+                .ToList();
 
-			return View(prognosisList);
+            return View(prognosisList);
 		}
 
 		[ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

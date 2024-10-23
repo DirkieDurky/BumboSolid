@@ -178,39 +178,72 @@
 					</table>
 				</div>
 
-				<!--External factors-->
+				<!-- External Factors -->
 				<div class="p-2 background-white prognosis-table" id="prognosis-tables-spacing">
 					<h6>Externe Factoren</h6>
-
 					<hr>
+					@if (Model != null && Model.Any() && Model.FirstOrDefault()?.PrognosisDays != null)
+					{
+						<table>
+							@foreach (var day in Model.FirstOrDefault()?.PrognosisDays)
+							{
+								var totalImpact = 1.0;
 
-					<table>
-						<tr><td class="background-light impact-unchangeable">...</td></tr>
-						<tr><td class="background-light impact-unchangeable">...</td></tr>
-						<tr><td class="background-light impact-unchangeable">...</td></tr>
-						<tr><td class="background-light impact-unchangeable">...</td></tr>
-						<tr><td class="background-light impact-unchangeable">...</td></tr>
-						<tr><td class="background-light impact-unchangeable">...</td></tr>
-						<tr><td class="background-light impact-unchangeable">...</td></tr>
-					</table>
+								foreach (var factor in day.Factors)
+								{
+									var impactFactor = 1 + (factor.Impact / 100.0);
+									totalImpact *= impactFactor;
+								}
+
+								var roundedTotalImpact = (int)Math.Round((totalImpact - 1) * 100);
+
+								<tr>
+									<td class="background-light impact-unchangeable">
+										@roundedTotalImpact %
+									</td>
+								</tr>
+							}
+						</table>
+					}
+					else
+					{
+						<p>Geen factoren data beschikbaar.</p>
+					}
 				</div>
 
-				<!--Expected visitors-->
+				<!-- Expected visitors -->
 				<div class="p-2 background-white prognosis-table">
 					<h6>Verwachte Bezoekersdrukte</h6>
-
 					<hr>
+					@if (Model != null && Model.Any() && Model.FirstOrDefault()?.PrognosisDays != null)
+					{
+						<table>
+							@foreach (var day in Model.FirstOrDefault()?.PrognosisDays)
+							{
+								var totalImpact = 1.0;
 
-					<table>
-						<tr><td class="background-light impact-unchangeable">...</td></tr>
-						<tr><td class="background-light impact-unchangeable">...</td></tr>
-						<tr><td class="background-light impact-unchangeable">...</td></tr>
-						<tr><td class="background-light impact-unchangeable">...</td></tr>
-						<tr><td class="background-light impact-unchangeable">...</td></tr>
-						<tr><td class="background-light impact-unchangeable">...</td></tr>
-						<tr><td class="background-light impact-unchangeable">...</td></tr>
-					</table>
+								foreach (var factor in day.Factors)
+								{
+									var impactFactor = 1 + (factor.Impact / 100.0);
+									totalImpact *= impactFactor;
+								}
+
+								var expectedVisitors = day.VisitorEstimate * totalImpact;
+
+								<tr>
+									<td class="background-light impact-unchangeable">
+										@Math.Round(expectedVisitors)
+									</td>
+								</tr>
+							}
+						</table>
+					}
+					else
+					{
+						<p>Geen bezoekersdata beschikbaar.</p>
+					}
 				</div>
+
 			</div>
 
 			<div class="d-flex flex-row">
