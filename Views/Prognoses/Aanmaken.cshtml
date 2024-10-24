@@ -8,7 +8,7 @@
 
 	int value;
 }
-<form asp-action="Aanmaken">
+<form asp-action="Index">
 	<input type="hidden" asp-for="Prognosis.Id" />
 	<input type="hidden" asp-for="Prognosis.Year" />
 	<input type="hidden" asp-for="Prognosis.Week" />
@@ -38,19 +38,12 @@
 				<th scope="row">@day</th>
 				@{
 					if (Model.VisitorEstimatePerDay == null)
-
 					{
-
 						value = 0;
-
 					}
-
 					else
-
 					{
-
 						value = Model.VisitorEstimatePerDay![(byte)i];
-
 					}
 				}
 				<td class="table-gray"><input name="visitorEstimates" type="number" class="form-control" value="@value"></td>
@@ -107,7 +100,7 @@
 		}
 	</table>
 	<div class="d-flex flex-row">
-		<a class="btn btn-danger" asp-controller="Home" asp-action="Index">Prognose Afbreken</a>
+		<a class="btn btn-danger" asp-controller="Prognoses" asp-action="Index">Prognose Afbreken</a>
 		<input type="submit" class="btn btn-primary" value="Prognose Berekenen">
 	</div>
 </form>

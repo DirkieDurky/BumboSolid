@@ -8,221 +8,261 @@ using System.Diagnostics;
 
 namespace BumboSolid.Web.Controllers
 {
-	public class PrognosesController : Controller
-	{
-		private readonly BumboDbContext _context;
+    public class PrognosesController : Controller
+    {
+        private readonly BumboDbContext _context;
 
-		public PrognosesController(BumboDbContext context)
-		{
-			_context = context;
-		}
+        public PrognosesController(BumboDbContext context)
+        {
+            _context = context;
+        }
 
-		// GET: Prognoses
-		public async Task<IActionResult> Index()
-		{
-			return View(await _context.Prognoses.ToListAsync());
-		}
+        //var prognosisList = _context.Prognoses
+        //       .Include(p => p.PrognosisDays)
+        //           .ThenInclude(pd => pd.Factors)
+        //       .OrderByDescending(p => p.Year)
+        //       .ThenByDescending(p => p.Week)
+        //       .ToList();
 
-		// GET: Prognoses/Details/5
-		public async Task<IActionResult> Details(int? id)
-		{
-			if (id == null)
-			{
-				return NotFound();
-			}
+        // GET: Prognoses
+        public async Task<IActionResult> Index(int? id)
+        {
+            var prognoses = await _context.Prognoses
+                .Include(p => p.PrognosisDays)
+                    .ThenInclude(p => p.PrognosisFunctions)
+                .Include(p => p.PrognosisDays)
+                    .ThenInclude(pd => pd.Factors)
+                    .OrderByDescending(p => p.Year)
+                       .ThenByDescending(p => p.Week)
+                .ToListAsync();
 
-			var prognosis = await _context.Prognoses
-				.FirstOrDefaultAsync(m => m.Id == id);
-			if (prognosis == null)
-			{
-				return NotFound();
-			}
+            // Check if there are no prognoses
+            if (prognoses.Count == 0)
+            {
+                return NotFound();
+            }
 
-			return View(prognosis);
-		}
+            var selectedId = id ?? prognoses.OrderBy(x => x.Year).ThenBy(c => c.Week).First().Id;
 
-		// GET: Prognoses/Aanmaken
-		public IActionResult Aanmaken()
-		{
-			EditFactorsViewModel editFactorsViewModel = new EditFactorsViewModel();
+            var selectedPrognosis = await _context.Prognoses
+                .Include(p => p.PrognosisDays)
+                    .ThenInclude(pd => pd.PrognosisFunctions)
+                .FirstOrDefaultAsync(p => p.Id == selectedId);
 
-			IEnumerable<Prognosis> prognoses = _context.Prognoses.Include(p => p.PrognosisDays).OrderBy(x => x.Year).ThenBy(x => x.Week).ToList();
-			if (prognoses.Count() > 0)
-			{
-				editFactorsViewModel.VisitorEstimatePerDay = prognoses.Last().PrognosisDays.ToDictionary(p => p.Weekday, p => p.VisitorEstimate);
-			}
-			else
-			{
-				editFactorsViewModel.VisitorEstimatePerDay = null;
-			}
+            if (selectedPrognosis == null)
+            {
+                return NotFound();
+            }
 
-			CultureInfo ci = new CultureInfo("nl-NL");
-			Calendar calendar = ci.Calendar;
-			DateTime nextWeek = DateTime.Now.AddDays(7);
-			Prognosis newPrognosis = new Prognosis()
-			{
-				Id = _context.Prognoses.Count() > 0 ? _context.Prognoses.Max(x => x.Id) + 1 : 0,
-				Year = (short)nextWeek.Year,
-				Week = (byte)calendar.GetWeekOfYear(nextWeek, ci.DateTimeFormat.CalendarWeekRule, ci.DateTimeFormat.FirstDayOfWeek),
-			};
+            var viewModel = new PrognosesViewModel
+            {
+                Prognoses = prognoses,
+                Id = selectedId
+            };
 
-			//Fill holidays in accordingly, and make the rest zeroes
-			for (byte i = 0; i < 7; i++)
-			{
-				PrognosisDay prognosisDay = new PrognosisDay()
-				{
-					PrognosisId = newPrognosis.Id,
-					Weekday = i,
-					VisitorEstimate = 0,
-				};
+            return View(viewModel);
+        }
 
-				//Get current day from year, week and weekday
-				DateTime startOfYear = new DateTime(newPrognosis.Year, 1, 1);
-				DateTime currentDay = calendar.AddWeeks(startOfYear, newPrognosis.Week - 1).AddDays(i - (int)startOfYear.DayOfWeek + 1);
+        // GET: Prognoses/Details/5
+        public async Task<IActionResult> Details(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
 
-				var temp = _context.HolidayDays.ToList();
-				List<HolidayDay> holidayInfo = temp.Where(d => d.Date == DateOnly.FromDateTime(currentDay)).ToList();
+            var prognosis = await _context.Prognoses
+                .FirstOrDefaultAsync(m => m.Id == id);
+            if (prognosis == null)
+            {
+                return NotFound();
+            }
 
-				prognosisDay.Factors.Add(new Factor()
-				{
-					PrognosisId = prognosisDay.PrognosisId,
-					Type = "Feestdagen",
-					Weekday = prognosisDay.Weekday,
-					Impact = (short)(holidayInfo.Count() == 0 ? 0 : holidayInfo.First().Impact),
-				});
+            return View(prognosis);
+        }
 
-				prognosisDay.Factors.Add(new Factor()
-				{
-					PrognosisId = prognosisDay.PrognosisId,
-					Type = "Weer",
-					Weekday = prognosisDay.Weekday,
-					Impact = 0,
-				});
+        // GET: Prognoses/Aanmaken
+        public IActionResult Aanmaken()
+        {
+            EditFactorsViewModel editFactorsViewModel = new EditFactorsViewModel();
 
-				prognosisDay.Factors.Add(new Factor()
-				{
-					PrognosisId = prognosisDay.PrognosisId,
-					Type = "Overig",
-					Weekday = prognosisDay.Weekday,
-					Impact = 0,
-				});
+            IEnumerable<Prognosis> prognoses = _context.Prognoses.Include(p => p.PrognosisDays).OrderBy(x => x.Year).ThenBy(x => x.Week).ToList();
+            if (prognoses.Count() > 0)
+            {
+                editFactorsViewModel.VisitorEstimatePerDay = prognoses.Last().PrognosisDays.ToDictionary(p => p.Weekday, p => p.VisitorEstimate);
+            }
+            else
+            {
+                editFactorsViewModel.VisitorEstimatePerDay = null;
+            }
 
-				newPrognosis.PrognosisDays.Add(prognosisDay);
-			}
+            CultureInfo ci = new CultureInfo("nl-NL");
+            Calendar calendar = ci.Calendar;
+            DateTime nextWeek = DateTime.Now.AddDays(7);
+            Prognosis newPrognosis = new Prognosis()
+            {
+                Id = _context.Prognoses.Count() > 0 ? _context.Prognoses.Max(x => x.Id) + 1 : 0,
+                Year = (short)nextWeek.Year,
+                Week = (byte)calendar.GetWeekOfYear(nextWeek, ci.DateTimeFormat.CalendarWeekRule, ci.DateTimeFormat.FirstDayOfWeek),
+            };
 
-			editFactorsViewModel.Prognosis = newPrognosis;
-			editFactorsViewModel.WeatherValues = _context.Weathers.ToList();
+            //Fill holidays in accordingly, and make the rest zeroes
+            for (byte i = 0; i < 7; i++)
+            {
+                PrognosisDay prognosisDay = new PrognosisDay()
+                {
+                    PrognosisId = newPrognosis.Id,
+                    Weekday = i,
+                    VisitorEstimate = 0,
+                };
 
-			return View(editFactorsViewModel);
-		}
+                //Get current day from year, week and weekday
+                DateTime startOfYear = new DateTime(newPrognosis.Year, 1, 1);
+                DateTime currentDay = calendar.AddWeeks(startOfYear, newPrognosis.Week - 1).AddDays(i - (int)startOfYear.DayOfWeek + 1);
 
-		// POST: Prognoses/Aanmaken
-		// To protect from overposting attacks, enable the specific properties you want to bind to.
-		// For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-		[HttpPost]
-		[ValidateAntiForgeryToken]
-		public async Task<IActionResult> Aanmaken(Prognosis prognosis, List<int> visitorEstimates, List<int> holidays, List<int> weather, List<int> other, List<String> description)
-		{
-			if (ModelState.IsValid)
-			{
-				_context.Add(prognosis);
+                var temp = _context.HolidayDays.ToList();
+                List<HolidayDay> holidayInfo = temp.Where(d => d.Date == DateOnly.FromDateTime(currentDay)).ToList();
 
-				for (int i = 0; i < 7; i++)
-				{
-					_context.Add(new PrognosisDay()
-					{
-						PrognosisId = prognosis.Id,
-						Weekday = (byte)i,
-						VisitorEstimate = visitorEstimates[i],
-					});
+                prognosisDay.Factors.Add(new Factor()
+                {
+                    PrognosisId = prognosisDay.PrognosisId,
+                    Type = "Feestdagen",
+                    Weekday = prognosisDay.Weekday,
+                    Impact = (short)(holidayInfo.Count() == 0 ? 0 : holidayInfo.First().Impact),
+                });
 
-					_context.Add(new Factor()
-					{
-						PrognosisId = prognosis.Id,
-						Type = "Feestdagen",
-						Weekday = (byte)i,
-						Impact = (short)holidays[i],
-					});
+                prognosisDay.Factors.Add(new Factor()
+                {
+                    PrognosisId = prognosisDay.PrognosisId,
+                    Type = "Weer",
+                    Weekday = prognosisDay.Weekday,
+                    Impact = 0,
+                });
 
-					_context.Add(new Factor()
-					{
-						PrognosisId = prognosis.Id,
-						Type = "Weer",
-						Weekday = (byte)i,
-						WeatherId = (byte)weather[i],
-						Impact = _context.Weathers.First(x=>x.Id == (byte)weather[i]).Impact,
-					});
+                prognosisDay.Factors.Add(new Factor()
+                {
+                    PrognosisId = prognosisDay.PrognosisId,
+                    Type = "Overig",
+                    Weekday = prognosisDay.Weekday,
+                    Impact = 0,
+                });
 
-					_context.Add(new Factor()
-					{
-						PrognosisId = prognosis.Id,
-						Type = "Overig",
-						Weekday = (byte)i,
-						Impact = (short)other[i],
-						Description = description[i],
-					});
-				}
-				await _context.SaveChangesAsync();
-				return RedirectToAction("Index", "Home");
-			}
+                newPrognosis.PrognosisDays.Add(prognosisDay);
+            }
 
-			return View(prognosis);
-		}
+            editFactorsViewModel.Prognosis = newPrognosis;
+            editFactorsViewModel.WeatherValues = _context.Weathers.ToList();
 
-		// GET: Prognoses/Bewerken/5
-		public async Task<IActionResult> Bewerken(int? id)
-		{
-			if (id == null)
-			{
-				return NotFound();
-			}
+            return View(editFactorsViewModel);
+        }
 
-			var prognosis = await _context.Prognoses.FindAsync(id);
-			if (prognosis == null)
-			{
-				return NotFound();
-			}
-			return View(prognosis);
-		}
+        // POST: Prognoses/Aanmaken
+        // To protect from overposting attacks, enable the specific properties you want to bind to.
+        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Aanmaken(Prognosis prognosis, List<int> visitorEstimates, List<int> holidays, List<int> weather, List<int> other, List<String> description)
+        {
+            if (ModelState.IsValid)
+            {
+                _context.Add(prognosis);
 
-		// POST: Prognoses/Bewerken/5
-		// To protect from overposting attacks, enable the specific properties you want to bind to.
-		// For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-		[HttpPost]
-		[ValidateAntiForgeryToken]
-		public async Task<IActionResult> Bewerken(int id, [Bind("Id,Year,Week")] Prognosis prognosis)
-		{
-			if (id != prognosis.Id)
-			{
-				return NotFound();
-			}
+                for (int i = 0; i < 7; i++)
+                {
+                    _context.Add(new PrognosisDay()
+                    {
+                        PrognosisId = prognosis.Id,
+                        Weekday = (byte)i,
+                        VisitorEstimate = visitorEstimates[i],
+                    });
 
-			if (ModelState.IsValid)
-			{
-				try
-				{
-					_context.Update(prognosis);
-					await _context.SaveChangesAsync();
-				}
-				catch (DbUpdateConcurrencyException)
-				{
-					if (!PrognosisExists(prognosis.Id))
-					{
-						return NotFound();
-					}
-					else
-					{
-						throw;
-					}
-				}
-				return RedirectToAction(nameof(Index));
-			}
-			return View(prognosis);
-		}
+                    _context.Add(new Factor()
+                    {
+                        PrognosisId = prognosis.Id,
+                        Type = "Feestdagen",
+                        Weekday = (byte)i,
+                        Impact = (short)holidays[i],
+                    });
 
-		private bool PrognosisExists(int id)
-		{
-			return _context.Prognoses.Any(e => e.Id == id);
-		}
-	}
+                    _context.Add(new Factor()
+                    {
+                        PrognosisId = prognosis.Id,
+                        Type = "Weer",
+                        Weekday = (byte)i,
+                        WeatherId = (byte)weather[i],
+                        Impact = _context.Weathers.First(x => x.Id == (byte)weather[i]).Impact,
+                    });
+
+                    _context.Add(new Factor()
+                    {
+                        PrognosisId = prognosis.Id,
+                        Type = "Overig",
+                        Weekday = (byte)i,
+                        Impact = (short)other[i],
+                        Description = description[i],
+                    });
+                }
+                await _context.SaveChangesAsync();
+                return RedirectToAction("Index", "Home");
+            }
+
+            return View(prognosis);
+        }
+
+        // GET: Prognoses/Bewerken/5
+        public async Task<IActionResult> Bewerken(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var prognosis = await _context.Prognoses.FindAsync(id);
+            if (prognosis == null)
+            {
+                return NotFound();
+            }
+            return View(prognosis);
+        }
+
+        // POST: Prognoses/Bewerken/5
+        // To protect from overposting attacks, enable the specific properties you want to bind to.
+        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Bewerken(int id, [Bind("Id,Year,Week")] Prognosis prognosis)
+        {
+            if (id != prognosis.Id)
+            {
+                return NotFound();
+            }
+
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    _context.Update(prognosis);
+                    await _context.SaveChangesAsync();
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    if (!PrognosisExists(prognosis.Id))
+                    {
+                        return NotFound();
+                    }
+                    else
+                    {
+                        throw;
+                    }
+                }
+                return RedirectToAction(nameof(Index));
+            }
+            return View(prognosis);
+        }
+
+        private bool PrognosisExists(int id)
+        {
+            return _context.Prognoses.Any(e => e.Id == id);
+        }
+    }
 }
