@@ -46,8 +46,9 @@
 		<div class="d-flex flex-row">
 			<input class="p-2 form-control holiday-date" placeholder="Begin" value="@Model.FirstDay.Day-@Model.FirstDay.Month">
 			<input class="p-2 form-control holiday-date" placeholder="Eind" value="@Model.LastDay.Day-@Model.LastDay.Month">
-			<a class="p-2 holiday-date remove-text-decoration"><span class="fa-solid fa-trash-can"></span></a>
-			@Html.ActionLink("Verwijderen", "Verwijderen", new { Name = Model.Holiday.Name })
+			<a href="@Url.Action("Verwijderen", new { Name = Model.Holiday.Name })" class="p-2 holiday-date remove-text-decoration">
+				<span class="fa-solid fa-trash-can"></span> Verwijderen
+			</a>
 		</div>
 	</div>
 
