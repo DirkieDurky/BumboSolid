@@ -203,7 +203,7 @@ namespace BumboSolid.Web.Controllers
                     });
                 }
                 await _context.SaveChangesAsync();
-                return RedirectToAction("Index", "Home");
+                return RedirectToAction("Index", "Prognoses");
             }
 
             return View(prognosis);
