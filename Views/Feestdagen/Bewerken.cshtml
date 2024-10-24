@@ -53,9 +53,9 @@
 					<input type="text" class="p-2 form-control holiday-date" asp-for="LastDay" value="@Model.LastDay.Day-@Model.LastDay.Month" />
 					<span asp-validation-for="LastDay" class="text-danger"></span>
 				</div>
-				<a class="p-2 holiday-date remove-text-decoration"><span class="fa-solid fa-trash-can"></span></a>
-				@Html.ActionLink("Verwijderen", "Verwijderen", new { Name = Model.Holiday.Name })
-				<a class="p-2 holiday-impact remove-text-decoration" asp-controller="Feestdagen" asp-action="Verwijderen" asp-route-id=@Model.Holiday.Name><span class="fa-solid fa-chart-simple"></span></a>
+				<a href="@Url.Action("Verwijderen", new { Name = Model.Holiday.Name })" class="p-2 holiday-date remove-text-decoration">
+					<span class="fa-solid fa-trash-can"></span> Verwijderen
+				</a>
 			</div>
 		</div>
 

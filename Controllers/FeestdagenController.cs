@@ -126,8 +126,6 @@ namespace BumboSolid.Web.Controllers
 		{
 			var Holiday = HolidayManageViewModel.Holiday;
 			bool changedDates = false;
-			HolidayManageViewModel.FirstDay = FirstDay;
-			HolidayManageViewModel.LastDay = LastDay;
 
 			// Making sure that FirstDay and LastDay are still in the same year
 			if (FirstDay.Year != Holiday.HolidayDays[0].Date.Year)
@@ -156,7 +154,14 @@ namespace BumboSolid.Web.Controllers
 			// Add or Remove HolidayDays if neccesary
 			int firstDayDifference = FirstDay.DayNumber - Holiday.HolidayDays[0].Date.DayNumber;
 			int LastDayDifference = LastDay.DayNumber - Holiday.HolidayDays[Holiday.HolidayDays.Count() - 1].Date.DayNumber;
-            Console.WriteLine(firstDayDifference);
+
+			// Make sure not both dates are changed at the same time
+			if (firstDayDifference != 0 && LastDayDifference != 0)
+			{
+				HolidayManageViewModel = CreateGraph(HolidayManageViewModel);
+				ModelState.AddModelError("LastDay", "Je kan niet beide dagen tergelijkertijd aanpassen");
+				return View(HolidayManageViewModel);
+			}
 
 			// Adding days before
 			if (firstDayDifference < 0)
@@ -224,15 +229,22 @@ namespace BumboSolid.Web.Controllers
 				changedDates = true;
 			}
 
-			await _context.SaveChangesAsync();
-
-			// If dates have been changed the user goes back to the index to make sure the new HolidayDays are handled correctly
-			if (changedDates == true) return RedirectToAction(nameof(Index));
-			else
+			// Check if the model state is still valid before saving to the database
+			if (ModelState.IsValid || changedDates == true)
 			{
-				HolidayManageViewModel = CreateGraph(HolidayManageViewModel);
-				return View(HolidayManageViewModel);
+				await _context.SaveChangesAsync();
+
+				// If dates have been changed the user goes back to the index to make sure the new HolidayDays are handled correctly
+				if (changedDates == true) return RedirectToAction(nameof(Index));
+				else
+				{
+					HolidayManageViewModel = CreateGraph(HolidayManageViewModel);
+					return View(HolidayManageViewModel);
+				}
 			}
+
+			HolidayManageViewModel = CreateGraph(HolidayManageViewModel);
+			return View(HolidayManageViewModel);
 		}
 
 		// GET: FeestdagenController/Verwijderen/5
