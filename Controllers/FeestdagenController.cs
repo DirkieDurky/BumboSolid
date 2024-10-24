@@ -135,8 +135,11 @@ namespace BumboSolid.Web.Controllers
 		// POST: FeestdagenController/Bewerken/5
 		[HttpPost]
 		[ValidateAntiForgeryToken]
-		public ActionResult Bewerken(int id, IFormCollection collection)
+		public async Task<IActionResult> Bewerken(Holiday Holiday, DateOnly FirstDay)
 		{
+            Console.WriteLine(Holiday);
+
+            Console.WriteLine(Holiday.Name);
 			try
 			{
 				return RedirectToAction(nameof(Index));
