@@ -3,6 +3,7 @@ using BumboSolid.Data.Models;
 using BumboSolid.Web.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 
 namespace BumboSolid.Web.Controllers
@@ -104,27 +105,13 @@ namespace BumboSolid.Web.Controllers
 			{
 				if (id.Equals(h.Name))
 				{
-					List<HolidayDay> holidayDays = h.HolidayDays.ToList();
+					List<HolidayDay> holidayDays = h.HolidayDays;
 
 					holiday.Holiday = h;
 					holiday.FirstDay = holidayDays[0].Date;
 					holiday.LastDay = holidayDays[holidayDays.Count() - 1].Date;
 
-					if (holidayDays.Count > 1)
-					{
-						foreach (HolidayDay holidayDay in holidayDays)
-						{
-							holiday.xValues.Add(holidayDay.Date.Day + "-" + holidayDay.Date.Month);
-							holiday.yValues.Add(holidayDay.Impact);
-
-							if (holiday.HighestImpact < holidayDay.Impact) holiday.HighestImpact = holidayDay.Impact;
-							else if (holiday.LowestImpact > holidayDay.Impact) holiday.LowestImpact = holidayDay.Impact;
-						}
-					} else
-					{
-						holiday.HighestImpact = 0;
-						holiday.LowestImpact = 0;
-					}
+					holiday = CreateGraph(holiday);
 
 					break;
 				}
@@ -135,18 +122,116 @@ namespace BumboSolid.Web.Controllers
 		// POST: FeestdagenController/Bewerken/5
 		[HttpPost]
 		[ValidateAntiForgeryToken]
-		public async Task<IActionResult> Bewerken(Holiday Holiday, DateOnly FirstDay)
+		public async Task<IActionResult> Bewerken(HolidayManageViewModel HolidayManageViewModel, DateOnly FirstDay, DateOnly LastDay)
 		{
-            Console.WriteLine(Holiday);
+			var Holiday = HolidayManageViewModel.Holiday;
+			bool changedDates = false;
+			HolidayManageViewModel.FirstDay = FirstDay;
+			HolidayManageViewModel.LastDay = LastDay;
 
-            Console.WriteLine(Holiday.Name);
-			try
+			// Making sure that FirstDay and LastDay are still in the same year
+			if (FirstDay.Year != Holiday.HolidayDays[0].Date.Year)
 			{
-				return RedirectToAction(nameof(Index));
+				HolidayManageViewModel = CreateGraph(HolidayManageViewModel);
+				ModelState.AddModelError("FirstDay", "Het gegeven jaar moet hetzelfde zijn als het jaar waarin het feest is gemaakt (" + Holiday.HolidayDays[0].Date.Year + ")");
+				return View(HolidayManageViewModel);
 			}
-			catch
+			if (LastDay.Year != Holiday.HolidayDays[0].Date.Year)
 			{
-				return View();
+				HolidayManageViewModel = CreateGraph(HolidayManageViewModel);
+				ModelState.AddModelError("LastDay", "Het gegeven jaar moet hetzelfde zijn als het jaar waarin het feest is gemaakt (" + Holiday.HolidayDays[0].Date.Year + ")");
+				return View(HolidayManageViewModel);
+			}
+
+			// Making sure that LastDay is not before FirstDay
+			if (LastDay.DayNumber < FirstDay.DayNumber)
+			{
+				HolidayManageViewModel = CreateGraph(HolidayManageViewModel);
+				ModelState.AddModelError("LastDay", "De laatste dag moet hetzelfde of later zijn dan de eerste dag");
+				return View(HolidayManageViewModel);
+			}
+
+			_context.Holidays.Update(Holiday);
+
+			// Add or Remove HolidayDays if neccesary
+			int firstDayDifference = FirstDay.DayNumber - Holiday.HolidayDays[0].Date.DayNumber;
+			int LastDayDifference = LastDay.DayNumber - Holiday.HolidayDays[Holiday.HolidayDays.Count() - 1].Date.DayNumber;
+            Console.WriteLine(firstDayDifference);
+
+			// Adding days before
+			if (firstDayDifference < 0)
+			{
+				for (int i = 0; i < Math.Abs(firstDayDifference); i++)
+				{
+					HolidayDay holidayDay = new HolidayDay();
+					holidayDay.Date = Holiday.HolidayDays[0].Date.AddDays(-i - 1);
+					holidayDay.Impact = 0;
+					holidayDay.HolidayName = Holiday.Name;
+
+					_context.HolidayDays.Add(holidayDay);
+				}
+
+				HolidayManageViewModel.LastDay = LastDay;
+				changedDates = true;
+			}
+
+			// Removing days before
+			if (firstDayDifference > 0)
+			{
+				for (int i = 0; i < firstDayDifference; i++)
+				{
+					HolidayDay holidayDay = Holiday.HolidayDays[i];
+
+					_context.HolidayDays.Remove(holidayDay);
+				}
+
+				HolidayManageViewModel.LastDay = LastDay;
+				changedDates = true;
+			}
+
+			// Adding days after
+			if (LastDayDifference > 0)
+			{
+				int holidayDays = Holiday.HolidayDays.Count() - 1;
+
+				for (int i = 0; i < Math.Abs(LastDayDifference); i++)
+				{
+					HolidayDay holidayDay = new HolidayDay();
+					holidayDay.Date = Holiday.HolidayDays[holidayDays].Date.AddDays(i + 1);
+					holidayDay.Impact = 0;
+					holidayDay.HolidayName = Holiday.Name;
+
+					_context.HolidayDays.Add(holidayDay);
+				}
+
+				HolidayManageViewModel.LastDay = LastDay;
+				changedDates = true;
+			}
+
+			// Removing days after
+			if (LastDayDifference < 0)
+			{
+				int holidayDays = Holiday.HolidayDays.Count();
+
+				for (int i = 0; i < Math.Abs(LastDayDifference); i++)
+				{
+					HolidayDay holidayDay = Holiday.HolidayDays[holidayDays - 1 - i];
+
+					_context.HolidayDays.Remove(holidayDay);
+				}
+
+				HolidayManageViewModel.LastDay = LastDay;
+				changedDates = true;
+			}
+
+			await _context.SaveChangesAsync();
+
+			// If dates have been changed the user goes back to the index to make sure the new HolidayDays are handled correctly
+			if (changedDates == true) return RedirectToAction(nameof(Index));
+			else
+			{
+				HolidayManageViewModel = CreateGraph(HolidayManageViewModel);
+				return View(HolidayManageViewModel);
 			}
 		}
 
@@ -186,6 +271,34 @@ namespace BumboSolid.Web.Controllers
 
 			}
 			return RedirectToAction(nameof(Index));
+		}
+
+		// Create the graph requried for Bewerken
+		public HolidayManageViewModel CreateGraph(HolidayManageViewModel HolidayManageViewModel)
+		{
+			Holiday Holiday = HolidayManageViewModel.Holiday;
+
+			if (HolidayManageViewModel != null)
+			{
+				if (Holiday.HolidayDays.Count > 1)
+				{
+					foreach (HolidayDay holidayDay in Holiday.HolidayDays)
+					{
+						HolidayManageViewModel.xValues.Add(holidayDay.Date.Day + "-" + holidayDay.Date.Month);
+						HolidayManageViewModel.yValues.Add(holidayDay.Impact);
+
+						if (HolidayManageViewModel.HighestImpact < holidayDay.Impact) HolidayManageViewModel.HighestImpact = holidayDay.Impact;
+						else if (HolidayManageViewModel.LowestImpact > holidayDay.Impact) HolidayManageViewModel.LowestImpact = holidayDay.Impact;
+					}
+				}
+				else
+				{
+					HolidayManageViewModel.HighestImpact = 0;
+					HolidayManageViewModel.LowestImpact = 0;
+				}
+			}
+
+			return HolidayManageViewModel;
 		}
 	}
 }
