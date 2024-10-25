@@ -100,8 +100,16 @@
                                 @* Kassa *@
                                 @{
                                     var kassa = Model.Prognoses.FirstOrDefault(x => x.Id == Model.Id)?.PrognosisDays.FirstOrDefault(x => x.Weekday == i)?.PrognosisFunctions.FirstOrDefault(x => x.Function == "Kassa");
-                                    intValue = kassa.WorkHours;
-                                    decimalValue = kassa.Staff;
+                                    if (kassa != null)
+                                    {
+                                        intValue = kassa.WorkHours;
+                                        decimalValue = kassa.Staff;
+                                    }
+                                    else
+                                    {
+                                        intValue = 0;
+                                        decimalValue = 0;
+                                    }
                                 }
                                 <td class="prognosis-table-color">
                                     <div class="workHoursBox">
@@ -115,8 +123,16 @@
                                 @* Vakkenvullen *@
                                 @{
                                     var vakkenvuller = Model.Prognoses.FirstOrDefault(x => x.Id == Model.Id)?.PrognosisDays.FirstOrDefault(x => x.Weekday == i)?.PrognosisFunctions.FirstOrDefault(x => x.Function == "Vakkenvuller");
-                                    intValue = vakkenvuller.WorkHours;
-                                    decimalValue = vakkenvuller.Staff;
+                                    if (vakkenvuller != null)
+                                    {
+                                        intValue = vakkenvuller.WorkHours;
+                                        decimalValue = vakkenvuller.Staff;
+                                    }
+                                    else
+                                    {
+                                        intValue = 0;
+                                        decimalValue = 0;
+                                    }
                                 }
                                 <td class="prognosis-table-color">
                                     <div class="workHoursBox">
@@ -130,8 +146,16 @@
                                 @* Vers *@
                                 @{
                                     var vers = Model.Prognoses.FirstOrDefault(x => x.Id == Model.Id)?.PrognosisDays.FirstOrDefault(x => x.Weekday == i)?.PrognosisFunctions.FirstOrDefault(x => x.Function == "Vers");
-                                    intValue = vers.WorkHours;
-                                    decimalValue = vers.Staff;
+                                    if (vers != null)
+                                    {
+                                        intValue = vers.WorkHours;
+                                        decimalValue = vers.Staff;
+                                    }
+                                    else
+                                    {
+                                        intValue = 0;
+                                        decimalValue = 0;
+                                    }
                                 }
                                 <td class="prognosis-table-color">
                                     <div class="workHoursBox">
@@ -147,10 +171,21 @@
                                 @{
                                     var totalImpact = 1.0;
 
-                                    foreach (var factor in Model.Prognoses.FirstOrDefault(x => x.Id == Model.Id)?.PrognosisDays.FirstOrDefault(x => x.Weekday == i)?.Factors)
+                                    var prognose = Model.Prognoses.FirstOrDefault(x => x.Id == Model.Id);
+                                    var prognosisDay = prognose?.PrognosisDays.FirstOrDefault(x => x.Weekday == i);
+                                    var factors = prognosisDay?.Factors;
+
+                                    if (factors != null)
                                     {
-                                        var impactFactor = 1 + (factor.Impact / 100.0);
-                                        totalImpact *= impactFactor;
+                                        foreach (var factor in factors)
+                                        {
+                                            var impactFactor = 1 + (factor.Impact / 100.0);
+                                            totalImpact *= impactFactor;
+                                        }
+                                    }
+                                    else
+                                    {
+                                        totalImpact = 1;
                                     }
 
                                     var roundedTotalImpact = ((totalImpact - 1) * 100);
