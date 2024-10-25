@@ -257,6 +257,8 @@ p {
     width: 20vw;
     height: 49vh;
     margin-bottom: 2vh;
+    overflow-y: auto;
+    overflow-x: hidden;
 }
 
 .prognosis-table {
@@ -405,12 +407,12 @@ th, td {
 }
 
 .Prognosis-Left {
-    width: 20%;
-    margin-right: 5%;
+    width: 20vw;
+    margin-right: 5vw;
 }
 
 .Prognosis-Right {
-    width: 75%;
+    width: 75vw;
 }
 
 .staffBox {

@@ -17,13 +17,6 @@ namespace BumboSolid.Web.Controllers
             _context = context;
         }
 
-        //var prognosisList = _context.Prognoses
-        //       .Include(p => p.PrognosisDays)
-        //           .ThenInclude(pd => pd.Factors)
-        //       .OrderByDescending(p => p.Year)
-        //       .ThenByDescending(p => p.Week)
-        //       .ToList();
-
         // GET: Prognoses
         public async Task<IActionResult> Index(int? id)
         {
