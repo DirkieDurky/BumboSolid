@@ -7,7 +7,7 @@ namespace BumboSolid.Web.Models
 	{
     
         [StringLength(25)]
-        [RegularExpression("^[a-zA-Z0-9]*$", ErrorMessage = "Alleen alfanumerieke tekens zijn toegestaan.")]
+        [RegularExpression("^[a-zA-Z0-9\\s]*$", ErrorMessage = "Alleen alfanumerieke tekens en spaties zijn toegestaan.")]
         public String Name { get; set; }
 
         [DataType(DataType.Date)]

@@ -10,7 +10,7 @@ public partial class Norm
     public int Id { get; set; }
 
     [StringLength(50)]
-    [RegularExpression("^[a-zA-Z0-9]*$", ErrorMessage = "Alleen alfanumerieke tekens zijn toegestaan.")]
+    [RegularExpression("^[a-zA-Z0-9\\s]*$", ErrorMessage = "Alleen alfanumerieke tekens en spaties zijn toegestaan.")]
     public string Activity { get; set; } = null!;
 
     public string Function { get; set; } = null!;
