@@ -12,9 +12,9 @@
 		@foreach (var holiday in Model)
 		{
 			<div class="d-flex flex-row">
-				<input class="p-2 form-control holiday-name" placeholder="Feest naam" value="@holiday.Name">
-				<input class="p-2 form-control holiday-date" placeholder="Begin" value="@holiday.FirstDay.Day-@holiday.FirstDay.Month">
-				<input class="p-2 form-control holiday-date" placeholder="Eind" value="@holiday.LastDay.Day-@holiday.LastDay.Month">
+				<input class="p-2 form-control holiday-name" placeholder="Feest naam" value="@holiday.Name" readonly>
+				<input class="p-2 form-control holiday-date" placeholder="Begin" value="@holiday.FirstDay.Day-@holiday.FirstDay.Month" readonly>
+				<input class="p-2 form-control holiday-date" placeholder="Eind" value="@holiday.LastDay.Day-@holiday.LastDay.Month" readonly>
 				<a class="p-2 holiday-impact remove-text-decoration" asp-controller="Feestdagen" asp-action="Bewerken" asp-route-id=@holiday.Name><span class="fa-solid fa-chart-simple"></span></a>
 			</div>
 		}
