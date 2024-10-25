@@ -229,22 +229,15 @@ namespace BumboSolid.Web.Controllers
 				changedDates = true;
 			}
 
-			// Check if the model state is still valid before saving to the database
-			if (ModelState.IsValid || changedDates == true)
+			await _context.SaveChangesAsync();
+
+			// If dates have been changed the user goes back to the index to make sure the new HolidayDays are handled correctly
+			if (changedDates == true) return RedirectToAction(nameof(Index));
+			else
 			{
-				await _context.SaveChangesAsync();
-
-				// If dates have been changed the user goes back to the index to make sure the new HolidayDays are handled correctly
-				if (changedDates == true) return RedirectToAction(nameof(Index));
-				else
-				{
-					HolidayManageViewModel = CreateGraph(HolidayManageViewModel);
-					return View(HolidayManageViewModel);
-				}
+				HolidayManageViewModel = CreateGraph(HolidayManageViewModel);
+				return View(HolidayManageViewModel);
 			}
-
-			HolidayManageViewModel = CreateGraph(HolidayManageViewModel);
-			return View(HolidayManageViewModel);
 		}
 
 		// GET: FeestdagenController/Verwijderen/5
