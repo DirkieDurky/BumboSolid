@@ -83,21 +83,34 @@
         <div class="background-dark">
             <div class="prognosis-table">
                 <table cellspacing="0">
-                    <tbody>
+                    <colgroup>
+                        <col />
+                        <col class="prognosis-table-color KVV" />
+                        <col class="prognosis-table-color KVV" />
+                        <col class="prognosis-table-color KVV" />
+                        <col />
+                        <col class="prognosis-table-color" />
+                        <col class="prognosis-table-color" />
+                    </colgroup>
+                    <thead>
                         <tr>
                             <th></th>
-                            <th scope="col" class="prognosis-table-color">Kassa</th>
-                            <th scope="col" class="prognosis-table-color">Vakkenvuller</th>
-                            <th scope="col" class="prognosis-table-color">Vers</th>
+                            <th>Kassa</th>
+                            <th>Vakkenvuller</th>
+                            <th>Vers</th>
                             <th></th>
-                            <th scope="col" class="prognosis-table-color">Externe Factors</th>
-                            <th scope="col" class="prognosis-table-color">Verwachte Bezoekersdrukte</th>
+                            <th>Externe Factors</th>
+                            <th>Verwachte Bezoekersdrukte</th>
                         </tr>
+                    </thead>
+                    <tbody>
                         @for (int i = 0; i < daysOfTheWeek.Length; i++)
                         {
                             String day = daysOfTheWeek[i];
                             <tr>
-                                <td scope="row">@day</td>
+                                <td>
+                                    @day
+                                </td>
 
                                 @* Kassa *@
                                 @{
@@ -113,7 +126,7 @@
                                         decimalValue = 0;
                                     }
                                 }
-                                <td class="prognosis-table-color">
+                                <td>
                                     <div class="workHoursBox">
                                         @intValue <br />
                                     </div>
@@ -136,7 +149,7 @@
                                         decimalValue = 0;
                                     }
                                 }
-                                <td class="prognosis-table-color">
+                                <td>
                                     <div class="workHoursBox">
                                         @intValue <br />
                                     </div>
@@ -159,7 +172,7 @@
                                         decimalValue = 0;
                                     }
                                 }
-                                <td class="prognosis-table-color">
+                                <td>
                                     <div class="workHoursBox">
                                         @intValue <br />
                                     </div>
@@ -192,16 +205,20 @@
 
                                     var roundedTotalImpact = Math.Round((totalImpact - 1) * 100);
                                 }
-                                <td class="prognosis-table-color">
-                                    @roundedTotalImpact%
+                                <td>
+                                    <div class="highlightBox">
+                                        @roundedTotalImpact%
+                                    </div>
                                 </td>
 
                                 @* VisitorEsitmate *@
                                 @{
                                     intValue = Model.Prognoses.FirstOrDefault(x => x.Id == Model.Id)?.PrognosisDays.FirstOrDefault(x => x.Weekday == i)?.VisitorEstimate ?? 0;
                                 }
-                                <td class="prognosis-table-color">
-                                    @intValue
+                                <td>
+                                    <div class="highlightBox">
+                                        @intValue
+                                    </div>
                                 </td>
                             </tr>
                         }
