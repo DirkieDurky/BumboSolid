@@ -1,33 +1,50 @@
-﻿@model BumboSolid.Data.Models.Holiday
+﻿@model BumboSolid.Web.Models.HolidayViewModel
 
 @{
-    ViewData["Title"] = "View";
+    ViewData["Title"] = "Aanmaken";
 }
 
-<h1>View</h1>
+<h1>Nieuwe Feestdag Aanmaken</h1>
 
-<h4>Holiday</h4>
 <hr />
 <div class="row">
     <div class="col-md-4">
-        <form asp-action="View">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="Name" class="control-label"></label>
-                <input asp-for="Name" class="form-control" />
-                <span asp-validation-for="Name" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
-            </div>
-        </form>
-    </div>
-</div>
+		<form asp-action="Aanmaken">
+			<div asp-validation-summary="ModelOnly" class="text-danger"></div>
+			<div class="form-group">
+				<label asp-for="Name" class="control-label">Naam</label>
+				<input asp-for="Name" class="form-control" />
+				<span asp-validation-for="Name" class="text-danger"></span>
+			</div>
+			<div class="form-group">
+				<label asp-for="FirstDay" class="control-label">Eerste Dag</label>
+				<input asp-for="FirstDay" id="firstday" class="form-control" value=null />
+				<span asp-validation-for="FirstDay" class="text-danger"></span>
+			</div>
+			<div class="form-group mb-3">
+				<label asp-for="LastDay" class="control-label">Laatste Dag</label>
+				<input asp-for="LastDay" id="lastday" class="form-control" value=null />
+				<span asp-validation-for="LastDay" class="text-danger"></span>
+			</div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
+			<script>
+				var year = new Date().getFullYear();
+				document.getElementById('firstday').setAttribute("min", year + "-01-01");
+				document.getElementById('firstday').setAttribute("max", year + "-12-31");
+				document.getElementById('lastday').setAttribute("min", year + "-01-01");
+				document.getElementById('lastday').setAttribute("max", year + "-12-31");
+			</script>
+
+			<div class="form-group">
+				<input type="submit" value="Aanmaken" class="btn btn-primary" />
+				<a type="button" class="btn btn-secondary" asp-action="Index">Terug</a>
+			</div>
+		</form>
+	</div>
 </div>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+	@{
+		await Html.RenderPartialAsync("_ValidationScriptsPartial");
+	}
 }
