@@ -57,8 +57,9 @@
 						<label for="per-bezoeker" class="col-form-label mx-2">per bezoeker</label>
 						<input type="checkbox" id="per-bezoeker" name="per-bezoeker" @(norm.PerVisitor ? "checked" : "") disabled />
 					</div>
+
 					<div class="col-sm-1 d-flex gap-2">
-						<a href="@Url.Action("Bewerken", new { id = norm.Id })" class="btn btn-warning">Bewerken</a>
+						<a href="@Url.Action("Bewerken", new { id = norm.Id })" class="btn btn-primary">Bewerken</a>
 						<a href="@Url.Action("Verwijderen", new { id = norm.Id })" class="btn btn-danger">Verwijderen</a>
 					</div>
 				</div>
