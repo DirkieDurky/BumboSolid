@@ -21,7 +21,7 @@
 				<input asp-for="FirstDay" id="firstday" class="form-control" value=null />
 				<span asp-validation-for="FirstDay" class="text-danger"></span>
 			</div>
-			<div class="form-group">
+			<div class="form-group mb-3">
 				<label asp-for="LastDay" class="control-label">Laatste Dag</label>
 				<input asp-for="LastDay" id="lastday" class="form-control" value=null />
 				<span asp-validation-for="LastDay" class="text-danger"></span>
@@ -36,8 +36,8 @@
 			</script>
 
 			<div class="form-group">
-				<a type="button" class="btn btn-primary" asp-action="Index">Terug</a>
 				<input type="submit" value="Aanmaken" class="btn btn-primary" />
+				<a type="button" class="btn btn-secondary" asp-action="Index">Terug</a>
 			</div>
 		</form>
 	</div>
