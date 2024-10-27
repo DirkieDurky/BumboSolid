@@ -70,7 +70,7 @@
 				}
 			}
 
-			@if (Model.Id != null)
+			@if (Model.Id != null && Model.Prognoses.Where(p => p.Id == (int)Model.Id).Count() > 0)
 			{
 				// Get the selected prognosis details
 				var selectedPrognosis = Model.Prognoses.FirstOrDefault(x => x.Id == Model.Id);
@@ -99,7 +99,7 @@
 			}
 		</div>
 		<div class="background-dark">
-			@if (Model.Id != null)
+			@if (Model.Id != null && Model.Prognoses.Where(p => p.Id == (int)Model.Id).Count() > 0)
 			{
 				int workHours;
 				decimal staff;
@@ -278,9 +278,16 @@
 			}
 			else
 			{
-				<span>Er zijn nog geen prognoses aangemaakt. Klik </span>
-				<a asp-controller="Prognoses" asp-action="Aanmaken">hier</a>
-				<span> om er een aan te maken!</span>
+				if (Model.Prognoses.Count() > 0)
+				{
+					<span>De geselecteerde prognose bestaat niet. Selecteer een prognose uit de lijst of klik <a asp-controller="Prognoses" asp-action="Index">hier</a>.</span>
+				}
+				else
+				{
+					<span>Er zijn nog geen prognoses aangemaakt. Klik </span>
+					<a asp-controller="Prognoses" asp-action="Aanmaken">hier</a>
+					<span> om er een aan te maken!</span>
+				}
 			}
 		</div>
 	</div>

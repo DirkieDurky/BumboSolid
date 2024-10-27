@@ -33,16 +33,6 @@ namespace BumboSolid.Web.Controllers
 			if (id == null && prognoses.Count != 0)
 			{
 				lastPrognosisId = id ?? prognoses.OrderBy(x => x.Year).ThenBy(c => c.Week).First().Id;
-
-				Prognosis? lastPrognosis = await _context.Prognoses
-					.Include(p => p.PrognosisDays)
-						.ThenInclude(pd => pd.PrognosisFunctions)
-					.FirstOrDefaultAsync(p => p.Id == lastPrognosisId);
-
-				if (lastPrognosis == null)
-				{
-					lastPrognosisId = null;
-				}
 			}
 
 			var viewModel = new PrognosesViewModel
