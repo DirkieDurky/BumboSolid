@@ -1,61 +1,64 @@
 ﻿@model BumboSolid.Data.Models.Norm
 
 @{
-    ViewData["Title"] = "Aanmaken";
+	ViewData["Title"] = "Aanmaken";
 }
 
 <h1>Nieuwe Normering Aanmaken</h1>
 
 <hr />
 <div class="row">
-    <div class="col-md-4">
-        <form asp-action="Aanmaken">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="Activity" class="control-label">Activiteit</label>
-                <input asp-for="Activity" class="form-control" />
-                <span asp-validation-for="Activity" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Function" class="control-label">Functie</label>
-                <select asp-for="Function" class="form-control" asp-items="ViewBag.Function"></select>
-            </div>
-            <div class="form-group">
-                <label asp-for="Duration" class="control-label">Duur</label>
-                <input asp-for="Duration" class="form-control" oninput="this.value = this.value.replace(/[^0-9]/g, '');" />
-                <span asp-validation-for="Duration" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label for="DurationUnit" class="control-label">Duur Eenheid</label>
-                <select id="DurationUnit" name="DurationUnit" class="form-control">
-                    <option value="seconds">Seconden</option>
-                    <option value="minutes">Minuten</option>
-                    <option value="hours">Uren</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label asp-for="AvgDailyPerformances" class="control-label">Gemiddelde uitvoeringen per dag</label>
-                <input asp-for="AvgDailyPerformances" class="form-control" oninput="this.value = this.value.replace(/[^0-9]/g, '');" />
-                <span asp-validation-for="AvgDailyPerformances" class="text-danger"></span>
-            </div>
-            <div class="form-group form-check">
-                <label class="form-check-label">
-                    <input class="form-check-input" asp-for="PerVisitor" /> Per bezoeker
-                </label>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Aanmaken" class="btn btn-primary" />
-            </div>
-        </form>
-    </div>
-</div>
+	<div class="col-md-4">
+		<form asp-action="Aanmaken">
+			<div asp-validation-summary="ModelOnly" class="text-danger"></div>
+			<div class="form-group">
+				<label asp-for="Activity" class="control-label">Activiteit</label>
+				<input asp-for="Activity" class="form-control" />
+				<span asp-validation-for="Activity" class="text-danger"></span>
+			</div>
 
-<div>
-    <a asp-action="Index">Terug</a>
+			<div class="form-group">
+				<label asp-for="Function" class="control-label">Functie</label>
+				<select asp-for="Function" class="form-control" asp-items="ViewBag.Function"></select>
+			</div>
+
+			<div class="form-group">
+				<label asp-for="Duration" class="control-label">Duur</label>
+				<input asp-for="Duration" class="form-control" oninput="this.value = this.value.replace(/[^0-9]/g, '');" />
+				<span asp-validation-for="Duration" class="text-danger"></span>
+			</div>
+
+			<div class="form-group">
+				<label for="DurationUnit" class="control-label">Duur Eenheid</label>
+				<select id="DurationUnit" name="DurationUnit" class="form-control">
+					<option value="seconds">Seconden</option>
+					<option value="minutes">Minuten</option>
+					<option value="hours">Uren</option>
+				</select>
+			</div>
+
+			<div class="form-group mb-3">
+				<label asp-for="AvgDailyPerformances" class="control-label">Gemiddelde uitvoeringen per dag</label>
+				<input asp-for="AvgDailyPerformances" class="form-control" oninput="this.value = this.value.replace(/[^0-9]/g, '');" />
+				<span asp-validation-for="AvgDailyPerformances" class="text-danger"></span>
+			</div>
+
+			<div class="form-group form-check mb-3">
+				<label class="form-check-label">
+					<input class="form-check-input" asp-for="PerVisitor" /> Per bezoeker
+				</label>
+			</div>
+
+			<div class="form-group">
+				<input type="submit" value="Aanmaken" class="btn btn-primary" />
+				<a asp-action="Index" class="btn btn-secondary">Terug</a>
+			</div>
+		</form>
+	</div>
 </div>
 
 @section Scripts {
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
-    }
+	@{
+		await Html.RenderPartialAsync("_ValidationScriptsPartial");
+	}
 }

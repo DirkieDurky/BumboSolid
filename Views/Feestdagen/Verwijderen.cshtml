@@ -1,19 +1,16 @@
 ﻿@model BumboSolid.Data.Models.Holiday
 
 <div class="card-body">
-    <p class="lead">Weet u zeker dat u deze normering wilt verwijderen?</p>
+	<p class="lead">Weet u zeker dat u dit feest wilt verwijderen?</p>
 
-    <div class="alert alert-warning" role="alert">
-        <p><strong>Feest:</strong> @Model.Name</p>
-    </div>
+	<div class="alert alert-warning" role="alert">
+		<p><strong>Feest:</strong> @Model.Name</p>
+	</div>
 
-    <form asp-action="Verwijderen" method="post" class="d-inline">
-        <input type="hidden" asp-for="Name" />
-        <button type="submit" class="btn btn-danger">
-            <i class="fas fa-trash-alt"></i> Ja, Verwijderen
-        </button>
-    </form>
-    <a asp-controller="Feestdagen" asp-action="Bewerken" asp-route-id=@Model.Name class="btn btn-secondary ms-2">
-        <i class="fas fa-times"></i> Annuleren
-    </a>
+	<form asp-action="Verwijderen" method="post" class="d-inline">
+		<input type="hidden" asp-for="Name" />
+		<button type="submit" class="btn btn-danger w-100">Verwijderen</button>
+	</form>
+
+	<a asp-controller="Feestdagen" asp-action="Bewerken" asp-route-id=@Model.Name class="btn btn-secondary w-100">Annuleren</a>
 </div>

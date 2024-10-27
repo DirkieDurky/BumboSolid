@@ -4,7 +4,7 @@ html {
 
 @media (min-width: 768px) {
     html {
-        font-size: 16px;
+        font-size: 12px;
     }
 }
 
@@ -100,25 +100,50 @@ p {
     border: none;
 }
 
-.prognosis-table {
-    padding: 25px 10px 25px 10px;
-    margin: 25px 10px 25px 10px;
-    width: 10rem;
-    text-align: center;
+
+
+.prognosis-table > table {
+    padding-block: 10px;
+    border-spacing: 10px 0px;
+    margin-bottom: 20px;
+}
+
+.prognosis-table > table th {
+    padding: 5px;
+    border-radius: 10px 10px 0px 0px;
+}
+
+.prognosis-table > table td {
+    padding: 5px 20px;
+}
+
+.prognosis-table-color {
+    background-color: #f2f2f2;
 }
 
 .btn {
     border-radius: 10px;
-    min-width: 15vw;
-    min-height: 7vh;
-    margin: 5px;
-    text-align: center;
+    width: 20vw;
+    height: 7vh;
     font-weight: bold;
     font-style: italic;
     border: none;
-    margin: 1vw auto 1vw auto;
-    white-space: normal;
-    line-height: 5vh;
+    margin-bottom: 2vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+::-webkit-scrollbar {
+    background-color: transparent;
+    width: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+    background-color: gray;
+    border-radius: 10px;
+    width: 1px;
 }
 
 .factor-buttons {
@@ -161,11 +186,6 @@ p {
     align-items: center;
     margin: auto;
     height: 100%;
-}
-
-.save-button {
-    margin: 1vw auto 1vw auto;
-    height: 4vw;
 }
 
 .holiday-name {
@@ -229,11 +249,15 @@ p {
 }
 
 #prognosis-scrollbar {
-    width: 100%;
-    height: 55vh;
-    line-height: 3em;
-    overflow: auto;
-    margin: 5% 5% 5% 0%;
+    width: 20vw;
+    height: 49vh;
+    margin-bottom: 2vh;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+.prognosis-table {
+    height: 67vh;
 }
 
 #holidays-scrollbar {
@@ -249,15 +273,6 @@ p {
     height: 45vh;
     line-height: 3em;
     overflow-y: auto;
-}
-
-#prognosis-weekdays {
-    margin-top: 13vh;
-}
-
-.prognosis-index {
-    height: 7vh;
-    margin-bottom: 5vh;
 }
 
 #prognosis-tables-spacing {
@@ -288,11 +303,22 @@ p {
     width: 180px;
 }
 
+.Prognosis-Right > div{
+    justify-content: space-between;
+}
+
 #prognosis-date-box {
     color: white;
-    margin: 0vh 5vw 2vh 5vw;
-    width: 23vw;
-    max-height: 8vh;
+    border-radius: 10px;
+    width: 20vw;
+    height: 7vh;
+    font-weight: bold;
+    font-style: italic;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
 }
 
 #prognosis-date {
@@ -373,4 +399,46 @@ th, td {
 .table-button {
     border-radius: 10px;
     min-width: 3vw;
+}
+
+.Prognosis-Left {
+    width: 20vw;
+    margin-right: 5vw;
+}
+
+.Prognosis-Right {
+    width: 75vw;
+}
+
+.staffBox {
+    background-color: #e5e5e5;
+    border-radius: 5px;
+}
+
+.workHoursBox {
+    background-color: #c6c6c6;
+    border-radius: 5px;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.color-block {
+    width: 20px;
+    height: 20px;
+}
+
+.prognosis-index {
+    border-radius: 10px;
+    background-color: #f2f2f2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    width: 200px;
+    height: 7vh;
+    margin-bottom: 2vh;
 }
