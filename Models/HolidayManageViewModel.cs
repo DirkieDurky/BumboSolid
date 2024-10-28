@@ -1,4 +1,5 @@
-﻿using BumboSolid.Data.Models;
+﻿using System.ComponentModel.DataAnnotations;
+using BumboSolid.Data.Models;
 
 namespace BumboSolid.Models
 {
@@ -6,9 +7,11 @@ namespace BumboSolid.Models
 	{
 		public Holiday Holiday { get; set; }
 
-		public DateOnly FirstDay { get; set; }
+        [DataType(DataType.Date)]
+        public DateOnly FirstDay { get; set; }
 
-		public DateOnly LastDay { get; set; }
+        [DataType(DataType.Date)]
+        public DateOnly LastDay { get; set; }
 
 		public int HighestImpact { get; set; }
 
