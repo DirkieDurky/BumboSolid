@@ -134,7 +134,7 @@
 									@{
 										var kassa = Model.Prognoses.FirstOrDefault(x => x.Id == Model.Id)?.PrognosisDays.FirstOrDefault(x => x.Weekday == i)?.PrognosisFunctions.FirstOrDefault(x => x.Function == "Kassa");
 										workHours = kassa == null ? 0 : kassa.WorkHours;
-										staff = kassa == null ? 0 : kassa.Staff;
+										staff = kassa == null ? 0 : kassa.WorkHours / 8;
 									}
 									<td>
 										<div class="d-flex flex-row justify-content-between gap-2">
@@ -151,17 +151,7 @@
 									@{
 										var vakkenvuller = Model.Prognoses.FirstOrDefault(x => x.Id == Model.Id)?.PrognosisDays.FirstOrDefault(x => x.Weekday == i)?.PrognosisFunctions.FirstOrDefault(x => x.Function == "Vakkenvuller");
 										workHours = vakkenvuller == null ? 0 : vakkenvuller.WorkHours;
-										staff = vakkenvuller == null ? 0 : vakkenvuller.Staff;
-										if (vakkenvuller != null)
-										{
-											workHours = vakkenvuller.WorkHours;
-											staff = vakkenvuller.Staff;
-										}
-										else
-										{
-											workHours = 0;
-											staff = 0;
-										}
+										staff = vakkenvuller == null ? 0 : vakkenvuller.WorkHours / 8;
 									}
 									<td>
 										<div class="d-flex flex-row justify-content-between gap-2">
@@ -178,17 +168,7 @@
 									@{
 										var vers = Model.Prognoses.FirstOrDefault(x => x.Id == Model.Id)?.PrognosisDays.FirstOrDefault(x => x.Weekday == i)?.PrognosisFunctions.FirstOrDefault(x => x.Function == "Vers");
 										workHours = vers == null ? 0 : vers.WorkHours;
-										staff = vers == null ? 0 : vers.Staff;
-										if (vers != null)
-										{
-											workHours = vers.WorkHours;
-											staff = vers.Staff;
-										}
-										else
-										{
-											workHours = 0;
-											staff = 0;
-										}
+										staff = vers == null ? 0 : vers.WorkHours / 8;
 									}
 									<td>
 										<div class="d-flex flex-row justify-content-between gap-2">

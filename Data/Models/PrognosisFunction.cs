@@ -11,8 +11,6 @@ public partial class PrognosisFunction
 
     public byte Weekday { get; set; }
 
-    public decimal Staff { get; set; }
-
     public short WorkHours { get; set; }
 
     public virtual Function FunctionNavigation { get; set; } = null!;
