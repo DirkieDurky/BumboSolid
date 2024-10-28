@@ -1,5 +1,5 @@
 ﻿@using BumboSolid.Data.Models
-@model BumboSolid.Web.Models.EditFactorsViewModel
+@model BumboSolid.Models.EditFactorsViewModel
 
 @{
 	String[] daysOfTheWeek = { "Maandag", "Dinsdag", "Woensdag", "Donderdag", "Vrijdag", "Zaterdag", "Zondag" };
@@ -18,10 +18,10 @@
 			<th scope="col" class="rounded-top table-gray">Schatting Bezoekersdrukte</th>
 			<th scope="col" class="rounded-top table-secondary">Feestdagen</th>
 			<th scope="col" class="rounded-top table-gray">
-				<button type="button">
-					Weer
-					<img src="~/images/pencil-square.svg" alt="Edit Icon" width="16" height="16" />
-				</button>
+				Weer
+				<a asp-controller="Weer" asp-action="Bewerken" class="remove-text-decoration p-2 bg-warning ms-2 rounded">
+					<img src="/images/pencil-square.svg" alt="Edit Icon" width="16" height="16" />
+				</a>
 			</th>
 			<th scope="col" class="rounded-top table-secondary">Overig</th>
 			<th scope="col" class="rounded-top table-gray">Totale Schatting Bezoekersdrukte</th>
@@ -30,9 +30,7 @@
 			<th scope="col" class="rounded-top table-secondary">Duur en hoeveelheid</th>
 		</tr>
 		@for (int i = 0; i < daysOfTheWeek.Length; i++)
-
 		{
-
 			String day = daysOfTheWeek[i];
 			<tr>
 				<th scope="row">@day</th>
@@ -53,16 +51,18 @@
 				}
 				<td class="table-secondary"><input name="holidays" type="number" class="form-control small-input" value="@value"></td>
 
-				@{
-					value = Model.Prognosis.PrognosisDays.First(x => x.Weekday == i).Factors.First(x => x.Type == "Weer").Impact;
-				}
-				<td class="table-gray">
-					<select name="weather" type="number" class="form-control small-input form-select" value="@value">
-						@{
-							foreach (Weather weatherValue in Model.WeatherValues)
+				<td class="table-gray d-flex flex-row gap-2">
+					@{
+						String imageSrc = "/images/weather/3.svg";
+					}
+					<img id="@("weather-icon-" + i)" src=@imageSrc class="background-white" />
 
+					<select id="@("weather-select-" + i)" name="weather" type="number" class="form-control small-input form-select" onchange="@("updateIcon("+i+")")">
+						@{
+							for (int j = 0; j < 7; j++)
 							{
-								<option value="@weatherValue.Id">@weatherValue.Impact</option>
+								<option selected=@(j == 3) value=@j>@Model.WeatherValues[j].Impact</option>
+								// <option value=''>&#xf023; &nbsp; All States</option>
 							}
 						}
 					</select>
@@ -100,8 +100,13 @@
 		}
 	</table>
 
-	<div class="d-flex flex-row">
-		<a class="btn btn-danger me-3" asp-controller="Prognoses" asp-action="Index">Prognose Afbreken</a>
+	<div class="d-flex flex-row gap-3">
+		<a class="btn btn-danger" asp-controller="Prognoses" asp-action="Index">Prognose Afbreken</a>
 		<input type="submit" class="btn btn-primary" value="Prognose Berekenen">
 	</div>
 </form>
+<script>
+	function updateIcon(selectId) {
+		document.getElementById("weather-icon-" + selectId).src = "/images/weather/" + document.getElementById("weather-select-" + selectId).value + ".svg";
+	}
+</script>

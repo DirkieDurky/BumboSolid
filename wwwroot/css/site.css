@@ -442,3 +442,8 @@ th, td {
     height: 7vh;
     margin-bottom: 2vh;
 }
+
+.weather-image {
+    width: 5rem;
+    height: 5rem;
+}

@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using BumboSolid.Data.Models;
 
-namespace BumboSolid.Web.Models
+namespace BumboSolid.Models
 {
 	public class HolidayViewModel
 	{

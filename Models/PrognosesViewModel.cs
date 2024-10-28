@@ -1,10 +1,10 @@
 ﻿using BumboSolid.Data.Models;
 
-namespace BumboSolid.Web.Models
+namespace BumboSolid.Models
 {
     public class PrognosesViewModel
     {
-        public List<Prognosis> Prognoses { get; set; }
+        public required List<Prognosis> Prognoses { get; set; }
 
         public int Id { get; set; }
 

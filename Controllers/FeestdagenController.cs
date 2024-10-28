@@ -1,12 +1,10 @@
 ﻿using BumboSolid.Data;
 using BumboSolid.Data.Models;
-using BumboSolid.Web.Models;
-using Microsoft.AspNetCore.Http;
+using BumboSolid.Models;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 
-namespace BumboSolid.Web.Controllers
+namespace BumboSolid.Controllers
 {
 	public class FeestdagenController : Controller
 	{
