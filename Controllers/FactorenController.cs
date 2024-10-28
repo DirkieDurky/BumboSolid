@@ -77,7 +77,7 @@ namespace BumboSolid.Controllers
 
 			await _context.SaveChangesAsync();
 
-            return RedirectToAction("Index", "Prognoses");
+            return RedirectToAction("Index", "Prognoses", new { id = prognosis.Id });
         }
 
 	}
