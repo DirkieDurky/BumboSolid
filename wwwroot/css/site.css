@@ -399,6 +399,7 @@ p {
 
 .table {
     border-spacing: 1rem 0;
+    display: block;
 }
 
     .table > tbody {
@@ -450,7 +451,6 @@ th, td {
     width: 5rem;
     height: 5rem;
 }
-}
 
 .prognosis-norm-table-container {
     overflow-y: scroll;
@@ -463,7 +463,6 @@ th, td {
     width: fit-content;
     margin: auto;
     margin-bottom: 3rem;
-}
 }
 
 .prognosis-top-item {
