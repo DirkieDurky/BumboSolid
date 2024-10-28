@@ -31,7 +31,7 @@ namespace BumboSolid.Controllers
 			int? lastPrognosisId = null;
 			if (id == null && prognoses.Count != 0)
 			{
-				lastPrognosisId = id ?? prognoses.OrderBy(x => x.Year).ThenBy(c => c.Week).First().Id;
+				lastPrognosisId = id ?? prognoses.OrderBy(x => x.Year).ThenBy(c => c.Week).Last().Id;
 			}
 
 			var viewModel = new PrognosesViewModel

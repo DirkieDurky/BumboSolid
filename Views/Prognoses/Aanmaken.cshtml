@@ -144,6 +144,8 @@
 						}
 
 						String descriptionString = norm.AvgDailyPerformances + " x " + readableDuration + " " + readableDurationUnit + " per dag";
+						if (norm.PerVisitor) descriptionString += " per klant";
+
 						<tr>
 							<td class="table-secondary">
 								<p class="background-light impact-unchangeable-dark">@norm.Activity</p>
