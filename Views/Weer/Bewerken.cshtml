@@ -20,7 +20,7 @@
 						<img class="weather-image" src=@imageSrc />
 						<div>
 							<label for="Impacts" class="control-label">@labels[i]</label>
-							<input name="Impacts" class="form-control" value="@Model.Impacts[i]" />
+							<input name="Impacts" class="form-control" value="@Model.Impacts[i]" type="number"/>
 							<span asp-validation-for="Impacts" class="text-danger"></span>
 						</div>
 					</div>
