@@ -110,10 +110,17 @@ p {
         border-bottom: 1px solid rgba(0, 0, 0, 0.5);
         border-radius: 10px 10px 0 0;
     }
+    .prognosis-table > table th {
+        padding: 5px;
+        border-radius: 10px 10px 0px 0px;
+    }
 
     .prognosis-table.side th {
         border-bottom: 1px solid rgba(0, 0, 0, 0.5);
         border-radius: 10px 10px 0 0;
+    }
+    .prognosis-table > table td {
+        padding: 5px 20px;
     }
 
 .prognosis-table-color {
@@ -319,6 +326,10 @@ p {
     width: 180px;
 }
 
+.Prognosis-Right > div {
+    justify-content: space-between;
+}
+
 #prognosis-date-box {
     color: white;
     border-radius: 10px;
@@ -366,7 +377,7 @@ p {
 }
 
 .small-input {
-    min-width: 4rem;
+    min-width: 5rem;
     height: 2.5rem;
 }
 
@@ -433,6 +444,20 @@ th, td {
     width: 200px;
     height: 5vh;
     margin-bottom: 2vh;
+}
+
+.prognosis-norm-table-container {
+    overflow-y: scroll;
+    max-height: 40rem;
+    min-width: fit-content;
+}
+
+.prognosis-create-top-item {
+    padding: 1rem;
+    width: fit-content;
+    margin: auto;
+    margin-bottom: 3rem;
+}
 }
 
 .prognosis-top-item {
