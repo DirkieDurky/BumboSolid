@@ -3,10 +3,9 @@ using Microsoft.EntityFrameworkCore;
 using BumboSolid.Data;
 using BumboSolid.Data.Models;
 using System.Globalization;
-using BumboSolid.Web.Models;
-using System.Diagnostics;
+using BumboSolid.Models;
 
-namespace BumboSolid.Web.Controllers
+namespace BumboSolid.Controllers
 {
 	public class PrognosesController : Controller
 	{
@@ -125,13 +124,13 @@ namespace BumboSolid.Web.Controllers
 					Impact = (short)(holidayInfo.Count() == 0 ? 0 : holidayInfo.First().Impact),
 				});
 
-				prognosisDay.Factors.Add(new Factor()
-				{
-					PrognosisId = prognosisDay.PrognosisId,
-					Type = "Weer",
-					Weekday = prognosisDay.Weekday,
-					Impact = 0,
-				});
+                prognosisDay.Factors.Add(new Factor()
+                {
+                    PrognosisId = prognosisDay.PrognosisId,
+                    Type = "Weer",
+                    Weekday = prognosisDay.Weekday,
+                    Impact = 3,
+                });
 
 				prognosisDay.Factors.Add(new Factor()
 				{

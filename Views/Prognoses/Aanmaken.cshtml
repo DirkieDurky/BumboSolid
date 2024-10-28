@@ -1,5 +1,5 @@
 ﻿@using BumboSolid.Data.Models
-@model BumboSolid.Web.Models.EditFactorsViewModel
+@model BumboSolid.Models.EditFactorsViewModel
 
 @{
 	String[] daysOfTheWeek = { "Maandag", "Dinsdag", "Woensdag", "Donderdag", "Vrijdag", "Zaterdag", "Zondag" };
@@ -29,8 +29,7 @@
 	{
 		return GetStartDate(year, week).AddDays(6);
 	}
-}
-@{
+
 	// Get the selected prognosis details
 	var firstDate = GetStartDate(Model.Prognosis!.Year, Model.Prognosis.Week);
 	var lastDate = GetEndDate(Model.Prognosis.Year, Model.Prognosis.Week);
@@ -54,10 +53,10 @@
 				<th scope="col" class="rounded-top table-gray">Schatting Bezoekersdrukte</th>
 				<th scope="col" class="rounded-top table-secondary">Feestdagen</th>
 				<th scope="col" class="rounded-top table-gray">
-					<button type="button">
-						Weer
-						<img src="~/images/pencil-square.svg" alt="Edit Icon" width="16" height="16" />
-					</button>
+					Weer
+					<a asp-controller="Weer" asp-action="Bewerken" class="remove-text-decoration p-2 bg-warning ms-2 rounded">
+						<img src="/images/pencil-square.svg" alt="Edit Icon" width="16" height="16" />
+					</a>
 				</th>
 				<th scope="col" class="rounded-top table-secondary">Overig</th>
 				<th scope="col" class="rounded-top table-gray">Totale Schatting Bezoekersdrukte</th>
@@ -84,26 +83,32 @@
 					}
 					<td class="table-secondary"><input id="holiday-@i" name="holidays" type="number" class="form-control small-input" value="@value" onchange="updateVisitorEstimate()"></td>
 
-					@{
-						value = Model.Prognosis.PrognosisDays.First(x => x.Weekday == i).Factors.First(x => x.Type == "Weer").Impact;
-					}
-					<td class="table-gray">
-						<select id="weather-@i" name="weather" type="number" class="form-control small-input form-select" onchange="updateVisitorEstimate()">
+					<td class="table-gray gap-2">
+						<div class="d-flex flex-row">
 							@{
-								foreach (Weather weatherValue in Model.WeatherValues)
-								{
-									<option value="@weatherValue.Id" class="@weatherValue.Impact">@weatherValue.Impact</option>
-								}
+								String imageSrc = "/images/weather/3.svg";
 							}
-						</select>
+							<img id="@("weather-icon-" + i)" src=@imageSrc class="background-white" />
+
+							<select id="@("weather-select-" + i)" name="weather" type="number" class="form-control small-input form-select" onchange="@("updateIcon("+i+"); updateVisitorEstimate();")">
+								@{
+									for (int j = 0; j < 7; j++)
+									{
+										<option selected=@(j == 3) value=@j class=@Model.WeatherValues[j].Impact>@Model.WeatherValues[j].Impact</option>
+									}
+								}
+							</select>
+						</div>
 					</td>
 
 					@{
 						value = Model.Prognosis.PrognosisDays.First(x => x.Weekday == i).Factors.First(x => x.Type == "Overig").Impact;
 					}
-					<td class="table-secondary d-flex flex-row gap-2">
-						<input id="other-@i" name="other" type="number" class="form-control small-input" value="@value" onchange="updateVisitorEstimate()">
-						<textarea name="description" class="factor-description" placeholder="Beschrijving" rows="2" cols="25"></textarea>
+					<td class="table-secondary gap-2">
+						<div class="d-flex flex-row">
+							<input id="other-@i" name="other" type="number" class="form-control small-input" value="@value" onchange="updateVisitorEstimate()">
+							<textarea name="description" class="factor-description" placeholder="Beschrijving" rows="2" cols="25"></textarea>
+						</div>
 					</td>
 
 					<td class="table-gray">
@@ -158,21 +163,25 @@
 		</div>
 	</div>
 
-	<div class="d-flex flex-row">
-		<a class="btn btn-danger me-3" asp-controller="Prognoses" asp-action="Index">Prognose Afbreken</a>
+	<div class="d-flex flex-row gap-3">
+		<a class="btn btn-danger" asp-controller="Prognoses" asp-action="Index">Prognose Afbreken</a>
 		<input type="submit" class="btn btn-primary" value="Prognose Berekenen">
 	</div>
 </form>
 <script>
+	function updateIcon(selectId) {
+		document.getElementById("weather-icon-" + selectId).src = "/images/weather/" + document.getElementById("weather-select-" + selectId).value + ".svg";
+	}
+
 	function updateVisitorEstimate() {
-		for (i=0;i<7;i++) {
-			document.getElementById("total-estimated-visitor-count-"+i).innerText =
-			Math.round(
-				document.getElementById("visitor-estimate-"+i).value *
-				(document.getElementById("holiday-"+i).value / 100 + 1) *
-				(document.getElementById("weather-"+i).options[document.getElementById("weather-"+i).value].className / 100 + 1) *
-				(document.getElementById("other-"+i).value / 100 + 1)
-			);
+		for (i = 0; i < 7; i++) {
+			document.getElementById("total-estimated-visitor-count-" + i).innerText =
+				Math.round(
+					document.getElementById("visitor-estimate-" + i).value *
+					(document.getElementById("holiday-" + i).value / 100 + 1) *
+					(document.getElementById("weather-select-" + i).options[document.getElementById("weather-select-" + i).value].className / 100 + 1) *
+					(document.getElementById("other-" + i).value / 100 + 1)
+				);
 		}
 	}
 	updateVisitorEstimate();

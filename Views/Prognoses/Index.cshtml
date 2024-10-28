@@ -1,5 +1,5 @@
-﻿@using BumboSolid.Data.Models
-@model BumboSolid.Web.Models.PrognosesViewModel
+﻿@model BumboSolid.Models.PrognosesViewModel
+@using BumboSolid.Data.Models
 
 @{
 	ViewData["Title"] = "Home Page";
@@ -52,9 +52,10 @@
 			</table>
 		</div>
 
-		<a class="btn btn-primary" asp-controller="Normeringen" asp-action="Index">Normeringen Beheren</a>
-		<a class="btn btn-primary" asp-controller="Feestdagen" asp-action="Index">Feestdagen Beheren</a>
-	</div>
+        <a class="btn btn-primary" asp-controller="Normeringen" asp-action="Index">Normeringen Beheren</a>
+        <a class="btn btn-primary" asp-controller="Feestdagen" asp-action="Index">Feestdagen Beheren</a>
+        <a class="btn btn-primary" asp-controller="Weer" asp-action="Bewerken">Weer-waarden bewerken</a>
+    </div>
 
 	<div class="prognosis-right">
 		<div class="d-flex flex-row gap-3 justify-content-between">
