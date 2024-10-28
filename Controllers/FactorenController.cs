@@ -63,8 +63,15 @@ namespace BumboSolid.Controllers
 					var weatherFactor = prognosisDay.Factors.FirstOrDefault(f => f.Type == "Weer");
 					if (weatherFactor != null)
 					{
-						weatherFactor.WeatherId = (byte)model.WeatherIds[i];
-					}
+                        weatherFactor.WeatherId = (byte)model.WeatherIds[i];
+
+                        var weatherImpact = _context.Weathers
+                            .Where(w => w.Id == weatherFactor.WeatherId)
+                            .Select(w => w.Impact)
+                            .FirstOrDefault();
+
+                        weatherFactor.Impact = weatherImpact;
+                    }
 
 					var otherFactor = prognosisDay.Factors.FirstOrDefault(f => f.Type == "Overig");
 					if (otherFactor != null)
