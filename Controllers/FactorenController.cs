@@ -31,19 +31,54 @@ namespace BumboSolid.Controllers
 			return View(editPrognosisFactorsViewModel);
 		}
 
-		// POST: FactorenController/Bewerken/5
 		[HttpPost]
 		[ValidateAntiForgeryToken]
-		public ActionResult Bewerken(int id, IFormCollection collection)
+		public async Task<IActionResult> Bewerken(int id, EditPrognosisFactorsViewModel model)
 		{
-			try
+			var prognosis = await _context.Prognoses
+				.Include(p => p.PrognosisDays)
+				.ThenInclude(pd => pd.Factors)
+				.FirstOrDefaultAsync(p => p.Id == id);
+
+			if (prognosis == null)
 			{
-				return RedirectToAction(nameof(Index));
+				return NotFound();
 			}
-			catch
+
+			for (int i = 0; i < model.VisitorEstimates.Length; i++)
 			{
-				return View();
+				var prognosisDay = prognosis.PrognosisDays.FirstOrDefault(pd => pd.Weekday == i);
+				if (prognosisDay != null)
+				{
+					// Update Visitor Estimate
+					prognosisDay.VisitorEstimate = model.VisitorEstimates[i];
+
+					// Update Factors
+					var holidayFactor = prognosisDay.Factors.FirstOrDefault(f => f.Type == "Feestdagen");
+					if (holidayFactor != null)
+					{
+						holidayFactor.Impact = (short)model.Holidays[i];
+					}
+
+					var weatherFactor = prognosisDay.Factors.FirstOrDefault(f => f.Type == "Weer");
+					if (weatherFactor != null)
+					{
+						weatherFactor.WeatherId = (byte)model.WeatherIds[i];
+					}
+
+					var otherFactor = prognosisDay.Factors.FirstOrDefault(f => f.Type == "Overig");
+					if (otherFactor != null)
+					{
+						otherFactor.Impact = (short)model.Others[i];
+						otherFactor.Description = model.Descriptions[i];
+					}
+				}
 			}
-		}
+
+			await _context.SaveChangesAsync();
+
+            return RedirectToAction("Index", "Prognoses");
+        }
+
 	}
 }
