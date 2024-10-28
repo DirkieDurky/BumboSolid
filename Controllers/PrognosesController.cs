@@ -4,6 +4,7 @@ using BumboSolid.Data;
 using BumboSolid.Data.Models;
 using System.Globalization;
 using BumboSolid.Models;
+using Microsoft.EntityFrameworkCore.Query.SqlExpressions;
 
 namespace BumboSolid.Controllers
 {
@@ -31,7 +32,7 @@ namespace BumboSolid.Controllers
 			int? lastPrognosisId = null;
 			if (id == null && prognoses.Count != 0)
 			{
-				lastPrognosisId = id ?? prognoses.OrderBy(x => x.Year).ThenBy(c => c.Week).First().Id;
+				lastPrognosisId = id ?? prognoses.OrderBy(x => x.Year).ThenBy(c => c.Week).Last().Id;
 			}
 
 			var viewModel = new PrognosesViewModel
@@ -64,40 +65,40 @@ namespace BumboSolid.Controllers
 		// GET: Prognoses/Aanmaken
 		public IActionResult Aanmaken()
 		{
-			EditFactorsViewModel editFactorsViewModel = new EditFactorsViewModel();
+			CreatePrognosisViewModel CreatePrognosisViewModel = new CreatePrognosisViewModel();
 
 			IEnumerable<Prognosis> prognoses = _context.Prognoses.Include(p => p.PrognosisDays).OrderBy(x => x.Year).ThenBy(x => x.Week).ToList();
 			if (prognoses.Count() > 0)
 			{
-				editFactorsViewModel.VisitorEstimatePerDay = prognoses.Last().PrognosisDays.ToDictionary(p => p.Weekday, p => p.VisitorEstimate);
+				CreatePrognosisViewModel.VisitorEstimatePerDay = prognoses.Last().PrognosisDays.ToDictionary(p => p.Weekday, p => p.VisitorEstimate);
 			}
 			else
 			{
-				editFactorsViewModel.VisitorEstimatePerDay = null;
+				CreatePrognosisViewModel.VisitorEstimatePerDay = null;
 			}
 
-            CultureInfo ci = new CultureInfo("nl-NL");
-            Calendar calendar = ci.Calendar;
+			CultureInfo ci = new CultureInfo("nl-NL");
+			Calendar calendar = ci.Calendar;
 
-            //Create prognosis for next week
-            DateTime nextWeek = DateTime.Now.AddDays(7);
-            short year = (short)nextWeek.Year;
-            byte week = (byte)calendar.GetWeekOfYear(nextWeek, ci.DateTimeFormat.CalendarWeekRule, ci.DateTimeFormat.FirstDayOfWeek);
+			//Create prognosis for next week
+			DateTime nextWeek = DateTime.Now.AddDays(7);
+			short year = (short)nextWeek.Year;
+			byte week = (byte)calendar.GetWeekOfYear(nextWeek, ci.DateTimeFormat.CalendarWeekRule, ci.DateTimeFormat.FirstDayOfWeek);
 
-            //If a prognosis already exists for this week, add another week (and keep doing that until we find one that isn't used yet)
+			//If a prognosis already exists for this week, add another week (and keep doing that until we find one that isn't used yet)
 			while (_context.Prognoses.Any(p => p.Year == year && p.Week == week))
 			{
 				year = (short)nextWeek.Year;
 				week = (byte)calendar.GetWeekOfYear(nextWeek, ci.DateTimeFormat.CalendarWeekRule, ci.DateTimeFormat.FirstDayOfWeek);
 				nextWeek = nextWeek.AddDays(7);
-            }
+			}
 
-            Prognosis newPrognosis = new Prognosis()
-            {
-                Id = _context.Prognoses.Count() > 0 ? _context.Prognoses.Max(x => x.Id) + 1 : 0,
-                Year = year,
-                Week = week,
-            };
+			Prognosis newPrognosis = new Prognosis()
+			{
+				Id = _context.Prognoses.Count() > 0 ? _context.Prognoses.Max(x => x.Id) + 1 : 0,
+				Year = year,
+				Week = week,
+			};
 
 			//Fill holidays in accordingly, and make the rest zeroes
 			for (byte i = 0; i < 7; i++)
@@ -124,13 +125,13 @@ namespace BumboSolid.Controllers
 					Impact = (short)(holidayInfo.Count() == 0 ? 0 : holidayInfo.First().Impact),
 				});
 
-                prognosisDay.Factors.Add(new Factor()
-                {
-                    PrognosisId = prognosisDay.PrognosisId,
-                    Type = "Weer",
-                    Weekday = prognosisDay.Weekday,
-                    Impact = 3,
-                });
+				prognosisDay.Factors.Add(new Factor()
+				{
+					PrognosisId = prognosisDay.PrognosisId,
+					Type = "Weer",
+					Weekday = prognosisDay.Weekday,
+					Impact = 3,
+				});
 
 				prognosisDay.Factors.Add(new Factor()
 				{
@@ -143,13 +144,13 @@ namespace BumboSolid.Controllers
 				newPrognosis.PrognosisDays.Add(prognosisDay);
 			}
 
-			editFactorsViewModel.Prognosis = newPrognosis;
-			editFactorsViewModel.WeatherValues = _context.Weathers.ToList();
+			CreatePrognosisViewModel.Prognosis = newPrognosis;
+			CreatePrognosisViewModel.WeatherValues = _context.Weathers.ToList();
 
-            editFactorsViewModel.Norms = _context.Norms.ToList();
+			CreatePrognosisViewModel.Norms = _context.Norms.ToList();
 
-            return View(editFactorsViewModel);
-        }
+			return View(CreatePrognosisViewModel);
+		}
 
 		// POST: Prognoses/Aanmaken
 		// To protect from overposting attacks, enable the specific properties you want to bind to.
@@ -158,50 +159,106 @@ namespace BumboSolid.Controllers
 		[ValidateAntiForgeryToken]
 		public async Task<IActionResult> Aanmaken(Prognosis prognosis, List<int> visitorEstimates, List<int> holidays, List<int> weather, List<int> other, List<String> description)
 		{
-			if (ModelState.IsValid)
+			var norms = _context.Norms
+				.Select(norm => new { norm.Duration, norm.AvgDailyPerformances, norm.PerVisitor, norm.Function })
+				.ToList();
+			string cashregister = _context.Functions.ToList()[0].Name;
+			string shelves = _context.Functions.ToList()[1].Name;
+			string fresh = _context.Functions.ToList()[2].Name;
+
+			double normCashVisitor = norms.Where(norm => norm.PerVisitor && norm.Function.Equals(cashregister))
+				.Select(norm => norm.Duration * norm.AvgDailyPerformances)
+				.Sum();
+			double normCashDay = norms.Where(norm => !norm.PerVisitor && norm.Function.Equals(cashregister))
+				.Select(norm => norm.Duration * norm.AvgDailyPerformances)
+				.Sum();
+			double normShelvesVisitor = norms.Where(norm => norm.PerVisitor && norm.Function.Equals(shelves))
+				.Select(norm => norm.Duration * norm.AvgDailyPerformances)
+				.Sum();
+			double normShelvesDay = norms.Where(norm => !norm.PerVisitor && norm.Function.Equals(shelves))
+				.Select(norm => norm.Duration * norm.AvgDailyPerformances)
+				.Sum();
+			double normFreshVisitor = norms.Where(norm => norm.PerVisitor && norm.Function.Equals(fresh))
+				.Select(norm => norm.Duration * norm.AvgDailyPerformances)
+				.Sum();
+			double normFreshDay = norms.Where(norm => !norm.PerVisitor && norm.Function.Equals(fresh))
+				.Select(norm => norm.Duration * norm.AvgDailyPerformances)
+				.Sum();
+
+
+			if (!ModelState.IsValid) return View(prognosis);
+
+			_context.Add(prognosis);
+
+			for (int i = 0; i < 7; i++)
 			{
-				_context.Add(prognosis);
+				double holidayd = holidays[i] / 100.00 + 1.0;
+				double weatherd = _context.Weathers.First(x => x.Id == (byte)weather[i]).Impact / 100 + 1.0;
+				double otherd = other[i] / 100.00 + 1;
 
-				for (int i = 0; i < 7; i++)
+				_context.Add(new PrognosisDay()
 				{
-					_context.Add(new PrognosisDay()
-					{
-						PrognosisId = prognosis.Id,
-						Weekday = (byte)i,
-						VisitorEstimate = visitorEstimates[i],
-					});
+					PrognosisId = prognosis.Id,
+					Weekday = (byte)i,
+					VisitorEstimate = visitorEstimates[i],
+				});
 
-					_context.Add(new Factor()
-					{
-						PrognosisId = prognosis.Id,
-						Type = "Feestdagen",
-						Weekday = (byte)i,
-						Impact = (short)holidays[i],
-					});
+				_context.Add(new Factor()
+				{
+					PrognosisId = prognosis.Id,
+					Type = "Feestdagen",
+					Weekday = (byte)i,
+					Impact = (short)holidays[i],
+				});
 
-					_context.Add(new Factor()
-					{
-						PrognosisId = prognosis.Id,
-						Type = "Weer",
-						Weekday = (byte)i,
-						WeatherId = (byte)weather[i],
-						Impact = _context.Weathers.First(x => x.Id == (byte)weather[i]).Impact,
-					});
+				_context.Add(new Factor()
+				{
+					PrognosisId = prognosis.Id,
+					Type = "Weer",
+					Weekday = (byte)i,
+					WeatherId = (byte)weather[i],
+					Impact = _context.Weathers.First(x => x.Id == (byte)weather[i]).Impact,
+				});
 
-					_context.Add(new Factor()
-					{
-						PrognosisId = prognosis.Id,
-						Type = "Overig",
-						Weekday = (byte)i,
-						Impact = (short)other[i],
-						Description = description[i],
-					});
-				}
-				await _context.SaveChangesAsync();
-				return RedirectToAction("Index", "Prognoses");
+				_context.Add(new Factor()
+				{
+					PrognosisId = prognosis.Id,
+					Type = "Overig",
+					Weekday = (byte)i,
+					Impact = (short)other[i],
+					Description = description[i],
+				});
+
+				_context.Add(new PrognosisFunction()
+				{
+					PrognosisId = prognosis.Id,
+					Function = cashregister,
+					Weekday = (byte)i,
+					WorkHours = (short)((normCashDay + (normCashVisitor * visitorEstimates[i])) * (holidayd * weatherd * otherd) / 3600)
+				});
+
+				_context.Add(new PrognosisFunction()
+				{
+					PrognosisId = prognosis.Id,
+					Function = shelves,
+					Weekday = (byte)i,
+					WorkHours = (short)((normShelvesDay + (normShelvesVisitor * visitorEstimates[i])) * (holidayd * weatherd * otherd) / 3600)
+				});
+
+
+				_context.Add(new PrognosisFunction()
+				{
+					PrognosisId = prognosis.Id,
+					Function = fresh,
+					Weekday = (byte)i,
+					WorkHours = (short)((normFreshDay + (normFreshVisitor * visitorEstimates[i])) * (holidayd * weatherd * otherd) / 3600)
+				});
 			}
+			await _context.SaveChangesAsync();
+			return RedirectToAction("Index", "Prognoses");
 
-			return View(prognosis);
+
+
 		}
 
 		// GET: Prognoses/Bewerken/5
