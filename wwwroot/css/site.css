@@ -11,7 +11,7 @@ html {
 }
 
 body {
-    margin: 5rem;
+/*    margin: 5rem;*/
 }
 
 .btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
