@@ -103,7 +103,7 @@
 			@if (Model.Id != null && Model.Prognoses.Where(p => p.Id == (int)Model.Id).Count() > 0)
 			{
 				int workHours;
-				decimal staff;
+				double staff;
 
 				<div class="d-flex flex-row gap-3">
 					<table cellspacing="0" class="prognosis-table main">
@@ -134,7 +134,7 @@
 									@{
 										var kassa = Model.Prognoses.FirstOrDefault(x => x.Id == Model.Id)?.PrognosisDays.FirstOrDefault(x => x.Weekday == i)?.PrognosisFunctions.FirstOrDefault(x => x.Function == "Kassa");
 										workHours = kassa == null ? 0 : kassa.WorkHours;
-										staff = kassa == null ? 0 : kassa.WorkHours / 8;
+										staff = kassa == null ? 0 : double.Round((kassa.WorkHours / 8d), 2);
 									}
 									<td>
 										<div class="d-flex flex-row justify-content-between gap-2">
@@ -151,7 +151,7 @@
 									@{
 										var vakkenvuller = Model.Prognoses.FirstOrDefault(x => x.Id == Model.Id)?.PrognosisDays.FirstOrDefault(x => x.Weekday == i)?.PrognosisFunctions.FirstOrDefault(x => x.Function == "Vakkenvuller");
 										workHours = vakkenvuller == null ? 0 : vakkenvuller.WorkHours;
-										staff = vakkenvuller == null ? 0 : vakkenvuller.WorkHours / 8;
+										staff = vakkenvuller == null ? 0 : double.Round((vakkenvuller.WorkHours / 8d), 2);
 									}
 									<td>
 										<div class="d-flex flex-row justify-content-between gap-2">
@@ -168,7 +168,7 @@
 									@{
 										var vers = Model.Prognoses.FirstOrDefault(x => x.Id == Model.Id)?.PrognosisDays.FirstOrDefault(x => x.Weekday == i)?.PrognosisFunctions.FirstOrDefault(x => x.Function == "Vers");
 										workHours = vers == null ? 0 : vers.WorkHours;
-										staff = vers == null ? 0 : vers.WorkHours / 8;
+										staff = vers == null ? 0 : double.Round((vers.WorkHours / 8d), 2);
 									}
 									<td>
 										<div class="d-flex flex-row justify-content-between gap-2">

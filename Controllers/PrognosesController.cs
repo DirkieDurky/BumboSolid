@@ -4,6 +4,7 @@ using BumboSolid.Data;
 using BumboSolid.Data.Models;
 using System.Globalization;
 using BumboSolid.Models;
+using Microsoft.EntityFrameworkCore.Query.SqlExpressions;
 
 namespace BumboSolid.Controllers
 {
@@ -161,9 +162,9 @@ namespace BumboSolid.Controllers
             var norms = _context.Norms
                 .Select(norm => new { norm.Duration, norm.AvgDailyPerformances, norm.PerVisitor, norm.Function })
                 .ToList();
-            string cashregister = "Kassa";
-            string shelves = "Vakkenvuller";
-            string fresh = "Vers";
+            string cashregister = _context.Functions.ToList()[0].Name; 
+            string shelves = _context.Functions.ToList()[1].Name;
+            string fresh = _context.Functions.ToList()[2].Name;
 
             double normCashVisitor = norms.Where(norm => norm.PerVisitor && norm.Function.Equals(cashregister))
                 .Select(norm => norm.Duration * norm.AvgDailyPerformances)
@@ -191,6 +192,10 @@ namespace BumboSolid.Controllers
 
             for (int i = 0; i < 7; i++)
             {
+                double holidayd = holidays[i] / 100.00 + 1.0;
+                double weatherd = _context.Weathers.First(x => x.Id == (byte)weather[i]).Impact / 100 + 1.0;
+                double otherd = other[i] / 100.00 + 1;
+
                 _context.Add(new PrognosisDay()
                 {
                     PrognosisId = prognosis.Id,
@@ -229,7 +234,7 @@ namespace BumboSolid.Controllers
                     PrognosisId = prognosis.Id,
                     Function = cashregister,
                     Weekday = (byte)i,
-                    WorkHours = (short)((normCashDay + (normCashVisitor * visitorEstimates[i]))/8)
+                    WorkHours = (short)((normCashDay + (normCashVisitor * visitorEstimates[i])) * (holidayd * weatherd * otherd) / 3600)
                 });
 
                 _context.Add(new PrognosisFunction()
@@ -237,7 +242,7 @@ namespace BumboSolid.Controllers
                     PrognosisId = prognosis.Id,
                     Function = shelves,
                     Weekday = (byte)i,
-                    WorkHours = (short)((normShelvesDay + (normShelvesVisitor * visitorEstimates[i])) / 8)
+                    WorkHours = (short)((normShelvesDay + (normShelvesVisitor * visitorEstimates[i])) * (holidayd * weatherd * otherd) / 3600)
                 });
 
 
@@ -246,7 +251,7 @@ namespace BumboSolid.Controllers
                     PrognosisId = prognosis.Id,
                     Function = fresh,
                     Weekday = (byte)i,
-                    WorkHours = (short)((normFreshDay + (normFreshVisitor * visitorEstimates[i])) / 8)
+                    WorkHours = (short)((normFreshDay + (normFreshVisitor * visitorEstimates[i])) * (holidayd * weatherd * otherd) / 3600)
                 });
             }
             await _context.SaveChangesAsync();
