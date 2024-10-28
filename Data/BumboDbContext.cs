@@ -177,7 +177,6 @@ public partial class BumboDbContext : DbContext
 			entity.Property(e => e.Function)
 				.HasMaxLength(25)
 				.IsUnicode(false);
-			entity.Property(e => e.Staff).HasColumnType("decimal(3, 2)");
 
 			entity.HasOne(d => d.FunctionNavigation).WithMany(p => p.PrognosisFunctions)
 				.HasForeignKey(d => d.Function)
