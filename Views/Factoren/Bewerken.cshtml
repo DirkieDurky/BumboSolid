@@ -58,7 +58,7 @@
 						@{
 							for (int j = 0; j < 7; j++)
 							{
-								bool isSelected = j == (weatherId ?? 3); // fallback to option 3 if weatherId is null
+								bool isSelected = j == weatherId;
 								<option selected="@(isSelected)" value="@j" class="@Model.WeatherValues[j].Impact">@Model.WeatherValues[j].Impact</option>
 							}
 						}
@@ -82,6 +82,11 @@
 		</tr>
 	}
 </table>
+
+<div class="d-flex flex-row mt-3">
+	<a asp-controller="Prognoses" asp-action="Index" class="btn btn-secondary">Terug</a>
+	<button type="submit" class="btn btn-primary me-3">Opslaan & Bijwerken</button>
+</div>
 
 <script>
 	function updateIcon(selectId) {
