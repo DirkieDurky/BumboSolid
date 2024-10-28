@@ -25,7 +25,7 @@ namespace BumboSolid.Controllers
         // GET: Normeringen/Aanmaken
         public ActionResult Aanmaken()
         {
-            ViewBag.Function = new SelectList(new List<string> { "Vers", "Kassa", "Vakkenvullen" });
+            ViewBag.Function = new SelectList(_context.Functions.Select(f => f.Name).ToList());
             ViewBag.TimeUnits = new SelectList(new List<string> { "Seconden", "Minuten", "Uren" });
 
             return View(new Norm());
@@ -113,7 +113,7 @@ namespace BumboSolid.Controllers
                 return NotFound();
             }
 
-            ViewBag.Function = new SelectList(new List<string> { "Vers", "Kassa", "Vakkenvullen" }, norm.Function);
+            ViewBag.Function = new SelectList(_context.Functions.Select(f => f.Name).ToList(), norm.Function);
             ViewBag.TimeUnits = new SelectList(new List<string> { "Seconden", "Minuten", "Uren" });
 
             return View(norm);
