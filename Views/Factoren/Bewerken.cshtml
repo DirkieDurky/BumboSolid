@@ -50,7 +50,7 @@
 			<td class="table-gray gap-2">
 				<div class="d-flex flex-row">
 					@{
-						String imageSrc = "/images/weather/3.svg";
+						String imageSrc = weatherId != null ? $"/images/weather/{weatherId}.svg" : "/images/weather/3.svg";
 					}
 					<img id="@("weather-icon-" + i)" src=@imageSrc class="background-white" />
 
