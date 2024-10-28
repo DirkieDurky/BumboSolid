@@ -146,6 +146,8 @@ namespace BumboSolid.Web.Controllers
             editFactorsViewModel.Prognosis = newPrognosis;
             editFactorsViewModel.WeatherValues = _context.Weathers.ToList();
 
+            editFactorsViewModel.Norms = _context.Norms.ToList();
+
             return View(editFactorsViewModel);
         }
 
