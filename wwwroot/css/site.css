@@ -448,3 +448,10 @@ th, td {
     max-height: 40rem;
     min-width: fit-content;
 }
+
+.prognosis-create-top-item {
+    padding: 1rem;
+    width: fit-content;
+    margin: auto;
+    margin-bottom: 3rem;
+}

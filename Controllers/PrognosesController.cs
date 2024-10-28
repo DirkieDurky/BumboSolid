@@ -91,12 +91,25 @@ namespace BumboSolid.Web.Controllers
 
             CultureInfo ci = new CultureInfo("nl-NL");
             Calendar calendar = ci.Calendar;
+
+            //Create prognosis for next week
             DateTime nextWeek = DateTime.Now.AddDays(7);
+            short year = (short)nextWeek.Year;
+            byte week = (byte)calendar.GetWeekOfYear(nextWeek, ci.DateTimeFormat.CalendarWeekRule, ci.DateTimeFormat.FirstDayOfWeek);
+
+            //If a prognosis already exists for this week, add another week (and keep doing that until we find one that isn't used yet)
+			while (_context.Prognoses.Any(p => p.Year == year && p.Week == week))
+			{
+				year = (short)nextWeek.Year;
+				week = (byte)calendar.GetWeekOfYear(nextWeek, ci.DateTimeFormat.CalendarWeekRule, ci.DateTimeFormat.FirstDayOfWeek);
+				nextWeek = nextWeek.AddDays(7);
+            }
+
             Prognosis newPrognosis = new Prognosis()
             {
                 Id = _context.Prognoses.Count() > 0 ? _context.Prognoses.Max(x => x.Id) + 1 : 0,
-                Year = (short)nextWeek.Year,
-                Week = (byte)calendar.GetWeekOfYear(nextWeek, ci.DateTimeFormat.CalendarWeekRule, ci.DateTimeFormat.FirstDayOfWeek),
+                Year = year,
+                Week = week,
             };
 
             //Fill holidays in accordingly, and make the rest zeroes
