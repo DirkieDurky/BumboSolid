@@ -62,20 +62,20 @@ namespace BumboSolid.Controllers
             return View(prognosis);
         }
 
-        // GET: Prognoses/Aanmaken
-        public IActionResult Aanmaken()
-        {
-            EditFactorsViewModel editFactorsViewModel = new EditFactorsViewModel();
+		// GET: Prognoses/Aanmaken
+		public IActionResult Aanmaken()
+		{
+			CreatePrognosisViewModel CreatePrognosisViewModel = new CreatePrognosisViewModel();
 
-            IEnumerable<Prognosis> prognoses = _context.Prognoses.Include(p => p.PrognosisDays).OrderBy(x => x.Year).ThenBy(x => x.Week).ToList();
-            if (prognoses.Count() > 0)
-            {
-                editFactorsViewModel.VisitorEstimatePerDay = prognoses.Last().PrognosisDays.ToDictionary(p => p.Weekday, p => p.VisitorEstimate);
-            }
-            else
-            {
-                editFactorsViewModel.VisitorEstimatePerDay = null;
-            }
+			IEnumerable<Prognosis> prognoses = _context.Prognoses.Include(p => p.PrognosisDays).OrderBy(x => x.Year).ThenBy(x => x.Week).ToList();
+			if (prognoses.Count() > 0)
+			{
+				CreatePrognosisViewModel.VisitorEstimatePerDay = prognoses.Last().PrognosisDays.ToDictionary(p => p.Weekday, p => p.VisitorEstimate);
+			}
+			else
+			{
+				CreatePrognosisViewModel.VisitorEstimatePerDay = null;
+			}
 
             CultureInfo ci = new CultureInfo("nl-NL");
             Calendar calendar = ci.Calendar;
@@ -144,12 +144,12 @@ namespace BumboSolid.Controllers
                 newPrognosis.PrognosisDays.Add(prognosisDay);
             }
 
-            editFactorsViewModel.Prognosis = newPrognosis;
-            editFactorsViewModel.WeatherValues = _context.Weathers.ToList();
+			CreatePrognosisViewModel.Prognosis = newPrognosis;
+			CreatePrognosisViewModel.WeatherValues = _context.Weathers.ToList();
 
-            editFactorsViewModel.Norms = _context.Norms.ToList();
+            CreatePrognosisViewModel.Norms = _context.Norms.ToList();
 
-            return View(editFactorsViewModel);
+            return View(CreatePrognosisViewModel);
         }
 
         // POST: Prognoses/Aanmaken
