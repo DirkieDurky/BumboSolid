@@ -10,6 +10,10 @@ html {
     }
 }
 
+body {
+    margin: 5rem;
+}
+
 .btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
     box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
 }
@@ -93,31 +97,58 @@ p {
     border: none;
 }
 
-
-
-.prognosis-table > table {
+.prognosis-table {
     padding-block: 10px;
     border-spacing: 10px 0px;
     margin-bottom: 20px;
 }
 
-.prognosis-table > table th {
-    padding: 5px;
-    border-radius: 10px 10px 0px 0px;
-}
+    .prognosis-table.main th:not(th:nth-child(1)) {
+        border-bottom: 1px solid rgba(0, 0, 0, 0.5);
+        border-radius: 10px 10px 0 0;
+    }
+    .prognosis-table > table th {
+        padding: 5px;
+        border-radius: 10px 10px 0px 0px;
+    }
 
-.prognosis-table > table td {
-    padding: 5px 20px;
-}
+    .prognosis-table.side th {
+        border-bottom: 1px solid rgba(0, 0, 0, 0.5);
+        border-radius: 10px 10px 0 0;
+    }
+    .prognosis-table > table td {
+        padding: 5px 20px;
+    }
 
 .prognosis-table-color {
     background-color: #f2f2f2;
 }
 
+.prognosis-table tbody tr:last-child td {
+    border-radius: 0 0 10px 10px;
+}
+
+.prognosis-table .box {
+    border-radius: 5px;
+    padding: 0.5rem 2rem;
+}
+
+.workHours {
+    background-color: #d1d1d1;
+}
+
+.staff {
+    background-color: #b6b6b6;
+}
+
+.highlight {
+    background-color: #d6d6d6;
+}
+
 .btn {
     border-radius: 10px;
     width: 20vw;
-    height: 7vh;
+    height: 5vh;
     font-weight: bold;
     font-style: italic;
     border: none;
@@ -243,14 +274,10 @@ p {
 
 #prognosis-scrollbar {
     width: 20vw;
-    height: 49vh;
+    height: 55vh;
     margin-bottom: 2vh;
     overflow-y: auto;
     overflow-x: hidden;
-}
-
-.prognosis-table {
-    height: 67vh;
 }
 
 #holidays-scrollbar {
@@ -296,15 +323,14 @@ p {
     width: 180px;
 }
 
-.Prognosis-Right > div{
+.Prognosis-Right > div {
     justify-content: space-between;
 }
 
 #prognosis-date-box {
     color: white;
     border-radius: 10px;
-    width: 20vw;
-    height: 7vh;
+    height: 5vh;
     font-weight: bold;
     font-style: italic;
     border: none;
@@ -348,7 +374,7 @@ p {
 }
 
 .small-input {
-    min-width: 4rem;
+    min-width: 5rem;
     height: 2.5rem;
 }
 
@@ -370,6 +396,7 @@ p {
 
 .table {
     border-spacing: 1rem 0;
+    display: block;
 }
 
     .table > tbody {
@@ -394,25 +421,6 @@ th, td {
     min-width: 3vw;
 }
 
-.Prognosis-Left {
-    width: 20vw;
-    margin-right: 5vw;
-}
-
-.Prognosis-Right {
-    width: 75vw;
-}
-
-.staffBox {
-    background-color: #e5e5e5;
-    border-radius: 5px;
-}
-
-.workHoursBox {
-    background-color: #c6c6c6;
-    border-radius: 5px;
-}
-
 .legend-item {
     display: flex;
     align-items: center;
@@ -432,6 +440,28 @@ th, td {
     justify-content: center;
     text-align: center;
     width: 200px;
-    height: 7vh;
+    height: 5vh;
     margin-bottom: 2vh;
+}
+
+.weather-image {
+    width: 5rem;
+    height: 5rem;
+}
+
+.prognosis-norm-table-container {
+    overflow-y: scroll;
+    max-height: 40rem;
+    min-width: fit-content;
+}
+
+.prognosis-create-top-item {
+    padding: 1rem;
+    width: fit-content;
+    margin: auto;
+    margin-bottom: 3rem;
+}
+
+.prognosis-top-item {
+    width: 20rem;
 }

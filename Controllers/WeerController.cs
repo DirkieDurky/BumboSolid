@@ -1,83 +1,62 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using BumboSolid.Data;
+using BumboSolid.Data.Models;
+using BumboSolid.Models;
 
-namespace BumboSolid.Web.Controllers
+namespace BumboSolid.Controllers
 {
-	public class WeerController : Controller
-	{
-		// GET: WeerController
-		public ActionResult Index()
-		{
-			return View();
-		}
+    public class WeerController : Controller
+    {
+        private readonly BumboDbContext _context;
 
-		// GET: WeerController/Details/5
-		public ActionResult Details(int id)
-		{
-			return View();
-		}
+        public WeerController(BumboDbContext context)
+        {
+            _context = context;
+        }
 
-		// GET: WeerController/Aanmaken
-		public ActionResult Aanmaken()
-		{
-			return View();
-		}
+        // GET: Weer/Bewerken/5
+        public IActionResult Bewerken()
+        {
+            return View(new WeatherManageViewModel() { Impacts = _context.Weathers.Select(w => w.Impact).ToArray() });
+        }
 
-		// POST: WeerController/Aanmaken
-		[HttpPost]
-		[ValidateAntiForgeryToken]
-		public ActionResult Aanmaken(IFormCollection collection)
-		{
-			try
-			{
-				return RedirectToAction(nameof(Index));
+        // POST: Weer/Bewerken/5
+        // To protect from overposting attacks, enable the specific properties you want to bind to.
+        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Bewerken(short[] impacts)
+        {
+            if (ModelState.IsValid)
+            {
+                for (byte i=0;i<7;i++) {
+                    try
+                    {
+                        _context.Update(new Weather() { Id = i, Impact = impacts[i] });
+                        await _context.SaveChangesAsync();
+                    }
+                    catch (DbUpdateConcurrencyException)
+                    {
+                        if (!WeatherExists(i))
+                        {
+                            return NotFound();
+                        }
+                        else
+                        {
+                            throw;
+                        }
+                    }
+				}
+				return RedirectToAction("Index", "Prognoses");
 			}
-			catch
-			{
-				return View();
-			}
-		}
 
-		// GET: WeerController/Bewerken/5
-		public ActionResult Bewerken(int id)
-		{
-			return View();
-		}
+            return View(impacts);
+        }
 
-		// POST: WeerController/Bewerken/5
-		[HttpPost]
-		[ValidateAntiForgeryToken]
-		public ActionResult Bewerken(int id, IFormCollection collection)
-		{
-			try
-			{
-				return RedirectToAction(nameof(Index));
-			}
-			catch
-			{
-				return View();
-			}
-		}
-
-		// GET: WeerController/Verwijderen/5
-		public ActionResult Verwijderen(int id)
-		{
-			return View();
-		}
-
-		// POST: WeerController/Verwijderen/5
-		[HttpPost]
-		[ValidateAntiForgeryToken]
-		public ActionResult Verwijderen(int id, IFormCollection collection)
-		{
-			try
-			{
-				return RedirectToAction(nameof(Index));
-			}
-			catch
-			{
-				return View();
-			}
-		}
-	}
+        private bool WeatherExists(byte id)
+        {
+            return _context.Weathers.Any(e => e.Id == id);
+        }
+    }
 }
