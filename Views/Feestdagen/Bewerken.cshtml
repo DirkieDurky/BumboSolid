@@ -46,14 +46,29 @@
 
 			<div class="d-flex flex-row">
 				<div>
-					<input type="text" class="p-2 form-control holiday-date" asp-for="FirstDay" value="@Model.FirstDay.Day-@Model.FirstDay.Month" />
-					<span asp-validation-for="FirstDay" class="text-danger"></span>
+					<div>
+						<label asp-for="FirstDay" class="control-label">Eerste Dag</label>
+						<input asp-for="FirstDay" id="firstday" class="form-control" value=null />
+						<span asp-validation-for="FirstDay" class="text-danger"></span>
+					</div>
+					<div>
+						<label asp-for="LastDay" class="control-label">Laatste Dag</label>
+						<input asp-for="LastDay" id="lastday" class="form-control" value=null />
+						<span asp-validation-for="LastDay" class="text-danger"></span>
+					</div>
+
+					<script>
+						var year = new Date().getFullYear();
+						document.getElementById('firstday').setAttribute("min", year + "-01-01");
+						document.getElementById('firstday').setAttribute("max", year + "-12-31");
+						document.getElementById('firstday').value = @Model.FirstDay.Year + '-' + @Model.FirstDay.Month + '-' + @Model.FirstDay.Day;
+						document.getElementById('lastday').setAttribute("min", year + "-01-01");
+						document.getElementById('lastday').setAttribute("max", year + "-12-31");
+						document.getElementById('lastday').value = @Model.LastDay.Year + '-' + @Model.LastDay.Month + '-' + @Model.LastDay.Day;
+					</script>
 				</div>
-				<div>
-					<input type="text" class="p-2 form-control holiday-date" asp-for="LastDay" value="@Model.LastDay.Day-@Model.LastDay.Month" />
-					<span asp-validation-for="LastDay" class="text-danger"></span>
-				</div>
-				<a href="@Url.Action("Verwijderen", new { Name = Model.Holiday.Name })" class="btn btn-danger mt-2">
+
+				<a href="@Url.Action("Verwijderen", new { Name = Model.Holiday.Name })" class="btn btn-danger mt-2 auto-margin">
 					<span class="fa-solid fa-trash-can"></span>&nbsp;Verwijderen
 				</a>
 			</div>
