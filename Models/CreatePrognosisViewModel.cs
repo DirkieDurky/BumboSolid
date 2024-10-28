@@ -2,7 +2,7 @@
 
 namespace BumboSolid.Models
 {
-	public class EditFactorsViewModel
+	public class CreatePrognosisViewModel
 	{
 		public Prognosis Prognosis;
 		public Dictionary<byte, int>? VisitorEstimatePerDay = new Dictionary<byte, int>();
