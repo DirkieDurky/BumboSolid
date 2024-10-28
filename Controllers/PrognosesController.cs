@@ -3,10 +3,9 @@ using Microsoft.EntityFrameworkCore;
 using BumboSolid.Data;
 using BumboSolid.Data.Models;
 using System.Globalization;
-using BumboSolid.Web.Models;
-using System.Diagnostics;
+using BumboSolid.Models;
 
-namespace BumboSolid.Web.Controllers
+namespace BumboSolid.Controllers
 {
 	public class PrognosesController : Controller
 	{
@@ -18,9 +17,30 @@ namespace BumboSolid.Web.Controllers
 		}
 
 		// GET: Prognoses
-		public async Task<IActionResult> Index()
+		public async Task<IActionResult> Index(int? id)
 		{
-			return View(await _context.Prognoses.ToListAsync());
+			List<Prognosis> prognoses = await _context.Prognoses
+				.Include(p => p.PrognosisDays)
+					.ThenInclude(p => p.PrognosisFunctions)
+				.Include(p => p.PrognosisDays)
+					.ThenInclude(pd => pd.Factors)
+					.OrderByDescending(p => p.Year)
+					   .ThenByDescending(p => p.Week)
+				.ToListAsync();
+
+			int? lastPrognosisId = null;
+			if (id == null && prognoses.Count != 0)
+			{
+				lastPrognosisId = id ?? prognoses.OrderBy(x => x.Year).ThenBy(c => c.Week).First().Id;
+			}
+
+			var viewModel = new PrognosesViewModel
+			{
+				Prognoses = prognoses,
+				Id = id ?? lastPrognosisId
+			};
+
+			return View(viewModel);
 		}
 
 		// GET: Prognoses/Details/5
@@ -56,15 +76,28 @@ namespace BumboSolid.Web.Controllers
 				editFactorsViewModel.VisitorEstimatePerDay = null;
 			}
 
-			CultureInfo ci = new CultureInfo("nl-NL");
-			Calendar calendar = ci.Calendar;
-			DateTime nextWeek = DateTime.Now.AddDays(7);
-			Prognosis newPrognosis = new Prognosis()
+            CultureInfo ci = new CultureInfo("nl-NL");
+            Calendar calendar = ci.Calendar;
+
+            //Create prognosis for next week
+            DateTime nextWeek = DateTime.Now.AddDays(7);
+            short year = (short)nextWeek.Year;
+            byte week = (byte)calendar.GetWeekOfYear(nextWeek, ci.DateTimeFormat.CalendarWeekRule, ci.DateTimeFormat.FirstDayOfWeek);
+
+            //If a prognosis already exists for this week, add another week (and keep doing that until we find one that isn't used yet)
+			while (_context.Prognoses.Any(p => p.Year == year && p.Week == week))
 			{
-				Id = _context.Prognoses.Count() > 0 ? _context.Prognoses.Max(x => x.Id) + 1 : 0,
-				Year = (short)nextWeek.Year,
-				Week = (byte)calendar.GetWeekOfYear(nextWeek, ci.DateTimeFormat.CalendarWeekRule, ci.DateTimeFormat.FirstDayOfWeek),
-			};
+				year = (short)nextWeek.Year;
+				week = (byte)calendar.GetWeekOfYear(nextWeek, ci.DateTimeFormat.CalendarWeekRule, ci.DateTimeFormat.FirstDayOfWeek);
+				nextWeek = nextWeek.AddDays(7);
+            }
+
+            Prognosis newPrognosis = new Prognosis()
+            {
+                Id = _context.Prognoses.Count() > 0 ? _context.Prognoses.Max(x => x.Id) + 1 : 0,
+                Year = year,
+                Week = week,
+            };
 
 			//Fill holidays in accordingly, and make the rest zeroes
 			for (byte i = 0; i < 7; i++)
@@ -91,13 +124,13 @@ namespace BumboSolid.Web.Controllers
 					Impact = (short)(holidayInfo.Count() == 0 ? 0 : holidayInfo.First().Impact),
 				});
 
-				prognosisDay.Factors.Add(new Factor()
-				{
-					PrognosisId = prognosisDay.PrognosisId,
-					Type = "Weer",
-					Weekday = prognosisDay.Weekday,
-					Impact = 0,
-				});
+                prognosisDay.Factors.Add(new Factor()
+                {
+                    PrognosisId = prognosisDay.PrognosisId,
+                    Type = "Weer",
+                    Weekday = prognosisDay.Weekday,
+                    Impact = 3,
+                });
 
 				prognosisDay.Factors.Add(new Factor()
 				{
@@ -113,8 +146,10 @@ namespace BumboSolid.Web.Controllers
 			editFactorsViewModel.Prognosis = newPrognosis;
 			editFactorsViewModel.WeatherValues = _context.Weathers.ToList();
 
-			return View(editFactorsViewModel);
-		}
+            editFactorsViewModel.Norms = _context.Norms.ToList();
+
+            return View(editFactorsViewModel);
+        }
 
 		// POST: Prognoses/Aanmaken
 		// To protect from overposting attacks, enable the specific properties you want to bind to.
@@ -150,7 +185,7 @@ namespace BumboSolid.Web.Controllers
 						Type = "Weer",
 						Weekday = (byte)i,
 						WeatherId = (byte)weather[i],
-						Impact = _context.Weathers.First(x=>x.Id == (byte)weather[i]).Impact,
+						Impact = _context.Weathers.First(x => x.Id == (byte)weather[i]).Impact,
 					});
 
 					_context.Add(new Factor()
@@ -163,7 +198,7 @@ namespace BumboSolid.Web.Controllers
 					});
 				}
 				await _context.SaveChangesAsync();
-				return RedirectToAction("Index", "Home");
+				return RedirectToAction("Index", "Prognoses");
 			}
 
 			return View(prognosis);

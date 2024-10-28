@@ -1,24 +1,17 @@
 html {
     font-size: 14px;
+    position: relative;
+    min-height: 100%;
 }
 
 @media (min-width: 768px) {
     html {
-        font-size: 16px;
+        font-size: 12px;
     }
 }
 
 .btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
     box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
-}
-
-html {
-    position: relative;
-    min-height: 100%;
-}
-
-body {
-    margin-bottom: 60px;
 }
 
 table {
@@ -101,24 +94,76 @@ p {
 }
 
 .prognosis-table {
-    padding: 25px 10px 25px 10px;
-    margin: 25px 10px 25px 10px;
-    width: 10rem;
-    text-align: center;
+    padding-block: 10px;
+    border-spacing: 10px 0px;
+    margin-bottom: 20px;
+}
+
+    .prognosis-table.main th:not(th:nth-child(1)) {
+        border-bottom: 1px solid rgba(0, 0, 0, 0.5);
+        border-radius: 10px 10px 0 0;
+    }
+    .prognosis-table > table th {
+        padding: 5px;
+        border-radius: 10px 10px 0px 0px;
+    }
+
+    .prognosis-table.side th {
+        border-bottom: 1px solid rgba(0, 0, 0, 0.5);
+        border-radius: 10px 10px 0 0;
+    }
+    .prognosis-table > table td {
+        padding: 5px 20px;
+    }
+
+.prognosis-table-color {
+    background-color: #f2f2f2;
+}
+
+.prognosis-table tbody tr:last-child td {
+    border-radius: 0 0 10px 10px;
+}
+
+.prognosis-table .box {
+    border-radius: 5px;
+    padding: 0.5rem 2rem;
+}
+
+.workHours {
+    background-color: #d1d1d1;
+}
+
+.staff {
+    background-color: #b6b6b6;
+}
+
+.highlight {
+    background-color: #d6d6d6;
 }
 
 .btn {
     border-radius: 10px;
-    min-width: 15vw;
-    min-height: 7vh;
-    margin: 5px;
-    text-align: center;
+    width: 20vw;
+    height: 5vh;
     font-weight: bold;
     font-style: italic;
     border: none;
-    margin: 1vw auto 1vw auto;
-    white-space: normal;
-    line-height: 5vh;
+    margin-bottom: 2vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+::-webkit-scrollbar {
+    background-color: transparent;
+    width: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+    background-color: gray;
+    border-radius: 10px;
+    width: 1px;
 }
 
 .factor-buttons {
@@ -161,11 +206,6 @@ p {
     align-items: center;
     margin: auto;
     height: 100%;
-}
-
-.save-button {
-    margin: 1vw auto 1vw auto;
-    height: 4vw;
 }
 
 .holiday-name {
@@ -229,11 +269,11 @@ p {
 }
 
 #prognosis-scrollbar {
-    width: 100%;
+    width: 20vw;
     height: 55vh;
-    line-height: 3em;
-    overflow: auto;
-    margin: 5% 5% 5% 0%;
+    margin-bottom: 2vh;
+    overflow-y: auto;
+    overflow-x: hidden;
 }
 
 #holidays-scrollbar {
@@ -249,15 +289,6 @@ p {
     height: 45vh;
     line-height: 3em;
     overflow-y: auto;
-}
-
-#prognosis-weekdays {
-    margin-top: 13vh;
-}
-
-.prognosis-index {
-    height: 7vh;
-    margin-bottom: 5vh;
 }
 
 #prognosis-tables-spacing {
@@ -288,11 +319,21 @@ p {
     width: 180px;
 }
 
+.Prognosis-Right > div {
+    justify-content: space-between;
+}
+
 #prognosis-date-box {
     color: white;
-    margin: 0vh 5vw 2vh 5vw;
-    width: 23vw;
-    max-height: 8vh;
+    border-radius: 10px;
+    height: 5vh;
+    font-weight: bold;
+    font-style: italic;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
 }
 
 #prognosis-date {
@@ -329,7 +370,7 @@ p {
 }
 
 .small-input {
-    min-width: 4rem;
+    min-width: 5rem;
     height: 2.5rem;
 }
 
@@ -351,6 +392,7 @@ p {
 
 .table {
     border-spacing: 1rem 0;
+    display: block;
 }
 
     .table > tbody {
@@ -373,4 +415,49 @@ th, td {
 .table-button {
     border-radius: 10px;
     min-width: 3vw;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.color-block {
+    width: 20px;
+    height: 20px;
+}
+
+.prognosis-index {
+    border-radius: 10px;
+    background-color: #f2f2f2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    width: 200px;
+    height: 5vh;
+    margin-bottom: 2vh;
+}
+
+.weather-image {
+    width: 5rem;
+    height: 5rem;
+}
+
+.prognosis-norm-table-container {
+    overflow-y: scroll;
+    max-height: 40rem;
+    min-width: fit-content;
+}
+
+.prognosis-create-top-item {
+    padding: 1rem;
+    width: fit-content;
+    margin: auto;
+    margin-bottom: 3rem;
+}
+
+.prognosis-top-item {
+    width: 20rem;
 }

@@ -1,11 +1,10 @@
 ﻿using BumboSolid.Data;
 using BumboSolid.Data.Models;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 
-namespace BumboSolid.Web.Controllers
+namespace BumboSolid.Controllers
 {
     public class NormeringenController : Controller
     {

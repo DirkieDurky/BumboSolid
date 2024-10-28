@@ -1,68 +1,84 @@
-﻿@model BumboSolid.Web.Models.HolidayManageViewModel
+﻿@model BumboSolid.Models.HolidayManageViewModel
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
 <script src="https://kit.fontawesome.com/981e782106.js" crossorigin="anonymous"></script>
 
-<div class="modal-body auto-margin">
-	<h6>@Model.Holiday.Name</h6>
-</div>
-
-<div class="d-flex flex-row">
-	<div>
-		<div class="d-flex flex-row">
-			<h6 id="graph-impact-title">Invloed</h6>
-
-			<canvas id="holiday-chart"></canvas>
-
-			<script>
-				const xValues = @Html.Raw(Json.Serialize(Model.xValues))
-				const yValues = @Html.Raw(Json.Serialize(Model.yValues))
-
-				new Chart("holiday-chart", {
-					type: "line",
-					data: {
-						labels: xValues,
-						datasets: [{
-							fill: false,
-							lineTension: 0,
-							backgroundColor: "rgba(0,0,255,1.1)",
-							borderColor: "rgba(0,0,0,1.1)",
-							data: yValues
-						}]
-					},
-					options: {
-						legend: { display: false },
-						scales: {
-							yAxes: [{ ticks: { min: @Model.LowestImpact, max: @Model.HighestImpact } }],
-						}
-					}
-				});
-			</script>
-
-		</div>
-
-		<h6 id="graph-days-title">Dagen</h6>
-
-		<div class="d-flex flex-row">
-			<input class="p-2 form-control holiday-date" placeholder="Begin" value="@Model.FirstDay.Day-@Model.FirstDay.Month">
-			<input class="p-2 form-control holiday-date" placeholder="Eind" value="@Model.LastDay.Day-@Model.LastDay.Month">
-			<a class="p-2 holiday-date remove-text-decoration"><span class="fa-solid fa-trash-can"></span></a>
-		</div>
+<form asp-action="Bewerken" method="post">
+	<div class="modal-body auto-margin">
+		<h6>@Model.Holiday.Name</h6>
+		<input type="hidden" asp-for="Holiday.Name" />
 	</div>
 
-	<div id="holidays-scrollbar">
-		<form>
-			@foreach (var holidayDay in Model.Holiday.HolidayDays.ToList())
-			{
-				<div class="d-flex flex-row">
-					<input class="p-2 form-control holiday-date" value="@holidayDay.Date.Day-@holidayDay.Date.Month">
-					<input class="p-2 form-control holiday-date" value="@holidayDay.Impact">
+	<div class="d-flex flex-row">
+		<div>
+			<div class="d-flex flex-row">
+				<h6 id="graph-impact-title">Invloed</h6>
+
+				<canvas id="holiday-chart"></canvas>
+
+				<script>
+					const xValues = @Html.Raw(Json.Serialize(Model.xValues))
+					const yValues = @Html.Raw(Json.Serialize(Model.yValues))
+
+						new Chart("holiday-chart", {
+							type: "line",
+							data: {
+								labels: xValues,
+								datasets: [{
+									fill: false,
+									lineTension: 0,
+									backgroundColor: "rgba(0,0,255,1.1)",
+									borderColor: "rgba(0,0,0,1.1)",
+									data: yValues
+								}]
+							},
+							options: {
+								legend: { display: false },
+								scales: {
+									yAxes: [{ ticks: { min: @Model.LowestImpact, max: @Model.HighestImpact } }],
+								}
+							}
+						});
+				</script>
+			</div>
+
+			<h6 id="graph-days-title">Dagen</h6>
+
+			<div class="d-flex flex-row">
+				<div>
+					<input type="text" class="p-2 form-control holiday-date" asp-for="FirstDay" value="@Model.FirstDay.Day-@Model.FirstDay.Month" />
+					<span asp-validation-for="FirstDay" class="text-danger"></span>
 				</div>
-			}
-		</form>
+				<div>
+					<input type="text" class="p-2 form-control holiday-date" asp-for="LastDay" value="@Model.LastDay.Day-@Model.LastDay.Month" />
+					<span asp-validation-for="LastDay" class="text-danger"></span>
+				</div>
+				<a href="@Url.Action("Verwijderen", new { Name = Model.Holiday.Name })" class="btn btn-danger mt-2">
+					<span class="fa-solid fa-trash-can"></span>&nbsp;Verwijderen
+				</a>
+			</div>
+		</div>
+
+		<div>
+			<h6>Invloed Aanpassen</h6>
+
+			<div id="holidays-scrollbar">
+				@for (int i = 0; i < Model.Holiday.HolidayDays.Count; i++)
+				{
+					<div class="d-flex flex-row">
+						<input type="hidden" asp-for="Holiday.HolidayDays[i].Date" />
+						<input type="hidden" asp-for="Holiday.HolidayDays[i].HolidayName" />
+						<input class="p-2 form-control holiday-date" value="@Model.Holiday.HolidayDays[i].Date.Day-@Model.Holiday.HolidayDays[i].Date.Month" readonly>
+						<input type="text" class="p-2 form-control holiday-date" asp-for="Holiday.HolidayDays[i].Impact" />
+						<span asp-validation-for="Holiday.HolidayDays[i].Impact" class="text-danger"></span>
+					</div>
+				}
+			</div>
+		</div>
+
 	</div>
-</div>
-<div class="d-flex flex-row">
-	<button type="button" class="btn btn-danger">Annuleren & Ongedaan Maken</button>
-	<button type="button" class="btn btn-primary">Opslaan & Bijwerken</button>
-</div>
+	<div class="d-flex flex-row">
+		<button type="submit" class="btn btn-primary me-3">Opslaan & Bijwerken</button>
+		<a type="button" class="btn btn-secondary" asp-action="Index">Terug</a>
+	</div>
+</form>

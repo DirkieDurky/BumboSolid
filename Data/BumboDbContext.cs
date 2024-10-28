@@ -199,13 +199,14 @@ public partial class BumboDbContext : DbContext
 
 		Debug.WriteLine("test");
 		modelBuilder.Entity<Weather>().HasData(
-			new Weather { Id = 0, Impact = 0 },
-			new Weather { Id = 1, Impact = 20 },
-			new Weather { Id = 2, Impact = 40 },
-			new Weather { Id = 3, Impact = 60 },
-			new Weather { Id = 4, Impact = 80 },
-			new Weather { Id = 5, Impact = 100 }
-		);
+			new Weather { Id = 0, Impact = 75 },
+			new Weather { Id = 1, Impact = 50 },
+			new Weather { Id = 2, Impact = 25 },
+			new Weather { Id = 3, Impact = 0 },
+			new Weather { Id = 4, Impact = -25 },
+            new Weather { Id = 5, Impact = -50 },
+            new Weather { Id = 6, Impact = -75 }
+        );
 		modelBuilder.Entity<FactorType>().HasData(
 			new FactorType { Type = "Feestdagen" },
 			new FactorType { Type = "Weer" },

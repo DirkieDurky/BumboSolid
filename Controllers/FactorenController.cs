@@ -1,7 +1,6 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 
-namespace BumboSolid.Web.Controllers
+namespace BumboSolid.Controllers
 {
 	public class FactorenController : Controller
 	{
