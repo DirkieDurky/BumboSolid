@@ -1,0 +1,37 @@
+﻿@model IEnumerable<BumboSolid.Models.CLACardViewModel>
+
+@{
+    ViewData["Title"] = "CAO regels";
+}
+
+<p>
+    <h1>CAO regels</h1>
+    <a asp-action="Create">Toevoegen</a>
+</p>
+@if (!Model.Any())
+{
+    <h4>Het lijkt erop dat er geen CAO regels in het systeem staan. Voeg deze A.U.B. toe</h4>
+}
+else
+{
+    @foreach (var card in Model)
+    {
+        <div class="card mb-3">
+            <div class="card-header">
+                @if (card.AgeStart.HasValue && card.AgeEnd.HasValue)
+                {
+                    <h2>Regels voor @card.AgeStart tot @card.AgeEnd</h2>
+                }
+            </div>
+            <div class="card-body">
+                <ul>
+                    @foreach (var rule in card.Rules)
+                    {
+                        <li class="rules-list">@rule</li>
+                    }
+                </ul>
+            </div>
+        </div>
+    }
+}
+

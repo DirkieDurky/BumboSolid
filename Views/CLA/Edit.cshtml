@@ -1,0 +1,79 @@
+﻿@model BumboSolid.Data.Models.CLAEntry
+
+@{
+    ViewData["Title"] = "Edit";
+}
+
+<h1>Edit</h1>
+
+<h4>CLAEntry</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Edit">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="Id" />
+            <div class="form-group">
+                <label asp-for="AgeStart" class="control-label"></label>
+                <input asp-for="AgeStart" class="form-control" />
+                <span asp-validation-for="AgeStart" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="AgeEnd" class="control-label"></label>
+                <input asp-for="AgeEnd" class="form-control" />
+                <span asp-validation-for="AgeEnd" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="MaxWorkDurationPerDay" class="control-label"></label>
+                <input asp-for="MaxWorkDurationPerDay" class="form-control" />
+                <span asp-validation-for="MaxWorkDurationPerDay" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="MaxWorkDaysPerWeek" class="control-label"></label>
+                <input asp-for="MaxWorkDaysPerWeek" class="form-control" />
+                <span asp-validation-for="MaxWorkDaysPerWeek" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="MaxWorkDurationPerWeek" class="control-label"></label>
+                <input asp-for="MaxWorkDurationPerWeek" class="form-control" />
+                <span asp-validation-for="MaxWorkDurationPerWeek" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="MaxWorkDurationPerHolidayWeek" class="control-label"></label>
+                <input asp-for="MaxWorkDurationPerHolidayWeek" class="form-control" />
+                <span asp-validation-for="MaxWorkDurationPerHolidayWeek" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="EarliestWorkTime" class="control-label"></label>
+                <input asp-for="EarliestWorkTime" class="form-control" />
+                <span asp-validation-for="EarliestWorkTime" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="LatestWorkTime" class="control-label"></label>
+                <input asp-for="LatestWorkTime" class="form-control" />
+                <span asp-validation-for="LatestWorkTime" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="MaxAvgWeeklyWorkDurationOverFourWeeks" class="control-label"></label>
+                <input asp-for="MaxAvgWeeklyWorkDurationOverFourWeeks" class="form-control" />
+                <span asp-validation-for="MaxAvgWeeklyWorkDurationOverFourWeeks" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="MaxShiftDuration" class="control-label"></label>
+                <input asp-for="MaxShiftDuration" class="form-control" />
+                <span asp-validation-for="MaxShiftDuration" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
