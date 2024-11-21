@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace BumboSolid.Data.Models;
 
 public partial class Employee
 {
+    [Key]
     public int AspNetUserId { get; set; }
 
     public string FirstName { get; set; } = null!;
