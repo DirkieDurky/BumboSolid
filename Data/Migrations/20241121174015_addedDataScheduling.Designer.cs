@@ -4,6 +4,7 @@ using BumboSolid.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BumboSolid.Migrations
 {
     [DbContext(typeof(BumboDbContext))]
-    partial class BumboDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241121174015_addedDataScheduling")]
+    partial class addedDataScheduling
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -36,18 +39,6 @@ namespace BumboSolid.Migrations
                     b.HasKey("Employee", "Date");
 
                     b.ToTable("AvailabilityDay", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            Employee = 1,
-                            Date = new DateOnly(2023, 1, 1)
-                        },
-                        new
-                        {
-                            Employee = 2,
-                            Date = new DateOnly(2023, 1, 2)
-                        });
                 });
 
             modelBuilder.Entity("BumboSolid.Data.Models.AvailabilityRule", b =>
@@ -76,26 +67,6 @@ namespace BumboSolid.Migrations
                     b.HasIndex("Employee", "Date");
 
                     b.ToTable("AvailabilityRule", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Available = (byte)0,
-                            Date = new DateOnly(2023, 1, 1),
-                            Employee = 1,
-                            EndTime = new TimeOnly(0, 0, 0),
-                            StartTime = new TimeOnly(0, 0, 0)
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Available = (byte)0,
-                            Date = new DateOnly(2023, 1, 2),
-                            Employee = 2,
-                            EndTime = new TimeOnly(0, 0, 0),
-                            StartTime = new TimeOnly(0, 0, 0)
-                        });
                 });
 
             modelBuilder.Entity("BumboSolid.Data.Models.CLABreakEntry", b =>
@@ -113,20 +84,6 @@ namespace BumboSolid.Migrations
                     b.HasKey("CLAEntryId", "WorkDuration");
 
                     b.ToTable("CLABreakEntry", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            CLAEntryId = 1,
-                            WorkDuration = 4,
-                            MinBreakDuration = 30
-                        },
-                        new
-                        {
-                            CLAEntryId = 2,
-                            WorkDuration = 5,
-                            MinBreakDuration = 45
-                        });
                 });
 
             modelBuilder.Entity("BumboSolid.Data.Models.CLAEntry", b =>
@@ -171,28 +128,6 @@ namespace BumboSolid.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("CLAEntry", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            MaxAvgWeeklyWorkDurationOverFourWeeks = 38,
-                            MaxShiftDuration = 8,
-                            MaxWorkDaysPerWeek = 5,
-                            MaxWorkDurationPerDay = 8,
-                            MaxWorkDurationPerHolidayWeek = 35,
-                            MaxWorkDurationPerWeek = 40
-                        },
-                        new
-                        {
-                            Id = 2,
-                            MaxAvgWeeklyWorkDurationOverFourWeeks = 33,
-                            MaxShiftDuration = 7,
-                            MaxWorkDaysPerWeek = 5,
-                            MaxWorkDurationPerDay = 7,
-                            MaxWorkDurationPerHolidayWeek = 30,
-                            MaxWorkDurationPerWeek = 35
-                        });
                 });
 
             modelBuilder.Entity("BumboSolid.Data.Models.Department", b =>
@@ -271,8 +206,8 @@ namespace BumboSolid.Migrations
                             EmployedSince = new DateOnly(1, 1, 1),
                             FirstName = "John",
                             LastName = "Doe",
-                            PlaceOfResidence = "City",
-                            StreetName = "Street 1"
+                            PlaceOfResidence = "New York",
+                            StreetName = "5th Avenue"
                         },
                         new
                         {
@@ -281,8 +216,8 @@ namespace BumboSolid.Migrations
                             EmployedSince = new DateOnly(1, 1, 1),
                             FirstName = "Jane",
                             LastName = "Smith",
-                            PlaceOfResidence = "Town",
-                            StreetName = "Street 2"
+                            PlaceOfResidence = "Los Angeles",
+                            StreetName = "Sunset Boulevard"
                         });
                 });
 
@@ -382,18 +317,16 @@ namespace BumboSolid.Migrations
                         new
                         {
                             Id = 1,
-                            AbsentDescription = "Sick",
+                            AbsentDescription = "Illness",
                             Accepted = (byte)0,
-                            ShiftId = 1,
-                            SubstituteEmployeeId = 2
+                            ShiftId = 1
                         },
                         new
                         {
                             Id = 2,
                             AbsentDescription = "Vacation",
                             Accepted = (byte)0,
-                            ShiftId = 2,
-                            SubstituteEmployeeId = 1
+                            ShiftId = 2
                         });
                 });
 
@@ -411,11 +344,11 @@ namespace BumboSolid.Migrations
                     b.HasData(
                         new
                         {
-                            Name = "New Year"
+                            Name = "Christmas"
                         },
                         new
                         {
-                            Name = "Christmas"
+                            Name = "New Year"
                         });
                 });
 
@@ -440,14 +373,14 @@ namespace BumboSolid.Migrations
                     b.HasData(
                         new
                         {
-                            HolidayName = "New Year",
-                            Date = new DateOnly(2023, 1, 1),
+                            HolidayName = "Christmas",
+                            Date = new DateOnly(2024, 12, 25),
                             Impact = (short)0
                         },
                         new
                         {
-                            HolidayName = "Christmas",
-                            Date = new DateOnly(2023, 12, 25),
+                            HolidayName = "New Year",
+                            Date = new DateOnly(2025, 1, 1),
                             Impact = (short)0
                         });
                 });
@@ -489,19 +422,19 @@ namespace BumboSolid.Migrations
                         new
                         {
                             Id = 1,
-                            Activity = "Stocking",
-                            AvgDailyPerformances = (byte)5,
+                            Activity = "Stock Refill",
+                            AvgDailyPerformances = (byte)0,
                             Department = "Vakkenvullen",
-                            Duration = 60,
+                            Duration = 0,
                             PerVisitor = false
                         },
                         new
                         {
                             Id = 2,
-                            Activity = "Cashier",
-                            AvgDailyPerformances = (byte)8,
+                            Activity = "Customer Support",
+                            AvgDailyPerformances = (byte)0,
                             Department = "Kassa",
-                            Duration = 45,
+                            Duration = 0,
                             PerVisitor = false
                         });
                 });
@@ -531,7 +464,7 @@ namespace BumboSolid.Migrations
                         },
                         new
                         {
-                            PrognosisId = 2,
+                            PrognosisId = 1,
                             Weekday = (byte)2,
                             VisitorEstimate = 0
                         });
@@ -573,7 +506,7 @@ namespace BumboSolid.Migrations
                         },
                         new
                         {
-                            PrognosisId = 2,
+                            PrognosisId = 1,
                             Department = "Vakkenvullen",
                             Weekday = (byte)2,
                             WorkHours = (short)0
@@ -627,7 +560,7 @@ namespace BumboSolid.Migrations
                             Id = 1,
                             Department = "Kassa",
                             EndTime = new TimeOnly(0, 0, 0),
-                            ExternalEmployeeName = "John Doe",
+                            ExternalEmployeeName = "Temporary Worker",
                             StartTime = new TimeOnly(0, 0, 0),
                             WeekId = 1,
                             Weekday = (byte)0
@@ -637,7 +570,7 @@ namespace BumboSolid.Migrations
                             Id = 2,
                             Department = "Vakkenvullen",
                             EndTime = new TimeOnly(0, 0, 0),
-                            ExternalEmployeeName = "Jane Smith",
+                            ExternalEmployeeName = "Freelancer",
                             StartTime = new TimeOnly(0, 0, 0),
                             WeekId = 2,
                             Weekday = (byte)0
@@ -715,14 +648,14 @@ namespace BumboSolid.Migrations
                         new
                         {
                             Id = 1,
-                            WeekNumber = (byte)1,
-                            Year = (short)2024
+                            WeekNumber = (byte)0,
+                            Year = (short)0
                         },
                         new
                         {
                             Id = 2,
-                            WeekNumber = (byte)2,
-                            Year = (short)2024
+                            WeekNumber = (byte)0,
+                            Year = (short)0
                         });
                 });
 

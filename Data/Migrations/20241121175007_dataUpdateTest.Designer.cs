@@ -4,6 +4,7 @@ using BumboSolid.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BumboSolid.Migrations
 {
     [DbContext(typeof(BumboDbContext))]
-    partial class BumboDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241121175007_dataUpdateTest")]
+    partial class dataUpdateTest
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -715,14 +718,14 @@ namespace BumboSolid.Migrations
                         new
                         {
                             Id = 1,
-                            WeekNumber = (byte)1,
-                            Year = (short)2024
+                            WeekNumber = (byte)0,
+                            Year = (short)0
                         },
                         new
                         {
                             Id = 2,
-                            WeekNumber = (byte)2,
-                            Year = (short)2024
+                            WeekNumber = (byte)0,
+                            Year = (short)0
                         });
                 });
 
