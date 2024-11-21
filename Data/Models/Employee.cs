@@ -21,7 +21,9 @@ public partial class Employee
 
     public DateOnly EmployedSince { get; set; }
 
-    public virtual List<AvailabilityDay> AvailabilityDays { get; set; } = new List<AvailabilityDay>();
+    public virtual List<AvailabilityRule> AvailabilityRules { get; set; } = new List<AvailabilityRule>();
 
     public virtual List<FillRequest> FillRequests { get; set; } = new List<FillRequest>();
+
+    public virtual List<Department> Departments { get; set; } = new List<Department>();
 }
