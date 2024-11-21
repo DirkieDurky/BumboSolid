@@ -31,21 +31,21 @@
 	}
 
 	// Get the selected prognosis details
-	var firstDate = GetStartDate(Model.Prognosis!.Year, Model.Prognosis.Week);
-	var lastDate = GetEndDate(Model.Prognosis.Year, Model.Prognosis.Week);
+	var firstDate = GetStartDate(Model.Prognosis!.Year, Model.Prognosis.WeekNumber);
+	var lastDate = GetEndDate(Model.Prognosis.Year, Model.Prognosis.WeekNumber);
 
 	// Format the dates to dd/MM/yyyy
 	var formattedFirstDate = firstDate.ToString("dd/MM/yyyy");
 	var formattedLastDate = lastDate.ToString("dd/MM/yyyy");
 
 	<div class="background-dark prognosis-create-top-item">
-		<span>Week @Model.Prognosis.Week (@formattedFirstDate - @formattedLastDate)</span>
+		<span>Week @Model.Prognosis.WeekNumber (@formattedFirstDate - @formattedLastDate)</span>
 	</div>
 }
 <form asp-action="Aanmaken">
 	<input type="hidden" asp-for="Prognosis.Id" />
 	<input type="hidden" asp-for="Prognosis.Year" />
-	<input type="hidden" asp-for="Prognosis.Week" />
+	<input type="hidden" asp-for="Prognosis.WeekNumber" />
 	<div class="d-flex flex-row gap-3 flex-grow-0">
 		<table class="table" cellspacing="0">
 			<tr>
@@ -152,7 +152,7 @@
 							</td>
 
 							<td class="table-gray">
-								<p class="background-light impact-unchangeable-dark">@norm.Function</p>
+								<p class="background-light impact-unchangeable-dark">@norm.Department</p>
 							</td>
 
 							<td class="table-secondary">

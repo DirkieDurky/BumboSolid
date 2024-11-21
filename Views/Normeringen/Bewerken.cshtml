@@ -9,7 +9,7 @@
                 <h6>Activiteit</h6>
             </div>
             <div class="col-sm-2">
-                <h6>Functie</h6>
+                <h6>Afdeling</h6>
             </div>
             <div class="col-sm-3">
                 <h6>Duur</h6>
@@ -27,12 +27,12 @@
                 </div>
 
                 <div class="col-sm-2">
-                    <select class="form-control" asp-for="Function">
-                        <option value="Vers" selected="@(Model.Function == "Vers" ? "selected" : null)">Vers</option>
-                        <option value="Kassa" selected="@(Model.Function == "Kassa" ? "selected" : null)">Kassa</option>
-                        <option value="Vakkenvullen" selected="@(Model.Function == "Vakkenvullen" ? "selected" : null)">Vakkenvullen</option>
+                    <select class="form-control" asp-for="Department">
+                        <option value="Vers" selected="@(Model.Department == "Vers" ? "selected" : null)">Vers</option>
+                        <option value="Kassa" selected="@(Model.Department == "Kassa" ? "selected" : null)">Kassa</option>
+                        <option value="Vakkenvullen" selected="@(Model.Department == "Vakkenvullen" ? "selected" : null)">Vakkenvullen</option>
                     </select>
-                    <span asp-validation-for="Function" class="text-danger"></span>
+                    <span asp-validation-for="Department" class="text-danger"></span>
                 </div>
 
                 <div class="col-sm-1">

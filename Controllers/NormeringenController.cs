@@ -25,7 +25,7 @@ namespace BumboSolid.Controllers
         // GET: Normeringen/Aanmaken
         public ActionResult Aanmaken()
         {
-            ViewBag.Function = new SelectList(_context.Functions.Select(f => f.Name).ToList());
+            ViewBag.Department = new SelectList(_context.Departments.Select(f => f.Name).ToList());
             ViewBag.TimeUnits = new SelectList(new List<string> { "Seconden", "Minuten", "Uren" });
 
             return View(new Norm());
@@ -36,17 +36,17 @@ namespace BumboSolid.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Aanmaken(Norm norm, string DurationUnit)
         {
-            var selectedFunction = _context.Functions.FirstOrDefault(f => f.Name == norm.Function);
+            var selectedDepartment = _context.Departments.FirstOrDefault(f => f.Name == norm.Department);
 
-            if (selectedFunction == null)
+            if (selectedDepartment == null)
             {
                 ModelState.AddModelError("Function", "The selected function is not valid.");
-                ViewBag.Function = new SelectList(_context.Functions.Select(f => f.Name).ToList());
+                ViewBag.Department = new SelectList(_context.Departments.Select(f => f.Name).ToList());
                 ViewBag.TimeUnits = new SelectList(new List<string> { "Seconden", "Minuten", "Uren" });
                 return View(norm);
             }
 
-            norm.FunctionNavigation = selectedFunction;
+            norm.DepartmentNavigation = selectedDepartment;
 
             // Define the maximum allowable duration in seconds
             const int maxIntValue = int.MaxValue;
@@ -60,7 +60,7 @@ namespace BumboSolid.Controllers
                     if (calculatedDuration > maxIntValue / 60)
                     {
                         ModelState.AddModelError("Duration", "Duur is een te groot getal na het converteren naar seconden.");
-                        ViewBag.Function = new SelectList(_context.Functions.Select(f => f.Name).ToList());
+                        ViewBag.Function = new SelectList(_context.Departments.Select(f => f.Name).ToList());
                         ViewBag.TimeUnits = new SelectList(new List<string> { "Seconden", "Minuten", "Uren" });
                         return View(norm);
                     }
@@ -72,7 +72,7 @@ namespace BumboSolid.Controllers
                     if (calculatedDuration > maxIntValue / 3600)
                     {
                         ModelState.AddModelError("Duration", "Duur is een te groot getal na het converteren naar seconden.");
-                        ViewBag.Function = new SelectList(_context.Functions.Select(f => f.Name).ToList());
+                        ViewBag.Function = new SelectList(_context.Departments.Select(f => f.Name).ToList());
                         ViewBag.TimeUnits = new SelectList(new List<string> { "Seconden", "Minuten", "Uren" });
                         return View(norm);
                     }
@@ -94,7 +94,7 @@ namespace BumboSolid.Controllers
                 return RedirectToAction(nameof(Index));
             }
 
-            ViewBag.Function = new SelectList(_context.Functions.Select(f => f.Name).ToList());
+            ViewBag.Department = new SelectList(_context.Departments.Select(f => f.Name).ToList());
             ViewBag.TimeUnits = new SelectList(new List<string> { "Seconden", "Minuten", "Uren" });
             return View(norm);
         }
@@ -113,7 +113,7 @@ namespace BumboSolid.Controllers
                 return NotFound();
             }
 
-            ViewBag.Function = new SelectList(_context.Functions.Select(f => f.Name).ToList(), norm.Function);
+            ViewBag.Department = new SelectList(_context.Departments.Select(f => f.Name).ToList(), norm.Department);
             ViewBag.TimeUnits = new SelectList(new List<string> { "Seconden", "Minuten", "Uren" });
 
             return View(norm);
@@ -145,7 +145,7 @@ namespace BumboSolid.Controllers
                             if (calculatedDuration > maxIntValue / 60)
                             {
                                 ModelState.AddModelError("Duration", "Duur is een te groot getal na het converteren naar minuten.");
-                                ViewBag.Function = new SelectList(new List<string> { "Vers", "Kassa", "Vakkenvullen" }, norm.Function);
+                                ViewBag.Department = new SelectList(new List<string> { "Vers", "Kassa", "Vakkenvullen" }, norm.Department);
                                 ViewBag.TimeUnits = new SelectList(new List<string> { "Seconden", "Minuten", "Uren" });
                                 return View(norm);
                             }
@@ -157,7 +157,7 @@ namespace BumboSolid.Controllers
                             if (calculatedDuration > maxIntValue / 3600)
                             {
                                 ModelState.AddModelError("Duration", "Duur is een te groot getal na het converteren naar seconden.");
-                                ViewBag.Function = new SelectList(new List<string> { "Vers", "Kassa", "Vakkenvullen" }, norm.Function);
+                                ViewBag.Department = new SelectList(new List<string> { "Vers", "Kassa", "Vakkenvullen" }, norm.Department);
                                 ViewBag.TimeUnits = new SelectList(new List<string> { "Seconden", "Minuten", "Uren" });
                                 return View(norm);
                             }
@@ -184,7 +184,7 @@ namespace BumboSolid.Controllers
                 return RedirectToAction(nameof(Index));
             }
 
-            ViewBag.Function = new SelectList(new List<string> { "Vers", "Kassa", "Vakkenvullen" }, norm.Function);
+            ViewBag.Function = new SelectList(new List<string> { "Vers", "Kassa", "Vakkenvullen" }, norm.Department);
             ViewBag.TimeUnits = new SelectList(new List<string> { "Seconden", "Minuten", "Uren" });
             return View(norm);
         }

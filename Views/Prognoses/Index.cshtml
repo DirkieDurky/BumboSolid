@@ -2,31 +2,31 @@
 @using BumboSolid.Data.Models
 
 @{
-	ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Home Page";
 
-	String[] daysOfTheWeek = { "Maandag", "Dinsdag", "Woensdag", "Donderdag", "Vrijdag", "Zaterdag", "Zondag" };
+    String[] daysOfTheWeek = { "Maandag", "Dinsdag", "Woensdag", "Donderdag", "Vrijdag", "Zaterdag", "Zondag" };
 
-	// Function to calculate the first date of the week (Monday)
-	DateTime GetStartDate(int year, int week)
-	{
-		var cultureInfo = new System.Globalization.CultureInfo("en-US");
-		var calendar = cultureInfo.Calendar;
+    // Function to calculate the first date of the week (Monday)
+    DateTime GetStartDate(int year, int week)
+    {
+        var cultureInfo = new System.Globalization.CultureInfo("en-US");
+        var calendar = cultureInfo.Calendar;
 
-		var jan1 = new DateTime(year, 1, 1);
-		var firstDayOfWeek = jan1.AddDays((week - 1) * 7 - (int)jan1.DayOfWeek + (int)DayOfWeek.Monday);
+        var jan1 = new DateTime(year, 1, 1);
+        var firstDayOfWeek = jan1.AddDays((week - 1) * 7 - (int)jan1.DayOfWeek + (int)DayOfWeek.Monday);
 
-		if (firstDayOfWeek.Year < year)
-		{
-			firstDayOfWeek = firstDayOfWeek.AddDays(7);
-		}
+        if (firstDayOfWeek.Year < year)
+        {
+            firstDayOfWeek = firstDayOfWeek.AddDays(7);
+        }
 
-		return firstDayOfWeek;
-	}
+        return firstDayOfWeek;
+    }
 
-	DateTime GetEndDate(int year, int week)
-	{
-		return GetStartDate(year, week).AddDays(6);
-	}
+    DateTime GetEndDate(int year, int week)
+    {
+        return GetStartDate(year, week).AddDays(6);
+    }
 }
 
 <!-- Bootstrap JS and dependencies -->
@@ -36,240 +36,239 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
 
 <div class="d-flex flex-row justify-content-center gap-5">
-	<div class="prognosis-left">
-		<a class="btn btn-primary" asp-controller="Prognoses" asp-action="Aanmaken">Prognose Aanmaken</a>
+    <div class="prognosis-left">
+        <a class="btn btn-primary" asp-controller="Prognoses" asp-action="Aanmaken">Prognose Aanmaken</a>
 
-		<div class="background-dark" id="prognosis-scrollbar">
-			<table class="table">
-				@foreach (var item in Model.Prognoses)
-				{
-					<tr>
-						<a class="btn btn-outline-primary" asp-controller="Prognoses" asp-action="Index" asp-route-id="@item.Id">
-							@Html.DisplayFor(modelItem => item.Year) - week @Html.DisplayFor(modelItem => item.Week)
-						</a>
-					</tr>
-				}
-			</table>
-		</div>
+        <div class="background-dark" id="prognosis-scrollbar">
+            <table class="table">
+                @foreach (var item in Model.Prognoses)
+                {
+                    <tr>
+                        <a class="btn btn-outline-primary" asp-controller="Prognoses" asp-action="Index" asp-route-id="@item.Id">
+                            @Html.DisplayFor(modelItem => item.Year) - week @Html.DisplayFor(modelItem => item.WeekNumber)
+                        </a>
+                    </tr>
+                }
+            </table>
+        </div>
 
         <a class="btn btn-primary" asp-controller="Normeringen" asp-action="Index">Normeringen Beheren</a>
         <a class="btn btn-primary" asp-controller="Feestdagen" asp-action="Index">Feestdagen Beheren</a>
         <a class="btn btn-primary" asp-controller="Weer" asp-action="Bewerken">Weer-waarden bewerken</a>
     </div>
 
-	<div class="prognosis-right">
-		<div class="d-flex flex-row gap-3 justify-content-between">
-			@{
-				if (Model.Id != null && Model.Prognoses.Where(p => p.Id == Model.Id - 1).Count() > 0)
-				{
-					int previousId = (int)Model.Id - 1;
-					<a class="btn btn-primary prognosis-top-item" asp-controller="Prognoses" asp-action="Index" asp-route-id="@previousId">← Vorige Week</a>
-				}
-				else
-				{
-					<a class="btn btn-primary prognosis-top-item" disabled>← Vorige Week</a>
-				}
-			}
+    <div class="prognosis-right">
+        <div class="d-flex flex-row gap-3 justify-content-between">
+            @{
+                if (Model.Id != null && Model.Prognoses.Where(p => p.Id == Model.Id - 1).Count() > 0)
+                {
+                    int previousId = (int)Model.Id - 1;
+                    <a class="btn btn-primary prognosis-top-item" asp-controller="Prognoses" asp-action="Index" asp-route-id="@previousId">← Vorige Week</a>
+                }
+                else
+                {
+                    <a class="btn btn-primary prognosis-top-item" disabled>← Vorige Week</a>
+                }
+            }
 
-			@if (Model.Id != null && Model.Prognoses.Where(p => p.Id == (int)Model.Id).Count() > 0)
-			{
-				// Get the selected prognosis details
-				var selectedPrognosis = Model.Prognoses.FirstOrDefault(x => x.Id == Model.Id);
-				var firstDate = GetStartDate(selectedPrognosis!.Year, selectedPrognosis.Week);
-				var lastDate = GetEndDate(selectedPrognosis.Year, selectedPrognosis.Week);
+            @if (Model.Id != null && Model.Prognoses.Where(p => p.Id == (int)Model.Id).Count() > 0)
+            {
+                // Get the selected prognosis details
+                var selectedPrognosis = Model.Prognoses.FirstOrDefault(x => x.Id == Model.Id);
+                var firstDate = GetStartDate(selectedPrognosis!.Year, selectedPrognosis.WeekNumber);
+                var lastDate = GetEndDate(selectedPrognosis.Year, selectedPrognosis.WeekNumber);
+                // Format the dates to dd/MM/yyyy
+                var formattedFirstDate = firstDate.ToString("dd/MM/yyyy");
+                var formattedLastDate = lastDate.ToString("dd/MM/yyyy");
 
-				// Format the dates to dd/MM/yyyy
-				var formattedFirstDate = firstDate.ToString("dd/MM/yyyy");
-				var formattedLastDate = lastDate.ToString("dd/MM/yyyy");
+                <div class="background-dark prognosis-top-item" id="prognosis-date-box">
+                    <span>@formattedFirstDate - @formattedLastDate</span>
+                </div>
+            }
 
-				<div class="background-dark prognosis-top-item" id="prognosis-date-box">
-					<span>@formattedFirstDate - @formattedLastDate</span>
-				</div>
-			}
+            @{
+                if (Model.Id != null && Model.Prognoses.Where(p => p.Id == Model.Id + 1).Count() > 0)
+                {
+                    int nextId = (int)Model.Id + 1;
+                    <a class="btn btn-primary prognosis-top-item" asp-controller="Prognoses" asp-action="Index" asp-route-id="@nextId">Volgende Week →</a>
+                }
+                else
+                {
+                    <a class="btn btn-primary prognosis-top-item" disabled>Volgende week →</a>
+                }
+            }
+        </div>
+        <div class="background-dark">
+            @if (Model.Id != null && Model.Prognoses.Where(p => p.Id == (int)Model.Id).Count() > 0)
+            {
+                int workHours;
+                double staff;
 
-			@{
-				if (Model.Id != null && Model.Prognoses.Where(p => p.Id == Model.Id + 1).Count() > 0)
-				{
-					int nextId = (int)Model.Id + 1;
-					<a class="btn btn-primary prognosis-top-item" asp-controller="Prognoses" asp-action="Index" asp-route-id="@nextId">Volgende Week →</a>
-				}
-				else
-				{
-					<a class="btn btn-primary prognosis-top-item" disabled>Volgende week →</a>
-				}
-			}
-		</div>
-		<div class="background-dark">
-			@if (Model.Id != null && Model.Prognoses.Where(p => p.Id == (int)Model.Id).Count() > 0)
-			{
-				int workHours;
-				double staff;
+                <div class="d-flex flex-row gap-3">
+                    <table cellspacing="0" class="prognosis-table main">
+                        <colgroup>
+                            <col />
+                            <col class="prognosis-table-color" />
+                            <col class="prognosis-table-color" />
+                            <col class="prognosis-table-color" />
+                        </colgroup>
+                        <thead>
+                            <tr>
+                                <th></th>
+                                <th>Kassa</th>
+                                <th>Vakkenvullen</th>
+                                <th>Vers</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @for (int i = 0; i < daysOfTheWeek.Length; i++)
+                            {
+                                String day = daysOfTheWeek[i];
+                                <tr>
+                                    <td>
+                                        @day
+                                    </td>
 
-				<div class="d-flex flex-row gap-3">
-					<table cellspacing="0" class="prognosis-table main">
-						<colgroup>
-							<col />
-							<col class="prognosis-table-color" />
-							<col class="prognosis-table-color" />
-							<col class="prognosis-table-color" />
-						</colgroup>
-						<thead>
-							<tr>
-								<th></th>
-								<th>Kassa</th>
-								<th>Vakkenvuller</th>
-								<th>Vers</th>
-							</tr>
-						</thead>
-						<tbody>
-							@for (int i = 0; i < daysOfTheWeek.Length; i++)
-							{
-								String day = daysOfTheWeek[i];
-								<tr>
-									<td>
-										@day
-									</td>
+                                    @* Kassa *@
+                                    @{
+                                        var kassa = Model.Prognoses.FirstOrDefault(x => x.Id == Model.Id)?.PrognosisDays.FirstOrDefault(x => x.Weekday == i)?.PrognosisDepartments.FirstOrDefault(x => x.Department == "Kassa");
+                                        workHours = kassa == null ? 0 : kassa.WorkHours;
+                                        staff = kassa == null ? 0 : double.Round((kassa.WorkHours / 8d), 2);
+                                    }
+                                    <td>
+                                        <div class="d-flex flex-row justify-content-between gap-2">
+                                            <div class="box workHours">
+                                                @workHours
+                                            </div>
+                                            <div class="box staff">
+                                                @staff
+                                            </div>
+                                        </div>
+                                    </td>
 
-									@* Kassa *@
-									@{
-										var kassa = Model.Prognoses.FirstOrDefault(x => x.Id == Model.Id)?.PrognosisDays.FirstOrDefault(x => x.Weekday == i)?.PrognosisFunctions.FirstOrDefault(x => x.Function == "Kassa");
-										workHours = kassa == null ? 0 : kassa.WorkHours;
-										staff = kassa == null ? 0 : double.Round((kassa.WorkHours / 8d), 2);
-									}
-									<td>
-										<div class="d-flex flex-row justify-content-between gap-2">
-											<div class="box workHours">
-												@workHours
-											</div>
-											<div class="box staff">
-												@staff
-											</div>
-										</div>
-									</td>
+                                    @* Vakkenvullen *@
+                                    @{
+                                        var vakkenvullen = Model.Prognoses.FirstOrDefault(x => x.Id == Model.Id)?.PrognosisDays.FirstOrDefault(x => x.Weekday == i)?.PrognosisDepartments.FirstOrDefault(x => x.Department == "Vakkenvullen");
+                                        workHours = vakkenvullen == null ? 0 : vakkenvullen.WorkHours;
+                                        staff = vakkenvullen == null ? 0 : double.Round((vakkenvullen.WorkHours / 8d), 2);
+                                    }
+                                    <td>
+                                        <div class="d-flex flex-row justify-content-between gap-2">
+                                            <div class="box workHours">
+                                                @workHours <br />
+                                            </div>
+                                            <div class="box staff">
+                                                @staff
+                                            </div>
+                                        </div>
+                                    </td>
 
-									@* Vakkenvullen *@
-									@{
-										var vakkenvuller = Model.Prognoses.FirstOrDefault(x => x.Id == Model.Id)?.PrognosisDays.FirstOrDefault(x => x.Weekday == i)?.PrognosisFunctions.FirstOrDefault(x => x.Function == "Vakkenvuller");
-										workHours = vakkenvuller == null ? 0 : vakkenvuller.WorkHours;
-										staff = vakkenvuller == null ? 0 : double.Round((vakkenvuller.WorkHours / 8d), 2);
-									}
-									<td>
-										<div class="d-flex flex-row justify-content-between gap-2">
-											<div class="box workHours">
-												@workHours <br />
-											</div>
-											<div class="box staff">
-												@staff
-											</div>
-										</div>
-									</td>
+                                    @* Vers *@
+                                    @{
+                                        var vers = Model.Prognoses.FirstOrDefault(x => x.Id == Model.Id)?.PrognosisDays.FirstOrDefault(x => x.Weekday == i)?.PrognosisDepartments.FirstOrDefault(x => x.Department == "Vers");
+                                        workHours = vers == null ? 0 : vers.WorkHours;
+                                        staff = vers == null ? 0 : double.Round((vers.WorkHours / 8d), 2);
+                                    }
+                                    <td>
+                                        <div class="d-flex flex-row justify-content-between gap-2">
+                                            <div class="box workHours">
+                                                @workHours <br />
+                                            </div>
+                                            <div class="box staff">
+                                                @staff
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                    <table cellspacing="0" class="prognosis-table side">
+                        <colgroup>
+                            <col class="prognosis-table-color" />
+                            <col class="prognosis-table-color" />
+                        </colgroup>
+                        <thead>
+                            <tr>
+                                <th>Externe Factoren</th>
+                                <th>Verwachte Bezoekersdrukte</th>
+                            </tr>
+                        </thead>
+                        <tbody>
 
-									@* Vers *@
-									@{
-										var vers = Model.Prognoses.FirstOrDefault(x => x.Id == Model.Id)?.PrognosisDays.FirstOrDefault(x => x.Weekday == i)?.PrognosisFunctions.FirstOrDefault(x => x.Function == "Vers");
-										workHours = vers == null ? 0 : vers.WorkHours;
-										staff = vers == null ? 0 : double.Round((vers.WorkHours / 8d), 2);
-									}
-									<td>
-										<div class="d-flex flex-row justify-content-between gap-2">
-											<div class="box workHours">
-												@workHours <br />
-											</div>
-											<div class="box staff">
-												@staff
-											</div>
-										</div>
-									</td>
-								</tr>
-							}
-						</tbody>
-					</table>
-					<table cellspacing="0" class="prognosis-table side">
-						<colgroup>
-							<col class="prognosis-table-color" />
-							<col class="prognosis-table-color" />
-						</colgroup>
-						<thead>
-							<tr>
-								<th>Externe Factoren</th>
-								<th>Verwachte Bezoekersdrukte</th>
-							</tr>
-						</thead>
-						<tbody>
+                            @for (int i = 0; i < daysOfTheWeek.Length; i++)
+                            {
+                                <tr>
+                                    @* ExternFactors *@
+                                    @{
+                                        double totalImpact = 1.0;
 
-							@for (int i = 0; i < daysOfTheWeek.Length; i++)
-							{
-								<tr>
-									@* ExternFactors *@
-									@{
-										double totalImpact = 1.0;
+                                        Week? prognose = Model.Prognoses.FirstOrDefault(x => x.Id == Model.Id);
+                                        PrognosisDay? prognosisDay = prognose?.PrognosisDays.FirstOrDefault(x => x.Weekday == i);
+                                        ICollection<Factor>? factors = prognosisDay?.Factors;
 
-										Prognosis? prognose = Model.Prognoses.FirstOrDefault(x => x.Id == Model.Id);
-										PrognosisDay? prognosisDay = prognose?.PrognosisDays.FirstOrDefault(x => x.Weekday == i);
-										ICollection<Factor>? factors = prognosisDay?.Factors;
+                                        if (factors != null)
+                                        {
+                                            foreach (var factor in factors)
+                                            {
+                                                var impactFactor = 1 + (factor.Impact / 100.0);
+                                                totalImpact *= impactFactor;
+                                            }
+                                        }
+                                        else
+                                        {
+                                            totalImpact = 1;
+                                        }
+                                        int roundedTotalImpact = (int)Math.Round((totalImpact - 1) * 100);
+                                        string impactString = roundedTotalImpact.ToString() + "%";
+                                        if (roundedTotalImpact >= 0) impactString = "+" + impactString;
+                                    }
+                                    <td>
+                                        <div class="box highlight">
+                                            @impactString
+                                        </div>
+                                    </td>
 
-										if (factors != null)
-										{
-											foreach (var factor in factors)
-											{
-												var impactFactor = 1 + (factor.Impact / 100.0);
-												totalImpact *= impactFactor;
-											}
-										}
-										else
-										{
-											totalImpact = 1;
-										}
-										int roundedTotalImpact = (int)Math.Round((totalImpact - 1) * 100);
-										string impactString = roundedTotalImpact.ToString() + "%";
-										if (roundedTotalImpact >= 0) impactString = "+" + impactString;
-									}
-									<td>
-										<div class="box highlight">
-											@impactString
-										</div>
-									</td>
-
-									@* VisitorEsitmate *@
-									@{
-										workHours = Model.Prognoses.FirstOrDefault(x => x.Id == Model.Id)?.PrognosisDays.FirstOrDefault(x => x.Weekday == i)?.VisitorEstimate ?? 0;
-										workHours = (int)(workHours * totalImpact);
-									}
-									<td>
-										<div class="box highlight">
-											@workHours
-										</div>
-									</td>
-								</tr>
-							}
-						</tbody>
-					</table>
-				</div>
-				<div class="d-flex flex-row justify-content-evenly align-items-center">
-					<div class="prognosis-index">
-						<div class="legend-item">
-							<div class="color-block workHours"></div>
-							Workhours
-							<div class="color-block staff"></div>
-							Staff
-						</div>
-					</div>
-					<a class="btn btn-primary" asp-controller="Factoren" asp-action="Bewerken" asp-route-id="@Model.Id">Factoren Beheren</a>
-				</div>
-			}
-			else
-			{
-				if (Model.Prognoses.Count() > 0)
-				{
-					<span>De geselecteerde prognose bestaat niet. Selecteer een prognose uit de lijst of klik <a asp-controller="Prognoses" asp-action="Index">hier</a>.</span>
-				}
-				else
-				{
-					<span>Er zijn nog geen prognoses aangemaakt. Klik </span>
-					<a asp-controller="Prognoses" asp-action="Aanmaken">hier</a>
-					<span> om er een aan te maken!</span>
-				}
-			}
-		</div>
-	</div>
+                                    @* VisitorEsitmate *@
+                                    @{
+                                        workHours = Model.Prognoses.FirstOrDefault(x => x.Id == Model.Id)?.PrognosisDays.FirstOrDefault(x => x.Weekday == i)?.VisitorEstimate ?? 0;
+                                        workHours = (int)(workHours * totalImpact);
+                                    }
+                                    <td>
+                                        <div class="box highlight">
+                                            @workHours
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+                <div class="d-flex flex-row justify-content-evenly align-items-center">
+                    <div class="prognosis-index">
+                        <div class="legend-item">
+                            <div class="color-block workHours"></div>
+                            Workhours
+                            <div class="color-block staff"></div>
+                            Staff
+                        </div>
+                    </div>
+                    <a class="btn btn-primary" asp-controller="Factoren" asp-action="Bewerken" asp-route-id="@Model.Id">Factoren Beheren</a>
+                </div>
+            }
+            else
+            {
+                if (Model.Prognoses.Count() > 0)
+                {
+                    <span>De geselecteerde prognose bestaat niet. Selecteer een prognose uit de lijst of klik <a asp-controller="Prognoses" asp-action="Index">hier</a>.</span>
+                }
+                else
+                {
+                    <span>Er zijn nog geen prognoses aangemaakt. Klik </span>
+                    <a asp-controller="Prognoses" asp-action="Aanmaken">hier</a>
+                    <span> om er een aan te maken!</span>
+                }
+            }
+        </div>
+    </div>
 </div>

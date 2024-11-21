@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace BumboSolid.Controllers
 {
-	public class FeestdagenController : Controller
+    public class FeestdagenController : Controller
 	{
 		private readonly BumboDbContext _context;
 

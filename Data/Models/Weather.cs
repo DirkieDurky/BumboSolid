@@ -9,5 +9,5 @@ public partial class Weather
 
     public short Impact { get; set; }
 
-    public virtual ICollection<Factor> Factors { get; set; } = new List<Factor>();
+    public virtual List<Factor> Factors { get; set; } = new List<Factor>();
 }
