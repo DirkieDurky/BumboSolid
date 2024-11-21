@@ -16,17 +16,18 @@ namespace BumboSolid.Controllers
 
 		// GET: FactorenController/Bewerken/5
 		public async Task<IActionResult> Bewerken(int id)
-		{
-			EditPrognosisFactorsViewModel editPrognosisFactorsViewModel = new EditPrognosisFactorsViewModel();
-
-			var prognosis = await _context.Prognoses
+		{            
+			var week = await _context.Weeks
 				.Include(p => p.PrognosisDays)
 					.ThenInclude(pd => pd.Factors)
 						.ThenInclude(f => f.TypeNavigation)
 							.FirstOrDefaultAsync(p => p.Id == id);
 
-			editPrognosisFactorsViewModel.Prognosis = prognosis;
-			editPrognosisFactorsViewModel.WeatherValues = _context.Weathers.ToList();
+			EditPrognosisFactorsViewModel editPrognosisFactorsViewModel = new EditPrognosisFactorsViewModel()
+			{
+				Prognosis = week!,
+				WeatherValues = _context.Weathers.ToList(),
+			};
 
 			return View(editPrognosisFactorsViewModel);
 		}
@@ -35,7 +36,7 @@ namespace BumboSolid.Controllers
 		[ValidateAntiForgeryToken]
 		public async Task<IActionResult> Bewerken(int id, EditPrognosisFactorsViewModel model)
 		{
-			var prognosis = await _context.Prognoses
+			var prognosis = await _context.Weeks
 				.Include(p => p.PrognosisDays)
 				.ThenInclude(pd => pd.Factors)
 				.FirstOrDefaultAsync(p => p.Id == id);

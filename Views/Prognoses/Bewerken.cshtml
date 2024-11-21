@@ -1,4 +1,4 @@
-﻿@model BumboSolid.Data.Models.Prognosis
+﻿@model BumboSolid.Data.Models.Week
 
 @{
     ViewData["Title"] = "Edit";
@@ -19,9 +19,9 @@
                 <span asp-validation-for="Year" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Week" class="control-label"></label>
-                <input asp-for="Week" class="form-control" />
-                <span asp-validation-for="Week" class="text-danger"></span>
+                <label asp-for="WeekNumber" class="control-label"></label>
+                <input asp-for="WeekNumber" class="form-control" />
+                <span asp-validation-for="WeekNumber" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <input type="submit" value="Save" class="btn btn-primary" />
