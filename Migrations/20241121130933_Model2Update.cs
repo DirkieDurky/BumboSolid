@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #pragma warning disable CA1814 // Prefer jagged arrays over multidimensional
 
-namespace BumboSolid.Data.Migrations
+namespace BumboSolid.Migrations
 {
     /// <inheritdoc />
     public partial class Model2Update : Migration
@@ -115,16 +115,16 @@ namespace BumboSolid.Data.Migrations
                 name: "CLABreakEntry",
                 columns: table => new
                 {
-                    CAOEntryId = table.Column<int>(type: "int", nullable: false),
+                    CLAEntryId = table.Column<int>(type: "int", nullable: false),
                     WorkDuration = table.Column<int>(type: "int", nullable: false),
                     MinBreakDuration = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_CLABreakEntry", x => new { x.CAOEntryId, x.WorkDuration });
+                    table.PrimaryKey("PK_CLABreakEntry", x => new { x.CLAEntryId, x.WorkDuration });
                     table.ForeignKey(
                         name: "FK_CLABreakEntry_CLAEntry",
-                        column: x => x.CAOEntryId,
+                        column: x => x.CLAEntryId,
                         principalTable: "CLAEntry",
                         principalColumn: "ID");
                 });
@@ -214,7 +214,7 @@ namespace BumboSolid.Data.Migrations
                     Department = table.Column<string>(type: "varchar(25)", unicode: false, maxLength: 25, nullable: false),
                     StartTime = table.Column<TimeOnly>(type: "time", nullable: false),
                     EndTime = table.Column<TimeOnly>(type: "time", nullable: false),
-                    Emlpoyee = table.Column<int>(type: "int", nullable: true),
+                    Employee = table.Column<int>(type: "int", nullable: true),
                     ExternalEmployeeName = table.Column<string>(type: "varchar(135)", unicode: false, maxLength: 135, nullable: true)
                 },
                 constraints: table =>
@@ -339,7 +339,7 @@ namespace BumboSolid.Data.Migrations
                 values: new object[]
                 {
                     "Kassa",
-                    "Vakkenvuller",
+                    "Vakkenvullen",
                     "Vers"
                 });
 

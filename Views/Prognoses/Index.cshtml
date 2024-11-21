@@ -116,7 +116,7 @@
                             <tr>
                                 <th></th>
                                 <th>Kassa</th>
-                                <th>Vakkenvuller</th>
+                                <th>Vakkenvullen</th>
                                 <th>Vers</th>
                             </tr>
                         </thead>
@@ -148,9 +148,9 @@
 
                                     @* Vakkenvullen *@
                                     @{
-                                        var vakkenvuller = Model.Prognoses.FirstOrDefault(x => x.Id == Model.Id)?.PrognosisDays.FirstOrDefault(x => x.Weekday == i)?.PrognosisDepartments.FirstOrDefault(x => x.Department == "Vakkenvuller");
-                                        workHours = vakkenvuller == null ? 0 : vakkenvuller.WorkHours;
-                                        staff = vakkenvuller == null ? 0 : double.Round((vakkenvuller.WorkHours / 8d), 2);
+                                        var vakkenvullen = Model.Prognoses.FirstOrDefault(x => x.Id == Model.Id)?.PrognosisDays.FirstOrDefault(x => x.Weekday == i)?.PrognosisDepartments.FirstOrDefault(x => x.Department == "Vakkenvullen");
+                                        workHours = vakkenvullen == null ? 0 : vakkenvullen.WorkHours;
+                                        staff = vakkenvullen == null ? 0 : double.Round((vakkenvullen.WorkHours / 8d), 2);
                                     }
                                     <td>
                                         <div class="d-flex flex-row justify-content-between gap-2">

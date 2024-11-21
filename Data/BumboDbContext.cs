@@ -88,14 +88,14 @@ public partial class BumboDbContext : DbContext
 
         modelBuilder.Entity<CLABreakEntry>(entity =>
         {
-            entity.HasKey(e => new { e.CaoentryId, e.WorkDuration });
+            entity.HasKey(e => new { e.CLAEntryId, e.WorkDuration });
 
             entity.ToTable("CLABreakEntry");
 
-            entity.Property(e => e.CaoentryId).HasColumnName("CAOEntryId");
+            entity.Property(e => e.CLAEntryId).HasColumnName("CLAEntryId");
 
-            entity.HasOne(d => d.Caoentry).WithMany(p => p.ClabreakEntries)
-                .HasForeignKey(d => d.CaoentryId)
+            entity.HasOne(d => d.CLAEntry).WithMany(p => p.CLABreakEntries)
+                .HasForeignKey(d => d.CLAEntryId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_CLABreakEntry_CLAEntry");
         });
@@ -358,7 +358,7 @@ public partial class BumboDbContext : DbContext
 		);
 		modelBuilder.Entity<Department>().HasData(
 			new Department() { Name = "Kassa" },
-			new Department() { Name = "Vakkenvuller" },
+			new Department() { Name = "Vakkenvullen" },
 			new Department() { Name = "Vers" }
 		);
 

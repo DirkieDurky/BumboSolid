@@ -17,7 +17,7 @@ public partial class Shift
 
     public TimeOnly EndTime { get; set; }
 
-    public int? Emlpoyee { get; set; }
+    public int? Employee { get; set; }
 
     public string? ExternalEmployeeName { get; set; }
 

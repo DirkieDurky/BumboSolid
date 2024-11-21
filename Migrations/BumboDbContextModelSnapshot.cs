@@ -4,19 +4,16 @@ using BumboSolid.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
-using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace BumboSolid.Data.Migrations
+namespace BumboSolid.Migrations
 {
     [DbContext(typeof(BumboDbContext))]
-    [Migration("20241121032444_Model2Update")]
-    partial class Model2Update
+    partial class BumboDbContextModelSnapshot : ModelSnapshot
     {
-        /// <inheritdoc />
-        protected override void BuildTargetModel(ModelBuilder modelBuilder)
+        protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -71,9 +68,9 @@ namespace BumboSolid.Data.Migrations
 
             modelBuilder.Entity("BumboSolid.Data.Models.CLABreakEntry", b =>
                 {
-                    b.Property<int>("CaoentryId")
+                    b.Property<int>("CLAEntryId")
                         .HasColumnType("int")
-                        .HasColumnName("CAOEntryId");
+                        .HasColumnName("CLAEntryId");
 
                     b.Property<int>("WorkDuration")
                         .HasColumnType("int");
@@ -81,7 +78,7 @@ namespace BumboSolid.Data.Migrations
                     b.Property<int?>("MinBreakDuration")
                         .HasColumnType("int");
 
-                    b.HasKey("CaoentryId", "WorkDuration");
+                    b.HasKey("CLAEntryId", "WorkDuration");
 
                     b.ToTable("CLABreakEntry", (string)null);
                 });
@@ -149,7 +146,7 @@ namespace BumboSolid.Data.Migrations
                         },
                         new
                         {
-                            Name = "Vakkenvuller"
+                            Name = "Vakkenvullen"
                         },
                         new
                         {
@@ -413,7 +410,7 @@ namespace BumboSolid.Data.Migrations
                         .IsUnicode(false)
                         .HasColumnType("varchar(25)");
 
-                    b.Property<int?>("Emlpoyee")
+                    b.Property<int?>("Employee")
                         .HasColumnType("int");
 
                     b.Property<TimeOnly>("EndTime")
@@ -535,13 +532,13 @@ namespace BumboSolid.Data.Migrations
 
             modelBuilder.Entity("BumboSolid.Data.Models.CLABreakEntry", b =>
                 {
-                    b.HasOne("BumboSolid.Data.Models.CLAEntry", "Caoentry")
-                        .WithMany("ClabreakEntries")
-                        .HasForeignKey("CaoentryId")
+                    b.HasOne("BumboSolid.Data.Models.CLAEntry", "CLAEntry")
+                        .WithMany("CLABreakEntries")
+                        .HasForeignKey("CLAEntryId")
                         .IsRequired()
                         .HasConstraintName("FK_CLABreakEntry_CLAEntry");
 
-                    b.Navigation("Caoentry");
+                    b.Navigation("CLAEntry");
                 });
 
             modelBuilder.Entity("BumboSolid.Data.Models.Factor", b =>
@@ -666,7 +663,7 @@ namespace BumboSolid.Data.Migrations
 
             modelBuilder.Entity("BumboSolid.Data.Models.CLAEntry", b =>
                 {
-                    b.Navigation("ClabreakEntries");
+                    b.Navigation("CLABreakEntries");
                 });
 
             modelBuilder.Entity("BumboSolid.Data.Models.Department", b =>

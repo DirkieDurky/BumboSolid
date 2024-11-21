@@ -27,5 +27,5 @@ public partial class CLAEntry
 
     public int? MaxShiftDuration { get; set; }
 
-    public virtual List<CLABreakEntry> ClabreakEntries { get; set; } = new List<CLABreakEntry>();
+    public virtual List<CLABreakEntry> CLABreakEntries { get; set; } = new List<CLABreakEntry>();
 }
