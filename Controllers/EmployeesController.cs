@@ -18,7 +18,7 @@ namespace BumboSolid.Controllers
         public async Task<IActionResult> Index()
         {
             var employees = await _context.Employees
-                .Include(e => e.AvailabilityDays)
+                .Include(e => e.AvailabilityRules)
                 .Include(e => e.FillRequests)
                 .ToListAsync();
 
