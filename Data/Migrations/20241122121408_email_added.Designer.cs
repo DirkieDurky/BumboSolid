@@ -4,6 +4,7 @@ using BumboSolid.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BumboSolid.Migrations
 {
     [DbContext(typeof(BumboDbContext))]
-    partial class BumboDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241122121408_email_added")]
+    partial class email_added
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -22,7 +25,7 @@ namespace BumboSolid.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("BumboSolid.Data.Models.AvailabilityRule", b =>
+            modelBuilder.Entity("BumboSolid.Data.Models.AvailabilityDay", b =>
                 {
                     b.Property<int>("Employee")
                         .HasColumnType("int");
@@ -30,19 +33,38 @@ namespace BumboSolid.Migrations
                     b.Property<DateOnly>("Date")
                         .HasColumnType("date");
 
+                    b.Property<int?>("LessonHours")
+                        .HasColumnType("int");
+
+                    b.HasKey("Employee", "Date");
+
+                    b.ToTable("AvailabilityDay", (string)null);
+                });
+
+            modelBuilder.Entity("BumboSolid.Data.Models.AvailabilityRule", b =>
+                {
+                    b.Property<int>("Id")
+                        .HasColumnType("int")
+                        .HasColumnName("ID");
+
                     b.Property<byte>("Available")
                         .HasColumnType("tinyint");
+
+                    b.Property<DateOnly>("Date")
+                        .HasColumnType("date");
+
+                    b.Property<int>("Employee")
+                        .HasColumnType("int");
 
                     b.Property<TimeOnly>("EndTime")
                         .HasColumnType("time");
 
-                    b.Property<byte>("School")
-                        .HasColumnType("tinyint");
-
                     b.Property<TimeOnly>("StartTime")
                         .HasColumnType("time");
 
-                    b.HasKey("Employee", "Date");
+                    b.HasKey("Id");
+
+                    b.HasIndex("Employee", "Date");
 
                     b.ToTable("AvailabilityRule", (string)null);
                 });
@@ -115,7 +137,8 @@ namespace BumboSolid.Migrations
                         .IsUnicode(false)
                         .HasColumnType("varchar(25)");
 
-                    b.HasKey("Name");
+                    b.HasKey("Name")
+                        .HasName("PK_Department");
 
                     b.ToTable("Department", (string)null);
 
@@ -266,9 +289,9 @@ namespace BumboSolid.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex(new[] { "ShiftId" }, "IX_FillRequest_ShiftID");
+                    b.HasIndex("ShiftId");
 
-                    b.HasIndex(new[] { "SubstituteEmployeeId" }, "IX_FillRequest_SubstituteEmployeeID");
+                    b.HasIndex("SubstituteEmployeeId");
 
                     b.ToTable("FillRequest", (string)null);
                 });
@@ -372,7 +395,8 @@ namespace BumboSolid.Migrations
                     b.Property<short>("WorkHours")
                         .HasColumnType("smallint");
 
-                    b.HasKey("PrognosisId", "Department", "Weekday");
+                    b.HasKey("PrognosisId", "Department", "Weekday")
+                        .HasName("PK_PrognosisDepartment");
 
                     b.HasIndex(new[] { "Department" }, "IX_PrognosisDepartment_Department");
 
@@ -404,9 +428,6 @@ namespace BumboSolid.Migrations
                         .IsUnicode(false)
                         .HasColumnType("varchar(135)");
 
-                    b.Property<byte>("IsBreak")
-                        .HasColumnType("tinyint");
-
                     b.Property<TimeOnly>("StartTime")
                         .HasColumnType("time");
 
@@ -419,9 +440,9 @@ namespace BumboSolid.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex(new[] { "Department" }, "IX_Shift_Department");
+                    b.HasIndex("Department");
 
-                    b.HasIndex(new[] { "WeekId" }, "IX_Shift_WeekID");
+                    b.HasIndex("WeekId");
 
                     b.ToTable("Shift", (string)null);
                 });
@@ -494,32 +515,26 @@ namespace BumboSolid.Migrations
                     b.ToTable("Week", (string)null);
                 });
 
-            modelBuilder.Entity("Capability", b =>
+            modelBuilder.Entity("BumboSolid.Data.Models.AvailabilityDay", b =>
                 {
-                    b.Property<int>("Employee")
-                        .HasColumnType("int");
+                    b.HasOne("BumboSolid.Data.Models.Employee", "EmployeeNavigation")
+                        .WithMany("AvailabilityDays")
+                        .HasForeignKey("Employee")
+                        .IsRequired()
+                        .HasConstraintName("FK_AvailabilityDay_Employee");
 
-                    b.Property<string>("Department")
-                        .HasMaxLength(25)
-                        .IsUnicode(false)
-                        .HasColumnType("varchar(25)");
-
-                    b.HasKey("Employee", "Department");
-
-                    b.HasIndex("Department");
-
-                    b.ToTable("Capability", (string)null);
+                    b.Navigation("EmployeeNavigation");
                 });
 
             modelBuilder.Entity("BumboSolid.Data.Models.AvailabilityRule", b =>
                 {
-                    b.HasOne("BumboSolid.Data.Models.Employee", "EmployeeNavigation")
+                    b.HasOne("BumboSolid.Data.Models.AvailabilityDay", "AvailabilityDay")
                         .WithMany("AvailabilityRules")
-                        .HasForeignKey("Employee")
+                        .HasForeignKey("Employee", "Date")
                         .IsRequired()
-                        .HasConstraintName("FK_AvailabilityRule_Employee");
+                        .HasConstraintName("FK_AvailabilityRule_AvailabilityDay");
 
-                    b.Navigation("EmployeeNavigation");
+                    b.Navigation("AvailabilityDay");
                 });
 
             modelBuilder.Entity("BumboSolid.Data.Models.CLABreakEntry", b =>
@@ -648,19 +663,9 @@ namespace BumboSolid.Migrations
                     b.Navigation("Week");
                 });
 
-            modelBuilder.Entity("Capability", b =>
+            modelBuilder.Entity("BumboSolid.Data.Models.AvailabilityDay", b =>
                 {
-                    b.HasOne("BumboSolid.Data.Models.Department", null)
-                        .WithMany()
-                        .HasForeignKey("Department")
-                        .IsRequired()
-                        .HasConstraintName("FK_Capability_Department");
-
-                    b.HasOne("BumboSolid.Data.Models.Employee", null)
-                        .WithMany()
-                        .HasForeignKey("Employee")
-                        .IsRequired()
-                        .HasConstraintName("FK_Capability_Employee");
+                    b.Navigation("AvailabilityRules");
                 });
 
             modelBuilder.Entity("BumboSolid.Data.Models.CLAEntry", b =>
@@ -679,7 +684,7 @@ namespace BumboSolid.Migrations
 
             modelBuilder.Entity("BumboSolid.Data.Models.Employee", b =>
                 {
-                    b.Navigation("AvailabilityRules");
+                    b.Navigation("AvailabilityDays");
 
                     b.Navigation("FillRequests");
                 });
