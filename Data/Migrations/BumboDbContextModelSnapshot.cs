@@ -143,10 +143,6 @@ namespace BumboSolid.Migrations
                     b.Property<DateOnly>("BirthDate")
                         .HasColumnType("date");
 
-                    b.Property<string>("Email")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<DateOnly>("EmployedSince")
                         .HasColumnType("date");
 
