@@ -6,8 +6,6 @@ namespace BumboSolid.Data.Models;
 
 public partial class AvailabilityRule
 {
-    public int Id { get; set; }
-
     public int Employee { get; set; }
 
 	[DataType(DataType.Date)]
@@ -21,5 +19,7 @@ public partial class AvailabilityRule
 
     public byte Available { get; set; }
 
-    public virtual AvailabilityDay AvailabilityDay { get; set; } = null!;
+    public byte School { get; set; }
+
+    public virtual Employee EmployeeNavigation { get; set; } = null!;
 }
