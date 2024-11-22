@@ -87,5 +87,30 @@ namespace BumboSolid.Controllers
         {
             return _context.Employees.Any(e => e.AspNetUserId == id);
         }
+
+        public async Task<IActionResult> Delete(int id)
+		{
+            var employee = await _context.Employees.FirstOrDefaultAsync(e => e.AspNetUserId == id);
+            if (employee == null)
+            {
+                return NotFound();
+            }
+
+			return View(employee);
+		}
+
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteConfirmed(int id)
+        {
+            var employee = await _context.Employees.FirstOrDefaultAsync(e => e.AspNetUserId == id);
+
+            if (employee != null)
+            {
+                _context.Employees.Remove(employee);
+                await _context.SaveChangesAsync();
+            }
+            return RedirectToAction(nameof(Index));
+        }
     }
 }
