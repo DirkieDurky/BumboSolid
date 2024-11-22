@@ -59,8 +59,8 @@
 					</div>
 
 					<div class="col-sm-1 d-flex gap-2">
-						<a href="@Url.Action("Bewerken", new { id = norm.Id })" class="btn btn-primary">Bewerken</a>
-						<a href="@Url.Action("Verwijderen", new { id = norm.Id })" class="btn btn-danger">Verwijderen</a>
+						<a asp-controller="Normeringen" asp-action="Bewerken" asp-route-id="@norm.Id" class="btn btn-primary">Bewerken</a>
+						<a asp-controller="Normeringen" asp-action="Verwijderen" asp-route-id="@norm.Id" class="btn btn-danger">Verwijderen</a>
 					</div>
 				</div>
 			}

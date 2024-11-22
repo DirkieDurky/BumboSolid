@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore.Query.SqlExpressions;
 
 namespace BumboSolid.Controllers
 {
+	[Route("Prognoses")]
     public class PrognosesController : Controller
 	{
 		private readonly BumboDbContext _context;
@@ -18,6 +19,8 @@ namespace BumboSolid.Controllers
 		}
 
 		// GET: Prognoses
+		[HttpGet("~/")]
+		[HttpGet("{id:int?}")]
 		public async Task<IActionResult> Index(int? id)
 		{
 			List<Week> prognoses = await _context.Weeks
@@ -44,26 +47,9 @@ namespace BumboSolid.Controllers
 			return View(viewModel);
 		}
 
-		// GET: Prognoses/Details/5
-		public async Task<IActionResult> Details(int? id)
-		{
-			if (id == null)
-			{
-				return NotFound();
-			}
-
-			var prognosis = await _context.Weeks
-				.FirstOrDefaultAsync(m => m.Id == id);
-			if (prognosis == null)
-			{
-				return NotFound();
-			}
-
-			return View(prognosis);
-		}
-
 		// GET: Prognoses/Aanmaken
-		public IActionResult Aanmaken()
+		[HttpGet("Aanmaken")]
+		public IActionResult Create()
 		{
 			CultureInfo ci = new CultureInfo("nl-NL");
 			Calendar calendar = ci.Calendar;
@@ -148,9 +134,9 @@ namespace BumboSolid.Controllers
 		// POST: Prognoses/Aanmaken
 		// To protect from overposting attacks, enable the specific properties you want to bind to.
 		// For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-		[HttpPost]
 		[ValidateAntiForgeryToken]
-		public async Task<IActionResult> Aanmaken(Week prognosis, List<int> visitorEstimates, List<int> holidays, List<int> weather, List<int> other, List<String> description)
+		[HttpPost("Aanmaken")]
+		public async Task<IActionResult> Create(Week prognosis, List<int> visitorEstimates, List<int> holidays, List<int> weather, List<int> other, List<String> description)
 		{
 			var norms = _context.Norms
 				.Select(norm => new { norm.Duration, norm.AvgDailyPerformances, norm.PerVisitor, norm.Department })
@@ -256,7 +242,8 @@ namespace BumboSolid.Controllers
 		}
 
 		// GET: Prognoses/Bewerken/5
-		public async Task<IActionResult> Bewerken(int? id)
+		[HttpGet("Bewerken/{id:int?}")]
+		public async Task<IActionResult> Edit(int? id)
 		{
 			if (id == null)
 			{
@@ -274,9 +261,9 @@ namespace BumboSolid.Controllers
 		// POST: Prognoses/Bewerken/5
 		// To protect from overposting attacks, enable the specific properties you want to bind to.
 		// For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-		[HttpPost]
 		[ValidateAntiForgeryToken]
-		public async Task<IActionResult> Bewerken(int id, [Bind("Id,Year,Week")] Week prognosis)
+		[HttpPost("Bewerken/{id:int?}")]
+		public async Task<IActionResult> Edit(int id, [Bind("Id,Year,Week")] Week prognosis)
 		{
 			if (id != prognosis.Id)
 			{

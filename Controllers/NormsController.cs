@@ -6,24 +6,27 @@ using Microsoft.EntityFrameworkCore;
 
 namespace BumboSolid.Controllers
 {
-    public class NormeringenController : Controller
+    [Route("Normeringen")]
+    public class NormsController : Controller
     {
         private readonly BumboDbContext _context;
 
-        public NormeringenController(BumboDbContext context)
+        public NormsController(BumboDbContext context)
         {
             _context = context;
         }
 
         // GET: Normeringen/Index/5
+        [HttpGet("")]
         public ActionResult Index()
         {
             var normList = _context.Norms.ToList();
             return View(normList);
         }
 
-        // GET: Normeringen/Aanmaken
-        public ActionResult Aanmaken()
+		// GET: Normeringen/Aanmaken
+		[HttpGet("Aanmaken")]
+		public ActionResult Create()
         {
             ViewBag.Department = new SelectList(_context.Departments.Select(f => f.Name).ToList());
             ViewBag.TimeUnits = new SelectList(new List<string> { "Seconden", "Minuten", "Uren" });
@@ -32,9 +35,9 @@ namespace BumboSolid.Controllers
         }
 
         // POST: Normeringen/Aanmaken
-        [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Aanmaken(Norm norm, string DurationUnit)
+        [HttpPost("Aanmaken")]
+        public ActionResult Create(Norm norm, string DurationUnit)
         {
             var selectedDepartment = _context.Departments.FirstOrDefault(f => f.Name == norm.Department);
 
@@ -100,7 +103,8 @@ namespace BumboSolid.Controllers
         }
 
         // GET: Normeringen/Bewerken/5
-        public async Task<IActionResult> Bewerken(int? id)
+        [HttpGet("Bewerken/{id:int?}")]
+        public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
             {
@@ -120,9 +124,9 @@ namespace BumboSolid.Controllers
         }
 
         // POST: Normeringen/Bewerken/5
-        [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Bewerken(int id, Norm norm, string DurationUnit)
+		[HttpPost("Bewerken/{id:int?}")]
+		public async Task<IActionResult> Edit(int id, Norm norm, string DurationUnit)
         {
             if (id != norm.Id)
             {
@@ -189,9 +193,9 @@ namespace BumboSolid.Controllers
             return View(norm);
         }
 
-
-        // GET: Normeringen/Verwijderen/5
-        public async Task<IActionResult> Verwijderen(int? id)
+		// GET: Normeringen/Verwijderen/5
+		[HttpGet("Verwijderen/{id:int}")]
+		public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
             {
@@ -208,9 +212,10 @@ namespace BumboSolid.Controllers
         }
 
         // POST: Normeringen/Verwijderen/5
-        [HttpPost, ActionName("Verwijderen")]
+        [ActionName("Verwijderen")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> VerwijderenConfirmed(int id)
+		[HttpPost("Verwijderen/{id:int}")]
+        public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var norm = await _context.Norms.FindAsync(id);
             if (norm != null)

@@ -6,16 +6,18 @@ using Microsoft.EntityFrameworkCore;
 
 namespace BumboSolid.Controllers
 {
-    public class FeestdagenController : Controller
+	[Route("Feestdagen")]
+	public class HolidaysController : Controller
 	{
 		private readonly BumboDbContext _context;
 
-		public FeestdagenController(BumboDbContext context)
+		public HolidaysController(BumboDbContext context)
 		{
 			_context = context;
 		}
 
 		// GET: FeestdagenController
+		[HttpGet("")]
 		public ActionResult Index()
 		{
 			List<HolidayViewModel> holidayViewModels = new List<HolidayViewModel>();
@@ -25,35 +27,37 @@ namespace BumboSolid.Controllers
 				List<HolidayDay> holidayDays = holiday.HolidayDays.ToList();
 
 				DateOnly firstDay = holidayDays[0].Date;
-				DateOnly lastDay = holidayDays[holidayDays.Count()-1].Date;
+				DateOnly lastDay = holidayDays[holidayDays.Count() - 1].Date;
 
 				HolidayViewModel holidayViewModel = new HolidayViewModel() { Name = holiday.Name, FirstDay = firstDay, LastDay = lastDay };
 
-                holidayViewModels.Add(holidayViewModel);
+				holidayViewModels.Add(holidayViewModel);
 			}
 
 			return View(holidayViewModels);
 		}
 
 		// GET: FeestdagenController/Details/5
+		[HttpGet("Details/{id:int}")]
 		public ActionResult Details(int id)
 		{
 			return View();
 		}
 
 		// GET: FeestdagenController/Aanmaken
-		public ActionResult Aanmaken()
+		[HttpGet("Aanmaken")]
+		public ActionResult Create()
 		{
-            return View(new HolidayViewModel());
-        }
+			return View(new HolidayViewModel());
+		}
 
 		// POST: FeestdagenController/Aanmaken
-		[HttpPost]
 		[ValidateAntiForgeryToken]
-        public ActionResult Aanmaken(HolidayViewModel holidayViewModel)
-        {
-            Holiday holiday = new Holiday();
-            holiday.Name = holidayViewModel.Name;
+		[HttpPost("Aanmaken")]
+		public ActionResult Create(HolidayViewModel holidayViewModel)
+		{
+			Holiday holiday = new Holiday();
+			holiday.Name = holidayViewModel.Name;
 
 			// Making sure that the Holiday does not already exist
 			foreach (Holiday h in _context.Holidays)
@@ -65,62 +69,58 @@ namespace BumboSolid.Controllers
 				}
 			}
 
-            // Making sure that LastDay is not before FirstDay
-            if (holidayViewModel.LastDay.DayNumber < holidayViewModel.FirstDay.DayNumber)
-            {
-                ModelState.AddModelError("LastDay", "De laatste dag moet hetzelfde of later zijn dan de eerste dag");
-                return View(holidayViewModel);
-            }
+			// Making sure that LastDay is not before FirstDay
+			if (holidayViewModel.LastDay.DayNumber < holidayViewModel.FirstDay.DayNumber)
+			{
+				ModelState.AddModelError("LastDay", "De laatste dag moet hetzelfde of later zijn dan de eerste dag");
+				return View(holidayViewModel);
+			}
 
-            // Adding HolidayDay for every day the holiday is active
-            for (int i = 0; i <= holidayViewModel.LastDay.DayNumber - holidayViewModel.FirstDay.DayNumber; i++)
-            {
-                HolidayDay holidayDay = new HolidayDay();
-                holidayDay.HolidayName = holidayViewModel.Name;
-                holidayDay.Date = holidayViewModel.FirstDay.AddDays(i);
-                holidayDay.Impact = 0;
-                holidayDay.HolidayNameNavigation = holiday;
-                holiday.HolidayDays.Add(holidayDay);
-            }
+			// Adding HolidayDay for every day the holiday is active
+			for (int i = 0; i <= holidayViewModel.LastDay.DayNumber - holidayViewModel.FirstDay.DayNumber; i++)
+			{
+				HolidayDay holidayDay = new HolidayDay();
+				holidayDay.HolidayName = holidayViewModel.Name;
+				holidayDay.Date = holidayViewModel.FirstDay.AddDays(i);
+				holidayDay.Impact = 0;
+				holidayDay.HolidayNameNavigation = holiday;
+				holiday.HolidayDays.Add(holidayDay);
+			}
 
-            // Check if the model state is still valid before saving to the database
-            if (ModelState.IsValid)
-            {
-                _context.Holidays.Add(holiday);
-                _context.SaveChanges();
-                return RedirectToAction(nameof(Index));
-            }
+			// Check if the model state is still valid before saving to the database
+			if (ModelState.IsValid)
+			{
+				_context.Holidays.Add(holiday);
+				_context.SaveChanges();
+				return RedirectToAction(nameof(Index));
+			}
 
-            return View(holidayViewModel);
-        }
+			return View(holidayViewModel);
+		}
 
 		// GET: FeestdagenController/Bewerken/5
-		public ActionResult Bewerken(String id)
+		[HttpGet("Bewerken/{id}")]
+		public ActionResult Edit(String id)
 		{
-			HolidayManageViewModel holiday = new HolidayManageViewModel();
+			Holiday holiday = _context.Holidays.Include(x => x.HolidayDays).First(h => h.Name == id);
+			List<HolidayDay> holidayDays = holiday.HolidayDays;
 
-            foreach(Holiday h in _context.Holidays.Include(x => x.HolidayDays).ToList())
+			HolidayManageViewModel holidayManageViewModel = new HolidayManageViewModel()
 			{
-				if (id.Equals(h.Name))
-				{
-					List<HolidayDay> holidayDays = h.HolidayDays;
+				Holiday = holiday,
+				FirstDay = holidayDays[0].Date,
+				LastDay = holidayDays[holidayDays.Count() - 1].Date,
+			};
 
-					holiday.Holiday = h;
-					holiday.FirstDay = holidayDays[0].Date;
-					holiday.LastDay = holidayDays[holidayDays.Count() - 1].Date;
+			holidayManageViewModel = CreateGraph(holidayManageViewModel);
 
-					holiday = CreateGraph(holiday);
-
-					break;
-				}
-			}
-			return View(holiday);
+			return View(holidayManageViewModel);
 		}
 
 		// POST: FeestdagenController/Bewerken/5
-		[HttpPost]
 		[ValidateAntiForgeryToken]
-		public async Task<IActionResult> Bewerken(HolidayManageViewModel HolidayManageViewModel, DateOnly FirstDay, DateOnly LastDay)
+		[HttpPost("Bewerken/{id}")]
+		public async Task<IActionResult> Edit(HolidayManageViewModel HolidayManageViewModel, DateOnly FirstDay, DateOnly LastDay)
 		{
 			var Holiday = HolidayManageViewModel.Holiday;
 			bool changedDates = false;
@@ -239,14 +239,15 @@ namespace BumboSolid.Controllers
 		}
 
 		// GET: FeestdagenController/Verwijderen/5
-		public async Task<IActionResult> Verwijderen(String Name)
+		[HttpGet("Verwijderen/{name}")]
+		public async Task<IActionResult> Delete(String name)
 		{
-			if (Name == null)
+			if (name == null)
 			{
 				return NotFound();
 			}
 
-			var holiday = await _context.Holidays.FirstOrDefaultAsync(h => h.Name == Name);
+			var holiday = await _context.Holidays.FirstOrDefaultAsync(h => h.Name == name);
 			if (holiday == null)
 			{
 				return NotFound();
@@ -256,11 +257,12 @@ namespace BumboSolid.Controllers
 		}
 
 		// POST: FeestdagenController/Verwijderen/5
-		[HttpPost, ActionName("Verwijderen")]
+		[ActionName("Verwijderen")]
 		[ValidateAntiForgeryToken]
-		public async Task<IActionResult> VerwijderenConfirmed(String Name)
+		[HttpPost("Verwijderen/{name}")]
+		public async Task<IActionResult> DeleteConfirmed(String name)
 		{
-			var holiday = await _context.Holidays.Include(h => h.HolidayDays).FirstOrDefaultAsync(h => h.Name == Name);
+			var holiday = await _context.Holidays.Include(h => h.HolidayDays).FirstOrDefaultAsync(h => h.Name == name);
 
 			if (holiday != null)
 			{
@@ -276,7 +278,7 @@ namespace BumboSolid.Controllers
 			return RedirectToAction(nameof(Index));
 		}
 
-		// Create the graph requried for Bewerken
+		// Create the graph requried for Edit
 		public HolidayManageViewModel CreateGraph(HolidayManageViewModel HolidayManageViewModel)
 		{
 			Holiday Holiday = HolidayManageViewModel.Holiday;

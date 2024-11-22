@@ -6,17 +6,19 @@ using BumboSolid.Models;
 
 namespace BumboSolid.Controllers
 {
-    public class WeerController : Controller
+    [Route("Weer")]
+    public class WeathersController : Controller
     {
         private readonly BumboDbContext _context;
 
-        public WeerController(BumboDbContext context)
+        public WeathersController(BumboDbContext context)
         {
             _context = context;
         }
 
-        // GET: Weer/Bewerken/5
-        public IActionResult Bewerken()
+        // GET: Weer/Bewerken
+        [HttpGet("Bewerken")]
+        public IActionResult Edit()
         {
             return View(new WeatherManageViewModel() { Impacts = _context.Weathers.Select(w => w.Impact).ToArray() });
         }
@@ -24,9 +26,9 @@ namespace BumboSolid.Controllers
         // POST: Weer/Bewerken/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Bewerken(short[] impacts)
+		[HttpPost("Bewerken")]
+		public async Task<IActionResult> Edit(short[] impacts)
         {
             if (ModelState.IsValid)
             {
