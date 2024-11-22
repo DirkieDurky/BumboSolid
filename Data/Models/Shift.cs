@@ -21,6 +21,8 @@ public partial class Shift
 
     public string? ExternalEmployeeName { get; set; }
 
+    public byte IsBreak { get; set; }
+
     public virtual Department DepartmentNavigation { get; set; } = null!;
 
     public virtual List<FillRequest> FillRequests { get; set; } = new List<FillRequest>();
