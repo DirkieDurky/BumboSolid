@@ -7,7 +7,7 @@ namespace BumboSolid.Data.Models;
 public partial class Employee
 {
     [Key]
-    public int AspNetUserId { get; set; }
+    public int ID { get; set; }
 
     public string FirstName { get; set; } = null!;
 

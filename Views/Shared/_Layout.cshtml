@@ -22,6 +22,17 @@
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Prognoses" asp-action="Index">Prognoses</a>
                         </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Account" asp-action="Logout">Uitloggen</a>
+                        </li>
+                        @if (User.Identity.IsAuthenticated)
+                        {
+                            <ul class="navbar-nav flex-grow-1">
+                                <li class="nav-item">
+                                    @User.Identity.Name
+                                </li>
+                            </ul>
+                        }
                     </ul>
 
                     <!--

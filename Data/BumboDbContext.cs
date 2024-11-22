@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using BumboSolid.Data.Models;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 namespace BumboSolid.Data;
 
-public partial class BumboDbContext : DbContext
+public partial class BumboDbContext : IdentityDbContext<IdentityUser, IdentityRole, string>
 {
     public BumboDbContext()
     {
@@ -58,6 +60,8 @@ public partial class BumboDbContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        base.OnModelCreating(modelBuilder);
+
         modelBuilder.Entity<AvailabilityRule>(entity =>
         {
             entity.HasKey(e => new { e.Employee, e.Date });
@@ -104,11 +108,11 @@ public partial class BumboDbContext : DbContext
 
         modelBuilder.Entity<Employee>(entity =>
         {
-            entity.HasKey(e => e.AspNetUserId);
+            entity.HasKey(e => e.ID);
 
             entity.ToTable("Employee");
 
-            entity.Property(e => e.AspNetUserId)
+            entity.Property(e => e.ID)
                 .ValueGeneratedNever()
                 .HasColumnName("AspNetUserID");
             entity.Property(e => e.FirstName)

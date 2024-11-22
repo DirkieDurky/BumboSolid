@@ -36,8 +36,8 @@ namespace BumboSolid.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(Employee employee)
         {
-            int maxId = _context.Employees.Any() ? _context.Employees.Max(n => n.AspNetUserId) : 0;
-            employee.AspNetUserId = maxId + 1;
+            int maxId = _context.Employees.Any() ? _context.Employees.Max(n => n.ID) : 0;
+            employee.ID = maxId + 1;
 
             if (ModelState.IsValid)
             {
@@ -85,12 +85,12 @@ namespace BumboSolid.Controllers
         // Checks if an employee exists in the database by ID.
         private bool EmployeeExists(int id)
         {
-            return _context.Employees.Any(e => e.AspNetUserId == id);
+            return _context.Employees.Any(e => e.ID == id);
         }
 
         public async Task<IActionResult> Delete(int id)
 		{
-            var employee = await _context.Employees.FirstOrDefaultAsync(e => e.AspNetUserId == id);
+            var employee = await _context.Employees.FirstOrDefaultAsync(e => e.ID == id);
             if (employee == null)
             {
                 return NotFound();
@@ -103,7 +103,7 @@ namespace BumboSolid.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var employee = await _context.Employees.FirstOrDefaultAsync(e => e.AspNetUserId == id);
+            var employee = await _context.Employees.FirstOrDefaultAsync(e => e.ID == id);
 
             if (employee != null)
             {
