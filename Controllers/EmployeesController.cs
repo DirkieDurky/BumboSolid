@@ -33,8 +33,12 @@ namespace BumboSolid.Controllers
 
         // Processes the data submitted for creating a new employee.
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(Employee employee)
         {
+            int maxId = _context.Employees.Any() ? _context.Employees.Max(n => n.AspNetUserId) : 0;
+            employee.AspNetUserId = maxId + 1;
+
             if (ModelState.IsValid)
             {
                 _context.Add(employee);
