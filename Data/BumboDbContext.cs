@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace BumboSolid.Data;
 
-public partial class BumboDbContext : IdentityDbContext<IdentityUser, IdentityRole, string>
+public partial class BumboDbContext : IdentityDbContext<Employee, IdentityRole<int>, int>
 {
     public BumboDbContext()
     {
@@ -108,11 +108,11 @@ public partial class BumboDbContext : IdentityDbContext<IdentityUser, IdentityRo
 
         modelBuilder.Entity<Employee>(entity =>
         {
-            entity.HasKey(e => e.ID);
+            entity.HasKey(e => e.Id);
 
             entity.ToTable("Employee");
 
-            entity.Property(e => e.ID)
+            entity.Property(e => e.Id)
                 .ValueGeneratedNever()
                 .HasColumnName("AspNetUserID");
             entity.Property(e => e.FirstName)

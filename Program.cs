@@ -1,6 +1,8 @@
 using Microsoft.EntityFrameworkCore;
 using BumboSolid.Data;
 using Microsoft.AspNetCore.Identity;
+using BumboSolid.Data.Models;
+using Authorisation.Helpers;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -22,23 +24,23 @@ builder.Services.AddDbContext<BumboDbContext>(options =>
 	options.UseSqlServer(connection));
 
 // Configure Identity services
-builder.Services.AddIdentity<IdentityUser, IdentityRole>(options =>
+builder.Services.AddIdentity<Employee, IdentityRole<int>>(options =>
 {
-    options.SignIn.RequireConfirmedAccount = false; // Optional: Require email confirmation
+    options.SignIn.RequireConfirmedAccount = false;
     options.Password.RequireDigit = true;
     options.Password.RequireUppercase = true;
-    options.Password.RequiredLength = 8; // Example: Set password requirements
-    options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5); // Lockout settings
+    options.Password.RequiredLength = 8;
+    options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
     options.Lockout.MaxFailedAccessAttempts = 5;
 }).AddEntityFrameworkStores<BumboDbContext>()
   .AddDefaultTokenProviders();
 // Configure authentication cookie settings
 builder.Services.ConfigureApplicationCookie(options =>
 {
-    options.LoginPath = "/Account/Login"; // Path to login page
-    options.AccessDeniedPath = "/Account/AccessDenied"; // Path to access denied page
-    options.ExpireTimeSpan = TimeSpan.FromDays(14); // Cookie expiration time
-    options.SlidingExpiration = true; // Renew cookie automatically with activity
+    options.LoginPath = "/Account/Login";
+    options.AccessDeniedPath = "/Account/AccessDenied";
+    options.ExpireTimeSpan = TimeSpan.FromDays(14);
+    options.SlidingExpiration = true;
 });
 
 var app = builder.Build();
@@ -47,7 +49,9 @@ var app = builder.Build();
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
-    await SeedRoles.InitializeAsync(services);
+    var userManager = services.GetRequiredService<UserManager<Employee>>();
+    var roleManager = services.GetRequiredService<RoleManager<IdentityRole<int>>>();
+    UserAndRoleSeeder.SeedData(userManager, roleManager);
 }
 
 // Configure the HTTP request pipeline.

@@ -1,18 +1,40 @@
-﻿using Microsoft.AspNetCore.Identity;
-namespace BumboSolid.Data
+﻿using BumboSolid.Data.Models;
+using Microsoft.AspNetCore.Identity;
+
+namespace Authorisation.Helpers
 {
-    public class SeedRoles
+    public static class UserAndRoleSeeder
     {
-        public static async Task InitializeAsync(IServiceProvider serviceProvider)
+        public static void SeedData(UserManager<Employee> userManager, RoleManager<IdentityRole<int>> roleManager)
         {
-            var roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
-            string[] roleNames = { "Manager", "Employee" };
-            foreach (var roleName in roleNames)
+            SeedRoles(roleManager);
+            SeedUsers(userManager);
+        }
+
+        private static void SeedUsers(UserManager<Employee> userManager)
+        {
+            if (userManager.FindByNameAsync("Medewerker1").Result == null)
             {
-                if (!await roleManager.RoleExistsAsync(roleName))
+                Employee user = new Employee();
+                user.Email = "bla@bla.nl";
+                user.UserName = "userBla";
+
+                IdentityResult result = userManager.CreateAsync(user, "Welkom123!").Result;
+                if (result.Succeeded)
                 {
-                    await roleManager.CreateAsync(new IdentityRole(roleName));
+                    userManager.AddToRoleAsync(user, "Medewerker").Wait();
                 }
+
+            }
+        }
+
+        private static void SeedRoles(RoleManager<IdentityRole<int>> roleManager)
+        {
+            if (!roleManager.RoleExistsAsync("Medewerker").Result)
+            {
+                IdentityRole<int> role = new IdentityRole<int>();
+                role.Name = "Medewerker";
+                IdentityResult result = roleManager.CreateAsync(role).Result;
             }
         }
     }

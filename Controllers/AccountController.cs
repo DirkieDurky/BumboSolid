@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace BumboSolid.Controllers
 {
-    [AllowAnonymous]
     public class AccountController : Controller
     {
         private readonly SignInManager<IdentityUser> _signInManager;
