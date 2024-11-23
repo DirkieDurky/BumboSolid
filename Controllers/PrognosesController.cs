@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace BumboSolid.Controllers
 {
-	[Authorize(Roles = "Manager")]
+	[Authorize]
 	[Route("Prognoses")]
     public class PrognosesController : Controller
 	{

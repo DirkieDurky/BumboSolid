@@ -112,18 +112,18 @@ public partial class BumboDbContext : IdentityDbContext<Employee, IdentityRole<i
 
             entity.ToTable("Employee");
 
-            entity.Property(e => e.Id)
-                .ValueGeneratedNever()
-                .HasColumnName("AspNetUserID");
             entity.Property(e => e.FirstName)
                 .HasMaxLength(45)
                 .IsUnicode(false);
+
             entity.Property(e => e.LastName)
                 .HasMaxLength(90)
                 .IsUnicode(false);
+
             entity.Property(e => e.PlaceOfResidence)
                 .HasMaxLength(45)
                 .IsUnicode(false);
+
             entity.Property(e => e.StreetName)
                 .HasMaxLength(45)
                 .IsUnicode(false);
@@ -148,6 +148,7 @@ public partial class BumboDbContext : IdentityDbContext<Employee, IdentityRole<i
                             .IsUnicode(false);
                     });
         });
+
 
         modelBuilder.Entity<Factor>(entity =>
         {

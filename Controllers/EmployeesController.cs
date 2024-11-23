@@ -2,16 +2,22 @@
 using Microsoft.EntityFrameworkCore;
 using BumboSolid.Data;
 using BumboSolid.Data.Models;
+using BumboSolid.Models;
+using Microsoft.AspNetCore.Identity;
 
 namespace BumboSolid.Controllers
 {
     public class EmployeesController : Controller
     {
         private readonly BumboDbContext _context;
+        private readonly UserManager<Employee> _userManager;
+        private readonly SignInManager<Employee> _signInManager;
 
-        public EmployeesController(BumboDbContext context)
+        public EmployeesController(BumboDbContext context, UserManager<Employee> userManager, SignInManager<Employee> signInManager)
         {
             _context = context;
+            _userManager = userManager;
+            _signInManager = signInManager;
         }
 
         // Displays the list of all employees with related data.
@@ -34,18 +40,47 @@ namespace BumboSolid.Controllers
         // Processes the data submitted for creating a new employee.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(Employee employee)
+        public async Task<IActionResult> Create(EmployeesCreateViewModel input)
         {
-            int maxId = _context.Employees.Any() ? _context.Employees.Max(n => n.Id) : 0;
-            employee.Id = maxId + 1;
+            var existingUser = await _userManager.FindByEmailAsync(input.Email);
+            if (existingUser != null)
+            {
+                ModelState.AddModelError(string.Empty, "Email is already in use.");
+            }
 
             if (ModelState.IsValid)
             {
-                _context.Add(employee);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                var user = new Employee
+                {
+                    UserName = input.Email,
+                    Email = input.Email,
+                    FirstName = input.FirstName,
+                    LastName = input.LastName,
+                    PlaceOfResidence = input.PlaceOfResidence,
+                    StreetName = input.StreetName,
+                    StreetNumber = input.StreetNumber,
+                    BirthDate = input.BirthDate,
+                    EmployedSince = input.EmployedSince,
+                    NormalizedEmail = input.Email.ToUpper(),
+                    NormalizedUserName = input.Email.ToUpper()
+                };
+
+                var result = await _userManager.CreateAsync(user, input.Password);
+
+                if (result.Succeeded)
+                {
+                    return RedirectToAction("Index");
+                }
+                else
+                {
+                    foreach (var error in result.Errors)
+                    {
+                        ModelState.AddModelError(string.Empty, error.Description);
+                    }
+                }
             }
-            return View(employee);
+
+            return View(input);
         }
 
         // Retrieves the details of an employee for editing.
