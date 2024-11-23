@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace BumboSolid.Migrations
 {
     /// <inheritdoc />
-    public partial class Model2Update : Migration
+    public partial class Module2 : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -151,18 +151,45 @@ namespace BumboSolid.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "AvailabilityDay",
+                name: "AvailabilityRule",
                 columns: table => new
                 {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     Employee = table.Column<int>(type: "int", nullable: false),
                     Date = table.Column<DateOnly>(type: "date", nullable: false),
-                    LessonHours = table.Column<int>(type: "int", nullable: true)
+                    StartTime = table.Column<TimeOnly>(type: "time", nullable: false),
+                    EndTime = table.Column<TimeOnly>(type: "time", nullable: false),
+                    Available = table.Column<byte>(type: "tinyint", nullable: false),
+                    School = table.Column<byte>(type: "tinyint", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_AvailabilityDay", x => new { x.Employee, x.Date });
+                    table.PrimaryKey("PK_AvailabilityRule", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_AvailabilityDay_Employee",
+                        name: "FK_AvailabilityRule_Employee",
+                        column: x => x.Employee,
+                        principalTable: "Employee",
+                        principalColumn: "AspNetUserID");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Capability",
+                columns: table => new
+                {
+                    Employee = table.Column<int>(type: "int", nullable: false),
+                    Department = table.Column<string>(type: "varchar(25)", unicode: false, maxLength: 25, nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Capability", x => new { x.Employee, x.Department });
+                    table.ForeignKey(
+                        name: "FK_Capability_Department",
+                        column: x => x.Department,
+                        principalTable: "Department",
+                        principalColumn: "Name");
+                    table.ForeignKey(
+                        name: "FK_Capability_Employee",
                         column: x => x.Employee,
                         principalTable: "Employee",
                         principalColumn: "AspNetUserID");
@@ -215,7 +242,8 @@ namespace BumboSolid.Migrations
                     StartTime = table.Column<TimeOnly>(type: "time", nullable: false),
                     EndTime = table.Column<TimeOnly>(type: "time", nullable: false),
                     Employee = table.Column<int>(type: "int", nullable: true),
-                    ExternalEmployeeName = table.Column<string>(type: "varchar(135)", unicode: false, maxLength: 135, nullable: true)
+                    ExternalEmployeeName = table.Column<string>(type: "varchar(135)", unicode: false, maxLength: 135, nullable: true),
+                    IsBreak = table.Column<byte>(type: "tinyint", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -230,27 +258,6 @@ namespace BumboSolid.Migrations
                         column: x => x.WeekID,
                         principalTable: "Week",
                         principalColumn: "ID");
-                });
-
-            migrationBuilder.CreateTable(
-                name: "AvailabilityRule",
-                columns: table => new
-                {
-                    ID = table.Column<int>(type: "int", nullable: false),
-                    Employee = table.Column<int>(type: "int", nullable: false),
-                    Date = table.Column<DateOnly>(type: "date", nullable: false),
-                    StartTime = table.Column<TimeOnly>(type: "time", nullable: false),
-                    EndTime = table.Column<TimeOnly>(type: "time", nullable: false),
-                    Available = table.Column<byte>(type: "tinyint", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_AvailabilityRule", x => x.ID);
-                    table.ForeignKey(
-                        name: "FK_AvailabilityRule_AvailabilityDay",
-                        columns: x => new { x.Employee, x.Date },
-                        principalTable: "AvailabilityDay",
-                        principalColumns: new[] { "Employee", "Date" });
                 });
 
             migrationBuilder.CreateTable(
@@ -368,9 +375,14 @@ namespace BumboSolid.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_AvailabilityRule_Employee_Date",
+                name: "IX_AvailabilityRule_Employee",
                 table: "AvailabilityRule",
-                columns: new[] { "Employee", "Date" });
+                column: "Employee");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Capability_Department",
+                table: "Capability",
+                column: "Department");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Factor_PrognosisID_Weekday",
@@ -430,6 +442,9 @@ namespace BumboSolid.Migrations
                 name: "AvailabilityRule");
 
             migrationBuilder.DropTable(
+                name: "Capability");
+
+            migrationBuilder.DropTable(
                 name: "CLABreakEntry");
 
             migrationBuilder.DropTable(
@@ -448,9 +463,6 @@ namespace BumboSolid.Migrations
                 name: "PrognosisDepartment");
 
             migrationBuilder.DropTable(
-                name: "AvailabilityDay");
-
-            migrationBuilder.DropTable(
                 name: "CLAEntry");
 
             migrationBuilder.DropTable(
@@ -460,6 +472,9 @@ namespace BumboSolid.Migrations
                 name: "Weather");
 
             migrationBuilder.DropTable(
+                name: "Employee");
+
+            migrationBuilder.DropTable(
                 name: "Shift");
 
             migrationBuilder.DropTable(
@@ -467,9 +482,6 @@ namespace BumboSolid.Migrations
 
             migrationBuilder.DropTable(
                 name: "PrognosisDay");
-
-            migrationBuilder.DropTable(
-                name: "Employee");
 
             migrationBuilder.DropTable(
                 name: "Department");
