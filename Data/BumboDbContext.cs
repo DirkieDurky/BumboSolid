@@ -60,7 +60,7 @@ public partial class BumboDbContext : DbContext
     {
         modelBuilder.Entity<AvailabilityRule>(entity =>
         {
-            entity.HasKey(e => new { e.Employee, e.Date });
+            entity.HasKey(e => e.Id);
 
             entity.ToTable("AvailabilityRule");
 
