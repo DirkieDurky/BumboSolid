@@ -42,10 +42,9 @@ namespace BumboSolid.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(EmployeesCreateViewModel input)
         {
-            var existingUser = await _userManager.FindByEmailAsync(input.Email);
-            if (existingUser != null)
+            if (await _userManager.FindByEmailAsync(input.Email) != null)
             {
-                ModelState.AddModelError(string.Empty, "Email is already in use.");
+                ModelState.AddModelError(string.Empty, $"The email '{input.Email}' is already in use.");
             }
 
             if (ModelState.IsValid)
@@ -61,8 +60,6 @@ namespace BumboSolid.Controllers
                     StreetNumber = input.StreetNumber,
                     BirthDate = input.BirthDate,
                     EmployedSince = input.EmployedSince,
-                    NormalizedEmail = input.Email.ToUpper(),
-                    NormalizedUserName = input.Email.ToUpper()
                 };
 
                 var result = await _userManager.CreateAsync(user, input.Password);
