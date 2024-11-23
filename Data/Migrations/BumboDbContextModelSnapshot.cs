@@ -24,14 +24,20 @@ namespace BumboSolid.Migrations
 
             modelBuilder.Entity("BumboSolid.Data.Models.AvailabilityRule", b =>
                 {
-                    b.Property<int>("Employee")
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<byte>("Available")
+                        .HasColumnType("tinyint");
 
                     b.Property<DateOnly>("Date")
                         .HasColumnType("date");
 
-                    b.Property<byte>("Available")
-                        .HasColumnType("tinyint");
+                    b.Property<int>("Employee")
+                        .HasColumnType("int");
 
                     b.Property<TimeOnly>("EndTime")
                         .HasColumnType("time");
@@ -42,7 +48,9 @@ namespace BumboSolid.Migrations
                     b.Property<TimeOnly>("StartTime")
                         .HasColumnType("time");
 
-                    b.HasKey("Employee", "Date");
+                    b.HasKey("Id");
+
+                    b.HasIndex("Employee");
 
                     b.ToTable("AvailabilityRule", (string)null);
                 });

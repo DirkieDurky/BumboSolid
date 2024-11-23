@@ -64,7 +64,7 @@ public partial class BumboDbContext : IdentityDbContext<Employee, IdentityRole<i
 
         modelBuilder.Entity<AvailabilityRule>(entity =>
         {
-            entity.HasKey(e => new { e.Employee, e.Date });
+            entity.HasKey(e => e.Id);
 
             entity.ToTable("AvailabilityRule");
 

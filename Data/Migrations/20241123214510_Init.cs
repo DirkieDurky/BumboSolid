@@ -290,6 +290,8 @@ namespace BumboSolid.Migrations
                 name: "AvailabilityRule",
                 columns: table => new
                 {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     Employee = table.Column<int>(type: "int", nullable: false),
                     Date = table.Column<DateOnly>(type: "date", nullable: false),
                     StartTime = table.Column<TimeOnly>(type: "time", nullable: false),
@@ -299,7 +301,7 @@ namespace BumboSolid.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_AvailabilityRule", x => new { x.Employee, x.Date });
+                    table.PrimaryKey("PK_AvailabilityRule", x => x.Id);
                     table.ForeignKey(
                         name: "FK_AvailabilityRule_Employee",
                         column: x => x.Employee,
@@ -534,6 +536,11 @@ namespace BumboSolid.Migrations
                 name: "IX_AspNetUserRoles_RoleId",
                 table: "AspNetUserRoles",
                 column: "RoleId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AvailabilityRule_Employee",
+                table: "AvailabilityRule",
+                column: "Employee");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Capability_Department",
