@@ -8,7 +8,7 @@
 	<p><strong>Duur:</strong> @Model.Duration seconden</p>
 </div>
 
-<form asp-action="Verwijderen" method="post">
+<form asp-action="Verwijderen" asp-route-id="@Model.Id" method="post">
 	<input type="hidden" asp-for="Id" />
 	<button type="submit" class="btn btn-danger w-100">Verwijderen</button>
 </form>

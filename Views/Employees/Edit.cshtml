@@ -1,0 +1,45 @@
+﻿@model BumboSolid.Data.Models.Employee
+
+<h1>Edit Employee</h1>
+
+<form asp-action="Edit" method="post">
+    <input type="hidden" asp-for="AspNetUserId" />
+
+    <div class="form-group">
+        <label asp-for="FirstName"></label>
+        <input asp-for="FirstName" class="form-control" />
+        <span asp-validation-for="FirstName" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="LastName"></label>
+        <input asp-for="LastName" class="form-control" />
+        <span asp-validation-for="LastName" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="PlaceOfResidence"></label>
+        <input asp-for="PlaceOfResidence" class="form-control" />
+        <span asp-validation-for="PlaceOfResidence" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="StreetName"></label>
+        <input asp-for="StreetName" class="form-control" />
+        <span asp-validation-for="StreetName" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="StreetNumber"></label>
+        <input asp-for="StreetNumber" class="form-control" />
+        <span asp-validation-for="StreetNumber" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="BirthDate"></label>
+        <input asp-for="BirthDate" type="date" class="form-control" />
+        <span asp-validation-for="BirthDate" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="EmployedSince"></label>
+        <input asp-for="EmployedSince" type="date" class="form-control" />
+        <span asp-validation-for="EmployedSince" class="text-danger"></span>
+    </div>
+    <button type="submit" class="btn btn-primary">Save</button>
+    <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+</form>

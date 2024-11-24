@@ -16,9 +16,7 @@ public partial class BumboDbContext : DbContext
 	{
 	}
 
-	public virtual DbSet<AvailabilityDay> AvailabilityDays { get; set; }
-
-	public virtual DbSet<AvailabilityRule> AvailabilityRules { get; set; }
+    public virtual DbSet<AvailabilityRule> AvailabilityRules { get; set; }
 
 	public virtual DbSet<CLABreakEntry> CLABreakEntries { get; set; }
 
@@ -58,37 +56,23 @@ public partial class BumboDbContext : DbContext
 		}
 	}
 
-	protected override void OnModelCreating(ModelBuilder modelBuilder)
-	{
-		modelBuilder.Entity<AvailabilityDay>(entity =>
-		{
-			entity.HasKey(e => new { e.Employee, e.Date });
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<AvailabilityRule>(entity =>
+        {
+            entity.HasKey(e => e.Id);
 
-			entity.ToTable("AvailabilityDay");
+            entity.ToTable("AvailabilityRule");
 
-			entity.HasOne(d => d.EmployeeNavigation).WithMany(p => p.AvailabilityDays)
-				.HasForeignKey(d => d.Employee)
-				.OnDelete(DeleteBehavior.ClientSetNull)
-				.HasConstraintName("FK_AvailabilityDay_Employee");
-		});
+            entity.HasOne(d => d.EmployeeNavigation).WithMany(p => p.AvailabilityRules)
+                .HasForeignKey(d => d.Employee)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_AvailabilityRule_Employee");
+        });
 
-		modelBuilder.Entity<AvailabilityRule>(entity =>
-		{
-			entity.ToTable("AvailabilityRule");
-
-			entity.Property(e => e.Id)
-				.ValueGeneratedNever()
-				.HasColumnName("ID");
-
-			entity.HasOne(d => d.AvailabilityDay).WithMany(p => p.AvailabilityRules)
-				.HasForeignKey(d => new { d.Employee, d.Date })
-				.OnDelete(DeleteBehavior.ClientSetNull)
-				.HasConstraintName("FK_AvailabilityRule_AvailabilityDay");
-		});
-
-		modelBuilder.Entity<CLABreakEntry>(entity =>
-		{
-			entity.HasKey(e => new { e.CLAEntryId, e.WorkDuration });
+        modelBuilder.Entity<CLABreakEntry>(entity =>
+        {
+            entity.HasKey(e => new { e.CLAEntryId, e.WorkDuration });
 
 			entity.ToTable("CLABreakEntry");
 
@@ -107,9 +91,9 @@ public partial class BumboDbContext : DbContext
 			entity.Property(e => e.Id).HasColumnName("ID");
 		});
 
-		modelBuilder.Entity<Department>(entity =>
-		{
-			entity.HasKey(e => e.Name).HasName("PK_Department");
+        modelBuilder.Entity<Department>(entity =>
+        {
+            entity.HasKey(e => e.Name);
 
 			entity.ToTable("Department");
 
@@ -124,22 +108,42 @@ public partial class BumboDbContext : DbContext
 
 			entity.ToTable("Employee");
 
-			entity.Property(e => e.AspNetUserId)
-				.ValueGeneratedNever()
-				.HasColumnName("AspNetUserID");
-			entity.Property(e => e.FirstName)
-				.HasMaxLength(45)
-				.IsUnicode(false);
-			entity.Property(e => e.LastName)
-				.HasMaxLength(90)
-				.IsUnicode(false);
-			entity.Property(e => e.PlaceOfResidence)
-				.HasMaxLength(45)
-				.IsUnicode(false);
-			entity.Property(e => e.StreetName)
-				.HasMaxLength(45)
-				.IsUnicode(false);
-		});
+            entity.Property(e => e.AspNetUserId)
+                .ValueGeneratedNever()
+                .HasColumnName("AspNetUserID");
+            entity.Property(e => e.FirstName)
+                .HasMaxLength(45)
+                .IsUnicode(false);
+            entity.Property(e => e.LastName)
+                .HasMaxLength(90)
+                .IsUnicode(false);
+            entity.Property(e => e.PlaceOfResidence)
+                .HasMaxLength(45)
+                .IsUnicode(false);
+            entity.Property(e => e.StreetName)
+                .HasMaxLength(45)
+                .IsUnicode(false);
+
+            entity.HasMany(d => d.Departments).WithMany(p => p.Employees)
+                .UsingEntity<Dictionary<string, object>>(
+                    "Capability",
+                    r => r.HasOne<Department>().WithMany()
+                        .HasForeignKey("Department")
+                        .OnDelete(DeleteBehavior.ClientSetNull)
+                        .HasConstraintName("FK_Capability_Department"),
+                    l => l.HasOne<Employee>().WithMany()
+                        .HasForeignKey("Employee")
+                        .OnDelete(DeleteBehavior.ClientSetNull)
+                        .HasConstraintName("FK_Capability_Employee"),
+                    j =>
+                    {
+                        j.HasKey("Employee", "Department");
+                        j.ToTable("Capability");
+                        j.IndexerProperty<string>("Department")
+                            .HasMaxLength(25)
+                            .IsUnicode(false);
+                    });
+        });
 
 		modelBuilder.Entity<Factor>(entity =>
 		{
@@ -190,15 +194,19 @@ public partial class BumboDbContext : DbContext
 		{
 			entity.ToTable("FillRequest");
 
-			entity.Property(e => e.Id)
-				.ValueGeneratedNever()
-				.HasColumnName("ID");
-			entity.Property(e => e.AbsentDescription)
-				.HasMaxLength(255)
-				.IsUnicode(false)
-				.HasColumnName("Absent_Description");
-			entity.Property(e => e.ShiftId).HasColumnName("ShiftID");
-			entity.Property(e => e.SubstituteEmployeeId).HasColumnName("SubstituteEmployeeID");
+            entity.HasIndex(e => e.ShiftId, "IX_FillRequest_ShiftID");
+
+            entity.HasIndex(e => e.SubstituteEmployeeId, "IX_FillRequest_SubstituteEmployeeID");
+
+            entity.Property(e => e.Id)
+                .ValueGeneratedNever()
+                .HasColumnName("ID");
+            entity.Property(e => e.AbsentDescription)
+                .HasMaxLength(255)
+                .IsUnicode(false)
+                .HasColumnName("Absent_Description");
+            entity.Property(e => e.ShiftId).HasColumnName("ShiftID");
+            entity.Property(e => e.SubstituteEmployeeId).HasColumnName("SubstituteEmployeeID");
 
 			entity.HasOne(d => d.Shift).WithMany(p => p.FillRequests)
 				.HasForeignKey(d => d.ShiftId)
@@ -274,9 +282,9 @@ public partial class BumboDbContext : DbContext
 				.HasConstraintName("FK_PrognosisDay_Week");
 		});
 
-		modelBuilder.Entity<PrognosisDepartment>(entity =>
-		{
-			entity.HasKey(e => new { e.PrognosisId, e.Department, e.Weekday }).HasName("PK_PrognosisDepartment");
+        modelBuilder.Entity<PrognosisDepartment>(entity =>
+        {
+            entity.HasKey(e => new { e.PrognosisId, e.Department, e.Weekday });
 
 			entity.ToTable("PrognosisDepartment");
 
@@ -304,16 +312,20 @@ public partial class BumboDbContext : DbContext
 		{
 			entity.ToTable("Shift");
 
-			entity.Property(e => e.Id)
-				.ValueGeneratedNever()
-				.HasColumnName("ID");
-			entity.Property(e => e.Department)
-				.HasMaxLength(25)
-				.IsUnicode(false);
-			entity.Property(e => e.ExternalEmployeeName)
-				.HasMaxLength(135)
-				.IsUnicode(false);
-			entity.Property(e => e.WeekId).HasColumnName("WeekID");
+            entity.HasIndex(e => e.Department, "IX_Shift_Department");
+
+            entity.HasIndex(e => e.WeekId, "IX_Shift_WeekID");
+
+            entity.Property(e => e.Id)
+                .ValueGeneratedNever()
+                .HasColumnName("ID");
+            entity.Property(e => e.Department)
+                .HasMaxLength(25)
+                .IsUnicode(false);
+            entity.Property(e => e.ExternalEmployeeName)
+                .HasMaxLength(135)
+                .IsUnicode(false);
+            entity.Property(e => e.WeekId).HasColumnName("WeekID");
 
 			entity.HasOne(d => d.DepartmentNavigation).WithMany(p => p.Shifts)
 				.HasForeignKey(d => d.Department)
@@ -333,14 +345,14 @@ public partial class BumboDbContext : DbContext
 			entity.Property(e => e.Id).HasColumnName("ID");
 		});
 
-		modelBuilder.Entity<Week>(entity =>
-		{
-			entity.ToTable("Week");
+        modelBuilder.Entity<Week>(entity =>
+        {
+            entity.ToTable("Week");
 
-			entity.Property(e => e.Id)
-				.ValueGeneratedNever()
-				.HasColumnName("ID");
-		});
+            entity.Property(e => e.Id)
+                .ValueGeneratedNever()
+                .HasColumnName("ID");
+        });
 
 		modelBuilder.Entity<Weather>().HasData(
 			new Weather { Id = 0, Impact = 75 },
@@ -364,10 +376,6 @@ public partial class BumboDbContext : DbContext
 		modelBuilder.Entity<Employee>().HasData(
 			new Employee { AspNetUserId = 1, FirstName = "John", LastName = "Doe", PlaceOfResidence = "City", StreetName = "Street 1" },
 			new Employee { AspNetUserId = 2, FirstName = "Jane", LastName = "Smith", PlaceOfResidence = "Town", StreetName = "Street 2" }
-		);
-		modelBuilder.Entity<AvailabilityDay>().HasData(
-			new AvailabilityDay { Employee = 1, Date = new DateOnly(2023, 1, 1) },
-			new AvailabilityDay { Employee = 2, Date = new DateOnly(2023, 1, 2) }
 		);
 		modelBuilder.Entity<AvailabilityRule>().HasData(
 			new AvailabilityRule { Id = 1, Employee = 1, Date = new DateOnly(2023, 1, 1) },
