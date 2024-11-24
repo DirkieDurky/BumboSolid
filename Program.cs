@@ -24,7 +24,7 @@ builder.Services.AddDbContext<BumboDbContext>(options =>
 	options.UseSqlServer(connection));
 
 // Configure Identity services
-builder.Services.AddIdentity<Employee, IdentityRole<int>>(options =>
+builder.Services.AddIdentity<User, IdentityRole<int>>(options =>
 {
     options.SignIn.RequireConfirmedAccount = false;
     options.Password.RequireDigit = true;
@@ -49,7 +49,7 @@ var app = builder.Build();
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
-    var userManager = services.GetRequiredService<UserManager<Employee>>();
+    var userManager = services.GetRequiredService<UserManager<User>>();
     var roleManager = services.GetRequiredService<RoleManager<IdentityRole<int>>>();
     UserAndRoleSeeder.SeedData(userManager, roleManager);
 }

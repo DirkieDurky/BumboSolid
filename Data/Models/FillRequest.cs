@@ -17,5 +17,5 @@ public partial class FillRequest
 
     public virtual Shift Shift { get; set; } = null!;
 
-    public virtual Employee? SubstituteEmployee { get; set; }
+    public virtual User? SubstituteEmployee { get; set; }
 }

@@ -3,9 +3,11 @@ using Microsoft.EntityFrameworkCore;
 using BumboSolid.Data;
 using BumboSolid.Data.Models;
 using BumboSolid.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace BumboSolid.Controllers
 {
+    [Authorize(Roles = "Manager")]
     [Route("Weer")]
     public class WeathersController : Controller
     {

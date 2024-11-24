@@ -10,54 +10,15 @@ namespace BumboSolid.Controllers
 {
     public class AccountController : Controller
     {
-        private readonly SignInManager<Employee> _signInManager;
-        private readonly UserManager<Employee> _userManager;
+        private readonly SignInManager<User> _signInManager;
+        private readonly UserManager<User> _userManager;
 
         public AccountController(
-            UserManager<Employee> userManager,
-            SignInManager<Employee> signInManager)
+            UserManager<User> userManager,
+            SignInManager<User> signInManager)
         {
             _userManager = userManager;
             _signInManager = signInManager;
-        }
-
-        // GET: /Account/Register
-        [HttpGet]
-        public IActionResult Register()
-        {
-            return View();
-        }
-
-        // POST: /Account/Register
-        [HttpPost]
-        public async Task<IActionResult> Register(RegisterViewModel input)
-        {
-            if (ModelState.IsValid)
-            {
-                var user = new Employee
-                {
-                    UserName = input.Email,
-                    Email = input.Email,
-                    FirstName = input.FirstName,
-                    LastName = input.LastName
-                };
-
-                var result = await _userManager.CreateAsync(user, input.Password);
-                if (result.Succeeded)
-                {
-                    await _signInManager.SignInAsync(user, isPersistent: false);
-                    return LocalRedirect("/Prognoses/Index");
-                }
-                else
-                {
-                    foreach (var error in result.Errors)
-                    {
-                        ModelState.AddModelError(string.Empty, error.Description);
-                    }
-                }
-            }
-
-            return View();
         }
 
         // GET: /Account/Login
@@ -75,7 +36,16 @@ namespace BumboSolid.Controllers
 
             if (result.Succeeded)
             {
-                return Redirect("/Prognosis/Index");
+                if (User.IsInRole("Manager"))
+                {
+                    return Redirect("/Prognoses");
+                }
+                if (User.IsInRole("Employee"))
+                {
+                    return Redirect("/Roosters");
+                }
+                ViewBag.Error = "Geen rol";
+                return View(Input);
             }
             else
             {
@@ -90,6 +60,12 @@ namespace BumboSolid.Controllers
         {
             await _signInManager.SignOutAsync();
             return Redirect("/");
+        }
+
+        [HttpGet]
+        public IActionResult AccessDenied()
+        {
+            return View();
         }
     }
 }

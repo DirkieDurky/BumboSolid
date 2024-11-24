@@ -6,10 +6,8 @@ using Microsoft.AspNetCore.Identity;
 
 namespace BumboSolid.Data.Models;
 
-public partial class Employee:IdentityUser<int>
+public partial class User:IdentityUser<int>
 {
-    public int Id { get; set; }
-
     public string FirstName { get; set; } = null!;
 
     public string LastName { get; set; }

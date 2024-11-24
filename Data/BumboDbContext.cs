@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace BumboSolid.Data;
 
-public partial class BumboDbContext : IdentityDbContext<Employee, IdentityRole<int>, int>
+public partial class BumboDbContext : IdentityDbContext<User, IdentityRole<int>, int>
 {
     public BumboDbContext()
     {
@@ -26,7 +26,7 @@ public partial class BumboDbContext : IdentityDbContext<Employee, IdentityRole<i
 
     public virtual DbSet<Department> Departments { get; set; }
 
-    public virtual DbSet<Employee> Employees { get; set; }
+    public virtual DbSet<User> Employees { get; set; }
 
     public virtual DbSet<Factor> Factors { get; set; }
 
@@ -106,11 +106,11 @@ public partial class BumboDbContext : IdentityDbContext<Employee, IdentityRole<i
                 .IsUnicode(false);
         });
 
-        modelBuilder.Entity<Employee>(entity =>
+        modelBuilder.Entity<User>(entity =>
         {
             entity.HasKey(e => e.Id);
 
-            entity.ToTable("Employee");
+            entity.ToTable("User");
 
             entity.Property(e => e.FirstName)
                 .HasMaxLength(45)
@@ -135,7 +135,7 @@ public partial class BumboDbContext : IdentityDbContext<Employee, IdentityRole<i
                         .HasForeignKey("Department")
                         .OnDelete(DeleteBehavior.ClientSetNull)
                         .HasConstraintName("FK_Capability_Department"),
-                    l => l.HasOne<Employee>().WithMany()
+                    l => l.HasOne<User>().WithMany()
                         .HasForeignKey("Employee")
                         .OnDelete(DeleteBehavior.ClientSetNull)
                         .HasConstraintName("FK_Capability_Employee"),

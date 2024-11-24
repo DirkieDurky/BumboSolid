@@ -4,16 +4,19 @@ using BumboSolid.Data;
 using BumboSolid.Data.Models;
 using BumboSolid.Models;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Authorization;
 
 namespace BumboSolid.Controllers
 {
+    [Authorize(Roles = "Manager")]
+    [Route("Werknemers")]
     public class EmployeesController : Controller
     {
         private readonly BumboDbContext _context;
-        private readonly UserManager<Employee> _userManager;
-        private readonly SignInManager<Employee> _signInManager;
+        private readonly UserManager<User> _userManager;
+        private readonly SignInManager<User> _signInManager;
 
-        public EmployeesController(BumboDbContext context, UserManager<Employee> userManager, SignInManager<Employee> signInManager)
+        public EmployeesController(BumboDbContext context, UserManager<User> userManager, SignInManager<User> signInManager)
         {
             _context = context;
             _userManager = userManager;
@@ -21,6 +24,7 @@ namespace BumboSolid.Controllers
         }
 
         // Displays the list of all employees with related data.
+        [HttpGet("")]
         public async Task<IActionResult> Index()
         {
             var employees = await _context.Employees
@@ -32,13 +36,14 @@ namespace BumboSolid.Controllers
         }
 
         // Provides the view to create a new employee.
+        [HttpGet("Aanmaken")]
         public IActionResult Create()
         {
             return View();
         }
 
         // Processes the data submitted for creating a new employee.
-        [HttpPost]
+        [HttpPost("Aanmaken")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(EmployeesCreateViewModel input)
         {
@@ -49,7 +54,7 @@ namespace BumboSolid.Controllers
 
             if (ModelState.IsValid)
             {
-                var user = new Employee
+                var user = new User
                 {
                     UserName = input.Email,
                     Email = input.Email,
@@ -66,6 +71,7 @@ namespace BumboSolid.Controllers
 
                 if (result.Succeeded)
                 {
+                    _userManager.AddToRoleAsync(user, "Employee").Wait();
                     return RedirectToAction("Index");
                 }
                 else
@@ -80,7 +86,8 @@ namespace BumboSolid.Controllers
             return View(input);
         }
 
-        // Retrieves the details of an employee for editing.
+        // Retrieves the details of an employee for editing
+        [HttpGet("Bewerken/{id:int}")]
         public async Task<IActionResult> Edit(int id)
         {
             var employee = await _context.Employees.FindAsync(id);
@@ -93,8 +100,8 @@ namespace BumboSolid.Controllers
         }
 
         // Processes the data submitted to update an employee's information.
-        [HttpPost]
-        public async Task<IActionResult> Edit(int id, Employee employee)
+        [HttpPost("Bewerken{id:int}")]
+        public async Task<IActionResult> Edit(int id, User employee)
         {
             var existingEmployee = await _context.Employees.FindAsync(id);
             if (existingEmployee == null)
@@ -120,6 +127,7 @@ namespace BumboSolid.Controllers
             return _context.Employees.Any(e => e.Id == id);
         }
 
+        [HttpGet("Verwijderen{id:int}")]
         public async Task<IActionResult> Delete(int id)
 		{
             var employee = await _context.Employees.FirstOrDefaultAsync(e => e.Id == id);
@@ -131,7 +139,7 @@ namespace BumboSolid.Controllers
 			return View(employee);
 		}
 
-        [HttpPost, ActionName("Delete")]
+        [HttpPost("Verwijderen{id:int}"), ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {

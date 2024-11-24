@@ -1,11 +1,13 @@
 ﻿using BumboSolid.Data;
 using BumboSolid.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace BumboSolid.Controllers
 {
-	[Route("Factoren")]
+    [Authorize(Roles = "Manager")]
+    [Route("Factoren")]
 	public class FactorsController : Controller
 	{
 		private readonly BumboDbContext _context;
