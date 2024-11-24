@@ -1,10 +1,16 @@
 ﻿@model BumboSolid.Data.Models.CLAEntry
 
 @{
-    ViewData["Title"] = "Create";
+    ViewData["Title"] = "CAO regel toevoegen";
 }
-
-<h1>Create</h1>
+<div class="row align-items-center">
+    <div class="col-auto">
+        <a class="btn" asp-controller="CLA" asp-action="Index">Terug</a>
+    </div>
+    <div class="text-center">
+        <h1>CAO Regel Toevoegen</h1>
+    </div>
+</div>
 
 <h4>CLAEntry</h4>
 <hr />
@@ -69,10 +75,8 @@
     </div>
 </div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
-
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 }

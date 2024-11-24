@@ -4,10 +4,10 @@
     ViewData["Title"] = "CAO regels";
 }
 
-<p>
+<div class="row align-items-center">
     <h1>CAO regels</h1>
-    <a asp-action="Create">Toevoegen</a>
-</p>
+    <a class="btn" asp-controller="CAO" asp-action="Toevoegen">Toevoegen</a>
+</div>
 @if (!Model.Any())
 {
     <h4>Het lijkt erop dat er geen CAO regels in het systeem staan. Voeg deze A.U.B. toe</h4>
@@ -21,6 +21,10 @@ else
                 @if (card.AgeStart.HasValue && card.AgeEnd.HasValue)
                 {
                     <h2>Regels voor @card.AgeStart tot @card.AgeEnd</h2>
+                }
+                else if (!card.AgeStart.HasValue && !card.AgeEnd.HasValue)
+                {
+                    <h2>Algemene regels</h2>
                 }
             </div>
             <div class="card-body">

@@ -12,6 +12,7 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace BumboSolid.Controllers
 {
+    [Route("CAO")]
     public class CLAController : Controller
     {
         private readonly BumboDbContext _context;
@@ -74,24 +75,7 @@ namespace BumboSolid.Controllers
             return View(groupedCLACards);
         }
 
-        // GET: CLA/Details/5
-        public async Task<IActionResult> Details(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var cLAEntry = await _context.CLAEntries
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (cLAEntry == null)
-            {
-                return NotFound();
-            }
-
-            return View(cLAEntry);
-        }
-
+        [Route("Toevoegen")]
         // GET: CLA/Create
         public IActionResult Create()
         {
