@@ -127,7 +127,7 @@ namespace BumboSolid.Controllers
             return _context.Employees.Any(e => e.Id == id);
         }
 
-        [HttpGet("Verwijderen{id:int}")]
+        [HttpGet("Verwijderen/{id:int}")]
         public async Task<IActionResult> Delete(int id)
 		{
             var employee = await _context.Employees.FirstOrDefaultAsync(e => e.Id == id);
@@ -139,7 +139,7 @@ namespace BumboSolid.Controllers
 			return View(employee);
 		}
 
-        [HttpPost("Verwijderen{id:int}"), ActionName("Delete")]
+        [HttpPost("Verwijderen/{id:int}"), ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
