@@ -100,7 +100,7 @@ namespace BumboSolid.Controllers
         }
 
         // Processes the data submitted to update an employee's information.
-        [HttpPost("Bewerken{id:int}")]
+        [HttpPost("Bewerken/{id:int}")]
         public async Task<IActionResult> Edit(int id, User employee)
         {
             var existingEmployee = await _context.Employees.FindAsync(id);
