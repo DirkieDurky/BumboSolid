@@ -283,19 +283,15 @@ namespace BumboSolid.Controllers
 			return RedirectToAction(nameof(Index));
 		}
 
-		// Get the date of the first day of the week
-		public static DateOnly FirstDateOfWeek(int Year, int WeekNr)
-		{
-			var firstOfJan = new DateTime(Year, 1, 1);
-			var firstThursdayOfYear = firstOfJan.AddDays(DayOfWeek.Thursday - firstOfJan.DayOfWeek);
-			var firstWeekOfYear = new GregorianCalendar().GetWeekOfYear(
-				firstThursdayOfYear,
-				CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Monday
-			);
+        // Get the date of the first day of the week
+        DateOnly FirstDateOfWeek(int year, int week)
+        {
+            var jan1 = new DateOnly(year, 1, 1);
+            var firstDayOfWeek = jan1.AddDays((week - 1) * 7 - (int)jan1.DayOfWeek + (int)DayOfWeek.Monday);
 
-			if (firstWeekOfYear == 1) WeekNr -= 1;
+            if (firstDayOfWeek.Year < year) firstDayOfWeek = firstDayOfWeek.AddDays(7);
 
-			return DateOnly.FromDateTime(firstThursdayOfYear.AddDays(WeekNr * 7 - 3));
-		}
+            return firstDayOfWeek;
+        }
 	}
 }
