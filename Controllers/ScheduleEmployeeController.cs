@@ -1,9 +1,12 @@
-﻿using BumboSolid.Data;
+﻿using System.Globalization;
+using System;
+using BumboSolid.Data;
 using BumboSolid.Data.Models;
 using BumboSolid.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.VisualBasic;
 
 namespace BumboSolid.Controllers
 {
@@ -37,14 +40,27 @@ namespace BumboSolid.Controllers
             {
                 foreach (FillRequest fillRequest in shift.FillRequests)
                 {
-					FillRequestViewModel fillRequestViewModel = new FillRequestViewModel()
-					{
+					// Getting correct date
+					var jan1 = new DateOnly(shift.Week.Year, 1, 1);
+					DateOnly date = jan1.AddDays(DayOfWeek.Monday - jan1.DayOfWeek).AddDays((shift.Week.WeekNumber - 1) * 7).AddDays((int)shift.Weekday - (int)DayOfWeek.Monday);
 
+                    // Creating FillReuestViewModel
+                    FillRequestViewModel fillRequestViewModel = new FillRequestViewModel()
+                    {
+                        Date = date,
+                        Day = shift.Weekday,
+						StartTime = shift.StartTime,
+                        EndTime = shift.EndTime,
 
-				     };
+						Department = shift.Department,
+                        Accepted = fillRequest.Accepted
+
+                    };
 				}
-			}
-			}
+			};
+		}
+	}
+}
 
             return View(shifts);
         }

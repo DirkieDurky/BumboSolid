@@ -15,6 +15,6 @@ namespace BumboSolid.Models
 
 		public TimeOnly EndTime { get; set; }
 
-		public string Accepted { get; set; }
+		public bool Accepted { get; set; }
 	}
 }
