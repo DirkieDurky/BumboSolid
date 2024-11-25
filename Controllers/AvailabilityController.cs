@@ -136,8 +136,8 @@ namespace BumboSolid.Controllers
 			return View(availabilityRuleViewModel);
 		}
 
-		// GET: AvailiabilityController/Edit
-		[HttpGet("Bewerken/{AvailabilityId:int}")]
+        // GET: AvailiabilityController/Edit/5
+        [HttpGet("Bewerken/{AvailabilityId:int}")]
 		public async Task<IActionResult> Edit(int AvailabilityId, int Year, int WeekNr)
 		{
 			if (AvailabilityId == null) return NotFound();
@@ -170,8 +170,8 @@ namespace BumboSolid.Controllers
 			return View(availabilityViewModel);
 		}
 
-		// Post: AvailiabilityController/Edit
-		[ValidateAntiForgeryToken]
+        // Post: AvailiabilityController/Edit/5
+        [ValidateAntiForgeryToken]
 		[HttpPost("Bewerken")]
 		public async Task<IActionResult> Edit(AvailabilityRuleViewModel availabilityRuleViewModel, int Year, int WeekNr, string Availability)
 		{
@@ -249,8 +249,8 @@ namespace BumboSolid.Controllers
 			return View(availabilityRuleViewModel);
 		}
 
-		// GET: AvailiabilityController/Delete
-		[HttpGet("Verwijderen/{AvailabilityId:int}")]
+        // GET: AvailiabilityController/Delete/5
+        [HttpGet("Verwijderen/{AvailabilityId:int}")]
 		public async Task<IActionResult> Delete(int AvailabilityId, int Year, int WeekNr)
 		{
             if (AvailabilityId == null) return NotFound();
@@ -264,7 +264,7 @@ namespace BumboSolid.Controllers
             return View(availabilityRule);
 		}
 
-		// POST: AvailiabilityController/Delete
+		// POST: AvailiabilityController/Delete/5
 		[ActionName("Verwijderen")]
 		[ValidateAntiForgeryToken]
 		[HttpPost("Verwijderen/{AvailabilityId:int}")]
