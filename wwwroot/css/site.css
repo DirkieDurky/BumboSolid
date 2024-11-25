@@ -103,6 +103,7 @@ p {
         border-bottom: 1px solid rgba(0, 0, 0, 0.5);
         border-radius: 10px 10px 0 0;
     }
+
     .prognosis-table > table th {
         padding: 5px;
         border-radius: 10px 10px 0px 0px;
@@ -112,6 +113,7 @@ p {
         border-bottom: 1px solid rgba(0, 0, 0, 0.5);
         border-radius: 10px 10px 0 0;
     }
+
     .prognosis-table > table td {
         padding: 5px 20px;
     }
@@ -465,11 +467,4 @@ th, td {
 .rules-list {
     text-align: left;
     padding-left: 1vw;
-}
-
-.horizontal-div {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    position: relative;
 }

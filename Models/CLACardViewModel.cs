@@ -1,4 +1,6 @@
-﻿namespace BumboSolid.Models
+﻿using BumboSolid.Data.Models;
+
+namespace BumboSolid.Models
 {
     public class CLACardViewModel
     {
