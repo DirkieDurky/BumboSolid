@@ -1,10 +1,10 @@
 ﻿@model BumboSolid.Models.AvailabilityRuleViewModel
 
 @{
-    ViewData["Title"] = "Create";
+	ViewData["Title"] = "Create";
 }
 
-<h1>Beschikbaarheid Toevoegen</h1>
+<h1>Beschikbaarheid Bewerken</h1>
 
 <hr />
 <div class="row">
@@ -19,7 +19,7 @@
 			<div class="form-group">
 				<label for="Day" class="control-label">Dag</label>
 				<select id="Day" name="Day" class="form-control">
-					<option value="Monday">Maandag</option>
+					<option value="Monday" selected="@(Model.Available == "Vers" ? "selected" : null)">Maandag</option>
 					<option value="Tuesday">Dinsdag</option>
 					<option value="Wednesday">Woensdag</option>
 					<option value="Thursday">Donderdag</option>

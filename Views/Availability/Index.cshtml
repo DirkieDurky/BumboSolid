@@ -6,7 +6,7 @@
 
 <script src="https://kit.fontawesome.com/981e782106.js" crossorigin="anonymous"></script>
 
-<a class="navbar-brand" asp-area="" asp-controller="Availability" asp-action="Create">Toevoegen</a>
+<a class="navbar-brand" asp-area="" asp-controller="Availability" asp-action="Create" asp-route-year="@ViewBag.year" asp-route-weekNr="@ViewBag.weekNr" asp-route-employeeId="@ViewBag.employeeId">Toevoegen</a>
 
 @foreach (var availiabilityRule in Model)
 {
@@ -15,7 +15,8 @@
         <h1>@availiabilityRule.StartTime</h1>
         <h1>@availiabilityRule.EndTime</h1>
         <h1>@availiabilityRule.Available</h1>
-        <a class="navbar-brand" asp-area="" asp-controller="Availability" asp-action="Edit"><i class="fa-solid fa-pencil"></i></a>
+        <h1>@availiabilityRule.School</h1>
+        <a class="navbar-brand" asp-area="" asp-controller="Availability" asp-action="Edit" asp-route-year="@ViewBag.year" asp-route-weekNr="@ViewBag.weekNr" asp-route-employeeId="@ViewBag.employeeId"><i class="fa-solid fa-pencil"></i></a>
         <a class="navbar-brand" asp-area="" asp-controller="Availability" asp-action="Delete"><i class="fa-solid fa-trash"></i></a>
     </div>
 }
