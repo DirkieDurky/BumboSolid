@@ -40,36 +40,66 @@ namespace BumboSolid.Controllers
             {
                 foreach (FillRequest fillRequest in shift.FillRequests)
                 {
-					// Getting correct date
+					// Getting correct date and day
 					var jan1 = new DateOnly(shift.Week.Year, 1, 1);
 					DateOnly date = jan1.AddDays(DayOfWeek.Monday - jan1.DayOfWeek).AddDays((shift.Week.WeekNumber - 1) * 7).AddDays((int)shift.Weekday - (int)DayOfWeek.Monday);
 
-                    // Creating FillReuestViewModel
-                    FillRequestViewModel fillRequestViewModel = new FillRequestViewModel()
+					string[] days = ["Monday", "Tuesdday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+
+					// Creating FillReuestViewModel
+					FillRequestViewModel fillRequestViewModel = new FillRequestViewModel()
                     {
                         Date = date,
-                        Day = shift.Weekday,
+                        Day = days[shift.Weekday],
 						StartTime = shift.StartTime,
                         EndTime = shift.EndTime,
 
 						Department = shift.Department,
-                        Accepted = fillRequest.Accepted
+                        Accepted = Convert.ToBoolean(fillRequest.Accepted)
+					};
 
-                    };
+                    fillRequests.Add(fillRequestViewModel);
 				}
 			};
-		}
-	}
-}
 
-            return View(shifts);
+            return View(fillRequests);
         }
 
         // GET: ScheduleEmployeeController/IncomingFillRequests
         [HttpGet("Inkomende invalsverzoeken")]
         public ActionResult IncomingFillRequests()
         {
-            return View();
-        }
+			var shifts = _context.Shifts.ToList(); //.Where(e => e.Employee != User.Id)
+
+			List<FillRequestViewModel> fillRequests = new List<FillRequestViewModel>();
+
+			foreach (Shift shift in shifts)
+			{
+				foreach (FillRequest fillRequest in shift.FillRequests)
+				{
+					// Getting correct date and day
+					var jan1 = new DateOnly(shift.Week.Year, 1, 1);
+					DateOnly date = jan1.AddDays(DayOfWeek.Monday - jan1.DayOfWeek).AddDays((shift.Week.WeekNumber - 1) * 7).AddDays((int)shift.Weekday - (int)DayOfWeek.Monday);
+
+					string[] days = ["Monday", "Tuesdday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+
+					// Creating FillReuestViewModel
+					FillRequestViewModel fillRequestViewModel = new FillRequestViewModel()
+					{
+						Date = date,
+						Day = days[shift.Weekday],
+						StartTime = shift.StartTime,
+						EndTime = shift.EndTime,
+
+						Department = shift.Department,
+						Name = _context.Employees.FirstOrDefault(i => i.Id == shift.Employee).FirstName + " " + _context.Employees.FirstOrDefault(i => i.Id == shift.Employee).LastName
+					};
+
+					fillRequests.Add(fillRequestViewModel);
+				}
+			};
+
+			return View(fillRequests);
+		}
     }
 }
