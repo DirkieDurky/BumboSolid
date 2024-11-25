@@ -10,7 +10,7 @@
 <hr />
 <div class="row">
 	<div class="col-md-4">
-		<form asp-action="Bewerken">
+		<form asp-controller="Weer" asp-action="Bewerken">
 			<div class="form-group">
 				@for (int i = 0; i < labels.Length; i++)
 				{
@@ -29,7 +29,7 @@
 
 			<div class="d-flex flex-row mt-3 gap-3">
 				<input type="submit" value="Opslaan & Terug" class="btn btn-primary" />
-				<a class="btn btn-danger" asp-controller="Prognoses" asp-action="Index">Terug</a>
+				<a class="btn btn-secondary" asp-controller="Prognoses" asp-action="">Terug</a>
 			</div>
 		</form>
 	</div>

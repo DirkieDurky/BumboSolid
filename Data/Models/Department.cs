@@ -12,4 +12,6 @@ public partial class Department
     public virtual List<PrognosisDepartment> PrognosisDepartments { get; set; } = new List<PrognosisDepartment>();
 
     public virtual List<Shift> Shifts { get; set; } = new List<Shift>();
+
+    public virtual List<User> Employees { get; set; } = new List<User>();
 }

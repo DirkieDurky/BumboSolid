@@ -1,0 +1,38 @@
+﻿@model IEnumerable<BumboSolid.Data.Models.User>
+
+<h1>Employees</h1>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>First Name</th>
+            <th>Last Name</th>
+            <th>Place of Residence</th>
+            <th>Street Name</th>
+            <th>Street Number</th>
+            <th>Birth Date</th>
+            <th>Employed Since</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var employee in Model)
+        {
+            <tr>
+                <td>@employee.FirstName</td>
+                <td>@employee.LastName</td>
+                <td>@employee.PlaceOfResidence</td>
+                <td>@employee.StreetName</td>
+                <td>@employee.StreetNumber</td>
+                <td>@employee.BirthDate.ToShortDateString()</td>
+                <td>@employee.EmployedSince.ToShortDateString()</td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@employee.Id" class="btn btn-primary btn-sm">Edit</a>
+                    <a asp-action="Delete" asp-route-id="@employee.Id" class="btn btn-secondary btn-sm">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<a asp-action="Create" class="btn btn-success">Add New Employee</a>

@@ -5,7 +5,7 @@
     int value;
 }
 
-<form method="post" asp-action="Bewerken" asp-controller="Factoren">
+<form method="post" asp-controller="Factoren" asp-action="Bewerken" asp-route-id="@Model.Prognosis.Id">
     <table class="table" cellspacing="0">
         <tr>
             <th></th>
@@ -89,7 +89,7 @@
     </table>
 
     <div class="d-flex flex-row mt-3">
-        <a asp-controller="Prognoses" asp-action="Index" class="btn btn-secondary">Terug</a>
+        <a asp-controller="Prognoses" asp-action="" class="btn btn-secondary">Terug</a>
         <button type="submit" class="btn btn-primary me-3">Opslaan</button>
     </div>
 </form>
