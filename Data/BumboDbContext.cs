@@ -377,14 +377,6 @@ public partial class BumboDbContext : IdentityDbContext<User, IdentityRole<int>,
 			new Department() { Name = "Vakkenvullen" },
 			new Department() { Name = "Vers" }
 		);
-		modelBuilder.Entity<User>().HasData(
-			new User { FirstName = "John", LastName = "Doe", PlaceOfResidence = "City", StreetName = "Street 1" },
-			new User { FirstName = "Jane", LastName = "Smith", PlaceOfResidence = "Town", StreetName = "Street 2" }
-		);
-		modelBuilder.Entity<AvailabilityRule>().HasData(
-			new AvailabilityRule { Id = 1, Employee = 1, Date = new DateOnly(2023, 1, 1) },
-			new AvailabilityRule { Id = 2, Employee = 2, Date = new DateOnly(2023, 1, 2) }
-		);
 		modelBuilder.Entity<CLAEntry>().HasData(
 			new CLAEntry { Id = 1, MaxWorkDurationPerDay = 8, MaxWorkDaysPerWeek = 5, MaxWorkDurationPerWeek = 40, MaxWorkDurationPerHolidayWeek = 35, MaxAvgWeeklyWorkDurationOverFourWeeks = 38, MaxShiftDuration = 8 },
 			new CLAEntry { Id = 2, MaxWorkDurationPerDay = 7, MaxWorkDaysPerWeek = 5, MaxWorkDurationPerWeek = 35, MaxWorkDurationPerHolidayWeek = 30, MaxAvgWeeklyWorkDurationOverFourWeeks = 33, MaxShiftDuration = 7 }
@@ -392,10 +384,6 @@ public partial class BumboDbContext : IdentityDbContext<User, IdentityRole<int>,
 		modelBuilder.Entity<CLABreakEntry>().HasData(
 			new CLABreakEntry { CLAEntryId = 1, WorkDuration = 4, MinBreakDuration = 30 },
 			new CLABreakEntry { CLAEntryId = 2, WorkDuration = 5, MinBreakDuration = 45 }
-		);
-		modelBuilder.Entity<FillRequest>().HasData(
-			new FillRequest { Id = 1, ShiftId = 1, SubstituteEmployeeId = 2, AbsentDescription = "Sick" },
-			new FillRequest { Id = 2, ShiftId = 2, SubstituteEmployeeId = 1, AbsentDescription = "Vacation" }
 		);
 		modelBuilder.Entity<Holiday>().HasData(
 			new Holiday { Name = "New Year" },

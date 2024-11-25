@@ -22,34 +22,6 @@ namespace BumboSolid.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("BumboSolid.Data.Models.AvailabilityDay", b =>
-                {
-                    b.Property<int>("Employee")
-                        .HasColumnType("int");
-
-                    b.Property<DateOnly>("Date")
-                        .HasColumnType("date");
-
-                    b.Property<int?>("LessonHours")
-                        .HasColumnType("int");
-
-                    b.HasKey("Employee", "Date");
-
-                    b.ToTable("AvailabilityDay", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            Employee = 1,
-                            Date = new DateOnly(2023, 1, 1)
-                        },
-                        new
-                        {
-                            Employee = 2,
-                            Date = new DateOnly(2023, 1, 2)
-                        });
-                });
-
             modelBuilder.Entity("BumboSolid.Data.Models.AvailabilityRule", b =>
                 {
                     b.Property<int>("Id")
@@ -81,26 +53,6 @@ namespace BumboSolid.Migrations
                     b.HasIndex("Employee");
 
                     b.ToTable("AvailabilityRule", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Available = (byte)0,
-                            Date = new DateOnly(2023, 1, 1),
-                            Employee = 1,
-                            EndTime = new TimeOnly(0, 0, 0),
-                            StartTime = new TimeOnly(0, 0, 0)
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Available = (byte)0,
-                            Date = new DateOnly(2023, 1, 2),
-                            Employee = 2,
-                            EndTime = new TimeOnly(0, 0, 0),
-                            StartTime = new TimeOnly(0, 0, 0)
-                        });
                 });
 
             modelBuilder.Entity("BumboSolid.Data.Models.CLABreakEntry", b =>
@@ -317,24 +269,6 @@ namespace BumboSolid.Migrations
                     b.HasIndex(new[] { "SubstituteEmployeeId" }, "IX_FillRequest_SubstituteEmployeeID");
 
                     b.ToTable("FillRequest", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            AbsentDescription = "Sick",
-                            Accepted = (byte)0,
-                            ShiftId = 1,
-                            SubstituteEmployeeId = 2
-                        },
-                        new
-                        {
-                            Id = 2,
-                            AbsentDescription = "Vacation",
-                            Accepted = (byte)0,
-                            ShiftId = 2,
-                            SubstituteEmployeeId = 1
-                        });
                 });
 
             modelBuilder.Entity("BumboSolid.Data.Models.Holiday", b =>
@@ -570,6 +504,7 @@ namespace BumboSolid.Migrations
                             Department = "Kassa",
                             EndTime = new TimeOnly(0, 0, 0),
                             ExternalEmployeeName = "John Doe",
+                            IsBreak = (byte)0,
                             StartTime = new TimeOnly(0, 0, 0),
                             WeekId = 1,
                             Weekday = (byte)0
@@ -580,6 +515,7 @@ namespace BumboSolid.Migrations
                             Department = "Vakkenvullen",
                             EndTime = new TimeOnly(0, 0, 0),
                             ExternalEmployeeName = "Jane Smith",
+                            IsBreak = (byte)0,
                             StartTime = new TimeOnly(0, 0, 0),
                             WeekId = 2,
                             Weekday = (byte)0

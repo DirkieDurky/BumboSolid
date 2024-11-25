@@ -8,18 +8,18 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace BumboSolid.Migrations
 {
     /// <inheritdoc />
-    public partial class addedDataScheduling : Migration
+    public partial class AddedDummyData : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.InsertData(
-                table: "Employee",
-                columns: new[] { "AspNetUserID", "BirthDate", "EmployedSince", "FirstName", "LastName", "PlaceOfResidence", "StreetName", "StreetNumber" },
+                table: "CLAEntry",
+                columns: new[] { "ID", "AgeEnd", "AgeStart", "EarliestWorkTime", "LatestWorkTime", "MaxAvgWeeklyWorkDurationOverFourWeeks", "MaxShiftDuration", "MaxWorkDaysPerWeek", "MaxWorkDurationPerDay", "MaxWorkDurationPerHolidayWeek", "MaxWorkDurationPerWeek" },
                 values: new object[,]
                 {
-                    { 1, new DateOnly(1, 1, 1), new DateOnly(1, 1, 1), "John", "Doe", "New York", "5th Avenue", null },
-                    { 2, new DateOnly(1, 1, 1), new DateOnly(1, 1, 1), "Jane", "Smith", "Los Angeles", "Sunset Boulevard", null }
+                    { 1, null, null, null, null, 38, 8, 5, 8, 35, 40 },
+                    { 2, null, null, null, null, 33, 7, 5, 7, 30, 35 }
                 });
 
             migrationBuilder.InsertData(
@@ -36,8 +36,8 @@ namespace BumboSolid.Migrations
                 columns: new[] { "ID", "Activity", "AvgDailyPerformances", "Department", "Duration", "PerVisitor" },
                 values: new object[,]
                 {
-                    { 1, "Stock Refill", (byte)0, "Vakkenvullen", 0, false },
-                    { 2, "Customer Support", (byte)0, "Kassa", 0, false }
+                    { 1, "Stocking", (byte)5, "Vakkenvullen", 60, false },
+                    { 2, "Cashier", (byte)8, "Kassa", 45, false }
                 });
 
             migrationBuilder.InsertData(
@@ -45,8 +45,17 @@ namespace BumboSolid.Migrations
                 columns: new[] { "ID", "WeekNumber", "Year" },
                 values: new object[,]
                 {
-                    { 1, (byte)0, (short)0 },
-                    { 2, (byte)0, (short)0 }
+                    { 1, (byte)1, (short)2024 },
+                    { 2, (byte)2, (short)2024 }
+                });
+
+            migrationBuilder.InsertData(
+                table: "CLABreakEntry",
+                columns: new[] { "CLAEntryId", "WorkDuration", "MinBreakDuration" },
+                values: new object[,]
+                {
+                    { 1, 4, 30 },
+                    { 2, 5, 45 }
                 });
 
             migrationBuilder.InsertData(
@@ -54,8 +63,8 @@ namespace BumboSolid.Migrations
                 columns: new[] { "Date", "Holiday_Name", "Impact" },
                 values: new object[,]
                 {
-                    { new DateOnly(2024, 12, 25), "Christmas", (short)0 },
-                    { new DateOnly(2025, 1, 1), "New Year", (short)0 }
+                    { new DateOnly(2023, 12, 25), "Christmas", (short)0 },
+                    { new DateOnly(2023, 1, 1), "New Year", (short)0 }
                 });
 
             migrationBuilder.InsertData(
@@ -64,25 +73,16 @@ namespace BumboSolid.Migrations
                 values: new object[,]
                 {
                     { 1, (byte)1, 0 },
-                    { 1, (byte)2, 0 }
+                    { 2, (byte)2, 0 }
                 });
 
             migrationBuilder.InsertData(
                 table: "Shift",
-                columns: new[] { "ID", "Department", "Employee", "EndTime", "ExternalEmployeeName", "StartTime", "WeekID", "Weekday" },
+                columns: new[] { "ID", "Department", "Employee", "EndTime", "ExternalEmployeeName", "IsBreak", "StartTime", "WeekID", "Weekday" },
                 values: new object[,]
                 {
-                    { 1, "Kassa", null, new TimeOnly(0, 0, 0), "Temporary Worker", new TimeOnly(0, 0, 0), 1, (byte)0 },
-                    { 2, "Vakkenvullen", null, new TimeOnly(0, 0, 0), "Freelancer", new TimeOnly(0, 0, 0), 2, (byte)0 }
-                });
-
-            migrationBuilder.InsertData(
-                table: "FillRequest",
-                columns: new[] { "ID", "Absent_Description", "Accepted", "ShiftID", "SubstituteEmployeeID" },
-                values: new object[,]
-                {
-                    { 1, "Illness", (byte)0, 1, null },
-                    { 2, "Vacation", (byte)0, 2, null }
+                    { 1, "Kassa", null, new TimeOnly(0, 0, 0), "John Doe", (byte)0, new TimeOnly(0, 0, 0), 1, (byte)0 },
+                    { 2, "Vakkenvullen", null, new TimeOnly(0, 0, 0), "Jane Smith", (byte)0, new TimeOnly(0, 0, 0), 2, (byte)0 }
                 });
 
             migrationBuilder.InsertData(
@@ -91,7 +91,7 @@ namespace BumboSolid.Migrations
                 values: new object[,]
                 {
                     { "Kassa", 1, (byte)1, (short)0 },
-                    { "Vakkenvullen", 1, (byte)2, (short)0 }
+                    { "Vakkenvullen", 2, (byte)2, (short)0 }
                 });
         }
 
@@ -99,34 +99,24 @@ namespace BumboSolid.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DeleteData(
-                table: "Employee",
-                keyColumn: "AspNetUserID",
-                keyValue: 1);
+                table: "CLABreakEntry",
+                keyColumns: new[] { "CLAEntryId", "WorkDuration" },
+                keyValues: new object[] { 1, 4 });
 
             migrationBuilder.DeleteData(
-                table: "Employee",
-                keyColumn: "AspNetUserID",
-                keyValue: 2);
-
-            migrationBuilder.DeleteData(
-                table: "FillRequest",
-                keyColumn: "ID",
-                keyValue: 1);
-
-            migrationBuilder.DeleteData(
-                table: "FillRequest",
-                keyColumn: "ID",
-                keyValue: 2);
+                table: "CLABreakEntry",
+                keyColumns: new[] { "CLAEntryId", "WorkDuration" },
+                keyValues: new object[] { 2, 5 });
 
             migrationBuilder.DeleteData(
                 table: "HolidayDay",
                 keyColumns: new[] { "Date", "Holiday_Name" },
-                keyValues: new object[] { new DateOnly(2024, 12, 25), "Christmas" });
+                keyValues: new object[] { new DateOnly(2023, 12, 25), "Christmas" });
 
             migrationBuilder.DeleteData(
                 table: "HolidayDay",
                 keyColumns: new[] { "Date", "Holiday_Name" },
-                keyValues: new object[] { new DateOnly(2025, 1, 1), "New Year" });
+                keyValues: new object[] { new DateOnly(2023, 1, 1), "New Year" });
 
             migrationBuilder.DeleteData(
                 table: "Norm",
@@ -146,7 +136,27 @@ namespace BumboSolid.Migrations
             migrationBuilder.DeleteData(
                 table: "PrognosisDepartment",
                 keyColumns: new[] { "Department", "PrognosisID", "Weekday" },
-                keyValues: new object[] { "Vakkenvullen", 1, (byte)2 });
+                keyValues: new object[] { "Vakkenvullen", 2, (byte)2 });
+
+            migrationBuilder.DeleteData(
+                table: "Shift",
+                keyColumn: "ID",
+                keyValue: 1);
+
+            migrationBuilder.DeleteData(
+                table: "Shift",
+                keyColumn: "ID",
+                keyValue: 2);
+
+            migrationBuilder.DeleteData(
+                table: "CLAEntry",
+                keyColumn: "ID",
+                keyValue: 1);
+
+            migrationBuilder.DeleteData(
+                table: "CLAEntry",
+                keyColumn: "ID",
+                keyValue: 2);
 
             migrationBuilder.DeleteData(
                 table: "Holiday",
@@ -166,17 +176,7 @@ namespace BumboSolid.Migrations
             migrationBuilder.DeleteData(
                 table: "PrognosisDay",
                 keyColumns: new[] { "PrognosisID", "Weekday" },
-                keyValues: new object[] { 1, (byte)2 });
-
-            migrationBuilder.DeleteData(
-                table: "Shift",
-                keyColumn: "ID",
-                keyValue: 1);
-
-            migrationBuilder.DeleteData(
-                table: "Shift",
-                keyColumn: "ID",
-                keyValue: 2);
+                keyValues: new object[] { 2, (byte)2 });
 
             migrationBuilder.DeleteData(
                 table: "Week",
