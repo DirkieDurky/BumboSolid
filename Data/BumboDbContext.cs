@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using BumboSolid.Data.Models;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 namespace BumboSolid.Data;
 
-public partial class BumboDbContext : DbContext
+public partial class BumboDbContext : IdentityDbContext<User, IdentityRole<int>, int>
 {
 	public BumboDbContext()
 	{
@@ -24,7 +26,7 @@ public partial class BumboDbContext : DbContext
 
 	public virtual DbSet<Department> Departments { get; set; }
 
-	public virtual DbSet<Employee> Employees { get; set; }
+    public virtual DbSet<User> Employees { get; set; }
 
 	public virtual DbSet<Factor> Factors { get; set; }
 
@@ -58,6 +60,8 @@ public partial class BumboDbContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        base.OnModelCreating(modelBuilder);
+
         modelBuilder.Entity<AvailabilityRule>(entity =>
         {
             entity.HasKey(e => e.Id);
@@ -102,24 +106,24 @@ public partial class BumboDbContext : DbContext
 				.IsUnicode(false);
 		});
 
-		modelBuilder.Entity<Employee>(entity =>
-		{
-			entity.HasKey(e => e.AspNetUserId);
+        modelBuilder.Entity<User>(entity =>
+        {
+            entity.HasKey(e => e.Id);
 
-			entity.ToTable("Employee");
+            entity.ToTable("User");
 
-            entity.Property(e => e.AspNetUserId)
-                .ValueGeneratedNever()
-                .HasColumnName("AspNetUserID");
             entity.Property(e => e.FirstName)
                 .HasMaxLength(45)
                 .IsUnicode(false);
+
             entity.Property(e => e.LastName)
                 .HasMaxLength(90)
                 .IsUnicode(false);
+
             entity.Property(e => e.PlaceOfResidence)
                 .HasMaxLength(45)
                 .IsUnicode(false);
+
             entity.Property(e => e.StreetName)
                 .HasMaxLength(45)
                 .IsUnicode(false);
@@ -131,7 +135,7 @@ public partial class BumboDbContext : DbContext
                         .HasForeignKey("Department")
                         .OnDelete(DeleteBehavior.ClientSetNull)
                         .HasConstraintName("FK_Capability_Department"),
-                    l => l.HasOne<Employee>().WithMany()
+                    l => l.HasOne<User>().WithMany()
                         .HasForeignKey("Employee")
                         .OnDelete(DeleteBehavior.ClientSetNull)
                         .HasConstraintName("FK_Capability_Employee"),

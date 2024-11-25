@@ -4,6 +4,7 @@ using BumboSolid.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BumboSolid.Migrations
 {
     [DbContext(typeof(BumboDbContext))]
-    partial class BumboDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241123214510_Init")]
+    partial class Init
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -21,34 +24,6 @@ namespace BumboSolid.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
-
-            modelBuilder.Entity("BumboSolid.Data.Models.AvailabilityDay", b =>
-                {
-                    b.Property<int>("Employee")
-                        .HasColumnType("int");
-
-                    b.Property<DateOnly>("Date")
-                        .HasColumnType("date");
-
-                    b.Property<int?>("LessonHours")
-                        .HasColumnType("int");
-
-                    b.HasKey("Employee", "Date");
-
-                    b.ToTable("AvailabilityDay", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            Employee = 1,
-                            Date = new DateOnly(2023, 1, 1)
-                        },
-                        new
-                        {
-                            Employee = 2,
-                            Date = new DateOnly(2023, 1, 2)
-                        });
-                });
 
             modelBuilder.Entity("BumboSolid.Data.Models.AvailabilityRule", b =>
                 {
@@ -81,26 +56,6 @@ namespace BumboSolid.Migrations
                     b.HasIndex("Employee");
 
                     b.ToTable("AvailabilityRule", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Available = (byte)0,
-                            Date = new DateOnly(2023, 1, 1),
-                            Employee = 1,
-                            EndTime = new TimeOnly(0, 0, 0),
-                            StartTime = new TimeOnly(0, 0, 0)
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Available = (byte)0,
-                            Date = new DateOnly(2023, 1, 2),
-                            Employee = 2,
-                            EndTime = new TimeOnly(0, 0, 0),
-                            StartTime = new TimeOnly(0, 0, 0)
-                        });
                 });
 
             modelBuilder.Entity("BumboSolid.Data.Models.CLABreakEntry", b =>
@@ -118,20 +73,6 @@ namespace BumboSolid.Migrations
                     b.HasKey("CLAEntryId", "WorkDuration");
 
                     b.ToTable("CLABreakEntry", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            CLAEntryId = 1,
-                            WorkDuration = 4,
-                            MinBreakDuration = 30
-                        },
-                        new
-                        {
-                            CLAEntryId = 2,
-                            WorkDuration = 5,
-                            MinBreakDuration = 45
-                        });
                 });
 
             modelBuilder.Entity("BumboSolid.Data.Models.CLAEntry", b =>
@@ -176,28 +117,6 @@ namespace BumboSolid.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("CLAEntry", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            MaxAvgWeeklyWorkDurationOverFourWeeks = 38,
-                            MaxShiftDuration = 8,
-                            MaxWorkDaysPerWeek = 5,
-                            MaxWorkDurationPerDay = 8,
-                            MaxWorkDurationPerHolidayWeek = 35,
-                            MaxWorkDurationPerWeek = 40
-                        },
-                        new
-                        {
-                            Id = 2,
-                            MaxAvgWeeklyWorkDurationOverFourWeeks = 33,
-                            MaxShiftDuration = 7,
-                            MaxWorkDaysPerWeek = 5,
-                            MaxWorkDurationPerDay = 7,
-                            MaxWorkDurationPerHolidayWeek = 30,
-                            MaxWorkDurationPerWeek = 35
-                        });
                 });
 
             modelBuilder.Entity("BumboSolid.Data.Models.Department", b =>
@@ -228,12 +147,28 @@ namespace BumboSolid.Migrations
 
             modelBuilder.Entity("BumboSolid.Data.Models.Employee", b =>
                 {
-                    b.Property<int>("AspNetUserId")
-                        .HasColumnType("int")
-                        .HasColumnName("AspNetUserID");
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("AccessFailedCount")
+                        .HasColumnType("int");
 
                     b.Property<DateOnly>("BirthDate")
                         .HasColumnType("date");
+
+                    b.Property<string>("ConcurrencyStamp")
+                        .IsConcurrencyToken()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Email")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<bool>("EmailConfirmed")
+                        .HasColumnType("bit");
 
                     b.Property<DateOnly>("EmployedSince")
                         .HasColumnType("date");
@@ -250,10 +185,36 @@ namespace BumboSolid.Migrations
                         .IsUnicode(false)
                         .HasColumnType("varchar(90)");
 
+                    b.Property<bool>("LockoutEnabled")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTimeOffset?>("LockoutEnd")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("NormalizedEmail")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<string>("NormalizedUserName")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<string>("PasswordHash")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PhoneNumber")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("PhoneNumberConfirmed")
+                        .HasColumnType("bit");
+
                     b.Property<string>("PlaceOfResidence")
                         .HasMaxLength(45)
                         .IsUnicode(false)
                         .HasColumnType("varchar(45)");
+
+                    b.Property<string>("SecurityStamp")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("StreetName")
                         .HasMaxLength(45)
@@ -263,31 +224,24 @@ namespace BumboSolid.Migrations
                     b.Property<int?>("StreetNumber")
                         .HasColumnType("int");
 
-                    b.HasKey("AspNetUserId");
+                    b.Property<bool>("TwoFactorEnabled")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("UserName")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("NormalizedEmail")
+                        .HasDatabaseName("EmailIndex");
+
+                    b.HasIndex("NormalizedUserName")
+                        .IsUnique()
+                        .HasDatabaseName("UserNameIndex")
+                        .HasFilter("[NormalizedUserName] IS NOT NULL");
 
                     b.ToTable("Employee", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            AspNetUserId = 1,
-                            BirthDate = new DateOnly(1, 1, 1),
-                            EmployedSince = new DateOnly(1, 1, 1),
-                            FirstName = "John",
-                            LastName = "Doe",
-                            PlaceOfResidence = "City",
-                            StreetName = "Street 1"
-                        },
-                        new
-                        {
-                            AspNetUserId = 2,
-                            BirthDate = new DateOnly(1, 1, 1),
-                            EmployedSince = new DateOnly(1, 1, 1),
-                            FirstName = "Jane",
-                            LastName = "Smith",
-                            PlaceOfResidence = "Town",
-                            StreetName = "Street 2"
-                        });
                 });
 
             modelBuilder.Entity("BumboSolid.Data.Models.Factor", b =>
@@ -381,24 +335,6 @@ namespace BumboSolid.Migrations
                     b.HasIndex(new[] { "SubstituteEmployeeId" }, "IX_FillRequest_SubstituteEmployeeID");
 
                     b.ToTable("FillRequest", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            AbsentDescription = "Sick",
-                            Accepted = (byte)0,
-                            ShiftId = 1,
-                            SubstituteEmployeeId = 2
-                        },
-                        new
-                        {
-                            Id = 2,
-                            AbsentDescription = "Vacation",
-                            Accepted = (byte)0,
-                            ShiftId = 2,
-                            SubstituteEmployeeId = 1
-                        });
                 });
 
             modelBuilder.Entity("BumboSolid.Data.Models.Holiday", b =>
@@ -411,16 +347,6 @@ namespace BumboSolid.Migrations
                     b.HasKey("Name");
 
                     b.ToTable("Holiday", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            Name = "New Year"
-                        },
-                        new
-                        {
-                            Name = "Christmas"
-                        });
                 });
 
             modelBuilder.Entity("BumboSolid.Data.Models.HolidayDay", b =>
@@ -440,20 +366,6 @@ namespace BumboSolid.Migrations
                     b.HasKey("HolidayName", "Date");
 
                     b.ToTable("HolidayDay", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            HolidayName = "New Year",
-                            Date = new DateOnly(2023, 1, 1),
-                            Impact = (short)0
-                        },
-                        new
-                        {
-                            HolidayName = "Christmas",
-                            Date = new DateOnly(2023, 12, 25),
-                            Impact = (short)0
-                        });
                 });
 
             modelBuilder.Entity("BumboSolid.Data.Models.Norm", b =>
@@ -488,26 +400,6 @@ namespace BumboSolid.Migrations
                     b.HasIndex(new[] { "Department" }, "IX_Norm_Department");
 
                     b.ToTable("Norm", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Activity = "Stocking",
-                            AvgDailyPerformances = (byte)5,
-                            Department = "Vakkenvullen",
-                            Duration = 60,
-                            PerVisitor = false
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Activity = "Cashier",
-                            AvgDailyPerformances = (byte)8,
-                            Department = "Kassa",
-                            Duration = 45,
-                            PerVisitor = false
-                        });
                 });
 
             modelBuilder.Entity("BumboSolid.Data.Models.PrognosisDay", b =>
@@ -525,20 +417,6 @@ namespace BumboSolid.Migrations
                     b.HasKey("PrognosisId", "Weekday");
 
                     b.ToTable("PrognosisDay", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            PrognosisId = 1,
-                            Weekday = (byte)1,
-                            VisitorEstimate = 0
-                        },
-                        new
-                        {
-                            PrognosisId = 2,
-                            Weekday = (byte)2,
-                            VisitorEstimate = 0
-                        });
                 });
 
             modelBuilder.Entity("BumboSolid.Data.Models.PrognosisDepartment", b =>
@@ -565,22 +443,6 @@ namespace BumboSolid.Migrations
                     b.HasIndex(new[] { "PrognosisId", "Weekday" }, "IX_PrognosisDepartment_PrognosisID_Weekday");
 
                     b.ToTable("PrognosisDepartment", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            PrognosisId = 1,
-                            Department = "Kassa",
-                            Weekday = (byte)1,
-                            WorkHours = (short)0
-                        },
-                        new
-                        {
-                            PrognosisId = 2,
-                            Department = "Vakkenvullen",
-                            Weekday = (byte)2,
-                            WorkHours = (short)0
-                        });
                 });
 
             modelBuilder.Entity("BumboSolid.Data.Models.Shift", b =>
@@ -626,28 +488,6 @@ namespace BumboSolid.Migrations
                     b.HasIndex(new[] { "WeekId" }, "IX_Shift_WeekID");
 
                     b.ToTable("Shift", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Department = "Kassa",
-                            EndTime = new TimeOnly(0, 0, 0),
-                            ExternalEmployeeName = "John Doe",
-                            StartTime = new TimeOnly(0, 0, 0),
-                            WeekId = 1,
-                            Weekday = (byte)0
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Department = "Vakkenvullen",
-                            EndTime = new TimeOnly(0, 0, 0),
-                            ExternalEmployeeName = "Jane Smith",
-                            StartTime = new TimeOnly(0, 0, 0),
-                            WeekId = 2,
-                            Weekday = (byte)0
-                        });
                 });
 
             modelBuilder.Entity("BumboSolid.Data.Models.Weather", b =>
@@ -716,20 +556,6 @@ namespace BumboSolid.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Week", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            WeekNumber = (byte)1,
-                            Year = (short)2024
-                        },
-                        new
-                        {
-                            Id = 2,
-                            WeekNumber = (byte)2,
-                            Year = (short)2024
-                        });
                 });
 
             modelBuilder.Entity("Capability", b =>
@@ -747,6 +573,139 @@ namespace BumboSolid.Migrations
                     b.HasIndex("Department");
 
                     b.ToTable("Capability", (string)null);
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole<int>", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ConcurrencyStamp")
+                        .IsConcurrencyToken()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<string>("NormalizedName")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("NormalizedName")
+                        .IsUnique()
+                        .HasDatabaseName("RoleNameIndex")
+                        .HasFilter("[NormalizedName] IS NOT NULL");
+
+                    b.ToTable("AspNetRoles", (string)null);
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<int>", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ClaimType")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ClaimValue")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("RoleId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("RoleId");
+
+                    b.ToTable("AspNetRoleClaims", (string)null);
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<int>", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ClaimType")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ClaimValue")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("AspNetUserClaims", (string)null);
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<int>", b =>
+                {
+                    b.Property<string>("LoginProvider")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("ProviderKey")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("ProviderDisplayName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("LoginProvider", "ProviderKey");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("AspNetUserLogins", (string)null);
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<int>", b =>
+                {
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("RoleId")
+                        .HasColumnType("int");
+
+                    b.HasKey("UserId", "RoleId");
+
+                    b.HasIndex("RoleId");
+
+                    b.ToTable("AspNetUserRoles", (string)null);
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<int>", b =>
+                {
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("LoginProvider")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("Value")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("UserId", "LoginProvider", "Name");
+
+                    b.ToTable("AspNetUserTokens", (string)null);
                 });
 
             modelBuilder.Entity("BumboSolid.Data.Models.AvailabilityRule", b =>
@@ -899,6 +858,57 @@ namespace BumboSolid.Migrations
                         .HasForeignKey("Employee")
                         .IsRequired()
                         .HasConstraintName("FK_Capability_Employee");
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<int>", b =>
+                {
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole<int>", null)
+                        .WithMany()
+                        .HasForeignKey("RoleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<int>", b =>
+                {
+                    b.HasOne("BumboSolid.Data.Models.Employee", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<int>", b =>
+                {
+                    b.HasOne("BumboSolid.Data.Models.Employee", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<int>", b =>
+                {
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole<int>", null)
+                        .WithMany()
+                        .HasForeignKey("RoleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("BumboSolid.Data.Models.Employee", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<int>", b =>
+                {
+                    b.HasOne("BumboSolid.Data.Models.Employee", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("BumboSolid.Data.Models.CLAEntry", b =>

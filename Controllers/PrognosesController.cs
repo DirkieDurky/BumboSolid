@@ -5,9 +5,11 @@ using BumboSolid.Data.Models;
 using System.Globalization;
 using BumboSolid.Models;
 using Microsoft.EntityFrameworkCore.Query.SqlExpressions;
+using Microsoft.AspNetCore.Authorization;
 
 namespace BumboSolid.Controllers
 {
+	[Authorize(Roles = "Manager")]
 	[Route("Prognoses")]
     public class PrognosesController : Controller
 	{

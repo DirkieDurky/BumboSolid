@@ -1,12 +1,14 @@
 ﻿using BumboSolid.Data;
 using BumboSolid.Data.Models;
 using BumboSolid.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace BumboSolid.Controllers
 {
-	[Route("Feestdagen")]
+    [Authorize(Roles = "Manager")]
+    [Route("Feestdagen")]
 	public class HolidaysController : Controller
 	{
 		private readonly BumboDbContext _context;

@@ -2,19 +2,29 @@
 using Microsoft.EntityFrameworkCore;
 using BumboSolid.Data;
 using BumboSolid.Data.Models;
+using BumboSolid.Models;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Authorization;
 
 namespace BumboSolid.Controllers
 {
+    [Authorize(Roles = "Manager")]
+    [Route("Werknemers")]
     public class EmployeesController : Controller
     {
         private readonly BumboDbContext _context;
+        private readonly UserManager<User> _userManager;
+        private readonly SignInManager<User> _signInManager;
 
-        public EmployeesController(BumboDbContext context)
+        public EmployeesController(BumboDbContext context, UserManager<User> userManager, SignInManager<User> signInManager)
         {
             _context = context;
+            _userManager = userManager;
+            _signInManager = signInManager;
         }
 
         // Displays the list of all employees with related data.
+        [HttpGet("")]
         public async Task<IActionResult> Index()
         {
             var employees = await _context.Employees
@@ -26,29 +36,58 @@ namespace BumboSolid.Controllers
         }
 
         // Provides the view to create a new employee.
+        [HttpGet("Aanmaken")]
         public IActionResult Create()
         {
             return View();
         }
 
         // Processes the data submitted for creating a new employee.
-        [HttpPost]
+        [HttpPost("Aanmaken")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(Employee employee)
+        public async Task<IActionResult> Create(EmployeesCreateViewModel input)
         {
-            int maxId = _context.Employees.Any() ? _context.Employees.Max(n => n.AspNetUserId) : 0;
-            employee.AspNetUserId = maxId + 1;
+            if (await _userManager.FindByEmailAsync(input.Email) != null)
+            {
+                ModelState.AddModelError(string.Empty, $"The email '{input.Email}' is already in use.");
+            }
 
             if (ModelState.IsValid)
             {
-                _context.Add(employee);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                var user = new User
+                {
+                    UserName = input.Email,
+                    Email = input.Email,
+                    FirstName = input.FirstName,
+                    LastName = input.LastName,
+                    PlaceOfResidence = input.PlaceOfResidence,
+                    StreetName = input.StreetName,
+                    StreetNumber = input.StreetNumber,
+                    BirthDate = input.BirthDate,
+                    EmployedSince = input.EmployedSince,
+                };
+
+                var result = await _userManager.CreateAsync(user, input.Password);
+
+                if (result.Succeeded)
+                {
+                    _userManager.AddToRoleAsync(user, "Employee").Wait();
+                    return RedirectToAction("Index");
+                }
+                else
+                {
+                    foreach (var error in result.Errors)
+                    {
+                        ModelState.AddModelError(string.Empty, error.Description);
+                    }
+                }
             }
-            return View(employee);
+
+            return View(input);
         }
 
-        // Retrieves the details of an employee for editing.
+        // Retrieves the details of an employee for editing
+        [HttpGet("Bewerken/{id:int}")]
         public async Task<IActionResult> Edit(int id)
         {
             var employee = await _context.Employees.FindAsync(id);
@@ -61,8 +100,8 @@ namespace BumboSolid.Controllers
         }
 
         // Processes the data submitted to update an employee's information.
-        [HttpPost]
-        public async Task<IActionResult> Edit(int id, Employee employee)
+        [HttpPost("Bewerken/{id:int}")]
+        public async Task<IActionResult> Edit(int id, User employee)
         {
             var existingEmployee = await _context.Employees.FindAsync(id);
             if (existingEmployee == null)
@@ -85,12 +124,13 @@ namespace BumboSolid.Controllers
         // Checks if an employee exists in the database by ID.
         private bool EmployeeExists(int id)
         {
-            return _context.Employees.Any(e => e.AspNetUserId == id);
+            return _context.Employees.Any(e => e.Id == id);
         }
 
+        [HttpGet("Verwijderen/{id:int}")]
         public async Task<IActionResult> Delete(int id)
 		{
-            var employee = await _context.Employees.FirstOrDefaultAsync(e => e.AspNetUserId == id);
+            var employee = await _context.Employees.FirstOrDefaultAsync(e => e.Id == id);
             if (employee == null)
             {
                 return NotFound();
@@ -99,11 +139,11 @@ namespace BumboSolid.Controllers
 			return View(employee);
 		}
 
-        [HttpPost, ActionName("Delete")]
+        [HttpPost("Verwijderen/{id:int}"), ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var employee = await _context.Employees.FirstOrDefaultAsync(e => e.AspNetUserId == id);
+            var employee = await _context.Employees.FirstOrDefaultAsync(e => e.Id == id);
 
             if (employee != null)
             {
