@@ -1,21 +1,25 @@
 ﻿using BumboSolid.Data;
 using BumboSolid.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace BumboSolid.Controllers
 {
-	public class FactorenController : Controller
+    [Authorize(Roles = "Manager")]
+    [Route("Factoren")]
+	public class FactorsController : Controller
 	{
 		private readonly BumboDbContext _context;
 
-		public FactorenController(BumboDbContext context)
+		public FactorsController(BumboDbContext context)
 		{
 			_context = context;
 		}
 
 		// GET: FactorenController/Bewerken/5
-		public async Task<IActionResult> Bewerken(int id)
+		[HttpGet("Bewerken/{id:int}")]
+		public async Task<IActionResult> Edit(int id)
 		{            
 			var week = await _context.Weeks
 				.Include(p => p.PrognosisDays)
@@ -32,9 +36,9 @@ namespace BumboSolid.Controllers
 			return View(editPrognosisFactorsViewModel);
 		}
 
-		[HttpPost]
 		[ValidateAntiForgeryToken]
-		public async Task<IActionResult> Bewerken(int id, EditPrognosisFactorsViewModel model)
+		[HttpPost("Bewerken/{id:int}")]
+		public async Task<IActionResult> Edit(int id, EditPrognosisFactorsViewModel model)
 		{
 			var prognosis = await _context.Weeks
 				.Include(p => p.PrognosisDays)
@@ -46,7 +50,7 @@ namespace BumboSolid.Controllers
 				return NotFound();
 			}
 
-			for (int i = 0; i < model.VisitorEstimates.Length; i++)
+			for (int i = 0; i < model.VisitorEstimates!.Length; i++)
 			{
 				var prognosisDay = prognosis.PrognosisDays.FirstOrDefault(pd => pd.Weekday == i);
 				if (prognosisDay != null)
@@ -58,13 +62,13 @@ namespace BumboSolid.Controllers
 					var holidayFactor = prognosisDay.Factors.FirstOrDefault(f => f.Type == "Feestdagen");
 					if (holidayFactor != null)
 					{
-						holidayFactor.Impact = (short)model.Holidays[i];
+						holidayFactor.Impact = (short)model.Holidays![i];
 					}
 
 					var weatherFactor = prognosisDay.Factors.FirstOrDefault(f => f.Type == "Weer");
 					if (weatherFactor != null)
 					{
-                        weatherFactor.WeatherId = (byte)model.WeatherIds[i];
+                        weatherFactor.WeatherId = (byte)model.WeatherIds![i];
 
                         var weatherImpact = _context.Weathers
                             .Where(w => w.Id == weatherFactor.WeatherId)
@@ -77,8 +81,8 @@ namespace BumboSolid.Controllers
 					var otherFactor = prognosisDay.Factors.FirstOrDefault(f => f.Type == "Overig");
 					if (otherFactor != null)
 					{
-						otherFactor.Impact = (short)model.Others[i];
-						otherFactor.Description = model.Descriptions[i];
+						otherFactor.Impact = (short)model.Others![i];
+						otherFactor.Description = model.Descriptions![i];
 					}
 				}
 			}

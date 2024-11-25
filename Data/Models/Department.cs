@@ -13,5 +13,5 @@ public partial class Department
 
     public virtual List<Shift> Shifts { get; set; } = new List<Shift>();
 
-    public virtual List<Employee> Employees { get; set; } = new List<Employee>();
+    public virtual List<User> Employees { get; set; } = new List<User>();
 }

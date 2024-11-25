@@ -6,7 +6,9 @@ namespace BumboSolid.Data.Models;
 
 public partial class AvailabilityRule
 {
-    public int Employee { get; set; }
+	public int Id { get; set; }
+
+	public int Employee { get; set; }
 
 	[DataType(DataType.Date)]
 	public DateOnly Date { get; set; }
@@ -17,9 +19,9 @@ public partial class AvailabilityRule
 	[DataType(DataType.Time)]
 	public TimeOnly EndTime { get; set; }
 
-    public byte Available { get; set; }
+	public byte Available { get; set; }
 
-    public byte School { get; set; }
+	public byte School { get; set; }
 
-    public virtual Employee EmployeeNavigation { get; set; } = null!;
+	public virtual User EmployeeNavigation { get; set; } = null!;
 }

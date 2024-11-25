@@ -8,11 +8,26 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace BumboSolid.Migrations
 {
     /// <inheritdoc />
-    public partial class Model2Update : Migration
+    public partial class Init : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.CreateTable(
+                name: "AspNetRoles",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
+                    NormalizedName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
+                    ConcurrencyStamp = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AspNetRoles", x => x.Id);
+                });
+
             migrationBuilder.CreateTable(
                 name: "CLAEntry",
                 columns: table => new
@@ -50,18 +65,33 @@ namespace BumboSolid.Migrations
                 name: "Employee",
                 columns: table => new
                 {
-                    AspNetUserID = table.Column<int>(type: "int", nullable: false),
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     FirstName = table.Column<string>(type: "varchar(45)", unicode: false, maxLength: 45, nullable: false),
                     LastName = table.Column<string>(type: "varchar(90)", unicode: false, maxLength: 90, nullable: false),
                     PlaceOfResidence = table.Column<string>(type: "varchar(45)", unicode: false, maxLength: 45, nullable: true),
                     StreetName = table.Column<string>(type: "varchar(45)", unicode: false, maxLength: 45, nullable: true),
                     StreetNumber = table.Column<int>(type: "int", nullable: true),
                     BirthDate = table.Column<DateOnly>(type: "date", nullable: false),
-                    EmployedSince = table.Column<DateOnly>(type: "date", nullable: false)
+                    EmployedSince = table.Column<DateOnly>(type: "date", nullable: false),
+                    UserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
+                    NormalizedUserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
+                    Email = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
+                    NormalizedEmail = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
+                    EmailConfirmed = table.Column<bool>(type: "bit", nullable: false),
+                    PasswordHash = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    SecurityStamp = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ConcurrencyStamp = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    PhoneNumber = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    PhoneNumberConfirmed = table.Column<bool>(type: "bit", nullable: false),
+                    TwoFactorEnabled = table.Column<bool>(type: "bit", nullable: false),
+                    LockoutEnd = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
+                    LockoutEnabled = table.Column<bool>(type: "bit", nullable: false),
+                    AccessFailedCount = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Employee", x => x.AspNetUserID);
+                    table.PrimaryKey("PK_Employee", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -112,6 +142,27 @@ namespace BumboSolid.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "AspNetRoleClaims",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    RoleId = table.Column<int>(type: "int", nullable: false),
+                    ClaimType = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ClaimValue = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AspNetRoleClaims", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_AspNetRoleClaims_AspNetRoles_RoleId",
+                        column: x => x.RoleId,
+                        principalTable: "AspNetRoles",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "CLABreakEntry",
                 columns: table => new
                 {
@@ -151,21 +202,133 @@ namespace BumboSolid.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "AvailabilityDay",
+                name: "AspNetUserClaims",
                 columns: table => new
                 {
-                    Employee = table.Column<int>(type: "int", nullable: false),
-                    Date = table.Column<DateOnly>(type: "date", nullable: false),
-                    LessonHours = table.Column<int>(type: "int", nullable: true)
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    UserId = table.Column<int>(type: "int", nullable: false),
+                    ClaimType = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ClaimValue = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_AvailabilityDay", x => new { x.Employee, x.Date });
+                    table.PrimaryKey("PK_AspNetUserClaims", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_AvailabilityDay_Employee",
+                        name: "FK_AspNetUserClaims_Employee_UserId",
+                        column: x => x.UserId,
+                        principalTable: "Employee",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "AspNetUserLogins",
+                columns: table => new
+                {
+                    LoginProvider = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    ProviderKey = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    ProviderDisplayName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    UserId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AspNetUserLogins", x => new { x.LoginProvider, x.ProviderKey });
+                    table.ForeignKey(
+                        name: "FK_AspNetUserLogins_Employee_UserId",
+                        column: x => x.UserId,
+                        principalTable: "Employee",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "AspNetUserRoles",
+                columns: table => new
+                {
+                    UserId = table.Column<int>(type: "int", nullable: false),
+                    RoleId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AspNetUserRoles", x => new { x.UserId, x.RoleId });
+                    table.ForeignKey(
+                        name: "FK_AspNetUserRoles_AspNetRoles_RoleId",
+                        column: x => x.RoleId,
+                        principalTable: "AspNetRoles",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_AspNetUserRoles_Employee_UserId",
+                        column: x => x.UserId,
+                        principalTable: "Employee",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "AspNetUserTokens",
+                columns: table => new
+                {
+                    UserId = table.Column<int>(type: "int", nullable: false),
+                    LoginProvider = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    Value = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AspNetUserTokens", x => new { x.UserId, x.LoginProvider, x.Name });
+                    table.ForeignKey(
+                        name: "FK_AspNetUserTokens_Employee_UserId",
+                        column: x => x.UserId,
+                        principalTable: "Employee",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "AvailabilityRule",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Employee = table.Column<int>(type: "int", nullable: false),
+                    Date = table.Column<DateOnly>(type: "date", nullable: false),
+                    StartTime = table.Column<TimeOnly>(type: "time", nullable: false),
+                    EndTime = table.Column<TimeOnly>(type: "time", nullable: false),
+                    Available = table.Column<byte>(type: "tinyint", nullable: false),
+                    School = table.Column<byte>(type: "tinyint", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AvailabilityRule", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_AvailabilityRule_Employee",
                         column: x => x.Employee,
                         principalTable: "Employee",
-                        principalColumn: "AspNetUserID");
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Capability",
+                columns: table => new
+                {
+                    Employee = table.Column<int>(type: "int", nullable: false),
+                    Department = table.Column<string>(type: "varchar(25)", unicode: false, maxLength: 25, nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Capability", x => new { x.Employee, x.Department });
+                    table.ForeignKey(
+                        name: "FK_Capability_Department",
+                        column: x => x.Department,
+                        principalTable: "Department",
+                        principalColumn: "Name");
+                    table.ForeignKey(
+                        name: "FK_Capability_Employee",
+                        column: x => x.Employee,
+                        principalTable: "Employee",
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -215,7 +378,8 @@ namespace BumboSolid.Migrations
                     StartTime = table.Column<TimeOnly>(type: "time", nullable: false),
                     EndTime = table.Column<TimeOnly>(type: "time", nullable: false),
                     Employee = table.Column<int>(type: "int", nullable: true),
-                    ExternalEmployeeName = table.Column<string>(type: "varchar(135)", unicode: false, maxLength: 135, nullable: true)
+                    ExternalEmployeeName = table.Column<string>(type: "varchar(135)", unicode: false, maxLength: 135, nullable: true),
+                    IsBreak = table.Column<byte>(type: "tinyint", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -230,27 +394,6 @@ namespace BumboSolid.Migrations
                         column: x => x.WeekID,
                         principalTable: "Week",
                         principalColumn: "ID");
-                });
-
-            migrationBuilder.CreateTable(
-                name: "AvailabilityRule",
-                columns: table => new
-                {
-                    ID = table.Column<int>(type: "int", nullable: false),
-                    Employee = table.Column<int>(type: "int", nullable: false),
-                    Date = table.Column<DateOnly>(type: "date", nullable: false),
-                    StartTime = table.Column<TimeOnly>(type: "time", nullable: false),
-                    EndTime = table.Column<TimeOnly>(type: "time", nullable: false),
-                    Available = table.Column<byte>(type: "tinyint", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_AvailabilityRule", x => x.ID);
-                    table.ForeignKey(
-                        name: "FK_AvailabilityRule_AvailabilityDay",
-                        columns: x => new { x.Employee, x.Date },
-                        principalTable: "AvailabilityDay",
-                        principalColumns: new[] { "Employee", "Date" });
                 });
 
             migrationBuilder.CreateTable(
@@ -325,7 +468,7 @@ namespace BumboSolid.Migrations
                         name: "FK_FillRequest_Employee",
                         column: x => x.SubstituteEmployeeID,
                         principalTable: "Employee",
-                        principalColumn: "AspNetUserID");
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_FillRequest_Shift",
                         column: x => x.ShiftID,
@@ -368,9 +511,53 @@ namespace BumboSolid.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_AvailabilityRule_Employee_Date",
+                name: "IX_AspNetRoleClaims_RoleId",
+                table: "AspNetRoleClaims",
+                column: "RoleId");
+
+            migrationBuilder.CreateIndex(
+                name: "RoleNameIndex",
+                table: "AspNetRoles",
+                column: "NormalizedName",
+                unique: true,
+                filter: "[NormalizedName] IS NOT NULL");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AspNetUserClaims_UserId",
+                table: "AspNetUserClaims",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AspNetUserLogins_UserId",
+                table: "AspNetUserLogins",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AspNetUserRoles_RoleId",
+                table: "AspNetUserRoles",
+                column: "RoleId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AvailabilityRule_Employee",
                 table: "AvailabilityRule",
-                columns: new[] { "Employee", "Date" });
+                column: "Employee");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Capability_Department",
+                table: "Capability",
+                column: "Department");
+
+            migrationBuilder.CreateIndex(
+                name: "EmailIndex",
+                table: "Employee",
+                column: "NormalizedEmail");
+
+            migrationBuilder.CreateIndex(
+                name: "UserNameIndex",
+                table: "Employee",
+                column: "NormalizedUserName",
+                unique: true,
+                filter: "[NormalizedUserName] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Factor_PrognosisID_Weekday",
@@ -427,7 +614,25 @@ namespace BumboSolid.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
+                name: "AspNetRoleClaims");
+
+            migrationBuilder.DropTable(
+                name: "AspNetUserClaims");
+
+            migrationBuilder.DropTable(
+                name: "AspNetUserLogins");
+
+            migrationBuilder.DropTable(
+                name: "AspNetUserRoles");
+
+            migrationBuilder.DropTable(
+                name: "AspNetUserTokens");
+
+            migrationBuilder.DropTable(
                 name: "AvailabilityRule");
+
+            migrationBuilder.DropTable(
+                name: "Capability");
 
             migrationBuilder.DropTable(
                 name: "CLABreakEntry");
@@ -448,7 +653,7 @@ namespace BumboSolid.Migrations
                 name: "PrognosisDepartment");
 
             migrationBuilder.DropTable(
-                name: "AvailabilityDay");
+                name: "AspNetRoles");
 
             migrationBuilder.DropTable(
                 name: "CLAEntry");
@@ -460,6 +665,9 @@ namespace BumboSolid.Migrations
                 name: "Weather");
 
             migrationBuilder.DropTable(
+                name: "Employee");
+
+            migrationBuilder.DropTable(
                 name: "Shift");
 
             migrationBuilder.DropTable(
@@ -467,9 +675,6 @@ namespace BumboSolid.Migrations
 
             migrationBuilder.DropTable(
                 name: "PrognosisDay");
-
-            migrationBuilder.DropTable(
-                name: "Employee");
 
             migrationBuilder.DropTable(
                 name: "Department");

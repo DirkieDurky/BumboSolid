@@ -1,15 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.AspNetCore.Identity;
 
 namespace BumboSolid.Data.Models;
 
-public partial class Employee
+public partial class User:IdentityUser<int>
 {
-    public int AspNetUserId { get; set; }
-
     public string FirstName { get; set; } = null!;
 
-    public string LastName { get; set; } = null!;
+    public string LastName { get; set; }
 
     public string? PlaceOfResidence { get; set; }
 
