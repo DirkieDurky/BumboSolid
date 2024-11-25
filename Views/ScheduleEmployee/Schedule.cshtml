@@ -1,0 +1,8 @@
+﻿
+@{
+    ViewData["Title"] = "Schedule";
+}
+
+<a asp-controller="ScheduleEmployee" asp-action="OutgoingFillRequests" asp-route-id="@ViewBag.FillRequestId" class="btn btn-primary">Uitgaande invalsverzoeken</a>
+<a asp-controller="ScheduleEmployee" asp-action="IncomingFillRequests" asp-route-id="@ViewBag.FillRequestId" class="btn btn-primary">Inkomende invalsverzoeken</a>
+<a asp-controller="ScheduleEmployee" asp-action="Outgoing" asp-route-id="@ViewBag.FillRequestId" class="btn btn-primary">Stuur invalsverzoek</a>

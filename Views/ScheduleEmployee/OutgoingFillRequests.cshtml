@@ -1,0 +1,20 @@
+﻿@model IEnumerable<BumboSolid.Data.Models.Shift>
+
+@{
+    ViewData["Title"] = "Outgoing Trade Requests";
+}
+
+@foreach (var shift in Model)
+{
+    @foreach (var fillRequest in shift.FillRequests)
+    {
+		<div class="d-flex flex-row">
+			<p>@ViewBag.Date</p>
+			<p>@shift.Weekday</p>
+			<p>@shift.Department</p>
+			<p>@shift.StartTime</p>
+			<p>@shift.EndTime</p>
+			<p>@fillRequest.Accepted</p>
+		</div>
+    }
+}
