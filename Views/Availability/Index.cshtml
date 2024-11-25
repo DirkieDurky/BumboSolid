@@ -16,7 +16,7 @@
         <h1>@availiabilityRule.EndTime</h1>
         <h1>@availiabilityRule.Available</h1>
         <h1>@availiabilityRule.School</h1>
-        <a class="navbar-brand" asp-area="" asp-controller="Availability" asp-action="Edit" asp-route-year="@ViewBag.year" asp-route-weekNr="@ViewBag.weekNr" asp-route-employeeId="@ViewBag.employeeId"><i class="fa-solid fa-pencil"></i></a>
-        <a class="navbar-brand" asp-area="" asp-controller="Availability" asp-action="Delete"><i class="fa-solid fa-trash"></i></a>
+        <a class="navbar-brand" asp-area="" asp-controller="Availability" asp-action="Edit" asp-route-AvailabilityId="@availiabilityRule.Id" asp-route-weekNr="@ViewBag.weekNr" asp-route-year="@ViewBag.year"><i class="fa-solid fa-pencil"></i></a>
+        <a class="navbar-brand" asp-area="" asp-controller="Availability" asp-action="Delete" asp-route-AvailabilityId="@availiabilityRule.Id" asp-route-weekNr="@ViewBag.weekNr" asp-route-year="@ViewBag.year"><i class="fa-solid fa-trash"></i></a>
     </div>
 }
