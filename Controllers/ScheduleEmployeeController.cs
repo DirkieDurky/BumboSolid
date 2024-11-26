@@ -82,7 +82,6 @@ namespace BumboSolid.Controllers
 			int userId = user.Id;
 
 			var fillRequests = await _context.FillRequests.Where(s => _context.Shifts.Any(i => i.Id == s.ShiftId && i.Employee != userId)).ToListAsync();
-			Console.WriteLine(fillRequests.Count());
 			List<FillRequestViewModel> fillRequestViewModels = new List<FillRequestViewModel>();
 
 			foreach (FillRequest fillRequest in fillRequests)
@@ -97,19 +96,38 @@ namespace BumboSolid.Controllers
 
 				string[] days = ["Monday", "Tuesdday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
 
-				// Creating FillReuestViewModel
-				FillRequestViewModel fillRequestViewModel = new FillRequestViewModel()
+				// Checking if this FillRequest does not overlap with an already existing shift
+				var shifts = _context.Shifts.Where(s => s.Employee == userId && s.WeekId == week.Id && s.Weekday == shift.Weekday).ToList();
+				var validShift = true;
+				foreach (Shift yourShift in shifts)
 				{
-					Date = date,
-					Day = days[shift.Weekday],
-					StartTime = shift.StartTime,
-					EndTime = shift.EndTime,
+					// shift ends during || shift starts earlier but ends later
+					if (yourShift.StartTime <= shift.StartTime && yourShift.EndTime >= shift.StartTime) validShift = false;
+					// shift starts during || shift starts later but ends earlier
+					if (yourShift.StartTime >= shift.StartTime && yourShift.StartTime <= shift.EndTime) validShift = false;
+				}
 
-					Department = shift.Department,
-					Name = user.FirstName + " " + user.LastName
-				};
+                // Checking if this shift does not break any CAO rules
+				var userAge = DateTime.Now
+                // Shift duration
+                if (shift.EndTime - shift.StartTime > user.)
 
-				fillRequestViewModels.Add(fillRequestViewModel);
+				if (validShift == true)
+				{
+					// Creating FillReuestViewModel
+					FillRequestViewModel fillRequestViewModel = new FillRequestViewModel()
+					{
+						Date = date,
+						Day = days[shift.Weekday],
+						StartTime = shift.StartTime,
+						EndTime = shift.EndTime,
+
+						Department = shift.Department,
+						Name = user.FirstName + " " + user.LastName
+					};
+
+					fillRequestViewModels.Add(fillRequestViewModel);
+				}
 			};
 
 			return View(fillRequestViewModels);
