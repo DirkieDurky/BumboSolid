@@ -33,13 +33,13 @@ namespace BumboSolid.Controllers
 
         // GET: ScheduleEmployeeController/OutgoingFillRequests
         [HttpGet("Uitgaande invalsverzoeken")]
-        public ActionResult OutgoingFillRequests()
+        public async ActionResult OutgoingFillRequests()
         {
-			var user = _userManager.GetUserAsync(User);
-			Console.WriteLine("User id: " + user.Id);
-			Console.WriteLine("User id: " + user.Id);
+			// Getting user id
+			var user = await _userManager.GetUserAsync(User);
+			int userId = user.Id;
 
-			var shifts = _context.Shifts.ToList(); //.Where(e => e.Employee == User.Id)
+			var shifts = _context.Shifts.Where(e => e.Employee == userId).ToList();
 
             List<FillRequestViewModel> fillRequests = new List<FillRequestViewModel>();
 
