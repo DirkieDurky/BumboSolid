@@ -14,7 +14,6 @@
 
 			<input type="hidden" id="year" name="year" value="@ViewBag.Year" />
 			<input type="hidden" id="weekNr" name="weekNr" value="@ViewBag.WeekNr" />
-			<input type="hidden" id="employeeId" name="employeeId" value="@ViewBag.employeeId" />
 
 			<div class="form-group">
 				<label for="Day" class="control-label">Dag</label>
@@ -53,7 +52,7 @@
 			</div>
 
 			<div class="form-group">
-				<input type="submit" value="Toevoegen" class="btn btn-primary" />
+				<button type="submit" class="btn btn-primary">Toevoegen</button>
 				<a type="button" class="btn btn-secondary" asp-action="Index">Terug</a>
 			</div>
 		</form>

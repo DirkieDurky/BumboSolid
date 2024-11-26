@@ -2,6 +2,7 @@
 using BumboSolid.Data;
 using BumboSolid.Data.Models;
 using BumboSolid.Models;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -10,27 +11,33 @@ namespace BumboSolid.Controllers
 	public class AvailabilityController : Controller
 	{
 		private readonly BumboDbContext _context;
+		private readonly UserManager<User> _userManager;
 
-		public AvailabilityController(BumboDbContext context)
+		public AvailabilityController(BumboDbContext context, UserManager<User> userManager)
 		{
 			_context = context;
+			_userManager = userManager;
+
 		}
 
 		// GET: AvailiabilityController/Index
 		[HttpGet("Werkgelegenheden")]
 		public async Task<IActionResult> Index(int Year, int WeekNr)
 		{
+			// Getting user
+			var user = await _userManager.GetUserAsync(User);
+			int userId = user.Id;
+
 			// This is to be deleted when the agenda has been inplemented
 			Year = 2024;
 			WeekNr = 47;
-			int EmployeeId = 1;
 
 			DateOnly startDate = FirstDateOfWeek(Year, WeekNr);
 
 			List<AvailabilityRuleViewModel> availabilityViewModels = new List<AvailabilityRuleViewModel>();
 
 			// Create list of availabilityRules
-            foreach (AvailabilityRule availabilityRule in _context.AvailabilityRules.Where(ar => ar.Date >= startDate && ar.Date < startDate.AddDays(7)).ToList()) // Hier moet alleen de availabilityrules van de jusite medewerker en de geselceteerde week worden meegegeven
+            foreach (AvailabilityRule availabilityRule in _context.AvailabilityRules.Where(ar => ar.Date >= startDate && ar.Date < startDate.AddDays(7)).Where(e => e.Employee == userId).ToList())
             {
 				AvailabilityRuleViewModel availabilityViewModel = new AvailabilityRuleViewModel() {
 					Id = availabilityRule.Id,
@@ -49,18 +56,16 @@ namespace BumboSolid.Controllers
 
 			ViewBag.year = Year;
 			ViewBag.weekNr = WeekNr;
-			ViewBag.employeeId = EmployeeId;
 
 			return View(availabilityViewModels);
         }
 
 		// GET: AvailiabilityController/Create
 		[HttpGet("Aanmaken")]
-		public async Task<IActionResult> Create(int Year, int WeekNr, int EmployeeId)
+		public async Task<IActionResult> Create(int Year, int WeekNr)
         {
 			ViewBag.year = Year;
 			ViewBag.weekNr = WeekNr;
-			ViewBag.employeeId = EmployeeId;
 
 			return View(new AvailabilityRuleViewModel());
         }
@@ -68,13 +73,16 @@ namespace BumboSolid.Controllers
 		// Post: AvailiabilityController/Create
 		[ValidateAntiForgeryToken]
 		[HttpPost("Aanmaken")]
-		public async Task<IActionResult> Create(AvailabilityRuleViewModel availabilityRuleViewModel, int Year, int WeekNr, int EmployeeId, string Availability)
+		public async Task<IActionResult> Create(AvailabilityRuleViewModel availabilityRuleViewModel, int Year, int WeekNr, string Availability)
 		{
+			// Getting user
+			var user = await _userManager.GetUserAsync(User);
+			int userId = user.Id;
+
 			AvailabilityRule availabilityRule = new AvailabilityRule();
 
 			ViewBag.year = Year;
 			ViewBag.weekNr = WeekNr;
-			ViewBag.employeeId = EmployeeId;
 
 			// Making sure that EndTime is not before StartTime
 			if (availabilityRuleViewModel.EndTime < availabilityRuleViewModel.StartTime)
@@ -120,8 +128,7 @@ namespace BumboSolid.Controllers
 					break;
 			}
 
-			availabilityRule.Employee = EmployeeId;
-
+			availabilityRule.Employee = userId;
 			availabilityRule.StartTime = availabilityRuleViewModel.StartTime;
 			availabilityRule.EndTime = availabilityRuleViewModel.EndTime;
 
@@ -137,7 +144,7 @@ namespace BumboSolid.Controllers
 		}
 
         // GET: AvailiabilityController/Edit/5
-        [HttpGet("Bewerken/{AvailabilityId:int}")]
+        [HttpGet("Bewerken")]
 		public async Task<IActionResult> Edit(int AvailabilityId, int Year, int WeekNr)
 		{
 			if (AvailabilityId == null) return NotFound();
@@ -148,16 +155,15 @@ namespace BumboSolid.Controllers
 			// Apply data from availabilityRuile to ViewModel
 			AvailabilityRuleViewModel availabilityViewModel = new AvailabilityRuleViewModel()
 			{
-                Id = availabilityRule.Id,
+				Id = availabilityRule.Id,
 
-                Day = availabilityRule.Date.DayOfWeek.ToString(),
+				Day = availabilityRule.Date.DayOfWeek.ToString(),
 				StartTime = availabilityRule.StartTime,
 				EndTime = availabilityRule.EndTime,
 
 				Available = Convert.ToBoolean(availabilityRule.Available),
 				School = Convert.ToBoolean(availabilityRule.School)
 			};
-
 
 			ViewBag.year = Year;
 			ViewBag.weekNr = WeekNr;
@@ -170,15 +176,20 @@ namespace BumboSolid.Controllers
 			return View(availabilityViewModel);
 		}
 
-        // Post: AvailiabilityController/Edit/5
-        [ValidateAntiForgeryToken]
+		// Post: AvailiabilityController/Edit/5
+		[ValidateAntiForgeryToken]
 		[HttpPost("Bewerken")]
 		public async Task<IActionResult> Edit(AvailabilityRuleViewModel availabilityRuleViewModel, int Year, int WeekNr, string Availability)
 		{
+            Console.WriteLine("test");
+			// Getting user
+			var user = await _userManager.GetUserAsync(User);
+			int userId = user.Id;
+
 			ViewBag.year = Year;
 			ViewBag.weekNr = WeekNr;
 			ViewBag.availability = Availability;
-
+			Console.WriteLine(availabilityRuleViewModel.Id);
 			if (availabilityRuleViewModel.Id == null) return NotFound();
 
             var availabilityRule = await _context.AvailabilityRules.FindAsync(availabilityRuleViewModel.Id);
@@ -234,7 +245,7 @@ namespace BumboSolid.Controllers
 					break;
 			}
 
-			availabilityRule.Employee = availabilityRule.Employee;
+			availabilityRule.Employee = userId;
 			availabilityRule.StartTime = availabilityRuleViewModel.StartTime;
 			availabilityRule.EndTime = availabilityRuleViewModel.EndTime;
 
