@@ -181,7 +181,6 @@ namespace BumboSolid.Controllers
 		[HttpPost("Bewerken")]
 		public async Task<IActionResult> Edit(AvailabilityRuleViewModel availabilityRuleViewModel, int Year, int WeekNr, string Availability)
 		{
-            Console.WriteLine("test");
 			// Getting user
 			var user = await _userManager.GetUserAsync(User);
 			int userId = user.Id;
