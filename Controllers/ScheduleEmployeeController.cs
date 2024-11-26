@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.VisualBasic;
+using Microsoft.AspNetCore.Identity;
 
 namespace BumboSolid.Controllers
 {
@@ -15,10 +16,12 @@ namespace BumboSolid.Controllers
 	public class ScheduleEmployeeController : Controller
 	{
 		private readonly BumboDbContext _context;
+		private readonly UserManager<User> _userManager;
 
-		public ScheduleEmployeeController(BumboDbContext context)
+		public ScheduleEmployeeController(BumboDbContext context, UserManager<User> userManager)
 		{
 			_context = context;
+			_userManager = userManager;
 		}
 
         // GET: ScheduleEmployeeController
@@ -32,7 +35,11 @@ namespace BumboSolid.Controllers
         [HttpGet("Uitgaande invalsverzoeken")]
         public ActionResult OutgoingFillRequests()
         {
-            var shifts = _context.Shifts.ToList(); //.Where(e => e.Employee == User.Id)
+			var user = _userManager.GetUserAsync(User);
+			Console.WriteLine("User id: " + user.Id);
+			Console.WriteLine("User id: " + user.Id);
+
+			var shifts = _context.Shifts.ToList(); //.Where(e => e.Employee == User.Id)
 
             List<FillRequestViewModel> fillRequests = new List<FillRequestViewModel>();
 
