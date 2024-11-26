@@ -4,7 +4,7 @@
     ViewData["Title"] = "CAO regels";
 }
 
-@if(TempData["Message"] != null)
+@if (TempData["Message"] != null)
 {
     <div class="alert alert-warning">
         @TempData["Message"]
@@ -31,6 +31,14 @@ else
                 else if (!card.AgeStart.HasValue && !card.AgeEnd.HasValue)
                 {
                     <h2>Algemene regels</h2>
+                }
+                else if (!card.AgeStart.HasValue && card.AgeEnd.HasValue)
+                {
+                    <h2>Regels tot @card.AgeEnd</h2>
+                }
+                else if (card.AgeStart.HasValue && !card.AgeEnd.HasValue)
+                {
+                    <h2>Regels vanaf @card.AgeStart jaar</h2>
                 }
             </div>
             <div class="card-body">

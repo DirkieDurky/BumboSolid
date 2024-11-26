@@ -38,12 +38,11 @@ namespace BumboSolid.Controllers
                 .ToListAsync();
 
             var groupedCLACards = entries
-                .Where(e => e.AgeStart.HasValue && e.AgeEnd.HasValue)
                 .GroupBy(e => new { e.AgeStart, e.AgeEnd })
                 .Select(group => new CLACardViewModel
                 {
-                    AgeStart = group.Key.AgeStart.Value,
-                    AgeEnd = group.Key.AgeEnd.Value,
+                    AgeStart = group.Key.AgeStart.HasValue ? group.Key.AgeStart.Value : null,
+                    AgeEnd = group.Key.AgeEnd.HasValue ? group.Key.AgeEnd.Value : null,
                     Rules = group.SelectMany(e =>
                     {
                         var rules = new List<string>();
@@ -180,22 +179,21 @@ namespace BumboSolid.Controllers
                 }
 
 
-                if (existingEntry.MaxAvgWeeklyWorkDurationOverFourWeeks.Equals(null) &&
-                    claViewModel.MaxAvgWeeklyWorkDurationOverFourWeeks.HasValue)
+                if (claViewModel.MaxAvgWeeklyWorkDurationOverFourWeeks.HasValue)
                     existingEntry.MaxAvgWeeklyWorkDurationOverFourWeeks = claViewModel.MaxAvgWeeklyWorkDurationOverFourWeeks * maxAvgMulti;
-                if (existingEntry.MaxShiftDuration.Equals(null) && claViewModel.MaxShiftDuration.HasValue)
+                if (claViewModel.MaxShiftDuration.HasValue)
                     existingEntry.MaxShiftDuration = claViewModel.MaxShiftDuration * maxTotalShiftMulti;
-                if (existingEntry.MaxWorkDurationPerDay.Equals(null) && claViewModel.MaxWorkDurationPerDay.HasValue)
+                if (claViewModel.MaxWorkDurationPerDay.HasValue)
                     existingEntry.MaxWorkDurationPerDay = claViewModel.MaxWorkDurationPerDay * maxWorkDayMulti;
-                if (existingEntry.MaxWorkDurationPerWeek.Equals(null) && claViewModel.MaxWorkDurationPerWeek.HasValue)
+                if (claViewModel.MaxWorkDurationPerWeek.HasValue)
                     existingEntry.MaxWorkDurationPerWeek = claViewModel.MaxWorkDurationPerWeek * maxWeekMulti;
-                if (existingEntry.MaxWorkDurationPerHolidayWeek.Equals(null) && claViewModel.MaxWorkDurationPerHolidayWeek.HasValue)
+                if (claViewModel.MaxWorkDurationPerHolidayWeek.HasValue)
                     existingEntry.MaxWorkDurationPerHolidayWeek = claViewModel.MaxWorkDurationPerHolidayWeek * maxHolidayMulti;
-                if (existingEntry.MaxWorkDaysPerWeek.Equals(null) && claViewModel.MaxWorkDaysPerWeek.HasValue)
+                if (claViewModel.MaxWorkDaysPerWeek.HasValue)
                     existingEntry.MaxWorkDaysPerWeek = claViewModel.MaxWorkDaysPerWeek;
-                if (existingEntry.LatestWorkTime.Equals(null) && claViewModel.LatestWorkTime.HasValue)
+                if (claViewModel.LatestWorkTime.HasValue)
                     existingEntry.LatestWorkTime = claViewModel.LatestWorkTime;
-                if (existingEntry.EarliestWorkTime.Equals(null) && claViewModel.EarliestWorkTime.HasValue)
+                if (claViewModel.EarliestWorkTime.HasValue)
                     existingEntry.EarliestWorkTime = claViewModel.EarliestWorkTime;
 
                 var breakEntry = await _context.CLABreakEntries
