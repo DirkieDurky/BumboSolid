@@ -1,73 +1,70 @@
 ﻿@model BumboSolid.Models.EmployeesCreateViewModel
 
-<h1>Create Employee</h1>
+<h1>Medewerker aanmaken</h1>
 
 <form asp-action="Create" method="post">
     <div class="form-group">
-        <label asp-for="FirstName"></label>
+        <label asp-for="FirstName">Voornaam</label>
         <input asp-for="FirstName" class="form-control" />
         <span asp-validation-for="FirstName" class="text-danger"></span>
     </div>
 
     <div class="form-group">
-        <label asp-for="LastName"></label>
+        <label asp-for="LastName">Achternaam</label>
         <input asp-for="LastName" class="form-control" />
         <span asp-validation-for="LastName" class="text-danger"></span>
     </div>
 
     <div class="form-group">
-        <label asp-for="PlaceOfResidence"></label>
+        <label asp-for="PlaceOfResidence">Woonplaats</label>
         <input asp-for="PlaceOfResidence" class="form-control" />
         <span asp-validation-for="PlaceOfResidence" class="text-danger"></span>
     </div>
 
     <div class="form-group">
-        <label asp-for="StreetName"></label>
+        <label asp-for="StreetName">Straatnaam</label>
         <input asp-for="StreetName" class="form-control" />
         <span asp-validation-for="StreetName" class="text-danger"></span>
     </div>
 
     <div class="form-group">
-        <label asp-for="StreetNumber"></label>
+        <label asp-for="StreetNumber">Huisnummer</label>
         <input asp-for="StreetNumber" class="form-control" />
         <span asp-validation-for="StreetNumber" class="text-danger"></span>
     </div>
 
     <div class="form-group">
-        <label asp-for="BirthDate"></label>
+        <label asp-for="BirthDate">Geboortedatum</label>
         <input asp-for="BirthDate" type="date" class="form-control" />
         <span asp-validation-for="BirthDate" class="text-danger"></span>
     </div>
 
     <div class="form-group">
-        <label asp-for="EmployedSince"></label>
+        <label asp-for="EmployedSince">In dienst sinds</label>
         <input asp-for="EmployedSince" type="date" class="form-control" />
         <span asp-validation-for="EmployedSince" class="text-danger"></span>
     </div>
 
-    <!-- Email field -->
     <div class="form-group">
         <label asp-for="Email">Email</label>
         <input asp-for="Email" class="form-control" />
         <span asp-validation-for="Email" class="text-danger"></span>
     </div>
 
-    <!-- Password field -->
     <div class="form-group">
-        <label asp-for="Password">Password</label>
+        <label asp-for="Password">Wachtwoord</label>
         <input asp-for="Password" type="password" class="form-control" />
         <span asp-validation-for="Password" class="text-danger"></span>
     </div>
 
-    <!-- Confirm Password field -->
     <div class="form-group">
-        <label asp-for="ConfirmPassword">Confirm Password</label>
+        <label asp-for="ConfirmPassword">Bevestig wachtwoord</label>
         <input asp-for="ConfirmPassword" type="password" class="form-control" />
         <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
     </div>
 
-    <button type="submit" class="btn btn-primary">Save</button>
-    <a asp-action="" class="btn btn-secondary">Cancel</a>
+    <button type="submit" class="btn btn-primary">Aanmaken</button>
+    <a asp-action="Index" class="btn btn-secondary">Annuleren</a>
 </form>
 
 @section Scripts {

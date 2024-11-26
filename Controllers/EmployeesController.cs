@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Authorization;
 namespace BumboSolid.Controllers
 {
     [Authorize(Roles = "Manager")]
-    [Route("Werknemers")]
+    [Route("Medewerkers")]
     public class EmployeesController : Controller
     {
         private readonly BumboDbContext _context;
@@ -23,26 +23,39 @@ namespace BumboSolid.Controllers
             _signInManager = signInManager;
         }
 
-        // Displays the list of all employees with related data.
         [HttpGet("")]
         public async Task<IActionResult> Index()
         {
-            var employees = await _context.Employees
-                .Include(e => e.AvailabilityRules)
-                .Include(e => e.FillRequests)
+            // Only show the users with the employee role, because the manager may not be deleted.
+            var employeeRole = await _context.Roles
+                .Where(r => r.Name == "Employee")
+                .Select(r => r.Id)
+                .FirstOrDefaultAsync();
+
+            if (employeeRole == null)
+            {
+                ViewBag.NoEmployees = "No employees found.";
+                return View(new List<User>());
+            }
+
+            var employees = await _context.UserRoles
+                .Where(ur => ur.RoleId == employeeRole)
+                .Select(ur => ur.UserId)
                 .ToListAsync();
 
-            return View(employees);
+            var employeeUsers = await _context.Users
+                .Where(u => employees.Contains(u.Id))
+                .ToListAsync();
+
+            return View(employeeUsers);
         }
 
-        // Provides the view to create a new employee.
         [HttpGet("Aanmaken")]
         public IActionResult Create()
         {
             return View();
         }
 
-        // Processes the data submitted for creating a new employee.
         [HttpPost("Aanmaken")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(EmployeesCreateViewModel input)
@@ -86,42 +99,87 @@ namespace BumboSolid.Controllers
             return View(input);
         }
 
-        // Retrieves the details of an employee for editing
         [HttpGet("Bewerken/{id:int}")]
         public async Task<IActionResult> Edit(int id)
         {
-            var employee = await _context.Employees.FindAsync(id);
+            var employee = await _context.Users.FindAsync(id);
             if (employee == null)
             {
-                // Change to index screen?
                 return NotFound();
             }
-            return View(employee);
+
+            var model = new EmployeesEditViewModel
+            {
+                Id = employee.Id,
+                FirstName = employee.FirstName,
+                LastName = employee.LastName,
+                Email = employee.Email,
+                PlaceOfResidence = employee.PlaceOfResidence,
+                StreetName = employee.StreetName,
+                StreetNumber = employee.StreetNumber,
+                BirthDate = employee.BirthDate,
+                EmployedSince = employee.EmployedSince
+            };
+
+            return View(model);
         }
 
-        // Processes the data submitted to update an employee's information.
+
         [HttpPost("Bewerken/{id:int}")]
-        public async Task<IActionResult> Edit(int id, User employee)
+        public async Task<IActionResult> Edit(int id, EmployeesEditViewModel model)
         {
-            var existingEmployee = await _context.Employees.FindAsync(id);
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            var existingEmployee = await _context.Users.FindAsync(id);
             if (existingEmployee == null)
             {
                 return NotFound();
             }
 
-            existingEmployee.FirstName = employee.FirstName;
-            existingEmployee.LastName = employee.LastName;
-            existingEmployee.PlaceOfResidence = employee.PlaceOfResidence;
-            existingEmployee.StreetName = employee.StreetName;
-            existingEmployee.StreetNumber = employee.StreetNumber;
-            existingEmployee.BirthDate = employee.BirthDate;
-            existingEmployee.EmployedSince = employee.EmployedSince;
+            existingEmployee.FirstName = model.FirstName;
+            existingEmployee.LastName = model.LastName;
+            existingEmployee.PlaceOfResidence = model.PlaceOfResidence;
+            existingEmployee.StreetName = model.StreetName;
+            existingEmployee.StreetNumber = model.StreetNumber;
+            existingEmployee.BirthDate = model.BirthDate;
+            existingEmployee.EmployedSince = model.EmployedSince;
 
+            // Update email
+            if (existingEmployee.Email != model.Email)
+            {
+                if (await _context.Users.AnyAsync(u => u.Email == model.Email && u.Id != id))
+                {
+                    ModelState.AddModelError("Email", "Dit emailadres is al in gebruik.");
+                    return View(model);
+                }
+
+                existingEmployee.Email = model.Email;
+            }
+
+            // Update password
+            if (!string.IsNullOrEmpty(model.Password))
+            {
+                if (model.Password != model.ConfirmPassword)
+                {
+                    ModelState.AddModelError("Password", "De wachtwoorden komen niet overeen.");
+                    return View(model);
+                }
+
+                var passwordHasher = new PasswordHasher<User>();
+                existingEmployee.PasswordHash = passwordHasher.HashPassword(existingEmployee, model.Password);
+            }
+
+            _context.Users.Update(existingEmployee);
             await _context.SaveChangesAsync();
+
             return RedirectToAction(nameof(Index));
         }
 
-        // Checks if an employee exists in the database by ID.
+
+
         private bool EmployeeExists(int id)
         {
             return _context.Employees.Any(e => e.Id == id);
