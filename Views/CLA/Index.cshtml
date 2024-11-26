@@ -4,6 +4,12 @@
     ViewData["Title"] = "CAO regels";
 }
 
+@if(TempData["Message"] != null)
+{
+    <div class="alert alert-warning">
+        @TempData["Message"]
+    </div>
+}
 <div class="row align-items-center">
     <h1>CAO regels</h1>
     <a class="btn" asp-controller="CAO" asp-action="Toevoegen">Toevoegen</a>
