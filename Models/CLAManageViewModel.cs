@@ -5,6 +5,7 @@ namespace BumboSolid.Models
 {
     public class CLAManageViewModel
     {
+        public int? Id { get; set; }
         [Range(0, int.MaxValue, ErrorMessage = "Leeftijd moet een positief getal zijn")]
         public int? AgeStart { get; set; }
 

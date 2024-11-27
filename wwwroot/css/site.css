@@ -467,4 +467,16 @@ th, td {
 .rules-list {
     text-align: left;
     padding-left: 1vw;
+    list-style: none;
+    font-weight: bold;
+}
+
+.slim-btn {
+    width: revert;
+
+}
+
+.general-error-center ul{
+    text-align: center;
+    background-color: darkred;
 }

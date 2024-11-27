@@ -24,22 +24,28 @@ else
     {
         <div class="card mb-3">
             <div class="card-header">
-                @if (card.AgeStart.HasValue && card.AgeEnd.HasValue)
-                {
-                    <h2>Regels voor @card.AgeStart tot @card.AgeEnd</h2>
-                }
-                else if (!card.AgeStart.HasValue && !card.AgeEnd.HasValue)
-                {
-                    <h2>Algemene regels</h2>
-                }
-                else if (!card.AgeStart.HasValue && card.AgeEnd.HasValue)
-                {
-                    <h2>Regels tot @card.AgeEnd</h2>
-                }
-                else if (card.AgeStart.HasValue && !card.AgeEnd.HasValue)
-                {
-                    <h2>Regels vanaf @card.AgeStart jaar</h2>
-                }
+                <div class="row">
+
+                    @if (card.AgeStart.HasValue && card.AgeEnd.HasValue)
+                    {
+                        <h2 class="col-10">Regels voor @card.AgeStart tot @card.AgeEnd</h2>
+                    }
+                    else if (!card.AgeStart.HasValue && !card.AgeEnd.HasValue)
+                    {
+                        <h2 class="col-10">Algemene regels</h2>
+                    }
+                    else if (!card.AgeStart.HasValue && card.AgeEnd.HasValue)
+                    {
+                        <h2 class="col-10">Regels tot @card.AgeEnd</h2>
+                    }
+                    else if (card.AgeStart.HasValue && !card.AgeEnd.HasValue)
+                    {
+                        <h2 class="col-10">Regels vanaf @card.AgeStart jaar</h2>
+                    }
+                    <a href="/CAO/Bewerken?AgeStart=@card.AgeStart&AgeEnd=@card.AgeEnd" class="btn col-1">Bewerk</a>
+                    <a href="/CAO/Verwijderen?AgeStart=@card.AgeStart&AgeEnd=@card.AgeEnd" class="btn col-1">Verwijder</a>
+                </div>
+
             </div>
             <div class="card-body">
                 <ul>

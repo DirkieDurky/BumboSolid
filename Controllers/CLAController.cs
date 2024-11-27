@@ -14,6 +14,7 @@ using Microsoft.EntityFrameworkCore.Diagnostics;
 using System.Net.Cache;
 using System.Security.Claims;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using NuGet.Configuration;
 
 namespace BumboSolid.Controllers
 {
@@ -26,6 +27,11 @@ namespace BumboSolid.Controllers
         public CLAController(BumboDbContext context)
         {
             _context = context;
+        }
+
+        public IActionResult EditDone()
+        {
+            return RedirectToAction(nameof(Index));
         }
 
         // GET: CLA
@@ -41,6 +47,7 @@ namespace BumboSolid.Controllers
                 .GroupBy(e => new { e.AgeStart, e.AgeEnd })
                 .Select(group => new CLACardViewModel
                 {
+                    Id = group.First().Id,
                     AgeStart = group.Key.AgeStart.HasValue ? group.Key.AgeStart.Value : null,
                     AgeEnd = group.Key.AgeEnd.HasValue ? group.Key.AgeEnd.Value : null,
                     Rules = group.SelectMany(e =>
@@ -72,7 +79,8 @@ namespace BumboSolid.Controllers
                         {
                             rules.Add($"Wanneer iemand langer dan {e.CLABreakEntries[0].WorkDuration / 60.0} uur werkt, " +
                                 $"is er recht op een pauze van {e.CLABreakEntries[0].MinBreakDuration} minuten.");
-                        } else
+                        }
+                        else
                         {
                             rules.Add($"Moet pauze krijgen na {e.CLABreakEntries[0].WorkDuration / 60.0} uur werken.");
                         }
@@ -133,6 +141,38 @@ namespace BumboSolid.Controllers
                 ModelState.AddModelError("MaxWorkDaysPerWeek", "Er zijn slechts zeven dagen in een week.");
                 noErrors = false;
             }
+
+            if (claViewModel.MaxWorkDurationPerDay.HasValue)
+                if ((claViewModel.MaxWorkDurationPerDay.Value > 1440 && !claViewModel.MaxDayDurationHours) ||
+                    (claViewModel.MaxWorkDurationPerDay.Value > 24 && claViewModel.MaxDayDurationHours))
+                {
+                    ModelState.AddModelError(nameof(claViewModel.MaxWorkDurationPerDay), "Er zit slechts 24 uur in een dag.");
+                    noErrors = false;
+                }
+
+            if (claViewModel.MaxWorkDurationPerWeek.HasValue)
+                if ((claViewModel.MaxWorkDurationPerWeek.Value > 10080 && !claViewModel.MaxWeekDurationHours) ||
+                    (claViewModel.MaxWorkDurationPerWeek.Value > 168 && claViewModel.MaxWeekDurationHours))
+                {
+                    ModelState.AddModelError(nameof(claViewModel.MaxWorkDurationPerWeek),"Er zit slechts 168 uur in een week");
+                    noErrors = false;
+                }
+
+            if (claViewModel.MaxWorkDurationPerHolidayWeek.HasValue)
+                if ((claViewModel.MaxWorkDurationPerHolidayWeek.Value > 10080 && !claViewModel.MaxHolidayDurationHours) ||
+                    (claViewModel.MaxWorkDurationPerHolidayWeek.Value > 168 && claViewModel.MaxHolidayDurationHours))
+                {
+                    ModelState.AddModelError(nameof(claViewModel.MaxWorkDurationPerHolidayWeek), "Er zit slechts 168 uur in een week");
+                    noErrors = false;
+                }
+
+            if (claViewModel.MaxAvgWeeklyWorkDurationOverFourWeeks.HasValue)
+                if ((claViewModel.MaxAvgWeeklyWorkDurationOverFourWeeks.Value > 10080 && !claViewModel.MaxAvgDurationHours) ||
+                    (claViewModel.MaxAvgWeeklyWorkDurationOverFourWeeks.Value > 168 && claViewModel.MaxAvgDurationHours))
+                {
+                    ModelState.AddModelError(nameof(claViewModel.MaxAvgWeeklyWorkDurationOverFourWeeks), "Er zit slechts 168 uur in een week");
+                    noErrors = false;
+                }
 
             if (!noErrors) return View(claViewModel);
 
@@ -309,20 +349,81 @@ namespace BumboSolid.Controllers
         }
 
         // GET: CLA/Edit/5
-        [HttpGet("Bewerken/{id:int?}")]
-        public async Task<IActionResult> Edit(int? id)
+        [HttpGet(template: "Bewerken")]
+        public async Task<IActionResult> Edit(int? ageStart, int? ageEnd)
         {
-            if (id == null)
+            var claEntry = await _context.CLAEntries
+                .FirstOrDefaultAsync(e =>
+                    (e.AgeStart == ageStart && e.AgeEnd == ageEnd) ||
+                    (e.AgeStart == null && ageStart == null && e.AgeEnd == ageEnd) ||
+                    (e.AgeStart == ageStart && e.AgeEnd == null && ageEnd == null) ||
+                    (e.AgeStart == null && e.AgeEnd == null && ageStart == null && ageEnd == null));
+            if (claEntry == null)
             {
-                return NotFound();
+                TempData["Message"] = "CAO regel niet gevonden";
+                return RedirectToAction(nameof(Index));
             }
 
-            var cLAEntry = await _context.CLAEntries.FindAsync(id);
-            if (cLAEntry == null)
+            var breakEntry = await _context.CLABreakEntries
+                .FirstOrDefaultAsync(e => e.CLAEntryId == claEntry.Id);
+
+            int maxAvgMulti = 60;
+            int maxTotalShiftMulti = 60;
+            int maxWorkDayMulti = 60;
+            int maxHolidayMulti = 60;
+            int maxWeekMulti = 60;
+            int maxUninterruptedMulti = 60;
+
+            if (claEntry.MaxAvgWeeklyWorkDurationOverFourWeeks.HasValue)
+                maxAvgMulti = (claEntry.MaxAvgWeeklyWorkDurationOverFourWeeks % 60 == 0) ? 60 : 1;
+            if (claEntry.MaxShiftDuration.HasValue)
+                maxTotalShiftMulti = (claEntry.MaxShiftDuration.Value % 60 == 0) ? 60 : 1;
+            if (claEntry.MaxWorkDurationPerDay.HasValue)
+                maxWorkDayMulti = (claEntry.MaxWorkDurationPerDay % 60 == 0) ? 60 : 1;
+            if (claEntry.MaxWorkDurationPerHolidayWeek.HasValue)
+                maxHolidayMulti = (claEntry.MaxWorkDurationPerHolidayWeek % 60 == 0) ? 60 : 1;
+            if (claEntry.MaxWorkDurationPerWeek.HasValue)
+                maxWeekMulti = (claEntry.MaxWorkDurationPerWeek % 60 == 0) ? 60 : 1;
+
+            if (breakEntry != null)
+                maxUninterruptedMulti = breakEntry.WorkDuration % 60 == 0 ? 60 : 1;
+
+            CLAManageViewModel claViewModel = new()
             {
-                return NotFound();
-            }
-            return View(cLAEntry);
+                Id = claEntry.Id,
+                AgeStart = claEntry.AgeStart.HasValue ? claEntry.AgeStart : null,
+                AgeEnd = claEntry.AgeEnd.HasValue ? claEntry.AgeEnd : null,
+                MaxWorkDurationPerDay = claEntry.MaxWorkDurationPerDay.HasValue ?
+                    claEntry.MaxWorkDurationPerDay / maxWorkDayMulti : null,
+                MaxWorkDaysPerWeek = claEntry.MaxWorkDaysPerWeek.HasValue ?
+                    claEntry.MaxWorkDaysPerWeek : null,
+                MaxWorkDurationPerWeek = claEntry.MaxWorkDurationPerWeek.HasValue ?
+                    claEntry.MaxWorkDurationPerWeek / maxWeekMulti : null,
+                MaxWorkDurationPerHolidayWeek = claEntry.MaxWorkDurationPerHolidayWeek.HasValue ?
+                    claEntry.MaxWorkDurationPerHolidayWeek / maxHolidayMulti : null,
+                EarliestWorkTime = claEntry.EarliestWorkTime.HasValue ?
+                    claEntry.EarliestWorkTime : null,
+                LatestWorkTime = claEntry.LatestWorkTime.HasValue ?
+                    claEntry.LatestWorkTime : null,
+                MaxShiftDuration = claEntry.MaxShiftDuration.HasValue ?
+                    claEntry.MaxShiftDuration / maxTotalShiftMulti : null,
+                MaxAvgWeeklyWorkDurationOverFourWeeks = claEntry.MaxAvgWeeklyWorkDurationOverFourWeeks.HasValue ?
+                    claEntry.MaxAvgWeeklyWorkDurationOverFourWeeks : null,
+
+                BreakWorkDuration = breakEntry != null ? breakEntry.WorkDuration / maxUninterruptedMulti : null,
+                BreakMinBreakDuration = breakEntry != null && breakEntry.MinBreakDuration.HasValue ?
+                    breakEntry.MinBreakDuration : null,
+
+                MaxAvgDurationHours = maxAvgMulti == 60,
+                MaxTotalShiftDurationHours = maxTotalShiftMulti == 60,
+                MaxDayDurationHours = maxWorkDayMulti == 60,
+                MaxHolidayDurationHours = maxHolidayMulti == 60,
+                MaxWeekDurationHours = maxWeekMulti == 60,
+                MaxUninterruptedShiftDurationHours = maxUninterruptedMulti == 60
+            };
+
+
+            return View(claViewModel);
         }
 
         // POST: CLA/Edit/5
@@ -330,13 +431,94 @@ namespace BumboSolid.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, CLAManageViewModel claViewModel)
+        [Route("Bewerken")]
+        public async Task<IActionResult> Edit(CLAManageViewModel claViewModel)
         {
-            //throw new NotImplementedException();
-            //if (id != claViewModel.Id)
-            //{
-            //    return NotFound();
-            //}
+            if (!claViewModel.Id.HasValue)
+            {
+                TempData["Message"] = "Id niet gevonden, aanpassen geannuleerd.";
+                return RedirectToAction(nameof(Index));
+            }
+
+            var claEntry = await _context.CLAEntries.
+                FirstOrDefaultAsync(e => e.Id == claViewModel.Id);
+            var breakEntry = await _context.CLABreakEntries.
+                FirstOrDefaultAsync(e => e.CLAEntryId == claViewModel.Id);
+
+            if (claEntry == null)
+            {
+                TempData["Message"] = "CAO regel niet gevonden, aanpassen geannuleerd.";
+                return RedirectToAction(nameof(Index));
+            }
+
+            //Since all fields are nullable (and ID isn't chosen by user),
+            //we have to check whether anything has been filled in anywhere...
+            var notChecked = new List<String>
+            {
+                nameof(claViewModel.AgeStart), nameof(claViewModel.AgeEnd), nameof(claViewModel.MaxAvgDurationHours),
+                nameof(claViewModel.MaxDayDurationHours), nameof(claViewModel.MaxHolidayDurationHours),
+                nameof(claViewModel.MaxWeekDurationHours), nameof(claViewModel.MaxTotalShiftDurationHours),
+                nameof(claViewModel.MaxUninterruptedShiftDurationHours)
+            }; //these on their own don't add any information
+
+            bool hasValue = claViewModel.GetType()
+                .GetProperties()
+                .Where(p => !notChecked.Contains(p.Name))
+                .Any(p => p.GetValue(claViewModel) != null);
+
+            bool noErrors = true;
+            if (!hasValue)
+            {
+                ModelState.AddModelError("", "CAO regels verwijderen");
+                noErrors = false;
+            }
+
+            if (claViewModel.AgeStart.HasValue && claViewModel.AgeEnd.HasValue && (claViewModel.AgeStart > claViewModel.AgeEnd))
+            {
+                ModelState.AddModelError("AgeEnd", "De eind leeftijd moet hoger zijn dan de begin leeftijd");
+                noErrors = false;
+            }
+
+            if (claViewModel.MaxWorkDaysPerWeek.HasValue && claViewModel.MaxWorkDaysPerWeek.Value > 7)
+            {
+                ModelState.AddModelError("MaxWorkDaysPerWeek", "Er zijn slechts zeven dagen in een week.");
+                noErrors = false;
+            }
+
+            if (claViewModel.MaxWorkDurationPerDay.HasValue)
+                if ((claViewModel.MaxWorkDurationPerDay.Value > 1440 && !claViewModel.MaxDayDurationHours) ||
+                    (claViewModel.MaxWorkDurationPerDay.Value > 24 && claViewModel.MaxDayDurationHours))
+                {
+                    ModelState.AddModelError(nameof(claViewModel.MaxWorkDurationPerDay), "Er zit slechts 24 uur in een dag.");
+                    noErrors = false;
+                }
+
+            if (claViewModel.MaxWorkDurationPerWeek.HasValue)
+                if ((claViewModel.MaxWorkDurationPerWeek.Value > 10080 && !claViewModel.MaxWeekDurationHours) ||
+                    (claViewModel.MaxWorkDurationPerWeek.Value > 168 && claViewModel.MaxWeekDurationHours))
+                {
+                    ModelState.AddModelError(nameof(claViewModel.MaxWorkDurationPerWeek), "Er zit slechts 168 uur in een week");
+                    noErrors = false;
+                }
+
+            if (claViewModel.MaxWorkDurationPerHolidayWeek.HasValue)
+                if ((claViewModel.MaxWorkDurationPerHolidayWeek.Value > 10080 && !claViewModel.MaxHolidayDurationHours) ||
+                    (claViewModel.MaxWorkDurationPerHolidayWeek.Value > 168 && claViewModel.MaxHolidayDurationHours))
+                {
+                    ModelState.AddModelError(nameof(claViewModel.MaxWorkDurationPerHolidayWeek), "Er zit slechts 168 uur in een week");
+                    noErrors = false;
+                }
+
+            if (claViewModel.MaxAvgWeeklyWorkDurationOverFourWeeks.HasValue)
+                if ((claViewModel.MaxAvgWeeklyWorkDurationOverFourWeeks.Value > 10080 && !claViewModel.MaxAvgDurationHours) ||
+                    (claViewModel.MaxAvgWeeklyWorkDurationOverFourWeeks.Value > 168 && claViewModel.MaxAvgDurationHours))
+                {
+                    ModelState.AddModelError(nameof(claViewModel.MaxAvgWeeklyWorkDurationOverFourWeeks), "Er zit slechts 168 uur in een week");
+                    noErrors = false;
+                }
+
+            if (!noErrors) return View(claViewModel);
+
 
             return RedirectToAction(nameof(Index));
 
