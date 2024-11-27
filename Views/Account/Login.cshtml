@@ -1,5 +1,9 @@
 ﻿@model BumboSolid.Models.LoginViewModel
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
+
 <h2>Login</h2>
+
 <div class="row">
     <div class="col-md-4">
         <span class="text-danger">@ViewBag.Error</span>
@@ -13,10 +17,47 @@
             </div>
             <div class="form-group">
                 <label asp-for="Password"></label>
-                <input asp-for="Password" class="form-control" />
+                <div class="password-input-container">
+                    <input asp-for="Password" class="form-control" />
+                    <button type="button" id="togglePassword" class="eye-btn">
+                        <i class="fas fa-eye"></i>
+                    </button>
+                </div>
                 <span asp-validation-for="Password" class="text-danger"></span>
             </div>
             <button type="submit" class="btn btn-primary">Login</button>
         </form>
     </div>
 </div>
+
+@section Scripts {
+    <script>
+        document.getElementById("togglePassword").addEventListener("click", function() {
+            var passwordField = document.getElementById("Password");
+            var icon = this.querySelector("i");
+            if (passwordField.type === "password") {
+                passwordField.type = "text";
+                icon.classList.remove("fa-eye");
+                icon.classList.add("fa-eye-slash");
+            } else {
+                passwordField.type = "password";
+                icon.classList.remove("fa-eye-slash");
+                icon.classList.add("fa-eye");
+            }
+        });
+
+        document.getElementById("toggleConfirmPassword").addEventListener("click", function() {
+            var confirmPasswordField = document.getElementById("ConfirmPassword");
+            var icon = this.querySelector("i");
+            if (confirmPasswordField.type === "password") {
+                confirmPasswordField.type = "text";
+                icon.classList.remove("fa-eye");
+                icon.classList.add("fa-eye-slash");
+            } else {
+                confirmPasswordField.type = "password";
+                icon.classList.remove("fa-eye-slash");
+                icon.classList.add("fa-eye");
+            }
+        });
+    </script>
+}
