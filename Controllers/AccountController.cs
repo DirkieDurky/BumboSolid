@@ -54,7 +54,7 @@ namespace BumboSolid.Controllers
             }
             else
             {
-                ModelState.AddModelError(string.Empty, "Invalid login attempt.");
+                ViewBag.Error = "Het ingevoerde wachtwoord of e-mailadres is onjuist.";
                 return View(Input);
             }
         }
