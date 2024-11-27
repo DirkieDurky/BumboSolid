@@ -191,12 +191,13 @@ namespace BumboSolid.Controllers
 			if (shift == null) return NotFound();
 
 			// Check if there is not already an open FillRequest for this Shift
-			var fillRequests = _context.FillRequests.Where(s => s.ShiftId == id).ToList();
-			foreach (FillRequest request in fillRequests) if (request.Accepted == 0) return RedirectToAction(nameof(Schedule));
+			/*var fillRequests = _context.FillRequests.Where(s => s.ShiftId == id).ToList();
+			foreach (FillRequest request in fillRequests) if (request.Accepted == 0) return RedirectToAction(nameof(Schedule));*/
 
 			FillRequest fillRequest = new FillRequest()
 			{
-				ShiftId = id
+				ShiftId = id,
+				Accepted = 0
 			};
 
 			if (ModelState.IsValid)

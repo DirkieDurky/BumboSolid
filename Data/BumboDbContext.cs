@@ -197,15 +197,14 @@ public partial class BumboDbContext : IdentityDbContext<User, IdentityRole<int>,
 
         modelBuilder.Entity<FillRequest>(entity =>
         {
-            entity.ToTable("FillRequest");
+			entity.ToTable("FillRequest");
 
             entity.HasIndex(e => e.ShiftId, "IX_FillRequest_ShiftID");
 
             entity.HasIndex(e => e.SubstituteEmployeeId, "IX_FillRequest_SubstituteEmployeeID");
 
-            entity.Property(e => e.Id)
-                .ValueGeneratedNever()
-                .HasColumnName("ID");
+            entity.Property(e => e.Id);
+
             entity.Property(e => e.AbsentDescription)
                 .HasMaxLength(255)
                 .IsUnicode(false)
@@ -321,9 +320,8 @@ public partial class BumboDbContext : IdentityDbContext<User, IdentityRole<int>,
 
             entity.HasIndex(e => e.WeekId, "IX_Shift_WeekID");
 
-            entity.Property(e => e.Id)
-                .ValueGeneratedNever()
-                .HasColumnName("ID");
+            entity.Property(e => e.Id);
+
             entity.Property(e => e.Department)
                 .HasMaxLength(25)
                 .IsUnicode(false);
@@ -354,9 +352,7 @@ public partial class BumboDbContext : IdentityDbContext<User, IdentityRole<int>,
         {
             entity.ToTable("Week");
 
-            entity.Property(e => e.Id)
-                .ValueGeneratedNever()
-                .HasColumnName("ID");
+            entity.Property(e => e.Id);
         });
 
         modelBuilder.Entity<Weather>().HasData(
