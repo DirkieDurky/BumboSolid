@@ -11,6 +11,7 @@
             <tr>
                 <th>Naam</th>
                 <th>Leeftijd</th>
+                <th>Afdelingen</th>
                 <th>In dienst sinds</th>
                 <th></th>
             </tr>
@@ -25,6 +26,9 @@
                 <tr>
                     <td>@employee.FirstName @employee.LastName</td>
                     <td>@age</td>
+                    <td>
+                        @string.Join(", ", employee.Departments.Select(d => d.Name))
+                    </td>
                     <td>@employee.EmployedSince.ToShortDateString()</td>
                     <td>
                         <a class="navbar-brand" asp-area="" asp-controller="Employees" asp-action="Edit" asp-route-id="@employee.Id"><i class="fa-solid fa-pencil"></i></a>

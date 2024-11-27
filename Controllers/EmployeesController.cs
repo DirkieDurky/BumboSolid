@@ -45,6 +45,7 @@ namespace BumboSolid.Controllers
 
             var employeeUsers = await _context.Users
                 .Where(u => employees.Contains(u.Id))
+                .Include(u => u.Departments)
                 .ToListAsync();
 
             return View(employeeUsers);
