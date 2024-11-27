@@ -32,13 +32,13 @@
 			<div class="d-flex flex-row">
 				<div class="form-group mb-3">
 					<label asp-for="StartTime" class="control-label">Starttijd</label>
-					<input asp-for="StartTime" class="form-control" value="@Model.StartTime" />
+					<input asp-for="StartTime" class="form-control" type="time" value="@Model.StartTime" />
 					<span asp-validation-for="StartTime" class="text-danger"></span>
 				</div>
 
 				<div class="form-group mb-3">
 					<label asp-for="EndTime" class="control-label">Eindtijd</label>
-					<input asp-for="EndTime" class="form-control" value="@Model.EndTime" />
+					<input asp-for="EndTime" class="form-control" type="time" value="@Model.EndTime" />
 					<span asp-validation-for="EndTime" class="text-danger"></span>
 				</div>
 			</div>
