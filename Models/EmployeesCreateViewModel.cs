@@ -26,8 +26,10 @@ namespace BumboSolid.Models
         [StringLength(50)]
         public string LastName { get; set; }
 
+        [StringLength(50)]
         public string? PlaceOfResidence { get; set; }
 
+        [StringLength(50)]
         public string? StreetName { get; set; }
 
         public int? StreetNumber { get; set; }

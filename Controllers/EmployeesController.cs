@@ -68,7 +68,22 @@ namespace BumboSolid.Controllers
         {
             if (await _userManager.FindByEmailAsync(input.Email) != null)
             {
-                ModelState.AddModelError(string.Empty, $"The email '{input.Email}' is already in use.");
+                ModelState.AddModelError(nameof(input.Email), $"De email '{input.Email}' is al in gebruik.");
+            }
+
+            // Check if the password meets the requirements
+            var passwordValidationResult = await _userManager.PasswordValidators
+                .FirstOrDefault()
+                .ValidateAsync(_userManager, null, input.Password);
+
+            foreach (var error in passwordValidationResult.Errors)
+            {
+                ModelState.AddModelError(nameof(input.Password), error.Description);
+            }
+
+            if (input.Password != input.ConfirmPassword)
+            {
+                ModelState.AddModelError(nameof(input.Password), "De wachtwoorden komen niet overeen.");
             }
 
             if (ModelState.IsValid)
@@ -146,6 +161,7 @@ namespace BumboSolid.Controllers
         }
 
         [HttpPost("Bewerken/{id:int}")]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, EmployeesEditViewModel model)
         {
             if (!ModelState.IsValid)
@@ -171,12 +187,12 @@ namespace BumboSolid.Controllers
             existingEmployee.BirthDate = model.BirthDate;
             existingEmployee.EmployedSince = model.EmployedSince;
 
-            // Update email
+            // Check if the email has been changed and if it's already taken by another user
             if (existingEmployee.Email != model.Email)
             {
                 if (await _context.Users.AnyAsync(u => u.Email == model.Email && u.Id != id))
                 {
-                    ModelState.AddModelError("Email", "Dit emailadres is al in gebruik.");
+                    ModelState.AddModelError(nameof(model.Email), $"De email '{model.Email}' is al in gebruik.");
                     model.Departments = await _context.Departments.ToListAsync();
                     return View(model);
                 }
@@ -184,20 +200,38 @@ namespace BumboSolid.Controllers
                 existingEmployee.Email = model.Email;
             }
 
-            // Update password
+            // Password logic
             if (!string.IsNullOrEmpty(model.Password))
             {
                 if (model.Password != model.ConfirmPassword)
                 {
-                    ModelState.AddModelError("Password", "De wachtwoorden komen niet overeen.");
+                    ModelState.AddModelError(nameof(model.Password), "De wachtwoorden komen niet overeen.");
                     model.Departments = await _context.Departments.ToListAsync();
                     return View(model);
                 }
 
-                var passwordHasher = new PasswordHasher<User>();
-                existingEmployee.PasswordHash = passwordHasher.HashPassword(existingEmployee, model.Password);
+                var passwordValidationResult = await _userManager.PasswordValidators
+                    .FirstOrDefault()
+                    .ValidateAsync(_userManager, null, model.Password);
+
+                foreach (var error in passwordValidationResult.Errors)
+                {
+                    ModelState.AddModelError(nameof(model.Password), error.Description);
+                }
+
+                if (ModelState.IsValid)
+                {
+                    var passwordHasher = new PasswordHasher<User>();
+                    existingEmployee.PasswordHash = passwordHasher.HashPassword(existingEmployee, model.Password);
+                }
+                else
+                {
+                    model.Departments = await _context.Departments.ToListAsync();
+                    return View(model);
+                }
             }
 
+            // Update employee departments
             var selectedDepartments = await _context.Departments
                 .Where(d => model.SelectedDepartments.Contains(d.Name))
                 .ToListAsync();
@@ -217,15 +251,15 @@ namespace BumboSolid.Controllers
 
         [HttpGet("Verwijderen/{id:int}")]
         public async Task<IActionResult> Delete(int id)
-		{
+        {
             var employee = await _context.Employees.FirstOrDefaultAsync(e => e.Id == id);
             if (employee == null)
             {
                 return NotFound();
             }
 
-			return View(employee);
-		}
+            return View(employee);
+        }
 
         [HttpPost("Verwijderen/{id:int}"), ActionName("Delete")]
         [ValidateAntiForgeryToken]
