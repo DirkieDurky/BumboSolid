@@ -5,6 +5,7 @@ namespace BumboSolid.Models
     {
         [Required(ErrorMessage = "Vul een Email in.")]
         [Display(Name = "Email")]
+        [EmailAddress]
         public string Email { get; set; }
 
         [Required(ErrorMessage = "Vul een wachtwoord in.")]
