@@ -16,6 +16,9 @@ using System.Security.Claims;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using NuGet.Configuration;
 using Microsoft.EntityFrameworkCore.Query.Internal;
+using Humanizer;
+using System.Text.RegularExpressions;
+using Microsoft.AspNetCore.Authentication;
 
 namespace BumboSolid.Controllers
 {
@@ -528,7 +531,7 @@ namespace BumboSolid.Controllers
 
             if (!claViewModel.BreakWorkDuration.HasValue && claViewModel.BreakMinBreakDuration.HasValue)
             {
-                ModelState.AddModelError(nameof(claViewModel.BreakMinBreakDuration), 
+                ModelState.AddModelError(nameof(claViewModel.BreakMinBreakDuration),
                     "Minimale pauzetijd mag niet worden ingevuld wanneer maximale werkduur zonder pauzes leeg is");
                 noErrors = false;
             }
@@ -546,7 +549,7 @@ namespace BumboSolid.Controllers
                 (claViewModel.MaxAvgWeeklyWorkDurationOverFourWeeks * maxAvgMulti) : null;
             claEntry.MaxShiftDuration = claViewModel.MaxShiftDuration.HasValue ?
                 (claViewModel.MaxShiftDuration.Value * maxTotalShiftMulti) : null;
-            claEntry.MaxWorkDaysPerWeek = claViewModel.MaxWorkDaysPerWeek.HasValue ? 
+            claEntry.MaxWorkDaysPerWeek = claViewModel.MaxWorkDaysPerWeek.HasValue ?
                 claViewModel.MaxWorkDaysPerWeek.Value : null;
             claEntry.MaxWorkDurationPerDay = claViewModel.MaxWorkDurationPerDay.HasValue ?
                 (claViewModel.MaxWorkDurationPerDay.Value * maxWorkDayMulti) : null;
@@ -554,13 +557,13 @@ namespace BumboSolid.Controllers
                 (claViewModel.MaxWorkDurationPerHolidayWeek.Value * maxHolidayMulti) : null;
             claEntry.MaxWorkDurationPerWeek = claViewModel.MaxWorkDurationPerWeek.HasValue ?
                 (claViewModel.MaxWorkDurationPerWeek.Value * maxWeekMulti) : null;
-            claEntry.LatestWorkTime = claViewModel.LatestWorkTime.HasValue ? 
+            claEntry.LatestWorkTime = claViewModel.LatestWorkTime.HasValue ?
                 claViewModel.LatestWorkTime.Value : null;
-            claEntry.EarliestWorkTime = claViewModel.EarliestWorkTime.HasValue ? 
+            claEntry.EarliestWorkTime = claViewModel.EarliestWorkTime.HasValue ?
                 claViewModel.EarliestWorkTime.Value : null;
 
 
-            if(breakEntry != null && claViewModel.BreakWorkDuration.HasValue)
+            if (breakEntry != null && claViewModel.BreakWorkDuration.HasValue)
             {
                 _context.CLABreakEntries.Remove(breakEntry); //apparently needed
                 var updatedBreakEntry = new CLABreakEntry();
@@ -573,7 +576,7 @@ namespace BumboSolid.Controllers
                 _context.CLABreakEntries.Add(updatedBreakEntry);
             }
 
-            if (breakEntry != null && !claViewModel.BreakWorkDuration.HasValue) 
+            if (breakEntry != null && !claViewModel.BreakWorkDuration.HasValue)
                 _context.CLABreakEntries.Remove(breakEntry);
 
             if (breakEntry == null && claViewModel.BreakWorkDuration.HasValue)
@@ -597,42 +600,65 @@ namespace BumboSolid.Controllers
         }
 
         // GET: CLA/Delete/5
-        [HttpGet("Verwijderen/{id:int?}")]
-        public async Task<IActionResult> Delete(int? id)
+        [HttpGet("Verwijderen")]
+        public async Task<IActionResult> Delete(int? ageStart, int? ageEnd)
         {
-            if (id == null)
+            var claEntry = await _context.CLAEntries
+                .FirstOrDefaultAsync(e =>
+                    (e.AgeStart == ageStart && e.AgeEnd == ageEnd) ||
+                    (e.AgeStart == null && ageStart == null && e.AgeEnd == ageEnd) ||
+                    (e.AgeStart == ageStart && e.AgeEnd == null && ageEnd == null) ||
+                    (e.AgeStart == null && e.AgeEnd == null && ageStart == null && ageEnd == null));
+            if (claEntry == null)
             {
-                return NotFound();
+                TempData["Message"] = "CAO regel niet gevonden";
+                return RedirectToAction(nameof(Index));
             }
 
-            var cLAEntry = await _context.CLAEntries
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (cLAEntry == null)
-            {
-                return NotFound();
-            }
-
-            return View(cLAEntry);
+            return View(claEntry);
         }
 
         // POST: CLA/Delete/5
-        [HttpPost, ActionName("Delete")]
+        [HttpPost, ActionName("VerwijderdSucces")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var cLAEntry = await _context.CLAEntries.FindAsync(id);
-            if (cLAEntry != null)
+            if (cLAEntry == null)
             {
-                _context.CLAEntries.Remove(cLAEntry);
+                TempData["Message"] = "CAO regel niet gevonden. Niks verwijderd.";
+                return RedirectToAction(nameof(Index));
             }
 
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
-        }
+            var breakEntry = await _context.CLABreakEntries.
+                FirstOrDefaultAsync(e => e.CLAEntryId == id);
+            if (breakEntry != null) _context.CLABreakEntries.Remove(breakEntry);
+            _context.CLAEntries.Remove(cLAEntry);
 
-        private bool CLAEntryExists(int id)
-        {
-            return _context.CLAEntries.Any(e => e.Id == id);
+            await _context.SaveChangesAsync();
+
+            string message = "";
+
+
+            if (cLAEntry.AgeStart.HasValue && cLAEntry.AgeEnd.HasValue)
+            {
+                message = $"Regels voor {cLAEntry.AgeStart} tot {cLAEntry.AgeEnd} verwijderd";
+            }
+            else if (!cLAEntry.AgeStart.HasValue && !cLAEntry.AgeEnd.HasValue)
+            {
+                message = $"Algemene regels verwijderd";
+            }
+            else if (!cLAEntry.AgeStart.HasValue && cLAEntry.AgeEnd.HasValue)
+            {
+                message = $"Regels tot {cLAEntry.AgeEnd} verwijderd";
+            }
+            else if (cLAEntry.AgeStart.HasValue && !cLAEntry.AgeEnd.HasValue)
+            {
+                message = $"Regels vanaf {cLAEntry.AgeStart} jaar verwijderd";
+            }
+
+            TempData["Message"] = message;
+            return RedirectToAction(nameof(Index));
         }
     }
 }

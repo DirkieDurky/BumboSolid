@@ -1,81 +1,34 @@
 ﻿@model BumboSolid.Data.Models.CLAEntry
 
 @{
-    ViewData["Title"] = "Delete";
+    ViewData["Title"] = "Verwijderen";
 }
 
-<h1>Delete</h1>
+<h1 class="text-center">Verwijderen</h1>
 
-<h3>Are you sure you want to delete this?</h3>
-<div>
-    <h4>CLAEntry</h4>
+<h3 class="text-center">Weet je zeker dat je de volgende regel wilt verwijderen?</h3>
+<div class="text-center">
+    @if (Model.AgeStart.HasValue && Model.AgeEnd.HasValue)
+    {
+        <h2>Regels voor @Model.AgeStart tot @Model.AgeEnd</h2>
+    }
+    else if (!Model.AgeStart.HasValue && !Model.AgeEnd.HasValue)
+    {
+        <h2>Algemene regels</h2>
+    }
+    else if (!Model.AgeStart.HasValue && Model.AgeEnd.HasValue)
+    {
+        <h2>Regels tot @Model.AgeEnd</h2>
+    }
+    else if (Model.AgeStart.HasValue && !Model.AgeEnd.HasValue)
+    {
+        <h2>Regels vanaf @Model.AgeStart jaar</h2>
+    }
     <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.AgeStart)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.AgeStart)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.AgeEnd)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.AgeEnd)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.MaxWorkDurationPerDay)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.MaxWorkDurationPerDay)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.MaxWorkDaysPerWeek)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.MaxWorkDaysPerWeek)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.MaxWorkDurationPerWeek)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.MaxWorkDurationPerWeek)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.MaxWorkDurationPerHolidayWeek)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.MaxWorkDurationPerHolidayWeek)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.EarliestWorkTime)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.EarliestWorkTime)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.LatestWorkTime)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.LatestWorkTime)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.MaxAvgWeeklyWorkDurationOverFourWeeks)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.MaxAvgWeeklyWorkDurationOverFourWeeks)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.MaxShiftDuration)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.MaxShiftDuration)
-        </dd>
-    </dl>
-    
-    <form asp-action="Delete">
+
+    <form asp-action="VerwijderdSucces">
         <input type="hidden" asp-for="Id" />
-        <input type="submit" value="Delete" class="btn btn-danger" /> |
-        <a asp-action="Index">Back to List</a>
+        <a asp-action="Index" class="btn btn-secondary">Annuleren</a>
+        <input type="submit" value="Verwijderen" class="btn btn-danger" />
     </form>
 </div>
