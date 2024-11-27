@@ -138,7 +138,7 @@ namespace BumboSolid.Controllers
 					// Max work days per week
 					List<int> workDays = new List<int>();
 					workDays.Add(shift.Weekday);
-					foreach (Shift pastShift in thisWeekShifts) if (workDays.Contains(pastShift.Weekday) == true) workDays.Add(pastShift.Weekday);
+					foreach (Shift pastShift in thisWeekShifts) if (workDays.Contains(pastShift.Weekday) == false) workDays.Add(pastShift.Weekday);
 					if (workDays.Count >= CLA.MaxWorkDaysPerWeek) validShift = false;
 
 					// Max work duration per day
