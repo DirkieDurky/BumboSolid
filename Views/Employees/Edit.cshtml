@@ -76,6 +76,24 @@
         <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
     </div>
 
+    <div>
+        <label>Afdelingen:</label>
+        <div>
+            @foreach (var department in Model.Departments)
+            {
+                <div class="form-check">
+                    <input type="checkbox"
+                           id="department_@department.Name"
+                           name="SelectedDepartments"
+                           value="@department.Name"
+                           class="form-check-input"
+                    @(Model.SelectedDepartments.Contains(department.Name) ? "checked" : "") />
+                    <label for="department_@department.Name" class="form-check-label">@department.Name</label>
+                </div>
+            }
+        </div>
+    </div>
+
     <button type="submit" class="btn btn-primary">Opslaan</button>
     <a asp-action="Index" class="btn btn-secondary">Annuleren</a>
 </form>

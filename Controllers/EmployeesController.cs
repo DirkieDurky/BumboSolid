@@ -51,9 +51,14 @@ namespace BumboSolid.Controllers
         }
 
         [HttpGet("Aanmaken")]
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
-            return View();
+            var departments = await _context.Departments.ToListAsync();
+
+            EmployeesCreateViewModel employeesCreateViewModel = new EmployeesCreateViewModel();
+            employeesCreateViewModel.Departments = departments;
+
+            return View(employeesCreateViewModel);
         }
 
         [HttpPost("Aanmaken")]
@@ -80,11 +85,17 @@ namespace BumboSolid.Controllers
                     EmployedSince = input.EmployedSince,
                 };
 
+                var selectedDepartments = await _context.Departments
+                    .Where(d => input.SelectedDepartments.Contains(d.Name))
+                    .ToListAsync();
+
+                user.Departments = selectedDepartments;
+
                 var result = await _userManager.CreateAsync(user, input.Password);
 
                 if (result.Succeeded)
                 {
-                    _userManager.AddToRoleAsync(user, "Employee").Wait();
+                    await _userManager.AddToRoleAsync(user, "Employee");
                     return RedirectToAction("Index");
                 }
                 else
@@ -96,17 +107,24 @@ namespace BumboSolid.Controllers
                 }
             }
 
+            input.Departments = await _context.Departments.ToListAsync();
             return View(input);
         }
+
 
         [HttpGet("Bewerken/{id:int}")]
         public async Task<IActionResult> Edit(int id)
         {
-            var employee = await _context.Users.FindAsync(id);
+            var employee = await _context.Users
+                .Include(u => u.Departments)
+                .FirstOrDefaultAsync(u => u.Id == id);
+
             if (employee == null)
             {
                 return NotFound();
             }
+
+            var departments = await _context.Departments.ToListAsync();
 
             var model = new EmployeesEditViewModel
             {
@@ -118,22 +136,27 @@ namespace BumboSolid.Controllers
                 StreetName = employee.StreetName,
                 StreetNumber = employee.StreetNumber,
                 BirthDate = employee.BirthDate,
-                EmployedSince = employee.EmployedSince
+                EmployedSince = employee.EmployedSince,
+                Departments = departments,
+                SelectedDepartments = employee.Departments.Select(d => d.Name).ToList()
             };
 
             return View(model);
         }
-
 
         [HttpPost("Bewerken/{id:int}")]
         public async Task<IActionResult> Edit(int id, EmployeesEditViewModel model)
         {
             if (!ModelState.IsValid)
             {
+                model.Departments = await _context.Departments.ToListAsync();
                 return View(model);
             }
 
-            var existingEmployee = await _context.Users.FindAsync(id);
+            var existingEmployee = await _context.Users
+                .Include(u => u.Departments)
+                .FirstOrDefaultAsync(u => u.Id == id);
+
             if (existingEmployee == null)
             {
                 return NotFound();
@@ -153,6 +176,7 @@ namespace BumboSolid.Controllers
                 if (await _context.Users.AnyAsync(u => u.Email == model.Email && u.Id != id))
                 {
                     ModelState.AddModelError("Email", "Dit emailadres is al in gebruik.");
+                    model.Departments = await _context.Departments.ToListAsync();
                     return View(model);
                 }
 
@@ -165,6 +189,7 @@ namespace BumboSolid.Controllers
                 if (model.Password != model.ConfirmPassword)
                 {
                     ModelState.AddModelError("Password", "De wachtwoorden komen niet overeen.");
+                    model.Departments = await _context.Departments.ToListAsync();
                     return View(model);
                 }
 
@@ -172,13 +197,17 @@ namespace BumboSolid.Controllers
                 existingEmployee.PasswordHash = passwordHasher.HashPassword(existingEmployee, model.Password);
             }
 
+            var selectedDepartments = await _context.Departments
+                .Where(d => model.SelectedDepartments.Contains(d.Name))
+                .ToListAsync();
+
+            existingEmployee.Departments = selectedDepartments;
+
             _context.Users.Update(existingEmployee);
             await _context.SaveChangesAsync();
 
             return RedirectToAction(nameof(Index));
         }
-
-
 
         private bool EmployeeExists(int id)
         {

@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using BumboSolid.Data.Models;
+using System.ComponentModel.DataAnnotations;
 
 namespace BumboSolid.Models
 {
@@ -36,5 +37,10 @@ namespace BumboSolid.Models
 
         [Required]
         public DateOnly EmployedSince { get; set; }
+
+        public List<Department> Departments { get; set; } = new List<Department>();
+
+        [Required(ErrorMessage = "Kies minstens één afdeling.")]
+        public List<string> SelectedDepartments { get; set; } = new List<string>();
     }
 }
