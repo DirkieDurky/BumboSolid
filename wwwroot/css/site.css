@@ -34,13 +34,6 @@ hr {
     min-height: 0.3vh;
 }
 
-li {
-    list-style-type: none;
-    margin: 14px;
-    text-align: right;
-    font-weight: bold;
-}
-
 p {
     text-align: center;
 }
@@ -143,7 +136,7 @@ p {
     background-color: #d6d6d6;
 }
 
-.btn {
+.early-btn {
     border-radius: 10px;
     width: 20vw;
     height: 5vh;

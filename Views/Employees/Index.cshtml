@@ -27,12 +27,12 @@
                 <td>@employee.BirthDate.ToShortDateString()</td>
                 <td>@employee.EmployedSince.ToShortDateString()</td>
                 <td>
-                    <a asp-action="Edit" asp-route-id="@employee.Id" class="btn btn-primary btn-sm">Edit</a>
-                    <a asp-action="Delete" asp-route-id="@employee.Id" class="btn btn-secondary btn-sm">Delete</a>
+                    <a asp-action="Edit" asp-route-id="@employee.Id" class="btn early-btn btn-primary btn-sm">Edit</a>
+                    <a asp-action="Delete" asp-route-id="@employee.Id" class="btn early-btn btn-secondary btn-sm">Delete</a>
                 </td>
             </tr>
         }
     </tbody>
 </table>
 
-<a asp-action="Create" class="btn btn-success">Add New Employee</a>
+<a asp-action="Create" class="btn early-btn btn-success">Add New Employee</a>

@@ -19,19 +19,19 @@
                 </button>
                 <div class="navbar-collapse collapse d-sm-inline-flex">
                     <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
+                        <li class="nav-item fw-bold">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Prognoses" asp-action="">Prognoses</a>
                         </li>
-                        <li class="nav-item">
+                        <li class="nav-item fw-bold">
                             <a class="nav-link text-dark" asp-area="" asp-controller="CAO" asp-action="">CAO regels</a>
                         </li>
-                        <li class="nav-item">
+                        <li class="nav-item fw-bold">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Account" asp-action="Logout">Uitloggen</a>
                         </li>
                         @if (User.Identity.IsAuthenticated)
                         {
                             <ul class="navbar-nav flex-grow-1">
-                                <li class="nav-item">
+                                <li class="nav-item fw-bold">
                                     @User.Identity.Name
                                 </li>
                             </ul>
