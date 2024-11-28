@@ -86,6 +86,11 @@ namespace BumboSolid.Controllers
                 ModelState.AddModelError(nameof(input.Password), "De wachtwoorden komen niet overeen.");
             }
 
+            if (!input.SelectedDepartments.Any())
+            {
+                ModelState.AddModelError("SelectedDepartments", "Kies minstens één afdeling.");
+            }
+
             if (ModelState.IsValid)
             {
                 var user = new User
@@ -164,6 +169,11 @@ namespace BumboSolid.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, EmployeesEditViewModel model)
         {
+            if (!model.SelectedDepartments.Any())
+            {
+                ModelState.AddModelError("SelectedDepartments", "Kies minstens één afdeling.");
+            }
+
             if (!ModelState.IsValid)
             {
                 model.Departments = await _context.Departments.ToListAsync();
