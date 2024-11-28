@@ -141,6 +141,19 @@ namespace BumboSolid.Controllers
                 noErrors = false;
             }
 
+            if (claViewModel.AgeStart.HasValue && claViewModel.AgeStart > 128)
+            {
+                ModelState.AddModelError(nameof(claViewModel.AgeStart), "Houdt de leeftijd wel een beetje realistisch A.U.B.");
+                noErrors = false;
+            }
+
+            if (claViewModel.AgeEnd.HasValue && claViewModel.AgeEnd > 128)
+            {
+                ModelState.AddModelError(nameof(claViewModel.AgeEnd), "Wanneer iemand zo oud is mogen ze al lang met pension, " +
+                    "houdt de leeftijd A.U.B. realistisch");
+                noErrors = false;
+            }
+
             if (claViewModel.MaxWorkDaysPerWeek.HasValue && claViewModel.MaxWorkDaysPerWeek.Value > 7)
             {
                 ModelState.AddModelError("MaxWorkDaysPerWeek", "Er zijn slechts zeven dagen in een week.");
@@ -420,7 +433,7 @@ namespace BumboSolid.Controllers
                 MaxShiftDuration = claEntry.MaxShiftDuration.HasValue ?
                     claEntry.MaxShiftDuration / maxTotalShiftMulti : null,
                 MaxAvgWeeklyWorkDurationOverFourWeeks = claEntry.MaxAvgWeeklyWorkDurationOverFourWeeks.HasValue ?
-                    claEntry.MaxAvgWeeklyWorkDurationOverFourWeeks : null,
+                    claEntry.MaxAvgWeeklyWorkDurationOverFourWeeks / maxAvgMulti : null,
 
                 BreakWorkDuration = breakEntry != null ? breakEntry.WorkDuration / maxUninterruptedMulti : null,
                 BreakMinBreakDuration = breakEntry != null && breakEntry.MinBreakDuration.HasValue ?
