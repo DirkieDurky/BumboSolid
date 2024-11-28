@@ -2,13 +2,15 @@
 using BumboSolid.Data;
 using BumboSolid.Data.Models;
 using BumboSolid.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace BumboSolid.Controllers
 {
-	public class AvailabilityController : Controller
+    [Authorize(Roles = "Employee,Manager")]
+    public class AvailabilityController : Controller
 	{
 		private readonly BumboDbContext _context;
 		private readonly UserManager<User> _userManager;
