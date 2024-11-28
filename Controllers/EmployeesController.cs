@@ -5,6 +5,7 @@ using BumboSolid.Data.Models;
 using BumboSolid.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authorization;
+using BumboSolid.Migrations;
 
 namespace BumboSolid.Controllers
 {
@@ -15,6 +16,12 @@ namespace BumboSolid.Controllers
         private readonly BumboDbContext _context;
         private readonly UserManager<User> _userManager;
         private readonly SignInManager<User> _signInManager;
+
+        private const int MinAge = 13;
+        private const int MaxAge = 128;
+
+        private const int MinEmployedYears = 0;
+        private const int MaxEmployedYears = 128;
 
         public EmployeesController(BumboDbContext context, UserManager<User> userManager, SignInManager<User> signInManager)
         {
@@ -69,6 +76,18 @@ namespace BumboSolid.Controllers
             if (await _userManager.FindByEmailAsync(input.Email) != null)
             {
                 ModelState.AddModelError(nameof(input.Email), $"De email '{input.Email}' is al in gebruik.");
+            }
+
+            // Validate Age
+            if (!IsValidAge(input.BirthDate, out var ageErrorMessage))
+            {
+                ModelState.AddModelError(nameof(input.BirthDate), ageErrorMessage);
+            }
+
+            // Validate Employment Duration
+            if (!IsValidEmploymentDuration(input.EmployedSince, input.BirthDate, out var employmentErrorMessage))
+            {
+                ModelState.AddModelError(nameof(input.EmployedSince), employmentErrorMessage);
             }
 
             // Check if the password meets the requirements
@@ -172,6 +191,18 @@ namespace BumboSolid.Controllers
             if (!model.SelectedDepartments.Any())
             {
                 ModelState.AddModelError("SelectedDepartments", "Kies minstens één afdeling.");
+            }
+
+            // Validate Age
+            if (!IsValidAge(model.BirthDate, out var ageErrorMessage))
+            {
+                ModelState.AddModelError(nameof(model.BirthDate), ageErrorMessage);
+            }
+
+            // Validate Employment Duration
+            if (!IsValidEmploymentDuration(model.EmployedSince, model.BirthDate, out var employmentErrorMessage))
+            {
+                ModelState.AddModelError(nameof(model.EmployedSince), employmentErrorMessage);
             }
 
             if (!ModelState.IsValid)
@@ -287,5 +318,46 @@ namespace BumboSolid.Controllers
             }
             return RedirectToAction(nameof(Index));
         }
+
+        private bool IsValidAge(DateOnly birthDate, out string errorMessage)
+        {
+            errorMessage = null;
+
+            var age = DateTime.Today.Year - birthDate.Year;
+            if (birthDate > DateOnly.FromDateTime(DateTime.Today.AddYears(-age)))
+                age--;
+
+            if (age < MinAge || age > MaxAge)
+            {
+                errorMessage = $"Leeftijd moet tussen {MinAge} en {MaxAge} jaar zijn. Huidige leeftijd: {age}.";
+                return false;
+            }
+
+            return true;
+        }
+
+        private bool IsValidEmploymentDuration(DateOnly employedSince, DateOnly birthDate, out string errorMessage)
+        {
+            errorMessage = null;
+
+            if (employedSince < birthDate)
+            {
+                errorMessage = "De datum 'In dienst sinds' kan niet eerder zijn dan de geboortedatum.";
+                return false;
+            }
+
+            var yearsEmployed = DateTime.Today.Year - employedSince.Year;
+            if (employedSince > DateOnly.FromDateTime(DateTime.Today.AddYears(-yearsEmployed)))
+                yearsEmployed--;
+
+            if (yearsEmployed < MinEmployedYears || yearsEmployed > MaxEmployedYears)
+            {
+                errorMessage = $"Dienstjaren moeten tussen {MinEmployedYears} en {MaxEmployedYears} jaar zijn. Huidige dienstjaren: {yearsEmployed}.";
+                return false;
+            }
+
+            return true;
+        }
+
     }
 }
