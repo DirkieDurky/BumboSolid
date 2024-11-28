@@ -20,20 +20,13 @@
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                     <ul class="navbar-nav flex-grow-1">
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Prognoses" asp-action="">Prognoses</a>
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Prognoses" asp-action="Index">Prognoses</a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Account" asp-action="Logout">Uitloggen</a>
+                         <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Availability" asp-action="Index">Beschikbaarheid</a>
                         </li>
-                        @if (User.Identity.IsAuthenticated)
-                        {
-                            <ul class="navbar-nav flex-grow-1">
-                                <li class="nav-item">
-                                    @User.Identity.Name
-                                </li>
-                            </ul>
-                        }
                     </ul>
+
 
                     <!--
                     <ul class="navbar-nav flex-grow-1">

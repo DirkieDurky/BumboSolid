@@ -1,0 +1,60 @@
+﻿@model BumboSolid.Models.AvailabilityRuleViewModel
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+<h1>Beschikbaarheid Toevoegen</h1>
+
+<hr />
+<div class="row">
+	<div class="col-md-4">
+		<form asp-action="Create">
+			<div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+			<input type="hidden" id="year" name="year" value="@ViewBag.Year" />
+			<input type="hidden" id="weekNr" name="weekNr" value="@ViewBag.WeekNr" />
+
+			<div class="form-group">
+				<label for="Day" class="control-label">Dag</label>
+				<select id="Day" name="Day" class="form-control">
+					<option value="Monday">Maandag</option>
+					<option value="Tuesday">Dinsdag</option>
+					<option value="Wednesday">Woensdag</option>
+					<option value="Thursday">Donderdag</option>
+					<option value="Friday">Vrijdag</option>
+					<option value="Saturday">Zaterdag</option>
+					<option value="Sunday">Zondag</option>
+				</select>
+			</div>
+
+			<div class="d-flex flex-row">
+				<div class="form-group mb-3">
+					<label asp-for="StartTime" class="control-label">Starttijd</label>
+					<input asp-for="StartTime" class="form-control" type="time" value="null" />
+					<span asp-validation-for="StartTime" class="text-danger"></span>
+				</div>
+
+				<div class="form-group mb-3">
+					<label asp-for="EndTime" class="control-label">Eindtijd</label>
+					<input asp-for="EndTime" class="form-control" type="time" value="null" />
+					<span asp-validation-for="EndTime" class="text-danger"></span>
+				</div>
+			</div>
+
+			<div class="form-group">
+				<label for="Availability" class="control-label">Beschikbaarheid</label>
+				<select id="Availability" name="Availability" class="form-control">
+					<option value="Available">Beschikbaar</option>
+					<option value="Unavailable">Niet beschikbaar</option>
+					<option value="School">School</option>
+				</select>
+			</div>
+
+			<div class="form-group">
+				<button type="submit" class="btn btn-primary">Toevoegen</button>
+				<a type="button" class="btn btn-secondary" asp-action="Index">Terug</a>
+			</div>
+		</form>
+	</div>
+</div>
