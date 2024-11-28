@@ -50,6 +50,17 @@
         <dd class="col-sm-10">
             @Html.DisplayFor(model => model.EmployedSince)
         </dd>
+        <dt class="col-sm-2">Afdelingen</dt>
+        <dd class="col-sm-10">
+            @if (Model.Departments != null && Model.Departments.Any())
+            {
+                @string.Join(", ", Model.Departments.Select(d => d.Name))
+            }
+            else
+            {
+                <span>Geen afdelingen gekoppeld</span>
+            }
+        </dd>
     </dl>
 
     <form asp-action="Delete" asp-route-id="@Model.Id" method="post">

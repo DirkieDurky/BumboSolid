@@ -252,7 +252,10 @@ namespace BumboSolid.Controllers
         [HttpGet("Verwijderen/{id:int}")]
         public async Task<IActionResult> Delete(int id)
         {
-            var employee = await _context.Employees.FirstOrDefaultAsync(e => e.Id == id);
+            var employee = await _context.Employees
+                .Include(u => u.Departments)
+                .FirstOrDefaultAsync(e => e.Id == id);
+
             if (employee == null)
             {
                 return NotFound();
