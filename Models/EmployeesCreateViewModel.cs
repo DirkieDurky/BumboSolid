@@ -7,6 +7,7 @@ namespace BumboSolid.Models
     {
         [Required]
         [EmailAddress]
+        [StringLength(256)]
         public string Email { get; set; }
 
         [Required]
