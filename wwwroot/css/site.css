@@ -461,3 +461,21 @@ th, td {
 .prognosis-top-item {
     width: 20rem;
 }
+
+.password-input-container {
+    position: relative;
+}
+
+.eye-btn {
+    position: absolute;
+    top: 50%;
+    right: 10px;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    cursor: pointer;
+}
+
+    .eye-btn i {
+        font-size: 1.2em;
+    }

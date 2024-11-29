@@ -20,27 +20,21 @@
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                     <ul class="navbar-nav flex-grow-1">
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Prognoses" asp-action="Index">Prognoses</a>
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Prognoses" asp-action="">Prognoses</a>
                         </li>
-                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Availability" asp-action="Index">Beschikbaarheid</a>
-                        </li>
-                    </ul>
-
-
-                    <!--
-                    <ul class="navbar-nav flex-grow-1">
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Roostering" asp-action="">Roostering</a>
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Employees" asp-action="Index">Medewerkers</a>
                         </li>
+                        @if (User.Identity.IsAuthenticated)
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Account" asp-action="Logout">Uitloggen</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark">@User.Identity.Name</a>
+                            </li>
+                        }
                     </ul>
-
-                    <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Tijdregistratie" asp-action="">Tijdregistratie</a>
-                        </li>
-                    </ul>
-                    -->
                 </div>
             </div>
         </nav>
