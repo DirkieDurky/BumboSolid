@@ -7,9 +7,12 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using BumboSolid.Data.Models;
 using BumboSolid.Data;
+using Microsoft.AspNetCore.Authorization;
 
 namespace BumboSolid.Controllers
 {
+	[Authorize(Roles = "Manager")]
+	[Route("Rooster")]
 	public class ShiftsController : Controller
 	{
 		private readonly BumboDbContext _context;
@@ -20,9 +23,10 @@ namespace BumboSolid.Controllers
 		}
 
 		// GET: Shifts
+		[HttpGet("")]
 		public async Task<IActionResult> Index()
 		{
-			var bumboDbContext = _context.Shifts.Include(s => s.DepartmentNavigation).Include(s => s.Week);
+			var bumboDbContext = _context.Weeks.Include(w => w.Shifts);
 			return View(await bumboDbContext.ToListAsync());
 		}
 
