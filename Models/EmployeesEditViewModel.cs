@@ -13,10 +13,12 @@ namespace BumboSolid.Models
         public string Email { get; set; }
 
         [DataType(DataType.Password)]
+        [StringLength(256)]
         public string? Password { get; set; }
 
         [Compare("Password", ErrorMessage = "De wachtwoorden komen niet overeen.")]
         [DataType(DataType.Password)]
+        [StringLength(256)]
         public string? ConfirmPassword { get; set; }
 
         [Required]
@@ -33,6 +35,7 @@ namespace BumboSolid.Models
         [StringLength(45)]
         public string? StreetName { get; set; }
 
+        [Range(0, 9999, ErrorMessage = "Het huisnummer moet een getal tussen 0 en 9999 zijn.")]
         public int? StreetNumber { get; set; }
 
         [Required]
