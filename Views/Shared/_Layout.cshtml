@@ -25,9 +25,15 @@
 						<li class="nav-item">
 							<a class="nav-link text-dark" asp-area="" asp-controller="Shifts" asp-action="Index">Roosters</a>
 						</li>
-						<li>
-							<a class="nav-link text-dark" asp-area="" asp-controller="Account" asp-action="Logout">Uitloggen</a>
+						<li class="nav-item">
+							<a class="nav-link text-dark" asp-area="" asp-controller="Employees" asp-action="Index">Medewerkers</a>
 						</li>
+						@if (User.Identity.IsAuthenticated)
+						{
+							<li>
+								<a class="nav-link text-dark" asp-area="" asp-controller="Account" asp-action="Logout">Uitloggen</a>
+							</li>
+						}
 					</ul>
 
 					@if (User.Identity.IsAuthenticated)
