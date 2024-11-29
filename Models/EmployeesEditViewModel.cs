@@ -20,15 +20,17 @@ namespace BumboSolid.Models
         public string? ConfirmPassword { get; set; }
 
         [Required]
-        [StringLength(50)]
+        [StringLength(45)]
         public string FirstName { get; set; }
 
         [Required]
-        [StringLength(50)]
+        [StringLength(90)]
         public string LastName { get; set; }
 
+        [StringLength(45)]
         public string? PlaceOfResidence { get; set; }
 
+        [StringLength(45)]
         public string? StreetName { get; set; }
 
         public int? StreetNumber { get; set; }
