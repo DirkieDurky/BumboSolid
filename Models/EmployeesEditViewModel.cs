@@ -3,23 +3,23 @@ using System.ComponentModel.DataAnnotations;
 
 namespace BumboSolid.Models
 {
-    public class EmployeesCreateViewModel
+    public class EmployeesEditViewModel
     {
+        public int Id { get; set; }
+
         [Required]
         [EmailAddress]
         [StringLength(256)]
         public string Email { get; set; }
 
-        [Required]
         [DataType(DataType.Password)]
         [StringLength(256)]
-        public string Password { get; set; }
+        public string? Password { get; set; }
 
-        [Required]
-        [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
+        [Compare("Password", ErrorMessage = "De wachtwoorden komen niet overeen.")]
         [DataType(DataType.Password)]
         [StringLength(256)]
-        public string ConfirmPassword { get; set; }
+        public string? ConfirmPassword { get; set; }
 
         [Required]
         [StringLength(45)]

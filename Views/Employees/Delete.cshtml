@@ -1,63 +1,71 @@
 ﻿@model BumboSolid.Data.Models.User
 
 @{
-    ViewData["Title"] = "Delete";
+    ViewData["Title"] = "Verwijderen";
 }
 
-<h1>Delete</h1>
-
-<h3>Are you sure you want to delete this?</h3>
+<h3>Weet je zeker dat je deze medewerker wilt verwijderen?</h3>
 <div>
-    <h4>Employee</h4>
     <hr />
     <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.FirstName)
+        <dt class="col-sm-2">
+            Voornaam
         </dt>
-        <dd class = "col-sm-10">
+        <dd class="col-sm-10">
             @Html.DisplayFor(model => model.FirstName)
         </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.LastName)
+        <dt class="col-sm-2">
+            Achternaam
         </dt>
-        <dd class = "col-sm-10">
+        <dd class="col-sm-10">
             @Html.DisplayFor(model => model.LastName)
         </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.PlaceOfResidence)
+        <dt class="col-sm-2">
+            Woonplaats
         </dt>
-        <dd class = "col-sm-10">
+        <dd class="col-sm-10">
             @Html.DisplayFor(model => model.PlaceOfResidence)
         </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.StreetName)
+        <dt class="col-sm-2">
+            Straatnaam
         </dt>
-        <dd class = "col-sm-10">
+        <dd class="col-sm-10">
             @Html.DisplayFor(model => model.StreetName)
         </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.StreetNumber)
+        <dt class="col-sm-2">
+            Huisnummer
         </dt>
-        <dd class = "col-sm-10">
+        <dd class="col-sm-10">
             @Html.DisplayFor(model => model.StreetNumber)
         </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.BirthDate)
+        <dt class="col-sm-2">
+            Geboortedatum
         </dt>
-        <dd class = "col-sm-10">
+        <dd class="col-sm-10">
             @Html.DisplayFor(model => model.BirthDate)
         </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.EmployedSince)
+        <dt class="col-sm-2">
+            In dienst sinds
         </dt>
-        <dd class = "col-sm-10">
+        <dd class="col-sm-10">
             @Html.DisplayFor(model => model.EmployedSince)
         </dd>
+        <dt class="col-sm-2">Afdelingen</dt>
+        <dd class="col-sm-10">
+            @if (Model.Departments != null && Model.Departments.Any())
+            {
+                @string.Join(", ", Model.Departments.Select(d => d.Name))
+            }
+            else
+            {
+                <span>Geen afdelingen gekoppeld</span>
+            }
+        </dd>
     </dl>
-    
-    <form asp-action="Delete">
+
+    <form asp-action="Delete" asp-route-id="@Model.Id" method="post">
         <input type="hidden" asp-for="Id" />
-        <input type="submit" value="Delete" class="btn early-btn btn-danger" /> |
-        <a asp-action="">Back to List</a>
+        <button type="submit" class="btn btn-danger">Verwijderen</button>
+        <a asp-controller="Employees" asp-action="Index" class="btn early-btn btn-secondary">Annuleren</a>
     </form>
 </div>

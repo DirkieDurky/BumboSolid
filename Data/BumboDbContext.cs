@@ -133,11 +133,11 @@ public partial class BumboDbContext : IdentityDbContext<User, IdentityRole<int>,
                     "Capability",
                     r => r.HasOne<Department>().WithMany()
                         .HasForeignKey("Department")
-                        .OnDelete(DeleteBehavior.ClientSetNull)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .HasConstraintName("FK_Capability_Department"),
                     l => l.HasOne<User>().WithMany()
                         .HasForeignKey("Employee")
-                        .OnDelete(DeleteBehavior.ClientSetNull)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .HasConstraintName("FK_Capability_Employee"),
                     j =>
                     {

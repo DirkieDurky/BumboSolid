@@ -1,77 +1,140 @@
 ﻿@model BumboSolid.Models.EmployeesCreateViewModel
 
-<h1>Create Employee</h1>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
+
+<h1>Medewerker aanmaken</h1>
 
 <form asp-action="Create" method="post">
-    <div class="form-group">
-        <label asp-for="FirstName"></label>
-        <input asp-for="FirstName" class="form-control" />
-        <span asp-validation-for="FirstName" class="text-danger"></span>
+    <div class="row">
+        <div class="col-md-6">
+            <div class="form-group">
+                <label asp-for="FirstName">Voornaam *</label>
+                <input asp-for="FirstName" class="form-control" />
+                <span asp-validation-for="FirstName" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="form-group">
+                <label asp-for="LastName">Achternaam *</label>
+                <input asp-for="LastName" class="form-control" />
+                <span asp-validation-for="LastName" class="text-danger"></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-4">
+            <div class="form-group">
+                <label asp-for="PlaceOfResidence">Woonplaats</label>
+                <input asp-for="PlaceOfResidence" class="form-control" />
+                <span asp-validation-for="PlaceOfResidence" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="form-group">
+                <label asp-for="StreetName">Straatnaam</label>
+                <input asp-for="StreetName" class="form-control" />
+                <span asp-validation-for="StreetName" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="form-group">
+                <label asp-for="StreetNumber">Huisnummer</label>
+                <input asp-for="StreetNumber" class="form-control" />
+                <span asp-validation-for="StreetNumber" class="text-danger"></span>
+            </div>
+        </div>
     </div>
 
     <div class="form-group">
-        <label asp-for="LastName"></label>
-        <input asp-for="LastName" class="form-control" />
-        <span asp-validation-for="LastName" class="text-danger"></span>
-    </div>
-
-    <div class="form-group">
-        <label asp-for="PlaceOfResidence"></label>
-        <input asp-for="PlaceOfResidence" class="form-control" />
-        <span asp-validation-for="PlaceOfResidence" class="text-danger"></span>
-    </div>
-
-    <div class="form-group">
-        <label asp-for="StreetName"></label>
-        <input asp-for="StreetName" class="form-control" />
-        <span asp-validation-for="StreetName" class="text-danger"></span>
-    </div>
-
-    <div class="form-group">
-        <label asp-for="StreetNumber"></label>
-        <input asp-for="StreetNumber" class="form-control" />
-        <span asp-validation-for="StreetNumber" class="text-danger"></span>
-    </div>
-
-    <div class="form-group">
-        <label asp-for="BirthDate"></label>
+        <label asp-for="BirthDate">Geboortedatum *</label>
         <input asp-for="BirthDate" type="date" class="form-control" />
         <span asp-validation-for="BirthDate" class="text-danger"></span>
     </div>
 
     <div class="form-group">
-        <label asp-for="EmployedSince"></label>
+        <label asp-for="EmployedSince">In dienst sinds *</label>
         <input asp-for="EmployedSince" type="date" class="form-control" />
         <span asp-validation-for="EmployedSince" class="text-danger"></span>
     </div>
 
-    <!-- Email field -->
     <div class="form-group">
-        <label asp-for="Email">Email</label>
+        <label asp-for="Email">Email *</label>
         <input asp-for="Email" class="form-control" />
         <span asp-validation-for="Email" class="text-danger"></span>
     </div>
 
-    <!-- Password field -->
-    <div class="form-group">
-        <label asp-for="Password">Password</label>
-        <input asp-for="Password" type="password" class="form-control" />
+    <div class="form-group position-relative">
+        <label asp-for="Password">Wachtwoord *</label>
+        <div class="password-input-container">
+            <input asp-for="Password" type="password" class="form-control" id="Password" />
+            <button type="button" id="togglePassword" class="eye-btn">
+                <i class="fas fa-eye"></i>
+            </button>
+        </div>
         <span asp-validation-for="Password" class="text-danger"></span>
     </div>
 
-    <!-- Confirm Password field -->
-    <div class="form-group">
-        <label asp-for="ConfirmPassword">Confirm Password</label>
-        <input asp-for="ConfirmPassword" type="password" class="form-control" />
+    <div class="form-group position-relative">
+        <label asp-for="ConfirmPassword">Bevestig wachtwoord *</label>
+        <div class="password-input-container">
+            <input asp-for="ConfirmPassword" type="password" class="form-control" id="ConfirmPassword" />
+            <button type="button" id="toggleConfirmPassword" class="eye-btn">
+                <i class="fas fa-eye"></i>
+            </button>
+        </div>
         <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
     </div>
 
-    <button type="submit" class="btn early-btn btn-primary">Save</button>
-    <a asp-action="" class="btn early-btn btn-secondary">Cancel</a>
+    <div>
+        <label>Afdelingen:</label>
+        <div>
+            @foreach (var department in Model.Departments)
+            {
+                <div class="form-check">
+                    <input type="checkbox" id="department_@department.Name" name="SelectedDepartments" value="@department.Name" class="form-check-input" />
+                    <label for="department_@department.Name" class="form-check-label">@department.Name</label>
+                </div>
+            }
+        </div>
+        <span asp-validation-for="SelectedDepartments" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn early-btn btn-primary">Aanmaken</button>
+    <a asp-action="Index" class="btn early-btn btn-secondary">Annuleren</a>
 </form>
 
 @section Scripts {
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
+    <script>
+        document.getElementById("togglePassword").addEventListener("click", function() {
+            var passwordField = document.getElementById("Password");
+            var icon = this.querySelector("i");
+            if (passwordField.type === "password") {
+                passwordField.type = "text";
+                icon.classList.remove("fa-eye");
+                icon.classList.add("fa-eye-slash");
+            } else {
+                passwordField.type = "password";
+                icon.classList.remove("fa-eye-slash");
+                icon.classList.add("fa-eye");
+            }
+        });
+
+        document.getElementById("toggleConfirmPassword").addEventListener("click", function() {
+            var confirmPasswordField = document.getElementById("ConfirmPassword");
+            var icon = this.querySelector("i");
+            if (confirmPasswordField.type === "password") {
+                confirmPasswordField.type = "text";
+                icon.classList.remove("fa-eye");
+                icon.classList.add("fa-eye-slash");
+            } else {
+                confirmPasswordField.type = "password";
+                icon.classList.remove("fa-eye-slash");
+                icon.classList.add("fa-eye");
+            }
+        });
+    </script>
 }
