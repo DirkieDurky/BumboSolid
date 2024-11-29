@@ -128,26 +128,26 @@ public partial class BumboDbContext : IdentityDbContext<User, IdentityRole<int>,
 				.HasMaxLength(45)
 				.IsUnicode(false);
 
-			entity.HasMany(d => d.Departments).WithMany(p => p.Employees)
-				.UsingEntity<Dictionary<string, object>>(
-					"Capability",
-					r => r.HasOne<Department>().WithMany()
-						.HasForeignKey("Department")
-						.OnDelete(DeleteBehavior.ClientSetNull)
-						.HasConstraintName("FK_Capability_Department"),
-					l => l.HasOne<User>().WithMany()
-						.HasForeignKey("Employee")
-						.OnDelete(DeleteBehavior.ClientSetNull)
-						.HasConstraintName("FK_Capability_Employee"),
-					j =>
-					{
-						j.HasKey("Employee", "Department");
-						j.ToTable("Capability");
-						j.IndexerProperty<string>("Department")
-							.HasMaxLength(25)
-							.IsUnicode(false);
-					});
-		});
+            entity.HasMany(d => d.Departments).WithMany(p => p.Employees)
+                .UsingEntity<Dictionary<string, object>>(
+                    "Capability",
+                    r => r.HasOne<Department>().WithMany()
+                        .HasForeignKey("Department")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .HasConstraintName("FK_Capability_Department"),
+                    l => l.HasOne<User>().WithMany()
+                        .HasForeignKey("Employee")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .HasConstraintName("FK_Capability_Employee"),
+                    j =>
+                    {
+                        j.HasKey("Employee", "Department");
+                        j.ToTable("Capability");
+                        j.IndexerProperty<string>("Department")
+                            .HasMaxLength(25)
+                            .IsUnicode(false);
+                    });
+        });
 
 		modelBuilder.Entity<Factor>(entity =>
 		{

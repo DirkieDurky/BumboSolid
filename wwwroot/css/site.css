@@ -550,3 +550,21 @@ th, td {
 	font-weight: 700 !important;
 }
 /* Schedule View Manager END */
+
+.password-input-container {
+    position: relative;
+}
+
+.eye-btn {
+    position: absolute;
+    top: 50%;
+    right: 10px;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    cursor: pointer;
+}
+
+    .eye-btn i {
+        font-size: 1.2em;
+    }
