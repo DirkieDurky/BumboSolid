@@ -409,6 +409,7 @@ public partial class BumboDbContext : IdentityDbContext<User, IdentityRole<int>,
 			new PrognosisDepartment { PrognosisId = 2, Department = "Vakkenvullen", Weekday = 2 }
 		);
 		modelBuilder.Entity<Shift>().HasData(
+			//DUMMYDATA SHIFT START
 			new Shift { Id = 3, Weekday = 2, StartTime = new TimeOnly(9, 0), EndTime = new TimeOnly(17, 5), Department = "Kassa", ExternalEmployeeName = "Alice Johnson", WeekId = 2 },
 			new Shift { Id = 4, Weekday = 5, StartTime = new TimeOnly(10, 55), EndTime = new TimeOnly(18, 5), Department = "Vakkenvullen", ExternalEmployeeName = "Bob Brown", WeekId = 2 },
 			new Shift { Id = 5, Weekday = 1, StartTime = new TimeOnly(8, 0), EndTime = new TimeOnly(16, 5), Department = "Kassa", ExternalEmployeeName = "Charlie Davis", WeekId = 2 },
@@ -425,7 +426,8 @@ public partial class BumboDbContext : IdentityDbContext<User, IdentityRole<int>,
 			new Shift { Id = 16, Weekday = 5, StartTime = new TimeOnly(20, 0), EndTime = new TimeOnly(5, 30), Department = "Kassa", ExternalEmployeeName = "Nina Roberts", WeekId = 2 },
 			new Shift { Id = 17, Weekday = 5, StartTime = new TimeOnly(20, 0), EndTime = new TimeOnly(5, 20), Department = "Vakkenvullen", ExternalEmployeeName = "Oscar Scott", WeekId = 2 },
 			new Shift { Id = 18, Weekday = 5, StartTime = new TimeOnly(20, 0), EndTime = new TimeOnly(5, 10), Department = "Vakkenvullen", ExternalEmployeeName = "Paula Turner", WeekId = 2 }
-		);
+			//DUMMYDATA SHIFT END
+			);
 		modelBuilder.Entity<Week>().HasData(
 			new Week { Id = 1, Year = 2024, WeekNumber = 1 },
 			new Week { Id = 2, Year = 2024, WeekNumber = 2 }

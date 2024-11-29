@@ -73,7 +73,7 @@
 </header>
 
 <div class="container p-1 border-solid-black border-radius-5 schedule-row-width-fix">
-	<div class="row schedule min-height-0 fw-bold">
+	<div class="row schedule min-height-0 fw-bold-parent">
 		<div class="hour-minute-column"></div>
 		<div class="col mb-1">Maandag</div>
 		<div class="col mb-1">Dinsdag</div>
@@ -90,7 +90,7 @@
 			<div class="hour-minute-column">@hour:00</div>
 			@for (int day = 0; day < 7; day++)
 			{
-				<div class="col">
+				<div class="col schedule-item-container">
 					@if (schedule[day, hour] != null)
 					{
 						if (hour > 6 && hour < 20) {

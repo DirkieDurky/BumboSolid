@@ -28,32 +28,18 @@
 						<li class="nav-item">
 							<a class="nav-link text-dark" asp-area="" asp-controller="Employees" asp-action="Index">Medewerkers</a>
 						</li>
-						@if (User.Identity.IsAuthenticated)
-						{
-							<li>
-								<a class="nav-link text-dark" asp-area="" asp-controller="Account" asp-action="Logout">Uitloggen</a>
-							</li>
-						}
 					</ul>
 
 					@if (User.Identity.IsAuthenticated)
 					{
+						<ul class="navbar-nav">
+							<li>
+								<a class="nav-link text-dark" asp-area="" asp-controller="Account" asp-action="Logout">Uitloggen</a>
+							</li>
+						</ul>
+
 						<a>@User.Identity.Name</a>
 					}
-
-					<!--
-					<ul class="navbar-nav flex-grow-1">
-						<li class="nav-item">
-							<a class="nav-link text-dark" asp-area="" asp-controller="Roostering" asp-action="">Roostering</a>
-						</li>
-					</ul>
-
-					<ul class="navbar-nav flex-grow-1">
-						<li class="nav-item">
-							<a class="nav-link text-dark" asp-area="" asp-controller="Tijdregistratie" asp-action="">Tijdregistratie</a>
-						</li>
-					</ul>
-					-->
 				</div>
 			</div>
 		</nav>

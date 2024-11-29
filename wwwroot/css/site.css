@@ -531,7 +531,7 @@ th, td {
 	min-height: 0 !important;
 }
 
-.col > a {
+.schedule-item-container > a {
 	display: flex;
 	width: 100%;
 	height: 100%;
@@ -542,11 +542,11 @@ th, td {
 	padding: 0.25rem 0.25rem;
 }
 
-.col > a:hover, .col > a:focus {
+.schedule-item-container > a:hover, .schedule-item-container > a:focus {
 	border-width: 2px;
 }
 
-.fw-bold > * {
+.fw-bold-parent > * {
 	font-weight: 700 !important;
 }
 /* Schedule View Manager END */
