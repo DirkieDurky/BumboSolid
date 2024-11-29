@@ -19,6 +19,7 @@ using Microsoft.EntityFrameworkCore.Query.Internal;
 using Humanizer;
 using System.Text.RegularExpressions;
 using Microsoft.AspNetCore.Authentication;
+using BumboSolid.HelperClasses;
 
 namespace BumboSolid.Controllers
 {
@@ -27,10 +28,12 @@ namespace BumboSolid.Controllers
     public class CLAController : Controller
     {
         private readonly BumboDbContext _context;
+        private ICLALogic _logic;
 
-        public CLAController(BumboDbContext context)
+        public CLAController(BumboDbContext context, ICLALogic logic)
         {
             _context = context;
+            _logic = logic;
         }
 
         public IActionResult EditDone()
@@ -111,95 +114,8 @@ namespace BumboSolid.Controllers
         [Route("Toevoegen")]
         public async Task<IActionResult> Create(CLAManageViewModel claViewModel)
         {
+            _logic.ValidateModel(claViewModel, ModelState);
             if (!ModelState.IsValid) return View(claViewModel);
-
-            //Since all fields are nullable (and ID isn't chosen by user),
-            //we have to check whether anything has been filled in anywhere...
-            var notChecked = new List<String>
-            {
-                nameof(claViewModel.AgeStart), nameof(claViewModel.AgeEnd), nameof(claViewModel.MaxAvgDurationHours),
-                nameof(claViewModel.MaxDayDurationHours), nameof(claViewModel.MaxHolidayDurationHours),
-                nameof(claViewModel.MaxWeekDurationHours), nameof(claViewModel.MaxTotalShiftDurationHours),
-                nameof(claViewModel.MaxUninterruptedShiftDurationHours), nameof(claViewModel.Id)
-            }; //these on their own don't add any information
-
-            bool hasValue = claViewModel.GetType()
-                .GetProperties()
-                .Where(p => !notChecked.Contains(p.Name))
-                .Any(p => p.GetValue(claViewModel) != null);
-
-            bool noErrors = true;
-            if (!hasValue)
-            {
-                ModelState.AddModelError("", "Vergeet niet iets van een regel in te voeren.");
-                noErrors = false;
-            }
-
-            if (claViewModel.AgeStart.HasValue && claViewModel.AgeEnd.HasValue && (claViewModel.AgeStart > claViewModel.AgeEnd))
-            {
-                ModelState.AddModelError("AgeEnd", "De eind leeftijd moet hoger zijn dan de begin leeftijd");
-                noErrors = false;
-            }
-
-            if (claViewModel.AgeStart.HasValue && claViewModel.AgeStart > 128)
-            {
-                ModelState.AddModelError(nameof(claViewModel.AgeStart), "Houdt de leeftijd wel een beetje realistisch A.U.B.");
-                noErrors = false;
-            }
-
-            if (claViewModel.AgeEnd.HasValue && claViewModel.AgeEnd > 128)
-            {
-                ModelState.AddModelError(nameof(claViewModel.AgeEnd), "Wanneer iemand zo oud is mogen ze al lang met pension, " +
-                    "houdt de leeftijd A.U.B. realistisch");
-                noErrors = false;
-            }
-
-            if (claViewModel.MaxWorkDaysPerWeek.HasValue && claViewModel.MaxWorkDaysPerWeek.Value > 7)
-            {
-                ModelState.AddModelError("MaxWorkDaysPerWeek", "Er zijn slechts zeven dagen in een week.");
-                noErrors = false;
-            }
-
-            if (claViewModel.MaxWorkDurationPerDay.HasValue)
-                if ((claViewModel.MaxWorkDurationPerDay.Value > 1440 && !claViewModel.MaxDayDurationHours) ||
-                    (claViewModel.MaxWorkDurationPerDay.Value > 24 && claViewModel.MaxDayDurationHours))
-                {
-                    ModelState.AddModelError(nameof(claViewModel.MaxWorkDurationPerDay), "Er zit slechts 24 uur in een dag.");
-                    noErrors = false;
-                }
-
-            if (claViewModel.MaxWorkDurationPerWeek.HasValue)
-                if ((claViewModel.MaxWorkDurationPerWeek.Value > 10080 && !claViewModel.MaxWeekDurationHours) ||
-                    (claViewModel.MaxWorkDurationPerWeek.Value > 168 && claViewModel.MaxWeekDurationHours))
-                {
-                    ModelState.AddModelError(nameof(claViewModel.MaxWorkDurationPerWeek), "Er zit slechts 168 uur in een week");
-                    noErrors = false;
-                }
-
-            if (claViewModel.MaxWorkDurationPerHolidayWeek.HasValue)
-                if ((claViewModel.MaxWorkDurationPerHolidayWeek.Value > 10080 && !claViewModel.MaxHolidayDurationHours) ||
-                    (claViewModel.MaxWorkDurationPerHolidayWeek.Value > 168 && claViewModel.MaxHolidayDurationHours))
-                {
-                    ModelState.AddModelError(nameof(claViewModel.MaxWorkDurationPerHolidayWeek), "Er zit slechts 168 uur in een week");
-                    noErrors = false;
-                }
-
-            if (claViewModel.MaxAvgWeeklyWorkDurationOverFourWeeks.HasValue)
-                if ((claViewModel.MaxAvgWeeklyWorkDurationOverFourWeeks.Value > 10080 && !claViewModel.MaxAvgDurationHours) ||
-                    (claViewModel.MaxAvgWeeklyWorkDurationOverFourWeeks.Value > 168 && claViewModel.MaxAvgDurationHours))
-                {
-                    ModelState.AddModelError(nameof(claViewModel.MaxAvgWeeklyWorkDurationOverFourWeeks), "Er zit slechts 168 uur in een week");
-                    noErrors = false;
-                }
-
-            if (!claViewModel.BreakWorkDuration.HasValue && claViewModel.BreakMinBreakDuration.HasValue)
-            {
-                ModelState.AddModelError(nameof(claViewModel.BreakMinBreakDuration),
-                    "Minimale pauzetijd mag niet worden ingevuld wanneer maximale werkduur zonder pauzes leeg is");
-                noErrors = false;
-            }
-
-            if (!noErrors) return View(claViewModel);
 
             int maxAvgMulti = claViewModel.MaxAvgDurationHours ? 60 : 1;
             int maxTotalShiftMulti = claViewModel.MaxTotalShiftDurationHours ? 60 : 1;
