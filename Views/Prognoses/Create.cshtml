@@ -73,7 +73,14 @@
 						}
 						else
 						{
-							value = Model.VisitorEstimatePerDay![(byte)i];
+							if (Model.VisitorEstimatePerDay != null && Model.VisitorEstimatePerDay.TryGetValue((byte)i, out int estimate))
+							{
+								value = estimate;
+							}
+							else
+							{
+								value = 0;
+							}
 						}
 					}
 					<td class="table-gray"><input id="visitor-estimate-@i" name="visitorEstimates" type="number" class="form-control" value="@value" onchange="updateVisitorEstimate()"></td>
