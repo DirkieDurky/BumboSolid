@@ -1,5 +1,4 @@
 ﻿using BumboSolid.Data.Models;
-using BumboSolid.Migrations;
 using BumboSolid.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;

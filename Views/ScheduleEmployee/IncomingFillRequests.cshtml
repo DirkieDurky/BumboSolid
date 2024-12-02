@@ -1,0 +1,17 @@
+﻿@model IEnumerable<BumboSolid.Models.FillRequestViewModel>
+
+@{
+	ViewData["Title"] = "Outgoing Trade Requests";
+}
+
+@foreach (var fillRequestViewModel in Model)
+{
+	<div class="d-flex flex-row">
+		<p>@fillRequestViewModel.Date</p>
+		<p>@fillRequestViewModel.Day</p>
+		<p>@fillRequestViewModel.Department</p>
+		<p>@fillRequestViewModel.StartTime</p>
+		<p>@fillRequestViewModel.EndTime</p>
+		<p>@fillRequestViewModel.Name</p>
+	</div>
+}

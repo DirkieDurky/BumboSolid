@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BumboSolid.Migrations
 {
     [DbContext(typeof(BumboDbContext))]
-    [Migration("20241123214510_Init")]
-    partial class Init
+    [Migration("20241202124244_ScrewDummyData")]
+    partial class ScrewDummyData
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -145,7 +145,488 @@ namespace BumboSolid.Migrations
                         });
                 });
 
-            modelBuilder.Entity("BumboSolid.Data.Models.Employee", b =>
+            modelBuilder.Entity("BumboSolid.Data.Models.Factor", b =>
+                {
+                    b.Property<int>("PrognosisId")
+                        .HasColumnType("int")
+                        .HasColumnName("PrognosisID");
+
+                    b.Property<string>("Type")
+                        .HasMaxLength(25)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(25)");
+
+                    b.Property<byte>("Weekday")
+                        .HasColumnType("tinyint");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("text");
+
+                    b.Property<short>("Impact")
+                        .HasColumnType("smallint");
+
+                    b.Property<byte?>("WeatherId")
+                        .HasColumnType("tinyint")
+                        .HasColumnName("WeatherID");
+
+                    b.HasKey("PrognosisId", "Type", "Weekday");
+
+                    b.HasIndex(new[] { "PrognosisId", "Weekday" }, "IX_Factor_PrognosisID_Weekday");
+
+                    b.HasIndex(new[] { "Type" }, "IX_Factor_Type");
+
+                    b.HasIndex(new[] { "WeatherId" }, "IX_Factor_WeatherID");
+
+                    b.ToTable("Factor", (string)null);
+                });
+
+            modelBuilder.Entity("BumboSolid.Data.Models.FactorType", b =>
+                {
+                    b.Property<string>("Type")
+                        .HasMaxLength(25)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(25)");
+
+                    b.HasKey("Type");
+
+                    b.ToTable("FactorType", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Type = "Feestdagen"
+                        },
+                        new
+                        {
+                            Type = "Weer"
+                        },
+                        new
+                        {
+                            Type = "Overig"
+                        });
+                });
+
+            modelBuilder.Entity("BumboSolid.Data.Models.FillRequest", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("AbsentDescription")
+                        .HasMaxLength(255)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(255)")
+                        .HasColumnName("Absent_Description");
+
+                    b.Property<byte>("Accepted")
+                        .HasColumnType("tinyint");
+
+                    b.Property<int>("ShiftId")
+                        .HasColumnType("int")
+                        .HasColumnName("ShiftID");
+
+                    b.Property<int?>("SubstituteEmployeeId")
+                        .HasColumnType("int")
+                        .HasColumnName("SubstituteEmployeeID");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex(new[] { "ShiftId" }, "IX_FillRequest_ShiftID");
+
+                    b.HasIndex(new[] { "SubstituteEmployeeId" }, "IX_FillRequest_SubstituteEmployeeID");
+
+                    b.ToTable("FillRequest", (string)null);
+                });
+
+            modelBuilder.Entity("BumboSolid.Data.Models.Holiday", b =>
+                {
+                    b.Property<string>("Name")
+                        .HasMaxLength(25)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(25)");
+
+                    b.HasKey("Name");
+
+                    b.ToTable("Holiday", (string)null);
+                });
+
+            modelBuilder.Entity("BumboSolid.Data.Models.HolidayDay", b =>
+                {
+                    b.Property<string>("HolidayName")
+                        .HasMaxLength(25)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(25)")
+                        .HasColumnName("Holiday_Name");
+
+                    b.Property<DateOnly>("Date")
+                        .HasColumnType("date");
+
+                    b.Property<short>("Impact")
+                        .HasColumnType("smallint");
+
+                    b.HasKey("HolidayName", "Date");
+
+                    b.ToTable("HolidayDay", (string)null);
+                });
+
+            modelBuilder.Entity("BumboSolid.Data.Models.Norm", b =>
+                {
+                    b.Property<int>("Id")
+                        .HasColumnType("int")
+                        .HasColumnName("ID");
+
+                    b.Property<string>("Activity")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(100)");
+
+                    b.Property<byte>("AvgDailyPerformances")
+                        .HasColumnType("tinyint");
+
+                    b.Property<string>("Department")
+                        .IsRequired()
+                        .HasMaxLength(25)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(25)");
+
+                    b.Property<int>("Duration")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("PerVisitor")
+                        .HasColumnType("bit");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex(new[] { "Department" }, "IX_Norm_Department");
+
+                    b.ToTable("Norm", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Activity = "Stocking",
+                            AvgDailyPerformances = (byte)5,
+                            Department = "Vakkenvullen",
+                            Duration = 60,
+                            PerVisitor = false
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Activity = "Cashier",
+                            AvgDailyPerformances = (byte)8,
+                            Department = "Kassa",
+                            Duration = 45,
+                            PerVisitor = false
+                        });
+                });
+
+            modelBuilder.Entity("BumboSolid.Data.Models.PrognosisDay", b =>
+                {
+                    b.Property<int>("PrognosisId")
+                        .HasColumnType("int")
+                        .HasColumnName("PrognosisID");
+
+                    b.Property<byte>("Weekday")
+                        .HasColumnType("tinyint");
+
+                    b.Property<int>("VisitorEstimate")
+                        .HasColumnType("int");
+
+                    b.HasKey("PrognosisId", "Weekday");
+
+                    b.ToTable("PrognosisDay", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            PrognosisId = 1,
+                            Weekday = (byte)1,
+                            VisitorEstimate = 0
+                        },
+                        new
+                        {
+                            PrognosisId = 2,
+                            Weekday = (byte)2,
+                            VisitorEstimate = 0
+                        });
+                });
+
+            modelBuilder.Entity("BumboSolid.Data.Models.PrognosisDepartment", b =>
+                {
+                    b.Property<int>("PrognosisId")
+                        .HasColumnType("int")
+                        .HasColumnName("PrognosisID");
+
+                    b.Property<string>("Department")
+                        .HasMaxLength(25)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(25)");
+
+                    b.Property<byte>("Weekday")
+                        .HasColumnType("tinyint");
+
+                    b.Property<short>("WorkHours")
+                        .HasColumnType("smallint");
+
+                    b.HasKey("PrognosisId", "Department", "Weekday");
+
+                    b.HasIndex(new[] { "Department" }, "IX_PrognosisDepartment_Department");
+
+                    b.HasIndex(new[] { "PrognosisId", "Weekday" }, "IX_PrognosisDepartment_PrognosisID_Weekday");
+
+                    b.ToTable("PrognosisDepartment", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            PrognosisId = 1,
+                            Department = "Kassa",
+                            Weekday = (byte)1,
+                            WorkHours = (short)0
+                        },
+                        new
+                        {
+                            PrognosisId = 2,
+                            Department = "Vakkenvullen",
+                            Weekday = (byte)2,
+                            WorkHours = (short)0
+                        });
+                });
+
+            modelBuilder.Entity("BumboSolid.Data.Models.Shift", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Department")
+                        .IsRequired()
+                        .HasMaxLength(25)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(25)");
+
+                    b.Property<int?>("Employee")
+                        .HasColumnType("int");
+
+                    b.Property<TimeOnly>("EndTime")
+                        .HasColumnType("time")
+                        .HasColumnName("EndTime");
+
+                    b.Property<string>("ExternalEmployeeName")
+                        .HasMaxLength(135)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(135)");
+
+                    b.Property<byte>("IsBreak")
+                        .HasColumnType("tinyint");
+
+                    b.Property<TimeOnly>("StartTime")
+                        .HasColumnType("time")
+                        .HasColumnName("StartTime");
+
+                    b.Property<int>("WeekId")
+                        .HasColumnType("int")
+                        .HasColumnName("WeekID");
+
+                    b.Property<byte>("Weekday")
+                        .HasColumnType("tinyint")
+                        .HasColumnName("Weekday");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex(new[] { "Department" }, "IX_Shift_Department");
+
+                    b.HasIndex(new[] { "WeekId" }, "IX_Shift_WeekID");
+
+                    b.ToTable("Shift", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 3,
+                            Department = "Kassa",
+                            EndTime = new TimeOnly(17, 5, 0),
+                            ExternalEmployeeName = "Alice Johnson",
+                            IsBreak = (byte)0,
+                            StartTime = new TimeOnly(9, 0, 0),
+                            WeekId = 2,
+                            Weekday = (byte)2
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Department = "Vakkenvullen",
+                            EndTime = new TimeOnly(18, 5, 0),
+                            ExternalEmployeeName = "Bob Brown",
+                            IsBreak = (byte)0,
+                            StartTime = new TimeOnly(10, 55, 0),
+                            WeekId = 2,
+                            Weekday = (byte)5
+                        },
+                        new
+                        {
+                            Id = 5,
+                            Department = "Kassa",
+                            EndTime = new TimeOnly(16, 5, 0),
+                            ExternalEmployeeName = "Charlie Davis",
+                            IsBreak = (byte)0,
+                            StartTime = new TimeOnly(8, 0, 0),
+                            WeekId = 2,
+                            Weekday = (byte)1
+                        },
+                        new
+                        {
+                            Id = 6,
+                            Department = "Vakkenvullen",
+                            EndTime = new TimeOnly(19, 0, 0),
+                            ExternalEmployeeName = "Diana Evans",
+                            IsBreak = (byte)0,
+                            StartTime = new TimeOnly(11, 0, 0),
+                            WeekId = 2,
+                            Weekday = (byte)3
+                        },
+                        new
+                        {
+                            Id = 7,
+                            Department = "Kassa",
+                            EndTime = new TimeOnly(15, 0, 0),
+                            ExternalEmployeeName = "Ethan Foster",
+                            IsBreak = (byte)0,
+                            StartTime = new TimeOnly(7, 0, 0),
+                            WeekId = 2,
+                            Weekday = (byte)0
+                        },
+                        new
+                        {
+                            Id = 8,
+                            Department = "Vakkenvullen",
+                            EndTime = new TimeOnly(20, 0, 0),
+                            ExternalEmployeeName = "Fiona Green",
+                            IsBreak = (byte)0,
+                            StartTime = new TimeOnly(12, 0, 0),
+                            WeekId = 2,
+                            Weekday = (byte)4
+                        },
+                        new
+                        {
+                            Id = 9,
+                            Department = "Kassa",
+                            EndTime = new TimeOnly(21, 5, 0),
+                            ExternalEmployeeName = "George Harris",
+                            IsBreak = (byte)0,
+                            StartTime = new TimeOnly(13, 0, 0),
+                            WeekId = 2,
+                            Weekday = (byte)6
+                        },
+                        new
+                        {
+                            Id = 10,
+                            Department = "Vakkenvullen",
+                            EndTime = new TimeOnly(22, 30, 0),
+                            ExternalEmployeeName = "Hannah Lee",
+                            IsBreak = (byte)0,
+                            StartTime = new TimeOnly(14, 0, 0),
+                            WeekId = 2,
+                            Weekday = (byte)2
+                        },
+                        new
+                        {
+                            Id = 11,
+                            Department = "Kassa",
+                            EndTime = new TimeOnly(23, 0, 0),
+                            ExternalEmployeeName = "Ian Miller",
+                            IsBreak = (byte)0,
+                            StartTime = new TimeOnly(15, 0, 0),
+                            WeekId = 2,
+                            Weekday = (byte)5
+                        },
+                        new
+                        {
+                            Id = 12,
+                            Department = "Vakkenvullen",
+                            EndTime = new TimeOnly(0, 0, 0),
+                            ExternalEmployeeName = "Julia Nelson",
+                            IsBreak = (byte)0,
+                            StartTime = new TimeOnly(16, 0, 0),
+                            WeekId = 2,
+                            Weekday = (byte)1
+                        },
+                        new
+                        {
+                            Id = 13,
+                            Department = "Kassa",
+                            EndTime = new TimeOnly(1, 0, 0),
+                            ExternalEmployeeName = "Kevin Owens",
+                            IsBreak = (byte)0,
+                            StartTime = new TimeOnly(17, 0, 0),
+                            WeekId = 2,
+                            Weekday = (byte)3
+                        },
+                        new
+                        {
+                            Id = 14,
+                            Department = "Vakkenvullen",
+                            EndTime = new TimeOnly(2, 0, 0),
+                            ExternalEmployeeName = "Laura Perez",
+                            IsBreak = (byte)0,
+                            StartTime = new TimeOnly(18, 0, 0),
+                            WeekId = 2,
+                            Weekday = (byte)0
+                        },
+                        new
+                        {
+                            Id = 15,
+                            Department = "Kassa",
+                            EndTime = new TimeOnly(3, 0, 0),
+                            ExternalEmployeeName = "Michael Quinn",
+                            IsBreak = (byte)0,
+                            StartTime = new TimeOnly(10, 0, 0),
+                            WeekId = 2,
+                            Weekday = (byte)4
+                        },
+                        new
+                        {
+                            Id = 16,
+                            Department = "Kassa",
+                            EndTime = new TimeOnly(5, 30, 0),
+                            ExternalEmployeeName = "Nina Roberts",
+                            IsBreak = (byte)0,
+                            StartTime = new TimeOnly(20, 0, 0),
+                            WeekId = 2,
+                            Weekday = (byte)5
+                        },
+                        new
+                        {
+                            Id = 17,
+                            Department = "Vakkenvullen",
+                            EndTime = new TimeOnly(5, 20, 0),
+                            ExternalEmployeeName = "Oscar Scott",
+                            IsBreak = (byte)0,
+                            StartTime = new TimeOnly(20, 0, 0),
+                            WeekId = 2,
+                            Weekday = (byte)5
+                        },
+                        new
+                        {
+                            Id = 18,
+                            Department = "Vakkenvullen",
+                            EndTime = new TimeOnly(5, 10, 0),
+                            ExternalEmployeeName = "Paula Turner",
+                            IsBreak = (byte)0,
+                            StartTime = new TimeOnly(20, 0, 0),
+                            WeekId = 2,
+                            Weekday = (byte)5
+                        });
+                });
+
+            modelBuilder.Entity("BumboSolid.Data.Models.User", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -241,253 +722,7 @@ namespace BumboSolid.Migrations
                         .HasDatabaseName("UserNameIndex")
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
-                    b.ToTable("Employee", (string)null);
-                });
-
-            modelBuilder.Entity("BumboSolid.Data.Models.Factor", b =>
-                {
-                    b.Property<int>("PrognosisId")
-                        .HasColumnType("int")
-                        .HasColumnName("PrognosisID");
-
-                    b.Property<string>("Type")
-                        .HasMaxLength(25)
-                        .IsUnicode(false)
-                        .HasColumnType("varchar(25)");
-
-                    b.Property<byte>("Weekday")
-                        .HasColumnType("tinyint");
-
-                    b.Property<string>("Description")
-                        .HasColumnType("text");
-
-                    b.Property<short>("Impact")
-                        .HasColumnType("smallint");
-
-                    b.Property<byte?>("WeatherId")
-                        .HasColumnType("tinyint")
-                        .HasColumnName("WeatherID");
-
-                    b.HasKey("PrognosisId", "Type", "Weekday");
-
-                    b.HasIndex(new[] { "PrognosisId", "Weekday" }, "IX_Factor_PrognosisID_Weekday");
-
-                    b.HasIndex(new[] { "Type" }, "IX_Factor_Type");
-
-                    b.HasIndex(new[] { "WeatherId" }, "IX_Factor_WeatherID");
-
-                    b.ToTable("Factor", (string)null);
-                });
-
-            modelBuilder.Entity("BumboSolid.Data.Models.FactorType", b =>
-                {
-                    b.Property<string>("Type")
-                        .HasMaxLength(25)
-                        .IsUnicode(false)
-                        .HasColumnType("varchar(25)");
-
-                    b.HasKey("Type");
-
-                    b.ToTable("FactorType", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            Type = "Feestdagen"
-                        },
-                        new
-                        {
-                            Type = "Weer"
-                        },
-                        new
-                        {
-                            Type = "Overig"
-                        });
-                });
-
-            modelBuilder.Entity("BumboSolid.Data.Models.FillRequest", b =>
-                {
-                    b.Property<int>("Id")
-                        .HasColumnType("int")
-                        .HasColumnName("ID");
-
-                    b.Property<string>("AbsentDescription")
-                        .HasMaxLength(255)
-                        .IsUnicode(false)
-                        .HasColumnType("varchar(255)")
-                        .HasColumnName("Absent_Description");
-
-                    b.Property<byte>("Accepted")
-                        .HasColumnType("tinyint");
-
-                    b.Property<int>("ShiftId")
-                        .HasColumnType("int")
-                        .HasColumnName("ShiftID");
-
-                    b.Property<int?>("SubstituteEmployeeId")
-                        .HasColumnType("int")
-                        .HasColumnName("SubstituteEmployeeID");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex(new[] { "ShiftId" }, "IX_FillRequest_ShiftID");
-
-                    b.HasIndex(new[] { "SubstituteEmployeeId" }, "IX_FillRequest_SubstituteEmployeeID");
-
-                    b.ToTable("FillRequest", (string)null);
-                });
-
-            modelBuilder.Entity("BumboSolid.Data.Models.Holiday", b =>
-                {
-                    b.Property<string>("Name")
-                        .HasMaxLength(25)
-                        .IsUnicode(false)
-                        .HasColumnType("varchar(25)");
-
-                    b.HasKey("Name");
-
-                    b.ToTable("Holiday", (string)null);
-                });
-
-            modelBuilder.Entity("BumboSolid.Data.Models.HolidayDay", b =>
-                {
-                    b.Property<string>("HolidayName")
-                        .HasMaxLength(25)
-                        .IsUnicode(false)
-                        .HasColumnType("varchar(25)")
-                        .HasColumnName("Holiday_Name");
-
-                    b.Property<DateOnly>("Date")
-                        .HasColumnType("date");
-
-                    b.Property<short>("Impact")
-                        .HasColumnType("smallint");
-
-                    b.HasKey("HolidayName", "Date");
-
-                    b.ToTable("HolidayDay", (string)null);
-                });
-
-            modelBuilder.Entity("BumboSolid.Data.Models.Norm", b =>
-                {
-                    b.Property<int>("Id")
-                        .HasColumnType("int")
-                        .HasColumnName("ID");
-
-                    b.Property<string>("Activity")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .IsUnicode(false)
-                        .HasColumnType("varchar(100)");
-
-                    b.Property<byte>("AvgDailyPerformances")
-                        .HasColumnType("tinyint");
-
-                    b.Property<string>("Department")
-                        .IsRequired()
-                        .HasMaxLength(25)
-                        .IsUnicode(false)
-                        .HasColumnType("varchar(25)");
-
-                    b.Property<int>("Duration")
-                        .HasColumnType("int");
-
-                    b.Property<bool>("PerVisitor")
-                        .HasColumnType("bit");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex(new[] { "Department" }, "IX_Norm_Department");
-
-                    b.ToTable("Norm", (string)null);
-                });
-
-            modelBuilder.Entity("BumboSolid.Data.Models.PrognosisDay", b =>
-                {
-                    b.Property<int>("PrognosisId")
-                        .HasColumnType("int")
-                        .HasColumnName("PrognosisID");
-
-                    b.Property<byte>("Weekday")
-                        .HasColumnType("tinyint");
-
-                    b.Property<int>("VisitorEstimate")
-                        .HasColumnType("int");
-
-                    b.HasKey("PrognosisId", "Weekday");
-
-                    b.ToTable("PrognosisDay", (string)null);
-                });
-
-            modelBuilder.Entity("BumboSolid.Data.Models.PrognosisDepartment", b =>
-                {
-                    b.Property<int>("PrognosisId")
-                        .HasColumnType("int")
-                        .HasColumnName("PrognosisID");
-
-                    b.Property<string>("Department")
-                        .HasMaxLength(25)
-                        .IsUnicode(false)
-                        .HasColumnType("varchar(25)");
-
-                    b.Property<byte>("Weekday")
-                        .HasColumnType("tinyint");
-
-                    b.Property<short>("WorkHours")
-                        .HasColumnType("smallint");
-
-                    b.HasKey("PrognosisId", "Department", "Weekday");
-
-                    b.HasIndex(new[] { "Department" }, "IX_PrognosisDepartment_Department");
-
-                    b.HasIndex(new[] { "PrognosisId", "Weekday" }, "IX_PrognosisDepartment_PrognosisID_Weekday");
-
-                    b.ToTable("PrognosisDepartment", (string)null);
-                });
-
-            modelBuilder.Entity("BumboSolid.Data.Models.Shift", b =>
-                {
-                    b.Property<int>("Id")
-                        .HasColumnType("int")
-                        .HasColumnName("ID");
-
-                    b.Property<string>("Department")
-                        .IsRequired()
-                        .HasMaxLength(25)
-                        .IsUnicode(false)
-                        .HasColumnType("varchar(25)");
-
-                    b.Property<int?>("Employee")
-                        .HasColumnType("int");
-
-                    b.Property<TimeOnly>("EndTime")
-                        .HasColumnType("time");
-
-                    b.Property<string>("ExternalEmployeeName")
-                        .HasMaxLength(135)
-                        .IsUnicode(false)
-                        .HasColumnType("varchar(135)");
-
-                    b.Property<byte>("IsBreak")
-                        .HasColumnType("tinyint");
-
-                    b.Property<TimeOnly>("StartTime")
-                        .HasColumnType("time");
-
-                    b.Property<int>("WeekId")
-                        .HasColumnType("int")
-                        .HasColumnName("WeekID");
-
-                    b.Property<byte>("Weekday")
-                        .HasColumnType("tinyint");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex(new[] { "Department" }, "IX_Shift_Department");
-
-                    b.HasIndex(new[] { "WeekId" }, "IX_Shift_WeekID");
-
-                    b.ToTable("Shift", (string)null);
+                    b.ToTable("User", (string)null);
                 });
 
             modelBuilder.Entity("BumboSolid.Data.Models.Weather", b =>
@@ -556,6 +791,20 @@ namespace BumboSolid.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Week", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            WeekNumber = (byte)1,
+                            Year = (short)2024
+                        },
+                        new
+                        {
+                            Id = 2,
+                            WeekNumber = (byte)2,
+                            Year = (short)2024
+                        });
                 });
 
             modelBuilder.Entity("Capability", b =>
@@ -710,7 +959,7 @@ namespace BumboSolid.Migrations
 
             modelBuilder.Entity("BumboSolid.Data.Models.AvailabilityRule", b =>
                 {
-                    b.HasOne("BumboSolid.Data.Models.Employee", "EmployeeNavigation")
+                    b.HasOne("BumboSolid.Data.Models.User", "EmployeeNavigation")
                         .WithMany("AvailabilityRules")
                         .HasForeignKey("Employee")
                         .IsRequired()
@@ -764,7 +1013,7 @@ namespace BumboSolid.Migrations
                         .IsRequired()
                         .HasConstraintName("FK_FillRequest_Shift");
 
-                    b.HasOne("BumboSolid.Data.Models.Employee", "SubstituteEmployee")
+                    b.HasOne("BumboSolid.Data.Models.User", "SubstituteEmployee")
                         .WithMany("FillRequests")
                         .HasForeignKey("SubstituteEmployeeId")
                         .HasConstraintName("FK_FillRequest_Employee");
@@ -850,12 +1099,14 @@ namespace BumboSolid.Migrations
                     b.HasOne("BumboSolid.Data.Models.Department", null)
                         .WithMany()
                         .HasForeignKey("Department")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("FK_Capability_Department");
 
-                    b.HasOne("BumboSolid.Data.Models.Employee", null)
+                    b.HasOne("BumboSolid.Data.Models.User", null)
                         .WithMany()
                         .HasForeignKey("Employee")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("FK_Capability_Employee");
                 });
@@ -871,7 +1122,7 @@ namespace BumboSolid.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<int>", b =>
                 {
-                    b.HasOne("BumboSolid.Data.Models.Employee", null)
+                    b.HasOne("BumboSolid.Data.Models.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -880,7 +1131,7 @@ namespace BumboSolid.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<int>", b =>
                 {
-                    b.HasOne("BumboSolid.Data.Models.Employee", null)
+                    b.HasOne("BumboSolid.Data.Models.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -895,7 +1146,7 @@ namespace BumboSolid.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("BumboSolid.Data.Models.Employee", null)
+                    b.HasOne("BumboSolid.Data.Models.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -904,7 +1155,7 @@ namespace BumboSolid.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<int>", b =>
                 {
-                    b.HasOne("BumboSolid.Data.Models.Employee", null)
+                    b.HasOne("BumboSolid.Data.Models.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -923,13 +1174,6 @@ namespace BumboSolid.Migrations
                     b.Navigation("PrognosisDepartments");
 
                     b.Navigation("Shifts");
-                });
-
-            modelBuilder.Entity("BumboSolid.Data.Models.Employee", b =>
-                {
-                    b.Navigation("AvailabilityRules");
-
-                    b.Navigation("FillRequests");
                 });
 
             modelBuilder.Entity("BumboSolid.Data.Models.FactorType", b =>
@@ -951,6 +1195,13 @@ namespace BumboSolid.Migrations
 
             modelBuilder.Entity("BumboSolid.Data.Models.Shift", b =>
                 {
+                    b.Navigation("FillRequests");
+                });
+
+            modelBuilder.Entity("BumboSolid.Data.Models.User", b =>
+                {
+                    b.Navigation("AvailabilityRules");
+
                     b.Navigation("FillRequests");
                 });
 
