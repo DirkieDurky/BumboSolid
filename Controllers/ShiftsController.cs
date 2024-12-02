@@ -97,7 +97,7 @@ namespace BumboSolid.Controllers
 		// For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
 		[HttpPost]
 		[ValidateAntiForgeryToken]
-		public async Task<IActionResult> Create([Bind("Id,WeekId,Weekday,Department,StartTime,EndTime,Employee,ExternalEmployeeName")] ShiftCreateViewModel shift)
+		public async Task<IActionResult> Create(User employee, String externalEmployee)
 		{
 			if (ModelState.IsValid)
 			{

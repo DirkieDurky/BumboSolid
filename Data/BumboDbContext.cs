@@ -321,8 +321,8 @@ public partial class BumboDbContext : IdentityDbContext<User, IdentityRole<int>,
 
             entity.HasIndex(e => e.WeekId, "IX_Shift_WeekID");
 
-			entity.Property(e => e.Id);
-				.ValueGeneratedNever()
+            entity.Property(e => e.Id)
+                .ValueGeneratedNever()
 				.HasColumnName("ID");
 			entity.Property(e => e.Weekday).HasColumnName("Weekday");
 			entity.Property(e => e.StartTime).HasColumnName("StartTime");
