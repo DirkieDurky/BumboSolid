@@ -68,7 +68,7 @@
 		<p>@startDate.ToString("dd/MM/yyyy") - @endDate.ToString("dd/MM/yyyy")</p>
 	</div>
 	<div class="w-100">
-		<a class="new-btn">Toevoegen</a>
+		<a class="new-btn" asp-action="Create" asp-route-year="@year" asp-route-week="@week">Toevoegen</a>
 	</div>
 </header>
 

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace BumboSolid.Data.Models;
 
-public partial class Shift
+public class Shift
 {
     public int Id { get; set; }
 

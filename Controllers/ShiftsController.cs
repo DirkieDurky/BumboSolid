@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using BumboSolid.Data.Models;
 using BumboSolid.Data;
 using Microsoft.AspNetCore.Authorization;
+using BumboSolid.Models;
 
 namespace BumboSolid.Controllers
 {
@@ -51,11 +52,44 @@ namespace BumboSolid.Controllers
 		}
 
 		// GET: Shifts/Create
-		public IActionResult Create()
+		[HttpGet("Medewerker Inplannen")]
+		public async Task<IActionResult> Create(Int16 year, Int16 week)
 		{
 			ViewData["Department"] = new SelectList(_context.Departments, "Name", "Name");
-			ViewData["WeekId"] = new SelectList(_context.Weeks, "Id", "Id");
-			return View();
+			ViewData["WeekId"] = new SelectList(new List<string> { "Maandag", "Dinsdag", "Woensdag", "Donderdag", "Vrijdag", "Zaterdag", "Zondag" });
+
+			var employeeRole = await _context.Roles
+				.Where(r => r.Name == "Employee")
+				.Select(r => r.Id)
+				.FirstOrDefaultAsync();
+
+			var employees = await _context.UserRoles
+				.Where(ur => ur.RoleId == employeeRole)
+				.Select(ur => ur.UserId)
+				.ToListAsync();
+
+			var employeeUsers = await _context.Users
+				.Where(u => employees.Contains(u.Id))
+				.Include(u => u.AvailabilityRules)
+				.ToListAsync();
+
+			var viewModel = new ShiftCreateViewModel
+			{
+				Employees = employeeUsers,
+				Shift = new Shift(),
+				Year = year,
+				Week = week
+			};
+
+			employeeUsers.Insert(0, new User
+			{
+				FirstName = "Extern",
+				LastName = "filiaal"
+			});
+
+			// Create a SelectList from the employees list
+			ViewData["Employees"] = new SelectList(employeeUsers, "Id", "Name");
+			return View(viewModel);
 		}
 
 		// POST: Shifts/Create
@@ -63,7 +97,7 @@ namespace BumboSolid.Controllers
 		// For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
 		[HttpPost]
 		[ValidateAntiForgeryToken]
-		public async Task<IActionResult> Create([Bind("Id,WeekId,Weekday,Department,StartTime,EndTime,Employee,ExternalEmployeeName")] Shift shift)
+		public async Task<IActionResult> Create([Bind("Id,WeekId,Weekday,Department,StartTime,EndTime,Employee,ExternalEmployeeName")] ShiftCreateViewModel shift)
 		{
 			if (ModelState.IsValid)
 			{
@@ -71,8 +105,8 @@ namespace BumboSolid.Controllers
 				await _context.SaveChangesAsync();
 				return RedirectToAction(nameof(Index));
 			}
-			ViewData["Department"] = new SelectList(_context.Departments, "Name", "Name", shift.Department);
-			ViewData["WeekId"] = new SelectList(_context.Weeks, "Id", "Id", shift.WeekId);
+			ViewData["Department"] = new SelectList(_context.Departments, "Name", "Name", shift.Shift.Department);
+			ViewData["WeekId"] = new SelectList(_context.Weeks, "Id", "Id", shift.Shift.WeekId);
 			return View(shift);
 		}
 
@@ -99,9 +133,9 @@ namespace BumboSolid.Controllers
 		// For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
 		[HttpPost]
 		[ValidateAntiForgeryToken]
-		public async Task<IActionResult> Edit(int id, [Bind("Id,WeekId,Weekday,Department,StartTime,EndTime,Employee,ExternalEmployeeName")] Shift shift)
+		public async Task<IActionResult> Edit(int id, [Bind("Id,WeekId,Weekday,Department,StartTime,EndTime,Employee,ExternalEmployeeName")] ShiftCreateViewModel shift)
 		{
-			if (id != shift.Id)
+			if (id != shift.Shift.Id)
 			{
 				return NotFound();
 			}
@@ -115,7 +149,7 @@ namespace BumboSolid.Controllers
 				}
 				catch (DbUpdateConcurrencyException)
 				{
-					if (!ShiftExists(shift.Id))
+					if (!ShiftExists(shift.Shift.Id))
 					{
 						return NotFound();
 					}
@@ -126,8 +160,8 @@ namespace BumboSolid.Controllers
 				}
 				return RedirectToAction(nameof(Index));
 			}
-			ViewData["Department"] = new SelectList(_context.Departments, "Name", "Name", shift.Department);
-			ViewData["WeekId"] = new SelectList(_context.Weeks, "Id", "Id", shift.WeekId);
+			ViewData["Department"] = new SelectList(_context.Departments, "Name", "Name", shift.Shift.Department);
+			ViewData["WeekId"] = new SelectList(_context.Weeks, "Id", "Id", shift.Shift.WeekId);
 			return View(shift);
 		}
 
