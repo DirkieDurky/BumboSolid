@@ -31,6 +31,11 @@ namespace BumboSolid.Controllers
         [HttpPost]
         public async Task<IActionResult> Login(LoginViewModel Input)
         {
+            if (!ModelState.IsValid)
+            {
+                return View(Input);
+            }
+
             var result = await _signInManager.PasswordSignInAsync(Input.Email, Input.Password, true, false);
 
             if (result.Succeeded)
@@ -48,7 +53,7 @@ namespace BumboSolid.Controllers
             }
             else
             {
-                ModelState.AddModelError(string.Empty, "Invalid login attempt.");
+                ViewBag.Error = "Het ingevoerde wachtwoord of e-mailadres is onjuist.";
                 return View(Input);
             }
         }
