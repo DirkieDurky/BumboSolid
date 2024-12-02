@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace BumboSolid.Migrations
 {
     /// <inheritdoc />
-    public partial class ScrewDummyData : Migration
+    public partial class AddIdentityColumns : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -132,13 +132,14 @@ namespace BumboSolid.Migrations
                 name: "Week",
                 columns: table => new
                 {
-                    ID = table.Column<int>(type: "int", nullable: false),
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     Year = table.Column<short>(type: "smallint", nullable: false),
                     WeekNumber = table.Column<byte>(type: "tinyint", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Week", x => x.ID);
+                    table.PrimaryKey("PK_Week", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -366,7 +367,7 @@ namespace BumboSolid.Migrations
                         name: "FK_PrognosisDay_Week",
                         column: x => x.PrognosisID,
                         principalTable: "Week",
-                        principalColumn: "ID");
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -396,7 +397,7 @@ namespace BumboSolid.Migrations
                         name: "FK_Shift_Week",
                         column: x => x.WeekID,
                         principalTable: "Week",
-                        principalColumn: "ID");
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -458,8 +459,7 @@ namespace BumboSolid.Migrations
                 name: "FillRequest",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                    ID = table.Column<int>(type: "int", nullable: false),
                     ShiftID = table.Column<int>(type: "int", nullable: false),
                     SubstituteEmployeeID = table.Column<int>(type: "int", nullable: true),
                     Absent_Description = table.Column<string>(type: "varchar(255)", unicode: false, maxLength: 255, nullable: true),
@@ -467,7 +467,7 @@ namespace BumboSolid.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_FillRequest", x => x.Id);
+                    table.PrimaryKey("PK_FillRequest", x => x.ID);
                     table.ForeignKey(
                         name: "FK_FillRequest_Employee",
                         column: x => x.SubstituteEmployeeID,
@@ -516,7 +516,7 @@ namespace BumboSolid.Migrations
 
             migrationBuilder.InsertData(
                 table: "Week",
-                columns: new[] { "ID", "WeekNumber", "Year" },
+                columns: new[] { "Id", "WeekNumber", "Year" },
                 values: new object[,]
                 {
                     { 1, (byte)1, (short)2024 },

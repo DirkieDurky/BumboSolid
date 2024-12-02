@@ -6,11 +6,9 @@ namespace BumboSolid.Models;
 
 public class ShiftCreateViewModel
 {
-	public required List<User> Employees { get; set; }
+	public required Dictionary<Int32, String>? Employees { get; set; }
 
 	public required Shift Shift { get; set; }
 
-	public Int16 Year { get; set; }
-
-	public Int16 Week { get; set; }
+	public required Week? Week { get; set; }
 }

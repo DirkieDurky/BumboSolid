@@ -17,15 +17,17 @@ public class Shift
 
     public TimeOnly EndTime { get; set; }
 
-    public int? Employee { get; set; }
+    public int? EmployeeId { get; set; }
+
+    public User? Employee { get; set; } = null!;
 
     public string? ExternalEmployeeName { get; set; }
 
     public byte IsBreak { get; set; }
 
-    public virtual Department DepartmentNavigation { get; set; } = null!;
+    public virtual Department? DepartmentNavigation { get; set; } = null!;
 
     public virtual List<FillRequest> FillRequests { get; set; } = new List<FillRequest>();
 
-    public virtual Week Week { get; set; } = null!;
+    public virtual Week? Week { get; set; } = null!;
 }
