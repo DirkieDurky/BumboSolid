@@ -143,31 +143,56 @@ namespace BumboSolid.Controllers
 		}
 
 		// GET: Shifts/Edit/5
+		[HttpGet("Bewerken/{id:int}")]
 		public async Task<IActionResult> Edit(int? id)
 		{
-			if (id == null)
+			if (id == null || _context.Shifts.FirstOrDefault(s => s.Id == id) == null)
 			{
 				return NotFound();
 			}
 
-			var shift = await _context.Shifts.FindAsync(id);
-			if (shift == null)
+			Shift shift = _context.Shifts.Include(s => s.Week).First(s => s.Id == id);
+
+			ViewBag.Departments = new SelectList(_context.Departments, "Name", "Name");
+			ViewBag.WeekDays = new SelectList(new List<string> { "Maandag", "Dinsdag", "Woensdag", "Donderdag", "Vrijdag", "Zaterdag", "Zondag" });
+
+			var employeeRole = await _context.Roles
+				.Where(r => r.Name == "Employee")
+				.Select(r => r.Id)
+				.FirstOrDefaultAsync();
+
+			var employees = await _context.UserRoles
+				.Where(ur => ur.RoleId == employeeRole)
+				.Select(ur => ur.UserId)
+				.ToListAsync();
+
+			Dictionary<Int32, String> employeeUsers = _context.Users
+				.Where(u => employees.Contains(u.Id))
+				.Include(u => u.AvailabilityRules).ToList()
+				.ToDictionary(u => u.Id, u => u.FirstName);
+
+			var viewModel = new ShiftCreateViewModel
 			{
-				return NotFound();
-			}
-			ViewData["Department"] = new SelectList(_context.Departments, "Name", "Name", shift.Department);
-			ViewData["WeekId"] = new SelectList(_context.Weeks, "Id", "Id", shift.WeekId);
-			return View(shift);
+				Employees = employeeUsers,
+				Shift = shift,
+				Week = shift.Week,
+			};
+
+			employeeUsers.Add(-1, "Extern filiaal");
+			if (shift.EmployeeId == null) shift.EmployeeId = -1;
+
+			return View(viewModel);
 		}
 
 		// POST: Shifts/Edit/5
 		// To protect from overposting attacks, enable the specific properties you want to bind to.
 		// For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-		[HttpPost]
+
+		[HttpPost("Bewerken/{id:int}")]
 		[ValidateAntiForgeryToken]
-		public async Task<IActionResult> Edit(int id, [Bind("Id,WeekId,Weekday,Department,StartTime,EndTime,Employee,ExternalEmployeeName")] ShiftCreateViewModel shift)
+		public async Task<IActionResult> Edit(int id, ShiftCreateViewModel shiftCreateViewModel)
 		{
-			if (id != shift.Shift.Id)
+			if (id != shiftCreateViewModel.Shift.Id)
 			{
 				return NotFound();
 			}
@@ -176,12 +201,13 @@ namespace BumboSolid.Controllers
 			{
 				try
 				{
-					_context.Update(shift);
+					if (shiftCreateViewModel.Shift.EmployeeId == -1) shiftCreateViewModel.Shift.EmployeeId = null;
+					_context.Update(shiftCreateViewModel.Shift);
 					await _context.SaveChangesAsync();
 				}
 				catch (DbUpdateConcurrencyException)
 				{
-					if (!ShiftExists(shift.Shift.Id))
+					if (!ShiftExists(shiftCreateViewModel.Shift.Id))
 					{
 						return NotFound();
 					}
@@ -192,9 +218,9 @@ namespace BumboSolid.Controllers
 				}
 				return RedirectToAction(nameof(Index));
 			}
-			ViewData["Department"] = new SelectList(_context.Departments, "Name", "Name", shift.Shift.Department);
-			ViewData["WeekId"] = new SelectList(_context.Weeks, "Id", "Id", shift.Shift.WeekId);
-			return View(shift);
+			ViewBag.Departments = new SelectList(_context.Departments, "Name", "Name", shiftCreateViewModel.Shift.Department);
+			ViewBag.WeekDays = new SelectList(_context.Weeks, "Id", "Id", shiftCreateViewModel.Shift.WeekId);
+			return View(shiftCreateViewModel);
 		}
 
 		// GET: Shifts/Delete/5
