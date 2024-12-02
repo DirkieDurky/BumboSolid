@@ -5,7 +5,6 @@ using BumboSolid.Data.Models;
 using BumboSolid.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authorization;
-using BumboSolid.Migrations;
 
 namespace BumboSolid.Controllers
 {

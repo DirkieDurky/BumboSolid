@@ -378,22 +378,6 @@ public partial class BumboDbContext : IdentityDbContext<User, IdentityRole<int>,
 			new Department() { Name = "Vakkenvullen" },
 			new Department() { Name = "Vers" }
 		);
-		modelBuilder.Entity<CLAEntry>().HasData(
-			new CLAEntry { Id = 1, MaxWorkDurationPerDay = 8, MaxWorkDaysPerWeek = 5, MaxWorkDurationPerWeek = 40, MaxWorkDurationPerHolidayWeek = 35, MaxAvgWeeklyWorkDurationOverFourWeeks = 38, MaxShiftDuration = 8 },
-			new CLAEntry { Id = 2, MaxWorkDurationPerDay = 7, MaxWorkDaysPerWeek = 5, MaxWorkDurationPerWeek = 35, MaxWorkDurationPerHolidayWeek = 30, MaxAvgWeeklyWorkDurationOverFourWeeks = 33, MaxShiftDuration = 7 }
-		);
-		modelBuilder.Entity<CLABreakEntry>().HasData(
-			new CLABreakEntry { CLAEntryId = 1, WorkDuration = 4, MinBreakDuration = 30 },
-			new CLABreakEntry { CLAEntryId = 2, WorkDuration = 5, MinBreakDuration = 45 }
-		);
-		modelBuilder.Entity<Holiday>().HasData(
-			new Holiday { Name = "New Year" },
-			new Holiday { Name = "Christmas" }
-		);
-		modelBuilder.Entity<HolidayDay>().HasData(
-			new HolidayDay { HolidayName = "New Year", Date = new DateOnly(2023, 1, 1) },
-			new HolidayDay { HolidayName = "Christmas", Date = new DateOnly(2023, 12, 25) }
-		);
 		modelBuilder.Entity<Norm>().HasData(
 			new Norm { Id = 1, Activity = "Stocking", Duration = 60, AvgDailyPerformances = 5, Department = "Vakkenvullen" },
 			new Norm { Id = 2, Activity = "Cashier", Duration = 45, AvgDailyPerformances = 8, Department = "Kassa" }

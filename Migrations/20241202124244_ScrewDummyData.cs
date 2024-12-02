@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace BumboSolid.Migrations
 {
     /// <inheritdoc />
-    public partial class keyidautogenerete : Migration
+    public partial class ScrewDummyData : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -132,14 +132,13 @@ namespace BumboSolid.Migrations
                 name: "Week",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                    ID = table.Column<int>(type: "int", nullable: false),
                     Year = table.Column<short>(type: "smallint", nullable: false),
                     WeekNumber = table.Column<byte>(type: "tinyint", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Week", x => x.Id);
+                    table.PrimaryKey("PK_Week", x => x.ID);
                 });
 
             migrationBuilder.CreateTable(
@@ -342,12 +341,14 @@ namespace BumboSolid.Migrations
                         name: "FK_Capability_Department",
                         column: x => x.Department,
                         principalTable: "Department",
-                        principalColumn: "Name");
+                        principalColumn: "Name",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_Capability_Employee",
                         column: x => x.Employee,
                         principalTable: "User",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -365,7 +366,7 @@ namespace BumboSolid.Migrations
                         name: "FK_PrognosisDay_Week",
                         column: x => x.PrognosisID,
                         principalTable: "Week",
-                        principalColumn: "Id");
+                        principalColumn: "ID");
                 });
 
             migrationBuilder.CreateTable(
@@ -395,7 +396,7 @@ namespace BumboSolid.Migrations
                         name: "FK_Shift_Week",
                         column: x => x.WeekID,
                         principalTable: "Week",
-                        principalColumn: "Id");
+                        principalColumn: "ID");
                 });
 
             migrationBuilder.CreateTable(
@@ -511,6 +512,65 @@ namespace BumboSolid.Migrations
                     { (byte)4, (short)-25 },
                     { (byte)5, (short)-50 },
                     { (byte)6, (short)-75 }
+                });
+
+            migrationBuilder.InsertData(
+                table: "Week",
+                columns: new[] { "ID", "WeekNumber", "Year" },
+                values: new object[,]
+                {
+                    { 1, (byte)1, (short)2024 },
+                    { 2, (byte)2, (short)2024 }
+                });
+
+            migrationBuilder.InsertData(
+                table: "Norm",
+                columns: new[] { "ID", "Activity", "AvgDailyPerformances", "Department", "Duration", "PerVisitor" },
+                values: new object[,]
+                {
+                    { 1, "Stocking", (byte)5, "Vakkenvullen", 60, false },
+                    { 2, "Cashier", (byte)8, "Kassa", 45, false }
+                });
+
+            migrationBuilder.InsertData(
+                table: "PrognosisDay",
+                columns: new[] { "PrognosisID", "Weekday", "VisitorEstimate" },
+                values: new object[,]
+                {
+                    { 1, (byte)1, 0 },
+                    { 2, (byte)2, 0 }
+                });
+
+            migrationBuilder.InsertData(
+                table: "Shift",
+                columns: new[] { "Id", "Department", "Employee", "EndTime", "ExternalEmployeeName", "IsBreak", "StartTime", "WeekID", "Weekday" },
+                values: new object[,]
+                {
+                    { 3, "Kassa", null, new TimeOnly(17, 5, 0), "Alice Johnson", (byte)0, new TimeOnly(9, 0, 0), 2, (byte)2 },
+                    { 4, "Vakkenvullen", null, new TimeOnly(18, 5, 0), "Bob Brown", (byte)0, new TimeOnly(10, 55, 0), 2, (byte)5 },
+                    { 5, "Kassa", null, new TimeOnly(16, 5, 0), "Charlie Davis", (byte)0, new TimeOnly(8, 0, 0), 2, (byte)1 },
+                    { 6, "Vakkenvullen", null, new TimeOnly(19, 0, 0), "Diana Evans", (byte)0, new TimeOnly(11, 0, 0), 2, (byte)3 },
+                    { 7, "Kassa", null, new TimeOnly(15, 0, 0), "Ethan Foster", (byte)0, new TimeOnly(7, 0, 0), 2, (byte)0 },
+                    { 8, "Vakkenvullen", null, new TimeOnly(20, 0, 0), "Fiona Green", (byte)0, new TimeOnly(12, 0, 0), 2, (byte)4 },
+                    { 9, "Kassa", null, new TimeOnly(21, 5, 0), "George Harris", (byte)0, new TimeOnly(13, 0, 0), 2, (byte)6 },
+                    { 10, "Vakkenvullen", null, new TimeOnly(22, 30, 0), "Hannah Lee", (byte)0, new TimeOnly(14, 0, 0), 2, (byte)2 },
+                    { 11, "Kassa", null, new TimeOnly(23, 0, 0), "Ian Miller", (byte)0, new TimeOnly(15, 0, 0), 2, (byte)5 },
+                    { 12, "Vakkenvullen", null, new TimeOnly(0, 0, 0), "Julia Nelson", (byte)0, new TimeOnly(16, 0, 0), 2, (byte)1 },
+                    { 13, "Kassa", null, new TimeOnly(1, 0, 0), "Kevin Owens", (byte)0, new TimeOnly(17, 0, 0), 2, (byte)3 },
+                    { 14, "Vakkenvullen", null, new TimeOnly(2, 0, 0), "Laura Perez", (byte)0, new TimeOnly(18, 0, 0), 2, (byte)0 },
+                    { 15, "Kassa", null, new TimeOnly(3, 0, 0), "Michael Quinn", (byte)0, new TimeOnly(10, 0, 0), 2, (byte)4 },
+                    { 16, "Kassa", null, new TimeOnly(5, 30, 0), "Nina Roberts", (byte)0, new TimeOnly(20, 0, 0), 2, (byte)5 },
+                    { 17, "Vakkenvullen", null, new TimeOnly(5, 20, 0), "Oscar Scott", (byte)0, new TimeOnly(20, 0, 0), 2, (byte)5 },
+                    { 18, "Vakkenvullen", null, new TimeOnly(5, 10, 0), "Paula Turner", (byte)0, new TimeOnly(20, 0, 0), 2, (byte)5 }
+                });
+
+            migrationBuilder.InsertData(
+                table: "PrognosisDepartment",
+                columns: new[] { "Department", "PrognosisID", "Weekday", "WorkHours" },
+                values: new object[,]
+                {
+                    { "Kassa", 1, (byte)1, (short)0 },
+                    { "Vakkenvullen", 2, (byte)2, (short)0 }
                 });
 
             migrationBuilder.CreateIndex(

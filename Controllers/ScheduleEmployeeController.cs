@@ -13,7 +13,7 @@ using System.Runtime.Intrinsics.Arm;
 namespace BumboSolid.Controllers
 {
     [Authorize(Roles = "Manager")]
-    [Route("Rooster")]
+    [Route("RoosterMedewerker")]
 	public class ScheduleEmployeeController : Controller
 	{
 		private readonly BumboDbContext _context;
@@ -177,7 +177,7 @@ namespace BumboSolid.Controllers
 		public ActionResult FillRequest(int id)
 		{
 			// This id is since there is not yet a schedule for shifts
-			id = 1;
+			id = 3;
 
 			var shift = _context.Shifts.FirstOrDefault(s => s.Id == id);
 			if (shift == null) return NotFound();
