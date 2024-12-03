@@ -19,18 +19,25 @@
 				</button>
 				<div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
 					<ul class="navbar-nav flex-grow-1">
-						<li class="nav-item">
-							<a class="nav-link text-dark" asp-area="" asp-controller="Prognoses" asp-action="">Prognoses</a>
-						</li>
-						<li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="ScheduleEmployee" asp-action="Schedule">Rooster Medewerker</a>
-                        </li>
-						<li class="nav-item">
-							<a class="nav-link text-dark" asp-area="" asp-controller="Shifts" asp-action="Index">Roosters</a>
-						</li>
-						<li class="nav-item">
-							<a class="nav-link text-dark" asp-area="" asp-controller="Employees" asp-action="Index">Medewerkers</a>
-						</li>
+						@if (User.IsInRole("Manager")) {
+							<li class="nav-item">
+								<a class="nav-link text-dark" asp-area="" asp-controller="Prognoses" asp-action="">Prognoses</a>
+							</li>
+							<li class="nav-item">
+								<a class="nav-link text-dark" asp-area="" asp-controller="Shifts" asp-action="Index">Roosters</a>
+							</li>
+							<li class="nav-item">
+								<a class="nav-link text-dark" asp-area="" asp-controller="Employees" asp-action="Index">Medewerkers</a>
+							</li>
+						} else if (User.IsInRole("Employee")) {
+							<li class="nav-item">
+								<a class="nav-link text-dark" asp-area="" asp-controller="ScheduleEmployee" asp-action="Schedule">Rooster Medewerker</a>
+							</li>
+							<li class="nav-item">
+								<a class="nav-link text-dark" asp-area="" asp-controller="Availability" asp-action="Index">Beschikbaarheid</a>
+							</li>
+						}
+
 					</ul>
 
 					@if (User.Identity.IsAuthenticated)
