@@ -1,24 +1,18 @@
-﻿@model IEnumerable<BumboSolid.Data.Models.Week>
+﻿@model BumboSolid.Models.SchedulesViewModel
 
 @{
 	ViewData["Title"] = "Rooster";
-	// TODO fix hardcoded dates
-	Int16 week = 2;
-	Int16 year = 2024;
-	DateTime startDate = FirstDateOfWeekISO8601(year, week);
+
+	var schedule = Model.Weeks.First(w => w.Id == Model.WeekId);
+
+	DateTime startDate = FirstDateOfWeekISO8601(schedule.Year, schedule.WeekNumber);
 	DateTime endDate = startDate.AddDays(6);
 
-	var Shifts = Model.Where(model => model.WeekNumber == week).SelectMany(model => model.Shifts).Select(shift => new
-	{
-		shift.Weekday,
-		shift.StartTime,
-		shift.EndTime,
-		shift.ExternalEmployeeName
-	});
+	var shifts = schedule.Shifts;
 
-	string[,] schedule = new string[7, 24];
+	string[,] newSchedule = new string[7, 24];
 
-	foreach (var shift in Shifts)
+	foreach (var shift in shifts)
 	{
 		int hours = shift.EndTime.Hour - shift.StartTime.Hour;
 		if (shift.EndTime.Minute > 0)
@@ -26,12 +20,13 @@
 
 		for (int i = 0; i < hours; i++)
 		{
-			if (schedule[shift.Weekday, shift.StartTime.Hour + i] != null)
+			if (newSchedule[shift.Weekday, shift.StartTime.Hour + i] != null)
 			{
-				schedule[shift.Weekday, shift.StartTime.Hour + i] += ", <br />";
+				newSchedule[shift.Weekday, shift.StartTime.Hour + i] += ", <br />";
 			}
 
-			schedule[shift.Weekday, shift.StartTime.Hour + i] += shift.ExternalEmployeeName!;
+			String employeeName = shift.Employee != null ? shift.Employee.FirstName + " " + shift.Employee.LastName : shift.ExternalEmployeeName!;
+			newSchedule[shift.Weekday, shift.StartTime.Hour + i] += employeeName;
 		}
 	}
 }
@@ -68,7 +63,7 @@
 		<p>@startDate.ToString("dd/MM/yyyy") - @endDate.ToString("dd/MM/yyyy")</p>
 	</div>
 	<div class="w-100">
-		<a class="new-btn">Toevoegen</a>
+		<a class="new-btn" asp-action="Create" asp-route-weekid="@schedule.Id">Toevoegen</a>
 	</div>
 </header>
 
@@ -91,37 +86,37 @@
 			@for (int day = 0; day < 7; day++)
 			{
 				<div class="col schedule-item-container">
-					@if (schedule[day, hour] != null)
+					@if (newSchedule[day, hour] != null)
 					{
 						if (hour > 6 && hour < 20) {
-							if (schedule[day, hour + 1] != null && schedule[day, hour - 1] != null) {
-								<a class="schedule-item-center">@Html.Raw(schedule[day, hour])</a>
+							if (newSchedule[day, hour + 1] != null && newSchedule[day, hour - 1] != null) {
+								<a class="schedule-item-center">@Html.Raw(newSchedule[day, hour])</a>
 							}
-							else if (schedule[day, hour + 1] != null) {
-								<a class="schedule-item-top">@Html.Raw(schedule[day, hour])</a>
+							else if (newSchedule[day, hour + 1] != null) {
+								<a class="schedule-item-top">@Html.Raw(newSchedule[day, hour])</a>
 							}
-							else if (schedule[day, hour - 1] != null)
+							else if (newSchedule[day, hour - 1] != null)
 							{
-								<a class="schedule-item-bottom">@Html.Raw(schedule[day, hour])</a>
+								<a class="schedule-item-bottom">@Html.Raw(newSchedule[day, hour])</a>
 							}
 							else {
-								<a class="schedule-item">@Html.Raw(schedule[day, hour])</a>
+								<a class="schedule-item">@Html.Raw(newSchedule[day, hour])</a>
 							}
 						} else if (hour == 0) {
-							if (schedule[day, hour + 1] != null)
+							if (newSchedule[day, hour + 1] != null)
 							{
-								<a class="schedule-item-top">@Html.Raw(schedule[day, hour])</a>
+								<a class="schedule-item-top">@Html.Raw(newSchedule[day, hour])</a>
 							} else {
-								<a class="schedule-item">@Html.Raw(schedule[day, hour])</a>
+								<a class="schedule-item">@Html.Raw(newSchedule[day, hour])</a>
 							}
 						} else {
-							if (schedule[day, hour - 1] != null)
+							if (newSchedule[day, hour - 1] != null)
 							{
-								<a class="schedule-item-bottom">@Html.Raw(schedule[day, hour])</a>
+								<a class="schedule-item-bottom">@Html.Raw(newSchedule[day, hour])</a>
 							}
 							else
 							{
-								<a class="schedule-item">@Html.Raw(schedule[day, hour])</a>
+								<a class="schedule-item">@Html.Raw(newSchedule[day, hour])</a>
 							}
 						}
 					}

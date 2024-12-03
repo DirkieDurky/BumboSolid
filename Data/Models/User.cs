@@ -27,4 +27,9 @@ public partial class User:IdentityUser<int>
     public virtual List<FillRequest> FillRequests { get; set; } = new List<FillRequest>();
 
     public virtual List<Department> Departments { get; set; } = new List<Department>();
+
+    public virtual List<Shift> Shifts { get; set; } = new List<Shift>();
+
+    // Added for custom display in dropdown
+	public string Name => $"{FirstName} {LastName}";
 }
