@@ -50,7 +50,9 @@ public partial class BumboDbContext : IdentityDbContext<User, IdentityRole<int>,
 
 	public virtual DbSet<Week> Weeks { get; set; }
 
-	protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    public virtual DbSet<Absence> Absences { get; set; }
+
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 	{
 		if (!optionsBuilder.IsConfigured)
 		{
@@ -203,13 +205,8 @@ public partial class BumboDbContext : IdentityDbContext<User, IdentityRole<int>,
 
 			entity.HasIndex(e => e.SubstituteEmployeeId, "IX_FillRequest_SubstituteEmployeeID");
 
-			entity.Property(e => e.Id)
-				.ValueGeneratedNever()
-				.HasColumnName("ID");
-			entity.Property(e => e.AbsentDescription)
-				.HasMaxLength(255)
-				.IsUnicode(false)
-				.HasColumnName("Absent_Description");
+			entity.Property(e => e.Id);
+
 			entity.Property(e => e.ShiftId).HasColumnName("ShiftID");
 			entity.Property(e => e.SubstituteEmployeeId).HasColumnName("SubstituteEmployeeID");
 
@@ -223,7 +220,7 @@ public partial class BumboDbContext : IdentityDbContext<User, IdentityRole<int>,
 				.HasConstraintName("FK_FillRequest_Employee");
 		});
 
-		modelBuilder.Entity<Holiday>(entity =>
+        modelBuilder.Entity<Holiday>(entity =>
 		{
 			entity.HasKey(e => e.Name);
 
@@ -350,7 +347,29 @@ public partial class BumboDbContext : IdentityDbContext<User, IdentityRole<int>,
 
 		});
 
-		modelBuilder.Entity<Weather>(entity =>
+        modelBuilder.Entity<Absence>(entity =>
+        {
+            entity.ToTable("Absence");
+
+            entity.Property(e => e.Id);
+
+            entity.Property(e => e.AbsentDescription)
+                .HasMaxLength(255)
+                .IsUnicode(false)
+                .HasColumnName("Absent_Description");
+
+            entity.HasOne(d => d.Week).WithMany(p => p.Absences)
+                  .HasForeignKey(d => d.WeekId)
+                  .OnDelete(DeleteBehavior.ClientSetNull)
+                  .HasConstraintName("FK_Shift_Week");
+
+            entity.HasOne(d => d.Employee).WithMany(p => p.Absences)
+                .HasForeignKey(d => d.EmployeeId)
+                .OnDelete(DeleteBehavior.Cascade)
+                .HasConstraintName("FK_Shift_Employee");
+        });
+
+        modelBuilder.Entity<Weather>(entity =>
 		{
 			entity.ToTable("Weather");
 

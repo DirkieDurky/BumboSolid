@@ -47,10 +47,13 @@
 		<div class="col mb-1">@shift.StartTime</div>
 		<div class="col mb-1">@shift.EndTime</div>
 		<div class="col mb-1">
-			<a class="new-btn" asp-controller="ScheduleEmployee" asp-action="FillRequest" asp-route-id="@shift.Id">Ruilen</a>
+			@if (shift.OpenFillRequest == false)
+			{
+				<a class="new-btn" asp-controller="ScheduleEmployee" asp-action="FillRequest" asp-route-id="@shift.Id">Ruilen</a>
+			}
 		</div>
 		<div class="col mb-1">
-			<a class="new-btn">Afmelden</a>
+			<a class="new-btn" asp-controller="ScheduleEmployee" asp-action="Absent" asp-route-id="@shift.Id">Afmelden</a>
 		</div>
 	</div>
 

@@ -13,5 +13,7 @@
 
         public TimeOnly EndTime { get; set; }
 
+        public bool OpenFillRequest { get; set; }
+
     }
 }

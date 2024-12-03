@@ -10,6 +10,7 @@ using Microsoft.VisualBasic;
 using Microsoft.AspNetCore.Identity;
 using System.Runtime.Intrinsics.Arm;
 using System.Linq;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace BumboSolid.Controllers
 {
@@ -43,16 +44,25 @@ namespace BumboSolid.Controllers
 			List<ShiftViewModel> shifts = new List<ShiftViewModel>();
 			foreach (var shift in await _context.Shifts.Where(s => s.Employee == user && s.Week.Year == year && s.Week.WeekNumber == weekNr).ToListAsync())
 			{
-				shifts.Add(new ShiftViewModel()
+                var week = _context.Weeks.FirstOrDefault(i => i.Id == shift.WeekId);
+
+                ShiftViewModel shiftViewModel = new ShiftViewModel()
 				{
 					Id = shift.Id,
 
-                    Weekday = Weekday(year, weekNr, shift.Weekday),
+                    Weekday = Weekday(week.Year, week.WeekNumber, shift.Weekday),
 					StartTime = shift.StartTime,
 					EndTime = shift.EndTime,
 
 					Department = shift.Department
-				});
+				};
+
+				// Check if there is not already an open FillRequest for this Shift
+				shiftViewModel.OpenFillRequest = false;
+                var fillRequests = _context.FillRequests.Where(s => s.ShiftId == shift.Id).ToList();
+				foreach (FillRequest request in fillRequests) if (request.Accepted == 0) shiftViewModel.OpenFillRequest = true;
+
+				shifts.Add(shiftViewModel);
 			}
 
 			EmployeeScheduleViewModel employeeScheduleViewModel = new EmployeeScheduleViewModel()
@@ -83,12 +93,12 @@ namespace BumboSolid.Controllers
 
 			foreach (FillRequest fillRequest in fillRequests)
             {
-				// Getting Shift and Week
-				var shift = _context.Shifts.FirstOrDefault(i => i.Id == fillRequest.ShiftId);
-				var week = _context.Weeks.FirstOrDefault(i => i.Id == shift.WeekId);
+                // Getting Shift and Week
+                var shift = _context.Shifts.FirstOrDefault(i => i.Id == fillRequest.ShiftId);
+                shift.Week = _context.Weeks.FirstOrDefault(i => i.Id == shift.WeekId);
 
-				// Getting correct date and day
-				var jan1 = new DateOnly(week.Year, 1, 1);
+                // Getting correct date and day
+                var jan1 = new DateOnly(shift.Week.Year, 1, 1);
 				DateOnly date = jan1.AddDays(DayOfWeek.Monday - jan1.DayOfWeek).AddDays((shift.Week.WeekNumber - 1) * 7).AddDays((int)shift.Weekday - (int)DayOfWeek.Monday);
 
 				string[] days = ["Monday", "Tuesdday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
@@ -126,17 +136,21 @@ namespace BumboSolid.Controllers
 			{
 				// Getting Shift and Week
 				var shift = _context.Shifts.FirstOrDefault(i => i.Id == fillRequest.ShiftId);
-				var week = _context.Weeks.FirstOrDefault(i => i.Id == shift.WeekId);
+				shift.Week = _context.Weeks.FirstOrDefault(i => i.Id == shift.WeekId);
 
 				// Getting correct date and day
-				var jan1 = new DateOnly(week.Year, 1, 1);
+				var jan1 = new DateOnly(shift.Week.Year, 1, 1);
 				DateOnly date = jan1.AddDays(DayOfWeek.Monday - jan1.DayOfWeek).AddDays((shift.Week.WeekNumber - 1) * 7).AddDays((int)shift.Weekday - (int)DayOfWeek.Monday);
 
 				string[] days = ["Monday", "Tuesdday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
 
-				// Checking if this FillRequest does not overlap with an already existing shift
-				var shifts = _context.Shifts.Where(s => s.EmployeeId == userId && s.WeekId == week.Id && s.Weekday == shift.Weekday).ToList();
-				var validShift = true;
+                // Checking if this user can work the given department
+                var validShift = false;
+                foreach (Department department in user.Departments) if (department.ToString().Equals(shift.Department)) validShift = true;
+                if (validShift == false) break;
+
+                // Checking if this FillRequest does not overlap with an already existing shift
+                var shifts = _context.Shifts.Where(s => s.EmployeeId == userId && s.WeekId == shift.Week.Id && s.Weekday == shift.Weekday).ToList();
 				foreach (Shift yourShift in shifts)
 				{
 					// shift ends during || shift starts earlier but ends later
@@ -144,6 +158,7 @@ namespace BumboSolid.Controllers
 					// shift starts during || shift starts later but ends earlier
 					if (yourShift.StartTime >= shift.StartTime && yourShift.StartTime <= shift.EndTime) validShift = false;
 				}
+				if (validShift == false) break;
 
 				// Checking if this shift does not break any CAO rules
 				var userAge = DateTime.Today.Year - user.BirthDate.Year;
@@ -185,13 +200,14 @@ namespace BumboSolid.Controllers
 					if (todayTotalMinutes > CLA.MaxWorkDurationPerDay) validShift = false;
 				}
 
-				// Getting shift user
-				var shiftUser = _context.Users.Where(i => i.Id == shift.Id).FirstOrDefault();
-
+				// Continue if shift is valid
 				if (validShift == true)
 				{
-					// Creating FillReuestViewModel
-					FillRequestViewModel fillRequestViewModel = new FillRequestViewModel()
+                    // Getting shift user
+                    var shiftUser = _context.Users.Where(i => i.Id == shift.Id).FirstOrDefault();
+
+                    // Creating FillReuestViewModel
+                    FillRequestViewModel fillRequestViewModel = new FillRequestViewModel()
 					{
 						Date = date,
 						Day = days[shift.Weekday],
@@ -241,11 +257,72 @@ namespace BumboSolid.Controllers
 			{
 				_context.FillRequests.Add(fillRequest);
 				_context.SaveChanges();
-				return RedirectToAction(nameof(Schedule));
 			}
 
 			return RedirectToAction(nameof(Schedule));
 		}
+
+		// GET: ScheduleEmployeeController/Absent/5
+		[HttpGet("Afmelden")]
+		public async Task<IActionResult> Absent(int id)
+		{
+            // Getting Shift and Week
+            var shift = _context.Shifts.FirstOrDefault(s => s.Id == id);
+            if (shift == null) return NotFound();
+            shift.Week = _context.Weeks.FirstOrDefault(i => i.Id == shift.WeekId);
+
+            AbsentViewModel absentViewModel = new AbsentViewModel()
+			{
+				ShiftId = id,
+
+				Weekday = Weekday(shift.Week.Year, shift.Week.WeekNumber, shift.Weekday),
+				StartTime = shift.StartTime,
+				EndTime  = shift.EndTime,
+
+				Department = shift.Department
+			};
+
+            return View(absentViewModel);
+		}
+
+        // Post: ScheduleEmployeeController/Absent/5
+        [ValidateAntiForgeryToken]
+        [HttpPost("Afmelden")]
+        public async Task<IActionResult> AbsentConfirmed(AbsentViewModel absentViewModel)
+        {
+            var shift = _context.Shifts.FirstOrDefault(s => s.Id == absentViewModel.ShiftId);
+            if (shift == null) return NotFound();
+
+			// Check if the whole shift has to go or just a bit
+			if (shift.StartTime <= absentViewModel.StartTime && shift.EndTime >= absentViewModel.StartTime) _context.Shifts.Remove(shift);
+			else
+			{
+				shift.StartTime = absentViewModel.StartTime;
+				shift.EndTime = absentViewModel.EndTime;
+				_context.Shifts.Update(shift);
+			}
+
+			// Creating absent
+			FillRequest absent = new FillRequest()
+			{
+				ShiftId = absentViewModel.ShiftId,
+				//AbsentDescription = absentViewModel.Description
+            };
+            foreach (var modelState in ViewData.ModelState.Values)
+            {
+                foreach (ModelError error in modelState.Errors)
+                {
+                    Console.WriteLine(error.ErrorMessage);
+                }
+            }
+            if (ModelState.IsValid)
+            {
+                _context.FillRequests.Add(absent);
+                _context.SaveChanges();
+            }
+
+            return RedirectToAction(nameof(Schedule));
+        }
 
         // Get the date of the first day of the week
         DateOnly FirstDateOfWeek(int year, int week)
@@ -266,7 +343,26 @@ namespace BumboSolid.Controllers
 
             if (firstDayOfWeek.Year < year) firstDayOfWeek = firstDayOfWeek.AddDays(7);
 
-            return firstDayOfWeek.AddDays(day).DayOfWeek.ToString();
+			// Translating day of the week
+			switch (firstDayOfWeek.AddDays(day).DayOfWeek.ToString())
+			{
+				case "Monday":
+                    return "Maandag";
+                case "Tuesday":
+                    return "Dinsdag";
+                case "Wednesday":
+                    return "Woensdag";
+                case "Thursday":
+                    return "Donderdag";
+                case "Friday":
+                    return "Vrijdag";
+                case "Saturday":
+                    return "Zaterdag";
+                case "Sunday":
+                    return "Zondag";
+				default:
+                    return null;
+            }
         }
     }
 }

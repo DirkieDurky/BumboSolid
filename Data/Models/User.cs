@@ -30,6 +30,9 @@ public partial class User:IdentityUser<int>
 
     public virtual List<Shift> Shifts { get; set; } = new List<Shift>();
 
+    public virtual List<Absence> Absences { get; set; } = new List<Absence>();
+
+
     // Added for custom display in dropdown
-	public string Name => $"{FirstName} {LastName}";
+    public string Name => $"{FirstName} {LastName}";
 }

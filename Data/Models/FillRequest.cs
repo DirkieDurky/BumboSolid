@@ -11,8 +11,6 @@ public partial class FillRequest
 
     public int? SubstituteEmployeeId { get; set; }
 
-    public string? AbsentDescription { get; set; }
-
     public byte Accepted { get; set; }
 
     public virtual Shift Shift { get; set; } = null!;

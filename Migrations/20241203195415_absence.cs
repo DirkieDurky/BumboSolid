@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace BumboSolid.Migrations
 {
     /// <inheritdoc />
-    public partial class Init : Migration
+    public partial class absence : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -353,6 +353,35 @@ namespace BumboSolid.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Absence",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    WeekId = table.Column<int>(type: "int", nullable: false),
+                    Weekday = table.Column<byte>(type: "tinyint", nullable: false),
+                    StartTime = table.Column<TimeOnly>(type: "time", nullable: false),
+                    EndTime = table.Column<TimeOnly>(type: "time", nullable: false),
+                    Absent_Description = table.Column<string>(type: "varchar(255)", unicode: false, maxLength: 255, nullable: true),
+                    EmployeeId = table.Column<int>(type: "int", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Absence", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Shift_Employee",
+                        column: x => x.EmployeeId,
+                        principalTable: "User",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Shift_Week",
+                        column: x => x.WeekId,
+                        principalTable: "Week",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
                 name: "PrognosisDay",
                 columns: table => new
                 {
@@ -465,15 +494,15 @@ namespace BumboSolid.Migrations
                 name: "FillRequest",
                 columns: table => new
                 {
-                    ID = table.Column<int>(type: "int", nullable: false),
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     ShiftID = table.Column<int>(type: "int", nullable: false),
                     SubstituteEmployeeID = table.Column<int>(type: "int", nullable: true),
-                    Absent_Description = table.Column<string>(type: "varchar(255)", unicode: false, maxLength: 255, nullable: true),
                     Accepted = table.Column<byte>(type: "tinyint", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_FillRequest", x => x.ID);
+                    table.PrimaryKey("PK_FillRequest", x => x.Id);
                     table.ForeignKey(
                         name: "FK_FillRequest_Employee",
                         column: x => x.SubstituteEmployeeID,
@@ -578,6 +607,16 @@ namespace BumboSolid.Migrations
                     { "Kassa", 1, (byte)1, (short)0 },
                     { "Vakkenvullen", 2, (byte)2, (short)0 }
                 });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Absence_EmployeeId",
+                table: "Absence",
+                column: "EmployeeId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Absence_WeekId",
+                table: "Absence",
+                column: "WeekId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
@@ -687,6 +726,9 @@ namespace BumboSolid.Migrations
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropTable(
+                name: "Absence");
+
             migrationBuilder.DropTable(
                 name: "AspNetRoleClaims");
 

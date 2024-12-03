@@ -22,6 +22,44 @@ namespace BumboSolid.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("BumboSolid.Data.Models.Absence", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("AbsentDescription")
+                        .HasMaxLength(255)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(255)")
+                        .HasColumnName("Absent_Description");
+
+                    b.Property<int?>("EmployeeId")
+                        .HasColumnType("int");
+
+                    b.Property<TimeOnly>("EndTime")
+                        .HasColumnType("time");
+
+                    b.Property<TimeOnly>("StartTime")
+                        .HasColumnType("time");
+
+                    b.Property<int>("WeekId")
+                        .HasColumnType("int");
+
+                    b.Property<byte>("Weekday")
+                        .HasColumnType("tinyint");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EmployeeId");
+
+                    b.HasIndex("WeekId");
+
+                    b.ToTable("Absence", (string)null);
+                });
+
             modelBuilder.Entity("BumboSolid.Data.Models.AvailabilityRule", b =>
                 {
                     b.Property<int>("Id")
@@ -206,14 +244,10 @@ namespace BumboSolid.Migrations
             modelBuilder.Entity("BumboSolid.Data.Models.FillRequest", b =>
                 {
                     b.Property<int>("Id")
-                        .HasColumnType("int")
-                        .HasColumnName("ID");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
 
-                    b.Property<string>("AbsentDescription")
-                        .HasMaxLength(255)
-                        .IsUnicode(false)
-                        .HasColumnType("varchar(255)")
-                        .HasColumnName("Absent_Description");
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<byte>("Accepted")
                         .HasColumnType("tinyint");
@@ -957,6 +991,25 @@ namespace BumboSolid.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("BumboSolid.Data.Models.Absence", b =>
+                {
+                    b.HasOne("BumboSolid.Data.Models.User", "Employee")
+                        .WithMany("Absences")
+                        .HasForeignKey("EmployeeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .HasConstraintName("FK_Shift_Employee");
+
+                    b.HasOne("BumboSolid.Data.Models.Week", "Week")
+                        .WithMany("Absences")
+                        .HasForeignKey("WeekId")
+                        .IsRequired()
+                        .HasConstraintName("FK_Shift_Week");
+
+                    b.Navigation("Employee");
+
+                    b.Navigation("Week");
+                });
+
             modelBuilder.Entity("BumboSolid.Data.Models.AvailabilityRule", b =>
                 {
                     b.HasOne("BumboSolid.Data.Models.User", "EmployeeNavigation")
@@ -1208,6 +1261,8 @@ namespace BumboSolid.Migrations
 
             modelBuilder.Entity("BumboSolid.Data.Models.User", b =>
                 {
+                    b.Navigation("Absences");
+
                     b.Navigation("AvailabilityRules");
 
                     b.Navigation("FillRequests");
@@ -1222,6 +1277,8 @@ namespace BumboSolid.Migrations
 
             modelBuilder.Entity("BumboSolid.Data.Models.Week", b =>
                 {
+                    b.Navigation("Absences");
+
                     b.Navigation("PrognosisDays");
 
                     b.Navigation("Shifts");
