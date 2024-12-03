@@ -46,7 +46,7 @@ namespace BumboSolid.Controllers
                 }
                 if (User.IsInRole("Employee"))
                 {
-                    return Redirect("/Roosters");
+                    return Redirect("/RoosterMedewerker");
                 }
                 ViewBag.Error = "Geen rol";
                 return View(Input);
