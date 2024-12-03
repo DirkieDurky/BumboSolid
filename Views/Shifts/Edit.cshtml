@@ -1,64 +1,133 @@
-﻿@model BumboSolid.Data.Models.Shift
+﻿@model BumboSolid.Models.ShiftCreateViewModel
 
 @{
     ViewData["Title"] = "Edit";
+
+    Int16 year = Model.Week.Year;
+    Int16 week = Model.Week.WeekNumber;
+    DateTime startDate = FirstDateOfWeekISO8601(year, week);
+    DateTime endDate = startDate.AddDays(6);
+
+    String[] daysOfTheWeek = { "Maandag", "Dinsdag", "Woensdag", "Donderdag", "Vrijdag", "Zaterdag", "Zondag" };
 }
 
-<h1>Edit</h1>
+@functions {
+    public static DateTime FirstDateOfWeekISO8601(int year, int weekOfYear)
+    {
+        DateTime jan1 = new DateTime(year, 1, 1);
+        int daysOffset = DayOfWeek.Thursday - jan1.DayOfWeek;
 
-<h4>Shift</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
+        DateTime firstThursday = jan1.AddDays(daysOffset);
+        var cal = System.Globalization.CultureInfo.CurrentCulture.Calendar;
+        int firstWeek = cal.GetWeekOfYear(firstThursday, System.Globalization.CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Monday);
+
+        var weekNum = weekOfYear;
+        if (firstWeek == 1)
+        {
+            weekNum -= 1;
+        }
+
+        var result = firstThursday.AddDays(weekNum * 7);
+        return result.AddDays(-3);
+    }
+}
+
+<header class="d-flex align-items-center gap-3 justify-content-center gap-3">
+    <div class="w-100 text-align text-end">
+        <a class="new-btn" asp-action="Index" asp-route-id="@Model.Week.Id">Terug</a>
+    </div>
+    <div class="mx-3 text-center text-nowrap">
+        <h1>Medewerker Inplannen</h1>
+        <p>@startDate.ToString("dd/MM/yyyy") - @endDate.ToString("dd/MM/yyyy")</p>
+    </div>
+    <div class="w-100"></div>
+</header>
+
+<div class="row justify-content-center">
+    <div class="col-md-8">
         <form asp-action="Edit">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="Id" />
-            <div class="form-group">
-                <label asp-for="WeekId" class="control-label"></label>
-                <select asp-for="WeekId" class="form-control" asp-items="ViewBag.WeekId"></select>
-                <span asp-validation-for="WeekId" class="text-danger"></span>
+            <input asp-for="Shift.Id" type="hidden" value="@Model.Shift.Id" />
+            <input asp-for="Shift.WeekId" type="hidden" value="@Model.Week.Id" />
+            <div class="row pb-2">
+                <div class="form-group col-md-6">
+                    <label class="control-label fw-bold">Medewerker</label>
+                    <select asp-for="Shift.EmployeeId" class="form-control p-1 border-solid-black" onchange="updateEmployeeName(this)">
+                        @foreach (KeyValuePair<Int32, String> employee in Model.Employees)
+                        {
+                            <option value="@employee.Key">@employee.Value</option>
+                        }
+                    </select>
+                </div>
+                <div class="form-group col-md-3">
+                    <p class="fw-bold m-0">Heeft pauze over</p>
+                    <p id="hasBreakIn">-:--</p>
+                </div>
+                <div class="form-group col-md-3">
+                    <p class="fw-bold m-0">Mag nog werken</p>
+                    <p id="canWorkFor">-:--</p>
+                </div>
+            </div>
+            <div class="row">
+                <div class="form-group col-md-6 pb-2">
+                    <label class="control-label fw-bold">Externe medewerker naam</label>
+                    <input asp-for="Shift.ExternalEmployeeName" class="form-control p-1 border-solid-black" />
+                    <span asp-validation-for="Shift.ExternalEmployeeName" class="text-danger"></span>
+                </div>
+                <div class="col-md-6"></div>
+                <div class="form-group col-md-6 pb-2">
+                    <label class="control-label fw-bold">Afdeling</label>
+                    <select asp-for="Shift.Department" class="form-control p-1 border-solid-black" asp-items="ViewBag.Departments"></select>
+                </div>
+                <div class="col-md-6"></div>
+                <div class="form-group col-md-6 pb-2">
+                    <label class="control-label fw-bold">Dag</label>
+                    <select asp-for="Shift.Weekday" class="form-control p-1 border-solid-black">
+                        @for (int i = 0; i < daysOfTheWeek.Length; i++)
+                        {
+                            <option value="@i">@daysOfTheWeek[i]</option>
+                        }
+                    </select>
+                </div>
+            </div>
+            <div class="row pb-3">
+                <div class="form-group col-md-6">
+                    <label class="control-label fw-bold">Starttijd</label>
+                    <input asp-for="Shift.StartTime" class="form-control  p-1 border-solid-black" type="time" />
+                    <span asp-validation-for="Shift.StartTime" class="text-danger"></span>
+                </div>
+                <div class="form-group col-md-6">
+                    <label class="control-label fw-bold">Eindtijd</label>
+                    <input asp-for="Shift.EndTime" class="form-control  p-1 border-solid-black" type="time" />
+                    <span asp-validation-for="Shift.EndTime" class="text-danger"></span>
+                </div>
             </div>
             <div class="form-group">
-                <label asp-for="Weekday" class="control-label"></label>
-                <input asp-for="Weekday" class="form-control" />
-                <span asp-validation-for="Weekday" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Department" class="control-label"></label>
-                <select asp-for="Department" class="form-control" asp-items="ViewBag.Department"></select>
-                <span asp-validation-for="Department" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="StartTime" class="control-label"></label>
-                <input asp-for="StartTime" class="form-control" />
-                <span asp-validation-for="StartTime" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="EndTime" class="control-label"></label>
-                <input asp-for="EndTime" class="form-control" />
-                <span asp-validation-for="EndTime" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="EmployeeId" class="control-label"></label>
-                <input asp-for="EmployeeId" class="form-control" />
-                <span asp-validation-for="EmployeeId" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="ExternalEmployeeName" class="control-label"></label>
-                <input asp-for="ExternalEmployeeName" class="form-control" />
-                <span asp-validation-for="ExternalEmployeeName" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
+                <input type="submit" value="Opslaan" class="new-btn w-100" />
             </div>
         </form>
     </div>
 </div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
-
+<!--TODO FIX WHEN WE GOT TIME-->
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script>
+        function updateEmployeeName(selectElement) {
+            var selectedEmployeeName = selectElement.options[selectElement.selectedIndex].text;
+            if (selectedEmployeeName === "Extern filiaal") {
+                document.getElementById('hasBreakIn').innerText = "-:--";
+            } else {
+                document.getElementById('hasBreakIn').innerText = "-:--";
+            }
+
+            if (selectedEmployeeName === "Extern filiaal") {
+                document.getElementById('canWorkFor').innerText = "-:--";
+            } else {
+                document.getElementById('canWorkFor').innerText = "-:--";
+            }
+        }
+    </script>
 }
