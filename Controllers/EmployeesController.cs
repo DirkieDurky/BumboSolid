@@ -5,7 +5,6 @@ using BumboSolid.Data.Models;
 using BumboSolid.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authorization;
-using BumboSolid.Migrations;
 
 namespace BumboSolid.Controllers
 {
@@ -90,15 +89,6 @@ namespace BumboSolid.Controllers
                 ModelState.AddModelError(nameof(input.EmployedSince), employmentErrorMessage);
             }
 
-            // Generate Username based on First and Last Name
-            string generatedUserName = await GenerateUserName(input.FirstName, input.LastName);
-
-            // Check if the username is valid
-            if (!IsValidUsername(generatedUserName, out var usernameErrorMessage))
-            {
-                ModelState.AddModelError(nameof(input.FirstName), usernameErrorMessage);
-            }
-
             // Check if the password meets the requirements
             var passwordValidationResult = await _userManager.PasswordValidators
                 .FirstOrDefault()
@@ -123,7 +113,7 @@ namespace BumboSolid.Controllers
             {
                 var user = new User
                 {
-                    UserName = generatedUserName,  // Use the generated unique username
+                    UserName = input.Email,
                     Email = input.Email,
                     FirstName = input.FirstName,
                     LastName = input.LastName,
@@ -367,47 +357,6 @@ namespace BumboSolid.Controllers
 
             return true;
         }
-
-        // Generate unique username based on firstname and lastname
-        private async Task<string> GenerateUserName(string firstName, string lastName)
-        {
-            string baseUserName = $"{firstName}{lastName}".ToLower();
-
-            var existingUser = await _userManager.FindByNameAsync(baseUserName);
-
-            if (existingUser != null)
-            {
-                int suffix = 1;
-                string newUserName;
-
-                do
-                {
-                    newUserName = $"{baseUserName}{suffix}";
-                    existingUser = await _userManager.FindByNameAsync(newUserName);
-                    suffix++;
-                } while (existingUser != null);
-
-                return newUserName;
-            }
-
-            return baseUserName;
-        }
-
-        private bool IsValidUsername(string username, out string errorMessage)
-        {
-            errorMessage = null;
-
-            var regex = new System.Text.RegularExpressions.Regex("^[a-zA-Z]+$");
-
-            if (!regex.IsMatch(username))
-            {
-                errorMessage = "Naam mag alleen letters bevatten.";
-                return false;
-            }
-
-            return true;
-        }
-
 
     }
 }
