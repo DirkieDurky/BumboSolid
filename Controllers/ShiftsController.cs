@@ -77,6 +77,7 @@ namespace BumboSolid.Controllers
 			var shifts = _context.Shifts
 				.Include(s => s.DepartmentNavigation)
 				.Include(s => s.Week)
+				.Include(s => s.Employee)
 				.Where(s => s.Week!.Year == year && s.Week.WeekNumber == week && s.Weekday == day && s.StartTime <= endTimeTime && s.EndTime >= startTimeTime)
 				.ToList();
 
