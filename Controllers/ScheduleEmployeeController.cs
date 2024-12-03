@@ -12,7 +12,7 @@ using System.Runtime.Intrinsics.Arm;
 
 namespace BumboSolid.Controllers
 {
-    [Authorize(Roles = "Manager")]
+    [Authorize(Roles = "Employee")]
     [Route("RoosterMedewerker")]
 	public class ScheduleEmployeeController : Controller
 	{
