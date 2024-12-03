@@ -31,10 +31,6 @@ namespace BumboSolid.Controllers
 			var user = await _userManager.GetUserAsync(User);
 			int userId = user.Id;
 
-			// This is to be deleted when the agenda has been inplemented
-			Year = 2024;
-			WeekNr = 47;
-
 			DateOnly startDate = FirstDateOfWeek(Year, WeekNr);
 
 			List<AvailabilityRuleViewModel> availabilityViewModels = new List<AvailabilityRuleViewModel>();
@@ -191,7 +187,7 @@ namespace BumboSolid.Controllers
 			ViewBag.year = Year;
 			ViewBag.weekNr = WeekNr;
 			ViewBag.availability = Availability;
-			Console.WriteLine(availabilityRuleViewModel.Id);
+
 			if (availabilityRuleViewModel.Id == null) return NotFound();
 
             var availabilityRule = await _context.AvailabilityRules.FindAsync(availabilityRuleViewModel.Id);
