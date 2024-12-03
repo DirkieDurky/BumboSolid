@@ -68,23 +68,61 @@ namespace BumboSolid.Controllers
 		}
 
 		// GET: Shifts/Details/5
-		public async Task<IActionResult> Details(int? id)
+		[HttpGet("Rooster Details")]
+		public IActionResult Details(short year, short week, int day, int startTime, int endTime)
 		{
-			if (id == null)
-			{
-				return NotFound();
-			}
+			TimeOnly startTimeTime = new(startTime, 0);
+			TimeOnly endTimeTime = new(endTime, 0);
 
-			var shift = await _context.Shifts
+			var shifts = _context.Shifts
 				.Include(s => s.DepartmentNavigation)
 				.Include(s => s.Week)
-				.FirstOrDefaultAsync(m => m.Id == id);
-			if (shift == null)
+				.Where(s => s.Week!.Year == year && s.Week.WeekNumber == week && s.Weekday == day && s.StartTime <= endTimeTime && s.EndTime >= startTimeTime)
+				.ToList();
+
+			if (shifts == null)
 			{
 				return NotFound();
 			}
 
-			return View(shift);
+			string dayName;
+
+			switch (day)
+			{
+				case 0:
+					dayName = "Maandag";
+					break;
+				case 1:
+					dayName = "Dinsdag";
+					break;
+				case 2:
+					dayName = "Woensdag";
+					break;
+				case 3:
+					dayName = "Donderdag";
+					break;
+				case 4:
+					dayName = "Vrijdag";
+					break;
+				case 5:
+					dayName = "Zaterdag";
+					break;
+				case 6:
+					dayName = "Zondag";
+					break;
+				default:
+					throw new ArgumentOutOfRangeException(nameof(day), "Invalid day of the week");
+			}
+
+			ScheduleViewDetailsViewModel scheduleViewDetailsViewModel = new()
+			{
+				Shifts = shifts,
+				Day = dayName,
+				StartTime = startTimeTime,
+				EndTime = endTimeTime,
+			};
+
+			return View(scheduleViewDetailsViewModel);
 		}
 
 		// GET: Shifts/Create
