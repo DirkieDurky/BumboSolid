@@ -355,10 +355,6 @@ public partial class BumboDbContext : IdentityDbContext<User, IdentityRole<int>,
 		modelBuilder.Entity<Week>(entity =>
 		{
 			entity.ToTable("Week");
-
-			entity.Property(e => e.Id)
-				.ValueGeneratedNever()
-				.HasColumnName("ID");
 		});
 
 		modelBuilder.Entity<Weather>().HasData(

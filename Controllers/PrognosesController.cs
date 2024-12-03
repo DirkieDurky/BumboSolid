@@ -71,7 +71,6 @@ namespace BumboSolid.Controllers
 
 			Week newWeek = new Week()
 			{
-				Id = _context.Weeks.Count() > 0 ? _context.Weeks.Max(x => x.Id) + 1 : 0,
 				Year = year,
 				WeekNumber = week,
 			};
@@ -81,7 +80,6 @@ namespace BumboSolid.Controllers
 			{
 				PrognosisDay prognosisDay = new PrognosisDay()
 				{
-					PrognosisId = newWeek.Id,
 					Weekday = i,
 					VisitorEstimate = 0,
 				};
@@ -95,7 +93,6 @@ namespace BumboSolid.Controllers
 
 				prognosisDay.Factors.Add(new Factor()
 				{
-					PrognosisId = prognosisDay.PrognosisId,
 					Type = "Feestdagen",
 					Weekday = prognosisDay.Weekday,
 					Impact = (short)(holidayInfo.Count() == 0 ? 0 : holidayInfo.First().Impact),
@@ -103,7 +100,6 @@ namespace BumboSolid.Controllers
 
 				prognosisDay.Factors.Add(new Factor()
 				{
-					PrognosisId = prognosisDay.PrognosisId,
 					Type = "Weer",
 					Weekday = prognosisDay.Weekday,
 					Impact = 3,
@@ -111,7 +107,6 @@ namespace BumboSolid.Controllers
 
 				prognosisDay.Factors.Add(new Factor()
 				{
-					PrognosisId = prognosisDay.PrognosisId,
 					Type = "Overig",
 					Weekday = prognosisDay.Weekday,
 					Impact = 0,
@@ -125,7 +120,6 @@ namespace BumboSolid.Controllers
 			CreatePrognosisViewModel CreatePrognosisViewModel = new CreatePrognosisViewModel()
 			{
 				Prognosis = newWeek,
-				VisitorEstimatePerDay = prognoses.Count() > 0 ? prognoses.Last().PrognosisDays.ToDictionary(p => p.Weekday, p => p.VisitorEstimate) : null,
 				WeatherValues = _context.Weathers.ToList(),
 				Norms = _context.Norms.ToList(),
 			};
@@ -170,7 +164,6 @@ namespace BumboSolid.Controllers
 			if (!ModelState.IsValid) return View(prognosis);
 
 			_context.Add(prognosis);
-
 			await _context.SaveChangesAsync();
 
 			for (int i = 0; i < 7; i++)
