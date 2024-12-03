@@ -2,12 +2,15 @@
 using BumboSolid.Data;
 using BumboSolid.Data.Models;
 using BumboSolid.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace BumboSolid.Controllers
 {
+    [Authorize(Roles = "Employee,Manager")]
+	[Route("Beschikbaarheid")]
 	public class AvailabilityController : Controller
 	{
 		private readonly BumboDbContext _context;
@@ -21,7 +24,7 @@ namespace BumboSolid.Controllers
 		}
 
 		// GET: AvailiabilityController/Index
-		[HttpGet("Werkgelegenheden")]
+		[HttpGet("")]
 		public async Task<IActionResult> Index(int Year, int WeekNr)
 		{
 			// Getting user

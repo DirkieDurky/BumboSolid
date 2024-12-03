@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace BumboSolid.Migrations
 {
     /// <inheritdoc />
-    public partial class AddIdentityColumns : Migration
+    public partial class Init : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -394,6 +394,12 @@ namespace BumboSolid.Migrations
                         principalTable: "Department",
                         principalColumn: "Name");
                     table.ForeignKey(
+                        name: "FK_Shift_Employee",
+                        column: x => x.Employee,
+                        principalTable: "User",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
                         name: "FK_Shift_Week",
                         column: x => x.WeekID,
                         principalTable: "Week",
@@ -656,6 +662,11 @@ namespace BumboSolid.Migrations
                 column: "Department");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Shift_Employee",
+                table: "Shift",
+                column: "Employee");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Shift_WeekID",
                 table: "Shift",
                 column: "WeekID");
@@ -728,9 +739,6 @@ namespace BumboSolid.Migrations
                 name: "Weather");
 
             migrationBuilder.DropTable(
-                name: "User");
-
-            migrationBuilder.DropTable(
                 name: "Shift");
 
             migrationBuilder.DropTable(
@@ -741,6 +749,9 @@ namespace BumboSolid.Migrations
 
             migrationBuilder.DropTable(
                 name: "Department");
+
+            migrationBuilder.DropTable(
+                name: "User");
 
             migrationBuilder.DropTable(
                 name: "Week");

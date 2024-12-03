@@ -66,6 +66,6 @@
     <form asp-action="Delete" asp-route-id="@Model.Id" method="post">
         <input type="hidden" asp-for="Id" />
         <button type="submit" class="btn btn-danger">Verwijderen</button>
-        <a asp-controller="Employees" asp-action="Index" class="btn btn-secondary">Annuleren</a>
+        <a asp-controller="Employees" asp-action="Index" class="btn early-btn btn-secondary">Annuleren</a>
     </form>
 </div>
