@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace BumboSolid.Migrations
 {
     /// <inheritdoc />
-    public partial class AddIdentity : Migration
+    public partial class Init : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -374,7 +374,8 @@ namespace BumboSolid.Migrations
                 name: "Shift",
                 columns: table => new
                 {
-                    ID = table.Column<int>(type: "int", nullable: false),
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     WeekID = table.Column<int>(type: "int", nullable: false),
                     Weekday = table.Column<byte>(type: "tinyint", nullable: false),
                     Department = table.Column<string>(type: "varchar(25)", unicode: false, maxLength: 25, nullable: false),
@@ -386,12 +387,18 @@ namespace BumboSolid.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Shift", x => x.ID);
+                    table.PrimaryKey("PK_Shift", x => x.Id);
                     table.ForeignKey(
                         name: "FK_Shift_Department",
                         column: x => x.Department,
                         principalTable: "Department",
                         principalColumn: "Name");
+                    table.ForeignKey(
+                        name: "FK_Shift_Employee",
+                        column: x => x.Employee,
+                        principalTable: "User",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_Shift_Week",
                         column: x => x.WeekID,
@@ -476,16 +483,7 @@ namespace BumboSolid.Migrations
                         name: "FK_FillRequest_Shift",
                         column: x => x.ShiftID,
                         principalTable: "Shift",
-                        principalColumn: "ID");
-                });
-
-            migrationBuilder.InsertData(
-                table: "CLAEntry",
-                columns: new[] { "ID", "AgeEnd", "AgeStart", "EarliestWorkTime", "LatestWorkTime", "MaxAvgWeeklyWorkDurationOverFourWeeks", "MaxShiftDuration", "MaxWorkDaysPerWeek", "MaxWorkDurationPerDay", "MaxWorkDurationPerHolidayWeek", "MaxWorkDurationPerWeek" },
-                values: new object[,]
-                {
-                    { 1, null, null, null, null, 38, 8, 5, 8, 35, 40 },
-                    { 2, null, null, null, null, 33, 7, 5, 7, 30, 35 }
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.InsertData(
@@ -506,15 +504,6 @@ namespace BumboSolid.Migrations
                     "Feestdagen",
                     "Overig",
                     "Weer"
-                });
-
-            migrationBuilder.InsertData(
-                table: "Holiday",
-                column: "Name",
-                values: new object[]
-                {
-                    "Christmas",
-                    "New Year"
                 });
 
             migrationBuilder.InsertData(
@@ -541,24 +530,6 @@ namespace BumboSolid.Migrations
                 });
 
             migrationBuilder.InsertData(
-                table: "CLABreakEntry",
-                columns: new[] { "CLAEntryId", "WorkDuration", "MinBreakDuration" },
-                values: new object[,]
-                {
-                    { 1, 4, 30 },
-                    { 2, 5, 45 }
-                });
-
-            migrationBuilder.InsertData(
-                table: "HolidayDay",
-                columns: new[] { "Date", "Holiday_Name", "Impact" },
-                values: new object[,]
-                {
-                    { new DateOnly(2023, 12, 25), "Christmas", (short)0 },
-                    { new DateOnly(2023, 1, 1), "New Year", (short)0 }
-                });
-
-            migrationBuilder.InsertData(
                 table: "Norm",
                 columns: new[] { "ID", "Activity", "AvgDailyPerformances", "Department", "Duration", "PerVisitor" },
                 values: new object[,]
@@ -578,7 +549,7 @@ namespace BumboSolid.Migrations
 
             migrationBuilder.InsertData(
                 table: "Shift",
-                columns: new[] { "ID", "Department", "Employee", "EndTime", "ExternalEmployeeName", "IsBreak", "StartTime", "WeekID", "Weekday" },
+                columns: new[] { "Id", "Department", "Employee", "EndTime", "ExternalEmployeeName", "IsBreak", "StartTime", "WeekID", "Weekday" },
                 values: new object[,]
                 {
                     { 3, "Kassa", null, new TimeOnly(17, 5, 0), "Alice Johnson", (byte)0, new TimeOnly(9, 0, 0), 2, (byte)2 },
@@ -691,6 +662,11 @@ namespace BumboSolid.Migrations
                 column: "Department");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Shift_Employee",
+                table: "Shift",
+                column: "Employee");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Shift_WeekID",
                 table: "Shift",
                 column: "WeekID");
@@ -763,9 +739,6 @@ namespace BumboSolid.Migrations
                 name: "Weather");
 
             migrationBuilder.DropTable(
-                name: "User");
-
-            migrationBuilder.DropTable(
                 name: "Shift");
 
             migrationBuilder.DropTable(
@@ -776,6 +749,9 @@ namespace BumboSolid.Migrations
 
             migrationBuilder.DropTable(
                 name: "Department");
+
+            migrationBuilder.DropTable(
+                name: "User");
 
             migrationBuilder.DropTable(
                 name: "Week");

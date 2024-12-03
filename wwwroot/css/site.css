@@ -28,10 +28,18 @@ table {
 }
 
 h6 {
-	font-size: 1vw;
-	font-weight: bold;
-	font-style: italic;
-	min-height: 5.5vh;
+    font-size: 1vw;
+    font-weight: bold;
+    font-style: italic;
+    min-height: 5.5vh;
+}
+
+hr {
+    min-height: 0.3vh;
+}
+
+p {
+    text-align: center;
 }
 
 .fa-chart-simple {
@@ -83,29 +91,29 @@ h6 {
 }
 
 .prognosis-table {
-	padding-block: 10px;
-	border-spacing: 10px 0px;
-	margin-bottom: 20px;
+    padding-block: 10px;
+    border-spacing: 10px 0px;
+    margin-bottom: 20px;
 }
 
-	.prognosis-table.main th:not(th:nth-child(1)) {
-		border-bottom: 1px solid rgba(0, 0, 0, 0.5);
-		border-radius: 10px 10px 0 0;
-	}
+.prognosis-table.main th:not(th:nth-child(1)) {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.5);
+    border-radius: 10px 10px 0 0;
+}
 
-	.prognosis-table > table th {
-		padding: 5px;
-		border-radius: 10px 10px 0px 0px;
-	}
+.prognosis-table > table th {
+    padding: 5px;
+    border-radius: 10px 10px 0px 0px;
+}
 
-	.prognosis-table.side th {
-		border-bottom: 1px solid rgba(0, 0, 0, 0.5);
-		border-radius: 10px 10px 0 0;
-	}
+.prognosis-table.side th {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.5);
+    border-radius: 10px 10px 0 0;
+}
 
-	.prognosis-table > table td {
-		padding: 5px 20px;
-	}
+.prognosis-table > table td {
+    padding: 5px 20px;
+}
 
 .prognosis-table-color {
 	background-color: #f2f2f2;
@@ -132,18 +140,18 @@ h6 {
 	background-color: #d6d6d6;
 }
 
-.btn {
-	border-radius: 10px;
-	width: 20vw;
-	height: 5vh;
-	font-weight: bold;
-	font-style: italic;
-	border: none;
-	margin-bottom: 2vh;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	text-align: center;
+.early-btn {
+    border-radius: 10px;
+    width: 20vw;
+    height: 5vh;
+    font-weight: bold;
+    font-style: italic;
+    border: none;
+    margin-bottom: 2vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
 }
 
 ::-webkit-scrollbar {
@@ -459,6 +467,10 @@ th, td {
 	padding: 0.5rem 0.5rem;
 	border: 1px solid black;
 	border-radius: calc(2rem + 2px);
+	display: inline-block;
+	min-width: 5rem;
+	text-align: center;
+	background-color: white;
 }
 
 	.new-btn:hover, .new-btn:focus {
@@ -551,6 +563,22 @@ th, td {
 }
 /* Schedule View Manager END */
 
+.rules-list {
+    text-align: left;
+    padding-left: 1vw;
+    list-style: none;
+    font-weight: bold;
+}
+
+.slim-btn {
+    width: revert;
+
+}
+
+.general-error-center ul{
+    text-align: center;
+    background-color: darkred;
+}
 .password-input-container {
     position: relative;
 }

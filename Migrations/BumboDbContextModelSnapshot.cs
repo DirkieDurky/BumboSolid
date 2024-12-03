@@ -70,20 +70,6 @@ namespace BumboSolid.Migrations
                     b.HasKey("CLAEntryId", "WorkDuration");
 
                     b.ToTable("CLABreakEntry", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            CLAEntryId = 1,
-                            WorkDuration = 4,
-                            MinBreakDuration = 30
-                        },
-                        new
-                        {
-                            CLAEntryId = 2,
-                            WorkDuration = 5,
-                            MinBreakDuration = 45
-                        });
                 });
 
             modelBuilder.Entity("BumboSolid.Data.Models.CLAEntry", b =>
@@ -128,28 +114,6 @@ namespace BumboSolid.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("CLAEntry", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            MaxAvgWeeklyWorkDurationOverFourWeeks = 38,
-                            MaxShiftDuration = 8,
-                            MaxWorkDaysPerWeek = 5,
-                            MaxWorkDurationPerDay = 8,
-                            MaxWorkDurationPerHolidayWeek = 35,
-                            MaxWorkDurationPerWeek = 40
-                        },
-                        new
-                        {
-                            Id = 2,
-                            MaxAvgWeeklyWorkDurationOverFourWeeks = 33,
-                            MaxShiftDuration = 7,
-                            MaxWorkDaysPerWeek = 5,
-                            MaxWorkDurationPerDay = 7,
-                            MaxWorkDurationPerHolidayWeek = 30,
-                            MaxWorkDurationPerWeek = 35
-                        });
                 });
 
             modelBuilder.Entity("BumboSolid.Data.Models.Department", b =>
@@ -180,7 +144,7 @@ namespace BumboSolid.Migrations
 
             modelBuilder.Entity("BumboSolid.Data.Models.Factor", b =>
                 {
-                    b.Property<int>("PrognosisId")
+                    b.Property<int?>("PrognosisId")
                         .HasColumnType("int")
                         .HasColumnName("PrognosisID");
 
@@ -281,16 +245,6 @@ namespace BumboSolid.Migrations
                     b.HasKey("Name");
 
                     b.ToTable("Holiday", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            Name = "New Year"
-                        },
-                        new
-                        {
-                            Name = "Christmas"
-                        });
                 });
 
             modelBuilder.Entity("BumboSolid.Data.Models.HolidayDay", b =>
@@ -310,20 +264,6 @@ namespace BumboSolid.Migrations
                     b.HasKey("HolidayName", "Date");
 
                     b.ToTable("HolidayDay", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            HolidayName = "New Year",
-                            Date = new DateOnly(2023, 1, 1),
-                            Impact = (short)0
-                        },
-                        new
-                        {
-                            HolidayName = "Christmas",
-                            Date = new DateOnly(2023, 12, 25),
-                            Impact = (short)0
-                        });
                 });
 
             modelBuilder.Entity("BumboSolid.Data.Models.Norm", b =>
@@ -382,7 +322,7 @@ namespace BumboSolid.Migrations
 
             modelBuilder.Entity("BumboSolid.Data.Models.PrognosisDay", b =>
                 {
-                    b.Property<int>("PrognosisId")
+                    b.Property<int?>("PrognosisId")
                         .HasColumnType("int")
                         .HasColumnName("PrognosisID");
 
@@ -456,8 +396,10 @@ namespace BumboSolid.Migrations
             modelBuilder.Entity("BumboSolid.Data.Models.Shift", b =>
                 {
                     b.Property<int>("Id")
-                        .HasColumnType("int")
-                        .HasColumnName("ID");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Department")
                         .IsRequired()
@@ -465,8 +407,9 @@ namespace BumboSolid.Migrations
                         .IsUnicode(false)
                         .HasColumnType("varchar(25)");
 
-                    b.Property<int?>("Employee")
-                        .HasColumnType("int");
+                    b.Property<int?>("EmployeeId")
+                        .HasColumnType("int")
+                        .HasColumnName("Employee");
 
                     b.Property<TimeOnly>("EndTime")
                         .HasColumnType("time")
@@ -493,6 +436,8 @@ namespace BumboSolid.Migrations
                         .HasColumnName("Weekday");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("EmployeeId");
 
                     b.HasIndex(new[] { "Department" }, "IX_Shift_Department");
 
@@ -1138,6 +1083,12 @@ namespace BumboSolid.Migrations
                         .IsRequired()
                         .HasConstraintName("FK_Shift_Department");
 
+                    b.HasOne("BumboSolid.Data.Models.User", "Employee")
+                        .WithMany("Shifts")
+                        .HasForeignKey("EmployeeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .HasConstraintName("FK_Shift_Employee");
+
                     b.HasOne("BumboSolid.Data.Models.Week", "Week")
                         .WithMany("Shifts")
                         .HasForeignKey("WeekId")
@@ -1145,6 +1096,8 @@ namespace BumboSolid.Migrations
                         .HasConstraintName("FK_Shift_Week");
 
                     b.Navigation("DepartmentNavigation");
+
+                    b.Navigation("Employee");
 
                     b.Navigation("Week");
                 });
@@ -1258,6 +1211,8 @@ namespace BumboSolid.Migrations
                     b.Navigation("AvailabilityRules");
 
                     b.Navigation("FillRequests");
+
+                    b.Navigation("Shifts");
                 });
 
             modelBuilder.Entity("BumboSolid.Data.Models.Weather", b =>
