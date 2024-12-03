@@ -224,6 +224,7 @@ namespace BumboSolid.Controllers
 		}
 
 		// GET: Shifts/Delete/5
+		[HttpGet("Verwijderen/{id:int}")]
 		public async Task<IActionResult> Delete(int? id)
 		{
 			if (id == null)
@@ -244,7 +245,8 @@ namespace BumboSolid.Controllers
 		}
 
 		// POST: Shifts/Delete/5
-		[HttpPost, ActionName("Delete")]
+		[ActionName("Delete")]
+		[HttpPost("Verwijderen/{id:int}")]
 		[ValidateAntiForgeryToken]
 		public async Task<IActionResult> DeleteConfirmed(int id)
 		{
