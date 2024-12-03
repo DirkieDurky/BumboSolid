@@ -14,7 +14,7 @@ using System.Globalization;
 namespace BumboSolid.Controllers
 {
 	[Authorize(Roles = "Manager")]
-	[Route("Rooster")]
+	[Route("Shift")]
 	public class ShiftsController : Controller
 	{
 		private readonly BumboDbContext _context;
@@ -22,69 +22,6 @@ namespace BumboSolid.Controllers
 		public ShiftsController(BumboDbContext context)
 		{
 			_context = context;
-		}
-
-		// GET: Shifts
-		[HttpGet("")]
-		[HttpGet("{id:int?}")]
-		public async Task<IActionResult> Index(int? id)
-		{
-			if (id == null)
-			{
-				CultureInfo ci = new CultureInfo("nl-NL");
-				Calendar calendar = ci.Calendar;
-
-				//Add week entry for next week
-				DateTime nextWeek = DateTime.Now.AddDays(7);
-				short year = (short)nextWeek.Year;
-				byte week = (byte)calendar.GetWeekOfYear(nextWeek, ci.DateTimeFormat.CalendarWeekRule, ci.DateTimeFormat.FirstDayOfWeek);
-
-				var currentWeek = _context.Weeks.FirstOrDefault(w => w.Year == year && w.WeekNumber == week);
-				if (currentWeek == null)
-				{
-					currentWeek = new Week()
-					{
-						Year = year,
-						WeekNumber = week,
-					};
-					_context.Add(currentWeek);
-					_context.SaveChanges();
-				}
-				id = currentWeek.Id;
-			}
-
-			var viewModel = new SchedulesViewModel
-			{
-				Weeks = await _context.Weeks
-					.Include(w => w.Shifts)
-						.ThenInclude(s => s.Employee)
-					.OrderByDescending(p => p.Year)
-						.ThenByDescending(p => p.WeekNumber)
-						.ToListAsync(),
-				WeekId = (int)id,
-			};
-
-			return View(viewModel);
-		}
-
-		// GET: Shifts/Details/5
-		public async Task<IActionResult> Details(int? id)
-		{
-			if (id == null)
-			{
-				return NotFound();
-			}
-
-			var shift = await _context.Shifts
-				.Include(s => s.DepartmentNavigation)
-				.Include(s => s.Week)
-				.FirstOrDefaultAsync(m => m.Id == id);
-			if (shift == null)
-			{
-				return NotFound();
-			}
-
-			return View(shift);
 		}
 
 		// GET: Shifts/Create

@@ -1,0 +1,41 @@
+﻿@using System.Globalization
+@{
+    CultureInfo ci = new CultureInfo("nl-NL");
+    Calendar calendar = ci.Calendar;
+
+    DateTime nextWeek = DateTime.Now.AddDays(7);
+    short year = (short)nextWeek.Year;
+    byte week = (byte)calendar.GetWeekOfYear(nextWeek, ci.DateTimeFormat.CalendarWeekRule, ci.DateTimeFormat.FirstDayOfWeek);
+
+    DateTime startDate = FirstDateOfWeekISO8601(year, week);
+    DateTime endDate = startDate.AddDays(6);
+}
+
+@functions {
+    public static DateTime FirstDateOfWeekISO8601(int year, int weekOfYear)
+    {
+        DateTime jan1 = new DateTime(year, 1, 1);
+        int daysOffset = DayOfWeek.Thursday - jan1.DayOfWeek;
+
+        DateTime firstThursday = jan1.AddDays(daysOffset);
+        var cal = System.Globalization.CultureInfo.CurrentCulture.Calendar;
+        int firstWeek = cal.GetWeekOfYear(firstThursday, System.Globalization.CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Monday);
+
+        var weekNum = weekOfYear;
+        if (firstWeek == 1)
+        {
+            weekNum -= 1;
+        }
+
+        var result = firstThursday.AddDays(weekNum * 7);
+        return result.AddDays(-3);
+    }
+}
+
+<header class="d-flex flex-column align-items-center justify-content-center">
+    <h1>Rooster</h1>
+    <p>@startDate.ToString("dd/MM/yyyy") - @endDate.ToString("dd/MM/yyyy")</p>
+</header>
+<form asp-action="Create" class="w-100 d-flex justify-content-center">
+    <input type="submit" class="new-btn" value="Nieuw Rooster Aanmaken">
+</form>

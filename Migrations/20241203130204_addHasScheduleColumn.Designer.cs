@@ -4,6 +4,7 @@ using BumboSolid.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BumboSolid.Migrations
 {
     [DbContext(typeof(BumboDbContext))]
-    partial class BumboDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241203130204_addHasScheduleColumn")]
+    partial class addHasScheduleColumn
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -303,27 +306,18 @@ namespace BumboSolid.Migrations
                         new
                         {
                             Id = 1,
-                            Activity = "1 vak vullen",
+                            Activity = "Stocking",
                             AvgDailyPerformances = (byte)5,
                             Department = "Vakkenvullen",
-                            Duration = 300,
+                            Duration = 60,
                             PerVisitor = false
                         },
                         new
                         {
                             Id = 2,
-                            Activity = "Kassa",
-                            AvgDailyPerformances = (byte)1,
-                            Department = "Kassa",
-                            Duration = 120,
-                            PerVisitor = true
-                        },
-                        new
-                        {
-                            Id = 3,
-                            Activity = "Vers",
+                            Activity = "Cashier",
                             AvgDailyPerformances = (byte)8,
-                            Department = "Vers",
+                            Department = "Kassa",
                             Duration = 45,
                             PerVisitor = false
                         });
@@ -349,44 +343,14 @@ namespace BumboSolid.Migrations
                         new
                         {
                             PrognosisId = 1,
-                            Weekday = (byte)0,
-                            VisitorEstimate = 1000
-                        },
-                        new
-                        {
-                            PrognosisId = 1,
                             Weekday = (byte)1,
-                            VisitorEstimate = 1000
+                            VisitorEstimate = 0
                         },
                         new
                         {
-                            PrognosisId = 1,
+                            PrognosisId = 2,
                             Weekday = (byte)2,
-                            VisitorEstimate = 1000
-                        },
-                        new
-                        {
-                            PrognosisId = 1,
-                            Weekday = (byte)3,
-                            VisitorEstimate = 1000
-                        },
-                        new
-                        {
-                            PrognosisId = 1,
-                            Weekday = (byte)4,
-                            VisitorEstimate = 1000
-                        },
-                        new
-                        {
-                            PrognosisId = 1,
-                            Weekday = (byte)5,
-                            VisitorEstimate = 1000
-                        },
-                        new
-                        {
-                            PrognosisId = 1,
-                            Weekday = (byte)6,
-                            VisitorEstimate = 1000
+                            VisitorEstimate = 0
                         });
                 });
 
@@ -420,148 +384,15 @@ namespace BumboSolid.Migrations
                         {
                             PrognosisId = 1,
                             Department = "Kassa",
-                            Weekday = (byte)0,
-                            WorkHours = (short)4000
-                        },
-                        new
-                        {
-                            PrognosisId = 1,
-                            Department = "Vakkenvullen",
-                            Weekday = (byte)0,
-                            WorkHours = (short)4000
-                        },
-                        new
-                        {
-                            PrognosisId = 1,
-                            Department = "Vers",
-                            Weekday = (byte)0,
-                            WorkHours = (short)4000
-                        },
-                        new
-                        {
-                            PrognosisId = 1,
-                            Department = "Kassa",
                             Weekday = (byte)1,
-                            WorkHours = (short)4000
+                            WorkHours = (short)0
                         },
                         new
                         {
-                            PrognosisId = 1,
-                            Department = "Vakkenvullen",
-                            Weekday = (byte)1,
-                            WorkHours = (short)4000
-                        },
-                        new
-                        {
-                            PrognosisId = 1,
-                            Department = "Vers",
-                            Weekday = (byte)1,
-                            WorkHours = (short)4000
-                        },
-                        new
-                        {
-                            PrognosisId = 1,
-                            Department = "Kassa",
-                            Weekday = (byte)2,
-                            WorkHours = (short)4000
-                        },
-                        new
-                        {
-                            PrognosisId = 1,
+                            PrognosisId = 2,
                             Department = "Vakkenvullen",
                             Weekday = (byte)2,
-                            WorkHours = (short)4000
-                        },
-                        new
-                        {
-                            PrognosisId = 1,
-                            Department = "Vers",
-                            Weekday = (byte)2,
-                            WorkHours = (short)4000
-                        },
-                        new
-                        {
-                            PrognosisId = 1,
-                            Department = "Kassa",
-                            Weekday = (byte)3,
-                            WorkHours = (short)4000
-                        },
-                        new
-                        {
-                            PrognosisId = 1,
-                            Department = "Vakkenvullen",
-                            Weekday = (byte)3,
-                            WorkHours = (short)4000
-                        },
-                        new
-                        {
-                            PrognosisId = 1,
-                            Department = "Vers",
-                            Weekday = (byte)3,
-                            WorkHours = (short)4000
-                        },
-                        new
-                        {
-                            PrognosisId = 1,
-                            Department = "Kassa",
-                            Weekday = (byte)4,
-                            WorkHours = (short)4000
-                        },
-                        new
-                        {
-                            PrognosisId = 1,
-                            Department = "Vakkenvullen",
-                            Weekday = (byte)4,
-                            WorkHours = (short)4000
-                        },
-                        new
-                        {
-                            PrognosisId = 1,
-                            Department = "Vers",
-                            Weekday = (byte)4,
-                            WorkHours = (short)4000
-                        },
-                        new
-                        {
-                            PrognosisId = 1,
-                            Department = "Kassa",
-                            Weekday = (byte)5,
-                            WorkHours = (short)4000
-                        },
-                        new
-                        {
-                            PrognosisId = 1,
-                            Department = "Vakkenvullen",
-                            Weekday = (byte)5,
-                            WorkHours = (short)4000
-                        },
-                        new
-                        {
-                            PrognosisId = 1,
-                            Department = "Vers",
-                            Weekday = (byte)5,
-                            WorkHours = (short)4000
-                        },
-                        new
-                        {
-                            PrognosisId = 1,
-                            Department = "Kassa",
-                            Weekday = (byte)6,
-                            WorkHours = (short)4000
-                        },
-                        new
-                        {
-                            PrognosisId = 1,
-                            Department = "Vakkenvullen",
-                            Weekday = (byte)6,
-                            WorkHours = (short)4000
-                        },
-                        new
-                        {
-                            PrognosisId = 1,
-                            Department = "Vers",
-                            Weekday = (byte)6,
-                            WorkHours = (short)4000
+                            WorkHours = (short)0
                         });
                 });
 
@@ -616,6 +447,184 @@ namespace BumboSolid.Migrations
                     b.HasIndex(new[] { "WeekId" }, "IX_Shift_WeekID");
 
                     b.ToTable("Shift", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 3,
+                            Department = "Kassa",
+                            EndTime = new TimeOnly(17, 5, 0),
+                            ExternalEmployeeName = "Alice Johnson",
+                            IsBreak = (byte)0,
+                            StartTime = new TimeOnly(9, 0, 0),
+                            WeekId = 2,
+                            Weekday = (byte)2
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Department = "Vakkenvullen",
+                            EndTime = new TimeOnly(18, 5, 0),
+                            ExternalEmployeeName = "Bob Brown",
+                            IsBreak = (byte)0,
+                            StartTime = new TimeOnly(10, 55, 0),
+                            WeekId = 2,
+                            Weekday = (byte)5
+                        },
+                        new
+                        {
+                            Id = 5,
+                            Department = "Kassa",
+                            EndTime = new TimeOnly(16, 5, 0),
+                            ExternalEmployeeName = "Charlie Davis",
+                            IsBreak = (byte)0,
+                            StartTime = new TimeOnly(8, 0, 0),
+                            WeekId = 2,
+                            Weekday = (byte)1
+                        },
+                        new
+                        {
+                            Id = 6,
+                            Department = "Vakkenvullen",
+                            EndTime = new TimeOnly(19, 0, 0),
+                            ExternalEmployeeName = "Diana Evans",
+                            IsBreak = (byte)0,
+                            StartTime = new TimeOnly(11, 0, 0),
+                            WeekId = 2,
+                            Weekday = (byte)3
+                        },
+                        new
+                        {
+                            Id = 7,
+                            Department = "Kassa",
+                            EndTime = new TimeOnly(15, 0, 0),
+                            ExternalEmployeeName = "Ethan Foster",
+                            IsBreak = (byte)0,
+                            StartTime = new TimeOnly(7, 0, 0),
+                            WeekId = 2,
+                            Weekday = (byte)0
+                        },
+                        new
+                        {
+                            Id = 8,
+                            Department = "Vakkenvullen",
+                            EndTime = new TimeOnly(20, 0, 0),
+                            ExternalEmployeeName = "Fiona Green",
+                            IsBreak = (byte)0,
+                            StartTime = new TimeOnly(12, 0, 0),
+                            WeekId = 2,
+                            Weekday = (byte)4
+                        },
+                        new
+                        {
+                            Id = 9,
+                            Department = "Kassa",
+                            EndTime = new TimeOnly(21, 5, 0),
+                            ExternalEmployeeName = "George Harris",
+                            IsBreak = (byte)0,
+                            StartTime = new TimeOnly(13, 0, 0),
+                            WeekId = 2,
+                            Weekday = (byte)6
+                        },
+                        new
+                        {
+                            Id = 10,
+                            Department = "Vakkenvullen",
+                            EndTime = new TimeOnly(22, 30, 0),
+                            ExternalEmployeeName = "Hannah Lee",
+                            IsBreak = (byte)0,
+                            StartTime = new TimeOnly(14, 0, 0),
+                            WeekId = 2,
+                            Weekday = (byte)2
+                        },
+                        new
+                        {
+                            Id = 11,
+                            Department = "Kassa",
+                            EndTime = new TimeOnly(23, 0, 0),
+                            ExternalEmployeeName = "Ian Miller",
+                            IsBreak = (byte)0,
+                            StartTime = new TimeOnly(15, 0, 0),
+                            WeekId = 2,
+                            Weekday = (byte)5
+                        },
+                        new
+                        {
+                            Id = 12,
+                            Department = "Vakkenvullen",
+                            EndTime = new TimeOnly(0, 0, 0),
+                            ExternalEmployeeName = "Julia Nelson",
+                            IsBreak = (byte)0,
+                            StartTime = new TimeOnly(16, 0, 0),
+                            WeekId = 2,
+                            Weekday = (byte)1
+                        },
+                        new
+                        {
+                            Id = 13,
+                            Department = "Kassa",
+                            EndTime = new TimeOnly(1, 0, 0),
+                            ExternalEmployeeName = "Kevin Owens",
+                            IsBreak = (byte)0,
+                            StartTime = new TimeOnly(17, 0, 0),
+                            WeekId = 2,
+                            Weekday = (byte)3
+                        },
+                        new
+                        {
+                            Id = 14,
+                            Department = "Vakkenvullen",
+                            EndTime = new TimeOnly(2, 0, 0),
+                            ExternalEmployeeName = "Laura Perez",
+                            IsBreak = (byte)0,
+                            StartTime = new TimeOnly(18, 0, 0),
+                            WeekId = 2,
+                            Weekday = (byte)0
+                        },
+                        new
+                        {
+                            Id = 15,
+                            Department = "Kassa",
+                            EndTime = new TimeOnly(3, 0, 0),
+                            ExternalEmployeeName = "Michael Quinn",
+                            IsBreak = (byte)0,
+                            StartTime = new TimeOnly(10, 0, 0),
+                            WeekId = 2,
+                            Weekday = (byte)4
+                        },
+                        new
+                        {
+                            Id = 16,
+                            Department = "Kassa",
+                            EndTime = new TimeOnly(5, 30, 0),
+                            ExternalEmployeeName = "Nina Roberts",
+                            IsBreak = (byte)0,
+                            StartTime = new TimeOnly(20, 0, 0),
+                            WeekId = 2,
+                            Weekday = (byte)5
+                        },
+                        new
+                        {
+                            Id = 17,
+                            Department = "Vakkenvullen",
+                            EndTime = new TimeOnly(5, 20, 0),
+                            ExternalEmployeeName = "Oscar Scott",
+                            IsBreak = (byte)0,
+                            StartTime = new TimeOnly(20, 0, 0),
+                            WeekId = 2,
+                            Weekday = (byte)5
+                        },
+                        new
+                        {
+                            Id = 18,
+                            Department = "Vakkenvullen",
+                            EndTime = new TimeOnly(5, 10, 0),
+                            ExternalEmployeeName = "Paula Turner",
+                            IsBreak = (byte)0,
+                            StartTime = new TimeOnly(20, 0, 0),
+                            WeekId = 2,
+                            Weekday = (byte)5
+                        });
                 });
 
             modelBuilder.Entity("BumboSolid.Data.Models.User", b =>
@@ -794,7 +803,14 @@ namespace BumboSolid.Migrations
                         {
                             Id = 1,
                             HasSchedule = (byte)0,
-                            WeekNumber = (byte)50,
+                            WeekNumber = (byte)1,
+                            Year = (short)2024
+                        },
+                        new
+                        {
+                            Id = 2,
+                            HasSchedule = (byte)0,
+                            WeekNumber = (byte)2,
                             Year = (short)2024
                         });
                 });

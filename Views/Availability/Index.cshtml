@@ -1,4 +1,4 @@
-﻿@model IEnumerable<BumboSolid.Models.AvailabilityRuleViewModel>
+﻿@model IEnumerable<BumboSolid.Data.Models.AvailabilityRule>
 
 @{
     ViewData["Title"] = "Index";
@@ -31,11 +31,11 @@
         @foreach (var availabilityRule in Model)
         {
             <tr>
-                <td>@availabilityRule.Day</td>
+                <td>@availabilityRule.Date</td>
                 <td>@availabilityRule.StartTime</td>
                 <td>@availabilityRule.EndTime</td>
-                <td>@(availabilityRule.Available ? "Ja" : "Nee")</td>
-                <td>@(availabilityRule.School ? "Ja" : "Nee")</td>
+                <td>@(availabilityRule.Available == 1 ? "Ja" : "Nee")</td>
+                <td>@(availabilityRule.School == 1 ? "Ja" : "Nee")</td>
                 <td>
                     <a class="btn btn-sm" asp-area="" asp-controller="Availability" asp-action="Edit"
                        asp-route-AvailabilityId="@availabilityRule.Id" asp-route-weekNr="@ViewBag.weekNr" asp-route-year="@ViewBag.year">
