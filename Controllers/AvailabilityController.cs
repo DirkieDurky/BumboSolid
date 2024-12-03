@@ -10,7 +10,8 @@ using Microsoft.EntityFrameworkCore;
 namespace BumboSolid.Controllers
 {
     [Authorize(Roles = "Employee,Manager")]
-    public class AvailabilityController : Controller
+	[Route("Beschikbaarheid")]
+	public class AvailabilityController : Controller
 	{
 		private readonly BumboDbContext _context;
 		private readonly UserManager<User> _userManager;
@@ -23,7 +24,7 @@ namespace BumboSolid.Controllers
 		}
 
 		// GET: AvailiabilityController/Index
-		[HttpGet("Werkgelegenheden")]
+		[HttpGet("")]
 		public async Task<IActionResult> Index(int Year, int WeekNr)
 		{
 			// Getting user

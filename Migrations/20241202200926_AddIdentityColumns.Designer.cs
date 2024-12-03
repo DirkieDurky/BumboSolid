@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BumboSolid.Migrations
 {
     [DbContext(typeof(BumboDbContext))]
-    [Migration("20241202124244_ScrewDummyData")]
-    partial class ScrewDummyData
+    [Migration("20241202200926_AddIdentityColumns")]
+    partial class AddIdentityColumns
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -209,10 +209,8 @@ namespace BumboSolid.Migrations
             modelBuilder.Entity("BumboSolid.Data.Models.FillRequest", b =>
                 {
                     b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                        .HasColumnType("int")
+                        .HasColumnName("ID");
 
                     b.Property<string>("AbsentDescription")
                         .HasMaxLength(255)
@@ -779,8 +777,10 @@ namespace BumboSolid.Migrations
             modelBuilder.Entity("BumboSolid.Data.Models.Week", b =>
                 {
                     b.Property<int>("Id")
-                        .HasColumnType("int")
-                        .HasColumnName("ID");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<byte>("WeekNumber")
                         .HasColumnType("tinyint");

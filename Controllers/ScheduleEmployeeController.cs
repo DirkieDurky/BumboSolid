@@ -12,7 +12,7 @@ using System.Runtime.Intrinsics.Arm;
 
 namespace BumboSolid.Controllers
 {
-    [Authorize(Roles = "Manager")]
+    [Authorize(Roles = "Employee")]
     [Route("RoosterMedewerker")]
 	public class ScheduleEmployeeController : Controller
 	{
@@ -40,7 +40,7 @@ namespace BumboSolid.Controllers
 			var user = await _userManager.GetUserAsync(User);
 			int userId = user.Id;
 
-			var fillRequests = await _context.FillRequests.Where(s => _context.Shifts.Any(i => i.Id == s.ShiftId && i.Employee == userId)).ToListAsync();
+			var fillRequests = await _context.FillRequests.Where(s => _context.Shifts.Any(i => i.Id == s.ShiftId && i.EmployeeId == userId)).ToListAsync();
 			Console.WriteLine(fillRequests.Count());
             List<FillRequestViewModel> fillRequestViewModels = new List<FillRequestViewModel>();
 
@@ -82,7 +82,7 @@ namespace BumboSolid.Controllers
 			var user = await _userManager.GetUserAsync(User);
 			int userId = user.Id;
 
-			var fillRequests = await _context.FillRequests.Where(s => _context.Shifts.Any(i => i.Id == s.ShiftId && i.Employee != userId)).ToListAsync();
+			var fillRequests = await _context.FillRequests.Where(s => _context.Shifts.Any(i => i.Id == s.ShiftId && i.EmployeeId != userId)).ToListAsync();
 			List<FillRequestViewModel> fillRequestViewModels = new List<FillRequestViewModel>();
 
 			foreach (FillRequest fillRequest in fillRequests)
@@ -98,7 +98,7 @@ namespace BumboSolid.Controllers
 				string[] days = ["Monday", "Tuesdday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
 
 				// Checking if this FillRequest does not overlap with an already existing shift
-				var shifts = _context.Shifts.Where(s => s.Employee == userId && s.WeekId == week.Id && s.Weekday == shift.Weekday).ToList();
+				var shifts = _context.Shifts.Where(s => s.EmployeeId == userId && s.WeekId == week.Id && s.Weekday == shift.Weekday).ToList();
 				var validShift = true;
 				foreach (Shift yourShift in shifts)
 				{
@@ -118,7 +118,7 @@ namespace BumboSolid.Controllers
 					if ((shift.EndTime - shift.StartTime).TotalMinutes > CLA.MaxShiftDuration) validShift = false;
 
 					// Average works hours over a span of 4 weeks
-					var lastFourWeeksShifts = _context.Shifts.Where(s => s.Employee == userId && shift.Week.WeekNumber - s.Week.WeekNumber < 3 && s.Week.Year == shift.Week.Year).ToList();
+					var lastFourWeeksShifts = _context.Shifts.Where(s => s.EmployeeId == userId && shift.Week.WeekNumber - s.Week.WeekNumber < 3 && s.Week.Year == shift.Week.Year).ToList();
 					var lastFourWeeksTotalMinutes = (shift.EndTime - shift.StartTime).Minutes;
 					foreach(Shift pastShift in lastFourWeeksShifts) lastFourWeeksTotalMinutes = lastFourWeeksTotalMinutes + (pastShift.EndTime - pastShift.StartTime).Minutes;
 					if (lastFourWeeksTotalMinutes > CLA.MaxAvgWeeklyWorkDurationOverFourWeeks) validShift = false;
@@ -130,7 +130,7 @@ namespace BumboSolid.Controllers
 					if (shift.StartTime < CLA.EarliestWorkTime) validShift = false;
 
 					// Max work duration per week
-					var thisWeekShifts = _context.Shifts.Where(s => s.Employee == userId && shift.Week.WeekNumber == s.Week.WeekNumber && s.Week.Year == shift.Week.Year).ToList();
+					var thisWeekShifts = _context.Shifts.Where(s => s.EmployeeId == userId && shift.Week.WeekNumber == s.Week.WeekNumber && s.Week.Year == shift.Week.Year).ToList();
 					var thisWeekTotalMinutes = (shift.EndTime - shift.StartTime).Minutes;
 					foreach (Shift pastShift in thisWeekShifts) thisWeekTotalMinutes = thisWeekTotalMinutes + (pastShift.EndTime - pastShift.StartTime).Minutes;
 					if (thisWeekTotalMinutes > CLA.MaxWorkDurationPerWeek) validShift = false;
@@ -142,7 +142,7 @@ namespace BumboSolid.Controllers
 					if (workDays.Count >= CLA.MaxWorkDaysPerWeek) validShift = false;
 
 					// Max work duration per day
-					var todayShifts = _context.Shifts.Where(s => s.Employee == userId && shift.Weekday == s.Weekday && shift.Week.WeekNumber == s.Week.WeekNumber && s.Week.Year == shift.Week.Year).ToList();
+					var todayShifts = _context.Shifts.Where(s => s.EmployeeId == userId && shift.Weekday == s.Weekday && shift.Week.WeekNumber == s.Week.WeekNumber && s.Week.Year == shift.Week.Year).ToList();
 					var todayTotalMinutes = (shift.EndTime - shift.StartTime).Minutes;
 					foreach (Shift pastShift in todayShifts) todayTotalMinutes = todayTotalMinutes + (pastShift.EndTime - pastShift.StartTime).Minutes;
 					if (todayTotalMinutes > CLA.MaxWorkDurationPerDay) validShift = false;

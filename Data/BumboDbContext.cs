@@ -128,26 +128,27 @@ public partial class BumboDbContext : IdentityDbContext<User, IdentityRole<int>,
 				.HasMaxLength(45)
 				.IsUnicode(false);
 
-            entity.HasMany(d => d.Departments).WithMany(p => p.Employees)
-                .UsingEntity<Dictionary<string, object>>(
-                    "Capability",
-                    r => r.HasOne<Department>().WithMany()
-                        .HasForeignKey("Department")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .HasConstraintName("FK_Capability_Department"),
-                    l => l.HasOne<User>().WithMany()
-                        .HasForeignKey("Employee")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .HasConstraintName("FK_Capability_Employee"),
-                    j =>
-                    {
-                        j.HasKey("Employee", "Department");
-                        j.ToTable("Capability");
-                        j.IndexerProperty<string>("Department")
-                            .HasMaxLength(25)
-                            .IsUnicode(false);
-                    });
-        });
+			entity.HasMany(d => d.Departments).WithMany(p => p.Employees)
+				.UsingEntity<Dictionary<string, object>>(
+					"Capability",
+					r => r.HasOne<Department>().WithMany()
+						.HasForeignKey("Department")
+						.OnDelete(DeleteBehavior.Cascade)
+						.HasConstraintName("FK_Capability_Department"),
+					l => l.HasOne<User>().WithMany()
+						.HasForeignKey("Employee")
+						.OnDelete(DeleteBehavior.Cascade)
+						.HasConstraintName("FK_Capability_Employee"),
+					j =>
+					{
+						j.HasKey("Employee", "Department");
+						j.ToTable("Capability");
+						j.IndexerProperty<string>("Department")
+							.HasMaxLength(25)
+							.IsUnicode(false);
+					});
+		});
+
 
 		modelBuilder.Entity<Factor>(entity =>
 		{
@@ -202,8 +203,9 @@ public partial class BumboDbContext : IdentityDbContext<User, IdentityRole<int>,
 
 			entity.HasIndex(e => e.SubstituteEmployeeId, "IX_FillRequest_SubstituteEmployeeID");
 
-			entity.Property(e => e.Id);
-
+			entity.Property(e => e.Id)
+				.ValueGeneratedNever()
+				.HasColumnName("ID");
 			entity.Property(e => e.AbsentDescription)
 				.HasMaxLength(255)
 				.IsUnicode(false)
@@ -319,8 +321,7 @@ public partial class BumboDbContext : IdentityDbContext<User, IdentityRole<int>,
 
 			entity.HasIndex(e => e.WeekId, "IX_Shift_WeekID");
 
-			entity.Property(e => e.Id);
-				
+			entity.Property(e => e.EmployeeId).HasColumnName("Employee");
 			entity.Property(e => e.Weekday).HasColumnName("Weekday");
 			entity.Property(e => e.StartTime).HasColumnName("StartTime");
 			entity.Property(e => e.EndTime).HasColumnName("EndTime");
@@ -341,6 +342,12 @@ public partial class BumboDbContext : IdentityDbContext<User, IdentityRole<int>,
 				.HasForeignKey(d => d.WeekId)
 				.OnDelete(DeleteBehavior.ClientSetNull)
 				.HasConstraintName("FK_Shift_Week");
+
+			entity.HasOne(d => d.Employee).WithMany(p => p.Shifts)
+				.HasForeignKey(d => d.EmployeeId)
+				.OnDelete(DeleteBehavior.Cascade)
+				.HasConstraintName("FK_Shift_Employee");
+
 		});
 
 		modelBuilder.Entity<Weather>(entity =>
@@ -353,10 +360,6 @@ public partial class BumboDbContext : IdentityDbContext<User, IdentityRole<int>,
 		modelBuilder.Entity<Week>(entity =>
 		{
 			entity.ToTable("Week");
-
-			entity.Property(e => e.Id)
-				.ValueGeneratedNever()
-				.HasColumnName("ID");
 		});
 
 		modelBuilder.Entity<Weather>().HasData(

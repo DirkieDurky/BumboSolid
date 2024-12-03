@@ -467,6 +467,10 @@ th, td {
 	padding: 0.5rem 0.5rem;
 	border: 1px solid black;
 	border-radius: calc(2rem + 2px);
+	display: inline-block;
+	min-width: 5rem;
+	text-align: center;
+	background-color: white;
 }
 
 	.new-btn:hover, .new-btn:focus {
