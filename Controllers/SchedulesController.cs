@@ -137,6 +137,7 @@ namespace BumboSolid.Controllers
 									EmployeeId = rule.Employee,
 									IsBreak = 0,
 								});
+								remainingWorkHours -= (rule.EndTime - rule.StartTime).Hours;
 							}
 						}
 					}
