@@ -144,7 +144,7 @@ namespace BumboSolid.Migrations
 
             modelBuilder.Entity("BumboSolid.Data.Models.Factor", b =>
                 {
-                    b.Property<int>("PrognosisId")
+                    b.Property<int?>("PrognosisId")
                         .HasColumnType("int")
                         .HasColumnName("PrognosisID");
 
@@ -322,7 +322,7 @@ namespace BumboSolid.Migrations
 
             modelBuilder.Entity("BumboSolid.Data.Models.PrognosisDay", b =>
                 {
-                    b.Property<int>("PrognosisId")
+                    b.Property<int?>("PrognosisId")
                         .HasColumnType("int")
                         .HasColumnName("PrognosisID");
 
