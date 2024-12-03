@@ -34,10 +34,6 @@ h6 {
     min-height: 5.5vh;
 }
 
-hr {
-    min-height: 0.3vh;
-}
-
 p {
     text-align: center;
 }
@@ -572,7 +568,6 @@ th, td {
 
 .slim-btn {
     width: revert;
-
 }
 
 .general-error-center ul{
