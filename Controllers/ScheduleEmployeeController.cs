@@ -9,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.VisualBasic;
 using Microsoft.AspNetCore.Identity;
 using System.Runtime.Intrinsics.Arm;
+using System.Linq;
 
 namespace BumboSolid.Controllers
 {
@@ -27,9 +28,46 @@ namespace BumboSolid.Controllers
 
         // GET: ScheduleEmployeeController
         [HttpGet("")]
-		public ActionResult Schedule()
+		public async Task<IActionResult> Schedule(int weekFromNow)
 		{
-            return View();
+            // Getting user id
+            var user = await _userManager.GetUserAsync(User);
+            int userId = user.Id;
+
+			// Getting correct date
+			int year = DateTime.Now.Year;
+			int weekNr = new CultureInfo("en-US").Calendar.GetWeekOfYear(DateTime.Now, CalendarWeekRule.FirstDay, DayOfWeek.Monday) + weekFromNow;
+			DateOnly startDate = FirstDateOfWeek(year, weekNr);
+
+			// Getting shifts
+			List<ShiftViewModel> shifts = new List<ShiftViewModel>();
+			foreach (var shift in await _context.Shifts.Where(s => s.Employee == user && s.Week.Year == year && s.Week.WeekNumber == weekNr).ToListAsync())
+			{
+				shifts.Add(new ShiftViewModel()
+				{
+					Id = shift.Id,
+
+                    Weekday = Weekday(year, weekNr, shift.Weekday),
+					StartTime = shift.StartTime,
+					EndTime = shift.EndTime,
+
+					Department = shift.Department
+				});
+			}
+
+			EmployeeScheduleViewModel employeeScheduleViewModel = new EmployeeScheduleViewModel()
+			{
+				FirstName = user.FirstName,
+				LastName = user.LastName,
+
+				StartDate = startDate,
+				EndDate = startDate.AddDays(6),
+                WeekFromNoW = weekFromNow,
+
+                Shifts = shifts
+            };
+
+            return View(employeeScheduleViewModel);
 		}
 
         // GET: ScheduleEmployeeController/OutgoingFillRequests
@@ -41,7 +79,6 @@ namespace BumboSolid.Controllers
 			int userId = user.Id;
 
 			var fillRequests = await _context.FillRequests.Where(s => _context.Shifts.Any(i => i.Id == s.ShiftId && i.EmployeeId == userId)).ToListAsync();
-			Console.WriteLine(fillRequests.Count());
             List<FillRequestViewModel> fillRequestViewModels = new List<FillRequestViewModel>();
 
 			foreach (FillRequest fillRequest in fillRequests)
@@ -176,9 +213,6 @@ namespace BumboSolid.Controllers
 		[HttpGet("Invalsverzoek versturen")]
 		public ActionResult FillRequest(int id)
 		{
-			// This id is since there is not yet a schedule for shifts
-			id = 3;
-
 			var shift = _context.Shifts.FirstOrDefault(s => s.Id == id);
 			if (shift == null) return NotFound();
 
@@ -206,12 +240,33 @@ namespace BumboSolid.Controllers
 			if (ModelState.IsValid)
 			{
 				_context.FillRequests.Add(fillRequest);
-				shift.FillRequests.Add(fillRequest);
 				_context.SaveChanges();
 				return RedirectToAction(nameof(Schedule));
 			}
 
 			return RedirectToAction(nameof(Schedule));
 		}
-	}
+
+        // Get the date of the first day of the week
+        DateOnly FirstDateOfWeek(int year, int week)
+        {
+            var jan1 = new DateOnly(year, 1, 1);
+            var firstDayOfWeek = jan1.AddDays((week - 1) * 7 - (int)jan1.DayOfWeek + (int)DayOfWeek.Monday);
+
+            if (firstDayOfWeek.Year < year) firstDayOfWeek = firstDayOfWeek.AddDays(7);
+
+            return firstDayOfWeek;
+        }
+
+        // Get the weekday of the given year, week and day
+        String Weekday(int year, int week, int day)
+        {
+            var jan1 = new DateOnly(year, 1, 1);
+            var firstDayOfWeek = jan1.AddDays((week - 1) * 7 - (int)jan1.DayOfWeek + (int)DayOfWeek.Monday);
+
+            if (firstDayOfWeek.Year < year) firstDayOfWeek = firstDayOfWeek.AddDays(7);
+
+            return firstDayOfWeek.AddDays(day).DayOfWeek.ToString();
+        }
+    }
 }

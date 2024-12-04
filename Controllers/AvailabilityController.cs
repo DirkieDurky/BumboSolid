@@ -25,20 +25,13 @@ namespace BumboSolid.Controllers
 
 		// GET: AvailiabilityController/Index
 		[HttpGet("")]
-		public async Task<IActionResult> Index(int Year, int WeekNr)
+		public async Task<IActionResult> Index(DateOnly weekStart)
 		{
 			// Getting user
 			var user = await _userManager.GetUserAsync(User);
 			int userId = user.Id;
 
-			// This is to be deleted when the agenda has been inplemented
-			Year = 2024;
-			WeekNr = 47;
-
-			DateOnly startDate = FirstDateOfWeek(Year, WeekNr);
-
-			ViewBag.year = Year;
-			ViewBag.weekNr = WeekNr;
+			DateOnly startDate = weekStart;
 
 			return View(_context.AvailabilityRules);
         }
@@ -128,6 +121,7 @@ namespace BumboSolid.Controllers
 			ViewBag.year = Year;
 			ViewBag.weekNr = WeekNr;
 			ViewBag.availability = Availability;
+
             if (availabilityRule == null) return NotFound();
 
 			// Making sure that EndTime is not before StartTime

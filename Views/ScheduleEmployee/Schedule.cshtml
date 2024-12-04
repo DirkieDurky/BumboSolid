@@ -1,9 +1,57 @@
-﻿
+﻿@model BumboSolid.Models.EmployeeScheduleViewModel
+
 @{
-    ViewData["Title"] = "Schedule";
+	ViewData["Title"] = "Rooster Medewerker";
 }
 
 <!--Thses are temporary buttons to help test while there is no schedule-->
 <a asp-controller="ScheduleEmployee" asp-action="OutgoingFillRequests" asp-route-id="@ViewBag.FillRequestId" class="btn btn-primary">Uitgaande invalsverzoeken</a>
 <a asp-controller="ScheduleEmployee" asp-action="IncomingFillRequests" asp-route-id="@ViewBag.FillRequestId" class="btn btn-primary">Inkomende invalsverzoeken</a>
-<a asp-controller="ScheduleEmployee" asp-action="FillRequest" class="btn btn-primary">Stuur invalsverzoek</a>
+
+<header class="d-flex align-items-center gap-3 justify-content-center gap-3">
+	<div class="w-100 text-align text-end">
+		<a class="new-btn" asp-controller="Availability" asp-action="Index" asp-route-weekStart="@(Model.StartDate)">Beschikbaarheid</a>
+	</div>
+	<div class="w-100">
+		<a class="new-btn" asp-controller="ScheduleEmployee" asp-route-weekFromNow="@(Model.WeekFromNoW-1)">Vorige Week</a>
+	</div>
+	<div class="mx-3 text-center text-nowrap">
+		<h1>Rooster</h1>
+		<p>@Model.FirstName @Model.LastName</p>
+		<p>@Model.StartDate - @Model.EndDate</p>
+	</div>
+	<div class="w-100 text-align text-end">
+		<a class="new-btn" asp-controller="ScheduleEmployee" asp-route-weekFromNow="@(Model.WeekFromNoW+1)">Volgende Week</a>
+	</div>
+	<div class="w-100">
+		<a class="new-btn" asp-controller="ScheduleEmployee">Huidige Week</a>
+	</div>
+</header>
+
+<div class="row schedule min-height-0 fw-bold-parent">
+	<div class="col mb-1">Dag</div>
+	<div class="col mb-1">Afdeling</div>
+	<div class="col mb-1">Starttijd</div>
+	<div class="col mb-1">Eindtijd</div>
+	<div class="col mb-1"></div>
+	<div class="col mb-1"></div>
+</div>
+
+<hr/>
+
+@foreach(var shift in Model.Shifts) 
+{
+	<div class="row schedule min-height-0 fw-bold-parent">
+		<div class="col mb-1">@shift.Weekday</div>
+		<div class="col mb-1">@shift.Department</div>
+		<div class="col mb-1">@shift.StartTime</div>
+		<div class="col mb-1">@shift.EndTime</div>
+		<div class="col mb-1">
+			<a class="new-btn" asp-controller="ScheduleEmployee" asp-action="FillRequest" asp-route-id="@shift.Id">Ruilen</a>
+		</div>
+		<div class="col mb-1">
+			<a class="new-btn">Afmelden</a>
+		</div>
+	</div>
+
+}
