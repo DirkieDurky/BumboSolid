@@ -25,16 +25,13 @@ namespace BumboSolid.Controllers
 
 		// GET: AvailiabilityController/Index
 		[HttpGet("")]
-		public async Task<IActionResult> Index(int Year, int WeekNr)
+		public async Task<IActionResult> Index(DateOnly weekStart)
 		{
 			// Getting user
 			var user = await _userManager.GetUserAsync(User);
 			int userId = user.Id;
 
-			DateOnly startDate = FirstDateOfWeek(Year, WeekNr);
-
-			ViewBag.year = Year;
-			ViewBag.weekNr = WeekNr;
+			DateOnly startDate = weekStart;
 
 			return View(_context.AvailabilityRules);
         }
@@ -125,9 +122,6 @@ namespace BumboSolid.Controllers
 			ViewBag.weekNr = WeekNr;
 			ViewBag.availability = Availability;
 
-			if (availabilityRuleViewModel.Id == null) return NotFound();
-
-            var availabilityRule = await _context.AvailabilityRules.FindAsync(availabilityRuleViewModel.Id);
             if (availabilityRule == null) return NotFound();
 
 			// Making sure that EndTime is not before StartTime
