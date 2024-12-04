@@ -5,7 +5,7 @@ namespace BumboSolid.Models
 {
 	public class HolidayManageViewModel
 	{
-		public Holiday Holiday { get; set; }
+		public required Holiday Holiday { get; set; }
 
         [DataType(DataType.Date)]
         public DateOnly FirstDay { get; set; }

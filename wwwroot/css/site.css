@@ -1,26 +1,30 @@
 html {
-    font-size: 14px;
-    position: relative;
-    min-height: 100%;
+	font-size: 14px;
+	position: relative;
+	min-height: 100%;
 }
 
 @media (min-width: 768px) {
-    html {
-        font-size: 12px;
-    }
+	html {
+		font-size: 16px;
+	}
 }
 
 .btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
-    box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+	box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+}
+
+body {
+	margin-bottom: 60px;
 }
 
 table {
-    border-collapse: separate;
-    border-spacing: 5px;
+	border-collapse: separate;
+	border-spacing: 5px;
 }
 
 .table-gray {
-    --bs-table-bg: darkgray;
+	--bs-table-bg: darkgray;
 }
 
 h6 {
@@ -30,67 +34,56 @@ h6 {
     min-height: 5.5vh;
 }
 
-hr {
-    min-height: 0.3vh;
-}
-
-li {
-    list-style-type: none;
-    margin: 14px;
-    text-align: right;
-    font-weight: bold;
-}
-
 p {
     text-align: center;
 }
 
 .fa-chart-simple {
-    width: 2vw;
-    height: 2vw;
+	width: 2vw;
+	height: 2vw;
 }
 
 #modal-holiday-manage-custom {
-    max-width: 70vw;
-    width: 70vw;
+	max-width: 70vw;
+	width: 70vw;
 }
 
 #holiday-chart {
-    max-width: 63vw;
-    max-height: 55vh;
-    margin: 2vh 2vh;
+	max-width: 63vw;
+	max-height: 55vh;
+	margin: 2vh 2vh;
 }
 
 .modal-dialog {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin: auto;
-    height: 100%;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	margin: auto;
+	height: 100%;
 }
 
 .square {
-    height: 2vw;
-    width: 2vw;
-    padding-bottom: 20%
+	height: 2vw;
+	width: 2vw;
+	padding-bottom: 20%
 }
 
 .background-dark {
-    background-color: darkgray;
-    border-radius: 10px;
-    border: none;
+	background-color: darkgray;
+	border-radius: 10px;
+	border: none;
 }
 
 .background-light {
-    background-color: lightgray;
-    border-radius: 10px;
-    border: none;
+	background-color: lightgray;
+	border-radius: 10px;
+	border: none;
 }
 
 .background-white {
-    background-color: white;
-    border-radius: 10px;
-    border: none;
+	background-color: white;
+	border-radius: 10px;
+	border: none;
 }
 
 .prognosis-table {
@@ -99,49 +92,51 @@ p {
     margin-bottom: 20px;
 }
 
-    .prognosis-table.main th:not(th:nth-child(1)) {
-        border-bottom: 1px solid rgba(0, 0, 0, 0.5);
-        border-radius: 10px 10px 0 0;
-    }
-    .prognosis-table > table th {
-        padding: 5px;
-        border-radius: 10px 10px 0px 0px;
-    }
+.prognosis-table.main th:not(th:nth-child(1)) {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.5);
+    border-radius: 10px 10px 0 0;
+}
 
-    .prognosis-table.side th {
-        border-bottom: 1px solid rgba(0, 0, 0, 0.5);
-        border-radius: 10px 10px 0 0;
-    }
-    .prognosis-table > table td {
-        padding: 5px 20px;
-    }
+.prognosis-table > table th {
+    padding: 5px;
+    border-radius: 10px 10px 0px 0px;
+}
+
+.prognosis-table.side th {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.5);
+    border-radius: 10px 10px 0 0;
+}
+
+.prognosis-table > table td {
+    padding: 5px 20px;
+}
 
 .prognosis-table-color {
-    background-color: #f2f2f2;
+	background-color: #f2f2f2;
 }
 
 .prognosis-table tbody tr:last-child td {
-    border-radius: 0 0 10px 10px;
+	border-radius: 0 0 10px 10px;
 }
 
 .prognosis-table .box {
-    border-radius: 5px;
-    padding: 0.5rem 2rem;
+	border-radius: 5px;
+	padding: 0.5rem 2rem;
 }
 
 .workHours {
-    background-color: #d1d1d1;
+	background-color: #d1d1d1;
 }
 
 .staff {
-    background-color: #b6b6b6;
+	background-color: #b6b6b6;
 }
 
 .highlight {
-    background-color: #d6d6d6;
+	background-color: #d6d6d6;
 }
 
-.btn {
+.early-btn {
     border-radius: 10px;
     width: 20vw;
     height: 5vh;
@@ -156,308 +151,460 @@ p {
 }
 
 ::-webkit-scrollbar {
-    background-color: transparent;
-    width: 10px;
+	background-color: transparent;
+	width: 10px;
 }
 
 ::-webkit-scrollbar-thumb {
-    background-color: gray;
-    border-radius: 10px;
-    width: 1px;
+	background-color: gray;
+	border-radius: 10px;
+	width: 1px;
 }
 
 .factor-buttons {
-    display: flex;
-    flex-direction: column;
-    gap: 7px;
+	display: flex;
+	flex-direction: column;
+	gap: 7px;
 }
 
-    .factor-buttons button {
-        width: 100%;
-        padding: 5px;
-        border: none;
-        border-radius: 10px;
-        font-size: 1vw;
-        background-color: lightgray;
-        color: black;
-        cursor: pointer;
-    }
+	.factor-buttons button {
+		width: 100%;
+		padding: 5px;
+		border: none;
+		border-radius: 10px;
+		font-size: 1vw;
+		background-color: lightgray;
+		color: black;
+		cursor: pointer;
+	}
 
 .impact-changeable {
-    color: black;
+	color: black;
 }
 
 .impact-unchangeable {
-    color: white;
+	color: white;
 }
 
 .impact-unchangeable-dark {
-    color: grey;
+	color: grey;
 }
 
 .modal-lg-custom {
-    max-width: 60%;
-    width: 60%;
+	max-width: 60%;
+	width: 60%;
 }
 
 .modal-dialog {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin: auto;
-    height: 100%;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	margin: auto;
+	height: 100%;
 }
 
 .holiday-name {
-    height: 50px;
-    width: 150px;
-    margin: 0.5vw;
+	height: 50px;
+	width: 150px;
+	margin: 0.5vw;
 }
 
 .holiday-date {
-    height: 50px;
-    width: 75px;
-    margin: 0.5vw;
-    text-align: center;
+	height: 50px;
+	width: 75px;
+	margin: 0.5vw;
+	text-align: center;
 }
 
 .holiday-impact {
-    height: 50px;
-    width: 75px;
-    margin: 0.5vw;
-    text-align: center;
+	height: 50px;
+	width: 75px;
+	margin: 0.5vw;
+	text-align: center;
 }
 
 .holiday-create {
-    height: 50px;
-    width: 150px;
-    margin: 0.5vw;
-    text-align: center;
+	height: 50px;
+	width: 150px;
+	margin: 0.5vw;
+	text-align: center;
 }
 
 .remove-text-decoration {
-    text-decoration: none;
-    color: black;
+	text-decoration: none;
+	color: black;
 }
 
-    .remove-text-decoration:hover {
-        text-decoration: none;
-        color: black;
-    }
+	.remove-text-decoration:hover {
+		text-decoration: none;
+		color: black;
+	}
 
 .fa-solid {
-    vertical-align: middle;
+	vertical-align: middle;
 }
 
 .holiday-impact:hover {
-    color: black;
+	color: black;
 }
 
 .holiday-title {
-    height: 50px;
-    width: 160px;
-    margin: 0.5vh 0.5vw 0vh 0.5vw;
+	height: 50px;
+	width: 160px;
+	margin: 0.5vh 0.5vw 0vh 0.5vw;
 }
 
 #holiday-impact-title {
-    height: 50px;
-    margin: 0.5vh 0.5vw 0vh 0.5vw;
+	height: 50px;
+	margin: 0.5vh 0.5vw 0vh 0.5vw;
 }
 
 .auto-margin {
-    margin: auto;
+	margin: auto;
 }
 
 #prognosis-scrollbar {
-    width: 20vw;
-    height: 55vh;
-    margin-bottom: 2vh;
-    overflow-y: auto;
-    overflow-x: hidden;
+	width: 20vw;
+	height: 55vh;
+	margin-bottom: 2vh;
+	overflow-y: auto;
+	overflow-x: hidden;
 }
 
 #holidays-scrollbar {
-    width: 100vw;
-    height: 45vh;
-    line-height: 3em;
-    overflow: auto;
-    margin-bottom: 5vh;
+	width: 100vw;
+	height: 45vh;
+	line-height: 3em;
+	overflow: auto;
+	margin-bottom: 5vh;
 }
 
 #norms-scrollbar {
-    width: 100%;
-    height: 45vh;
-    line-height: 3em;
-    overflow-y: auto;
+	width: 100%;
+	height: 45vh;
+	line-height: 3em;
+	overflow-y: auto;
 }
 
 #prognosis-tables-spacing {
-    margin-left: 5%;
+	margin-left: 5%;
 }
 
 #selected-prognosis-background {
-    width: 100%;
+	width: 100%;
 }
 
 #add-holiday-button {
-    text-align: center;
-    font-weight: bold;
-    font-style: italic;
-    font-size: 1vw;
-    color: white;
-    line-height: 1vw;
+	text-align: center;
+	font-weight: bold;
+	font-style: italic;
+	font-size: 1vw;
+	color: white;
+	line-height: 1vw;
 }
 
 #add-norm-button {
-    text-align: center;
-    font-weight: bold;
-    font-style: italic;
-    font-size: 1vw;
-    color: white;
-    line-height: 1vw;
-    height: 35px;
-    width: 180px;
+	text-align: center;
+	font-weight: bold;
+	font-style: italic;
+	font-size: 1vw;
+	color: white;
+	line-height: 1vw;
+	height: 35px;
+	width: 180px;
 }
 
 .Prognosis-Right > div {
-    justify-content: space-between;
+	justify-content: space-between;
 }
 
 #prognosis-date-box {
-    color: white;
-    border-radius: 10px;
-    height: 5vh;
-    font-weight: bold;
-    font-style: italic;
-    border: none;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
+	color: white;
+	border-radius: 10px;
+	height: 5vh;
+	font-weight: bold;
+	font-style: italic;
+	border: none;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	text-align: center;
 }
 
 #prognosis-date {
-    text-align: center;
-    line-height: 7vh;
+	text-align: center;
+	line-height: 7vh;
 }
 
 #norm-view {
-    position: absolute;
-    min-width: 170%;
+	position: absolute;
+	min-width: 170%;
 }
 
 .norm-row {
-    max-width: 100%;
+	max-width: 100%;
 }
 
 .dropdown-better {
-    width: min-content;
+	width: min-content;
 }
 
 .grouped-padding {
-    padding-left: 5px;
-    padding-right: 5px;
+	padding-left: 5px;
+	padding-right: 5px;
 }
 
 .btn-delete {
-    width: min-content;
-    height: min-content;
+	width: min-content;
+	height: min-content;
 }
 
 .btn-norm {
-    width: 91%;
-    margin-left: -0.05vw;
+	width: 91%;
+	margin-left: -0.05vw;
 }
 
 .small-input {
-    min-width: 5rem;
-    height: 2.5rem;
+	min-width: 5rem;
+	height: 2.5rem;
 }
 
 #graph-impact-title {
-    transform-origin: 0 0;
-    transform: rotate(90deg);
-    margin: auto 0 auto 0;
-    text-align: center;
-    padding: 0;
-    position: relative;
-    left: 2.5vw;
+	transform-origin: 0 0;
+	transform: rotate(90deg);
+	margin: auto 0 auto 0;
+	text-align: center;
+	padding: 0;
+	position: relative;
+	left: 2.5vw;
 }
 
 #graph-days-title {
-    margin: auto 0 auto 0;
-    text-align: center;
-    padding: 0;
+	margin: auto 0 auto 0;
+	text-align: center;
+	padding: 0;
 }
 
 .table {
-    border-spacing: 1rem 0;
-    display: block;
+	border-spacing: 1rem 0;
+	display: block;
 }
 
-    .table > tbody {
-        vertical-align: middle;
-    }
+	.table > tbody {
+		vertical-align: middle;
+	}
 
-    .table > :not(caption) > * > * {
-        padding: 0.5rem 1rem;
-    }
+	.table > :not(caption) > * > * {
+		padding: 0.5rem 1rem;
+	}
 
 th, td {
-    padding: 5px;
-    text-align: center;
+	padding: 5px;
+	text-align: center;
 }
 
 .factor-description {
-    resize: none;
+	resize: none;
 }
 
 .table-button {
-    border-radius: 10px;
-    min-width: 3vw;
+	border-radius: 10px;
+	min-width: 3vw;
 }
 
 .legend-item {
-    display: flex;
-    align-items: center;
-    gap: 10px;
+	display: flex;
+	align-items: center;
+	gap: 10px;
 }
 
 .color-block {
-    width: 20px;
-    height: 20px;
+	width: 20px;
+	height: 20px;
 }
 
 .prognosis-index {
-    border-radius: 10px;
-    background-color: #f2f2f2;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    width: 200px;
-    height: 5vh;
-    margin-bottom: 2vh;
+	border-radius: 10px;
+	background-color: #f2f2f2;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	text-align: center;
+	width: 200px;
+	height: 5vh;
+	margin-bottom: 2vh;
 }
 
 .weather-image {
-    width: 5rem;
-    height: 5rem;
+	width: 5rem;
+	height: 5rem;
 }
 
 .prognosis-norm-table-container {
-    overflow-y: scroll;
-    max-height: 40rem;
-    min-width: fit-content;
+	overflow-y: scroll;
+	max-height: 40rem;
+	min-width: fit-content;
 }
 
 .prognosis-create-top-item {
-    padding: 1rem;
-    width: fit-content;
-    margin: auto;
-    margin-bottom: 3rem;
+	padding: 1rem;
+	width: fit-content;
+	margin: auto;
+	margin-bottom: 3rem;
 }
 
 .prognosis-top-item {
-    width: 20rem;
+	width: 20rem;
 }
+
+.new-btn {
+	color: inherit;
+	text-decoration: inherit;
+	padding: 0.5rem 0.5rem;
+	border: 1px solid black;
+	border-radius: calc(2rem + 2px);
+	display: inline-block;
+	min-width: 5rem;
+	text-align: center;
+	background-color: white;
+}
+
+	.new-btn:hover, .new-btn:focus {
+		background-color: black;
+		color: white;
+	}
+
+/* Schedule View Manager START */
+.hour-minute-column {
+	width: 3rem;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.border-solid-black {
+	border: 1px solid black !important;
+}
+
+.border-radius-5 {
+	border-radius: 5px !important;
+}
+
+.schedule-hr {
+	margin: 0 -0.25rem;
+}
+
+.schedule > .col {
+	margin-left: 0.25rem;
+}
+
+.schedule > * {
+	min-height: 3rem;
+	text-align: center;
+}
+
+.schedule-row-width-fix > .row {
+	--bs-gutter-x: 0;
+}
+
+.min-height-0 {
+	min-height: 0 !important;
+}
+
+.schedule-item {
+	border: 1px solid black;
+	border-radius: 0.25rem;
+}
+
+.schedule-item-center {
+	border-right: 1px solid black;
+	border-left: 1px solid black;
+}
+
+.schedule-item-top {
+	border-top: 1px solid black;
+	border-right: 1px solid black;
+	border-left: 1px solid black;
+	border-radius: 0.25rem 0.25rem 0 0
+}
+
+.schedule-item-bottom {
+	border-right: 1px solid black;
+	border-bottom: 1px solid black;
+	border-left: 1px solid black;
+	border-radius: 0 0 0.25rem 0.25rem
+}
+
+.min-height-0 > * {
+	min-height: 0 !important;
+}
+
+.schedule-item-container > a {
+	display: flex;
+	width: 100%;
+	height: 100%;
+	align-items: center;
+	justify-content: center;
+	color: inherit;
+	text-decoration: inherit;
+	padding: 0.25rem 0.25rem;
+}
+
+.schedule-item-container > a:hover, .schedule-item-container > a:focus {
+	border-width: 2px;
+}
+
+.fw-bold-parent > * {
+	font-weight: 700 !important;
+}
+/* Schedule View Manager END */
+
+.rules-list {
+    text-align: left;
+    padding-left: 1vw;
+    list-style: none;
+    font-weight: bold;
+}
+
+.slim-btn {
+    width: revert;
+}
+
+.general-error-center ul{
+    text-align: center;
+    background-color: darkred;
+}
+.password-input-container {
+    position: relative;
+}
+
+.eye-btn {
+    position: absolute;
+    top: 50%;
+    right: 10px;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    cursor: pointer;
+}
+
+    .eye-btn i {
+        font-size: 1.2em;
+    }
+
+/* Schedule View Details Manager START */
+
+.icon-4 {
+	width: 1.5rem;
+	height: 1.5rem;
+}
+
+.no-a {
+	text-decoration: inherit;
+}
+
+.no-a:hover, .no-a:focus {
+	color: inherit;
+}
+
+/* Schedule View Details Manager END */

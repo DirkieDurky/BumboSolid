@@ -1,0 +1,16 @@
+﻿@model BumboSolid.Data.Models.Holiday
+
+<div class="card-body">
+	<p class="lead">Weet u zeker dat u dit feest wilt verwijderen?</p>
+
+	<div class="alert alert-warning" role="alert">
+		<p><strong>Feest:</strong> @Model.Name</p>
+	</div>
+
+	<form asp-controller="Feestdagen" asp-action="Verwijderen" asp-route-id="@Model.Name" method="post" class="d-inline">
+		<input type="hidden" asp-for="Name" />
+		<button type="submit" class="btn early-btn btn-danger w-100">Verwijderen</button>
+	</form>
+
+	<a asp-controller="Feestdagen" asp-action="Bewerken" asp-route-id=@Model.Name class="btn early-btn btn-secondary w-100">Annuleren</a>
+</div>

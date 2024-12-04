@@ -1,0 +1,47 @@
+﻿@model IEnumerable<BumboSolid.Data.Models.User>
+
+<script src="https://kit.fontawesome.com/981e782106.js" crossorigin="anonymous"></script>
+
+<h1>Medewerkers</h1>
+
+@if (Model.Any())
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Naam</th>
+                <th>Leeftijd</th>
+                <th>Afdelingen</th>
+                <th>In dienst sinds</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var employee in Model)
+            {
+                var birthDateTime = employee.BirthDate.ToDateTime(new TimeOnly(0, 0));
+                var age = DateTime.Today.Year - birthDateTime.Year;
+                if (birthDateTime.Date > DateTime.Today.AddYears(-age)) age--;
+
+                <tr>
+                    <td>@employee.FirstName @employee.LastName</td>
+                    <td>@age</td>
+                    <td>
+                        @string.Join(", ", employee.Departments.Select(d => d.Name))
+                    </td>
+                    <td>@employee.EmployedSince.ToShortDateString()</td>
+                    <td>
+                        <a class="navbar-brand" asp-area="" asp-controller="Employees" asp-action="Edit" asp-route-id="@employee.Id"><i class="fa-solid fa-pencil"></i></a>
+                        <a class="navbar-brand" asp-area="" asp-controller="Employees" asp-action="Delete" asp-route-id="@employee.Id"><i class="fa-solid fa-trash"></i></a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <p class="text-muted">Er zijn momenteel geen medewerkers.</p>
+}
+
+<a asp-action="Create" class="btn early-btn btn-success">Medewerker toevoegen</a>

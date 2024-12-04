@@ -7,5 +7,5 @@ public partial class FactorType
 {
     public string Type { get; set; } = null!;
 
-    public virtual ICollection<Factor> Factors { get; set; } = new List<Factor>();
+    public virtual List<Factor> Factors { get; set; } = new List<Factor>();
 }
