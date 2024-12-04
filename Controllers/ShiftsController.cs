@@ -14,7 +14,7 @@ using System.Globalization;
 namespace BumboSolid.Controllers
 {
 	[Authorize(Roles = "Manager")]
-	[Route("Shift")]
+	[Route("Shifts")]
 	public class ShiftsController : Controller
 	{
 		private readonly BumboDbContext _context;
@@ -22,6 +22,108 @@ namespace BumboSolid.Controllers
 		public ShiftsController(BumboDbContext context)
 		{
 			_context = context;
+		}
+
+		// GET: Shifts
+		[HttpGet("")]
+		[HttpGet("{id:int?}")]
+		public async Task<IActionResult> Index(int? id)
+		{
+			if (id == null)
+			{
+				CultureInfo ci = new CultureInfo("nl-NL");
+				Calendar calendar = ci.Calendar;
+
+				//Add week entry for next week
+				DateTime nextWeek = DateTime.Now.AddDays(7);
+				short year = (short)nextWeek.Year;
+				byte week = (byte)calendar.GetWeekOfYear(nextWeek, ci.DateTimeFormat.CalendarWeekRule, ci.DateTimeFormat.FirstDayOfWeek);
+
+				var currentWeek = _context.Weeks.FirstOrDefault(w => w.Year == year && w.WeekNumber == week);
+				if (currentWeek == null)
+				{
+					currentWeek = new Week()
+					{
+						Year = year,
+						WeekNumber = week,
+					};
+					_context.Add(currentWeek);
+					_context.SaveChanges();
+				}
+				id = currentWeek.Id;
+			}
+
+			var viewModel = new SchedulesViewModel
+			{
+				Weeks = await _context.Weeks
+					.Include(w => w.Shifts)
+						.ThenInclude(s => s.Employee)
+					.OrderByDescending(p => p.Year)
+						.ThenByDescending(p => p.WeekNumber)
+						.ToListAsync(),
+				WeekId = (int)id,
+			};
+
+			return View(viewModel);
+		}
+
+		// GET: Shifts/Details/5
+		[HttpGet("Rooster Details")]
+		public IActionResult Details(short year, short week, int day, int startTime, int endTime)
+		{
+			TimeOnly startTimeTime = new(startTime, 0);
+			TimeOnly endTimeTime = new(endTime, 0);
+
+			var shifts = _context.Shifts
+				.Include(s => s.DepartmentNavigation)
+				.Include(s => s.Week)
+				.Include(s => s.Employee)
+				.Where(s => s.Week!.Year == year && s.Week.WeekNumber == week && s.Weekday == day && s.StartTime <= endTimeTime && s.EndTime >= startTimeTime)
+				.ToList();
+
+			if (shifts == null)
+			{
+				return NotFound();
+			}
+
+			string dayName;
+
+			switch (day)
+			{
+				case 0:
+					dayName = "Maandag";
+					break;
+				case 1:
+					dayName = "Dinsdag";
+					break;
+				case 2:
+					dayName = "Woensdag";
+					break;
+				case 3:
+					dayName = "Donderdag";
+					break;
+				case 4:
+					dayName = "Vrijdag";
+					break;
+				case 5:
+					dayName = "Zaterdag";
+					break;
+				case 6:
+					dayName = "Zondag";
+					break;
+				default:
+					throw new ArgumentOutOfRangeException(nameof(day), "Invalid day of the week");
+			}
+
+			ScheduleViewDetailsViewModel scheduleViewDetailsViewModel = new()
+			{
+				Shifts = shifts,
+				Day = dayName,
+				StartTime = startTimeTime,
+				EndTime = endTimeTime,
+			};
+
+			return View(scheduleViewDetailsViewModel);
 		}
 
 		// GET: Shifts/Create
@@ -72,9 +174,8 @@ namespace BumboSolid.Controllers
 				if (shiftCreateViewModel.Shift.EmployeeId == -1) shiftCreateViewModel.Shift.EmployeeId = null;
 				_context.Add(shiftCreateViewModel.Shift);
 				await _context.SaveChangesAsync();
-				return RedirectToAction("Index", "Schedules");
+				return RedirectToAction(nameof(Index));
 			}
-
 			ViewBag.Departments = new SelectList(_context.Departments, "Name", "Name", shiftCreateViewModel.Shift.Department);
 			ViewBag.WeekDays = new SelectList(_context.Weeks, "Id", "Id", shiftCreateViewModel.Shift.WeekId);
 			return View(shiftCreateViewModel);
@@ -154,7 +255,7 @@ namespace BumboSolid.Controllers
 						throw;
 					}
 				}
-				return RedirectToAction(nameof(Index));
+				return RedirectToAction("Index", "Schedules");
 			}
 			ViewBag.Departments = new SelectList(_context.Departments, "Name", "Name", shiftCreateViewModel.Shift.Department);
 			ViewBag.WeekDays = new SelectList(_context.Weeks, "Id", "Id", shiftCreateViewModel.Shift.WeekId);
@@ -195,7 +296,7 @@ namespace BumboSolid.Controllers
 			}
 
 			await _context.SaveChangesAsync();
-			return RedirectToAction(nameof(Index));
+			return RedirectToAction("Index", "Schedules");
 		}
 
 		private bool ShiftExists(int id)
