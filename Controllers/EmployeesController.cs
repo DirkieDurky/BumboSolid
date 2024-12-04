@@ -124,12 +124,6 @@ namespace BumboSolid.Controllers
                     EmployedSince = input.EmployedSince,
                 };
 
-                var selectedDepartments = await _context.Departments
-                    .Where(d => input.SelectedDepartments.Contains(d.Name))
-                    .ToListAsync();
-
-                user.Departments = selectedDepartments;
-
                 var result = await _userManager.CreateAsync(user, input.Password);
 
                 if (result.Succeeded)

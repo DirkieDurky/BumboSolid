@@ -1,4 +1,4 @@
-﻿@model IEnumerable<BumboSolid.Models.AvailabilityRuleViewModel>
+﻿@model IEnumerable<BumboSolid.Data.Models.AvailabilityRule>
 
 @{
     ViewData["Title"] = "Index";
@@ -6,17 +6,47 @@
 
 <script src="https://kit.fontawesome.com/981e782106.js" crossorigin="anonymous"></script>
 
-<a class="navbar-brand" asp-area="" asp-controller="Availability" asp-action="Create" asp-route-year="@ViewBag.year" asp-route-weekNr="@ViewBag.weekNr" asp-route-employeeId="@ViewBag.employeeId">Toevoegen</a>
+<div class="mx-3 text-center text-nowrap">
+    <h1>Beschikbaarheid</h1>
+</div>
+<div class="w-100 mb-3">
+    <a class="btn new-btn" asp-area="" asp-controller="Availability" asp-action="Create"
+       asp-route-year="@ViewBag.year" asp-route-weekNr="@ViewBag.weekNr" asp-route-employeeId="@ViewBag.employeeId">
+        Toevoegen
+    </a>
+</div>
 
-@foreach (var availiabilityRule in Model)
-{
-    <div class="d-flex flex-row">
-        <h1>@availiabilityRule.Day</h1>
-        <h1>@availiabilityRule.StartTime</h1>
-        <h1>@availiabilityRule.EndTime</h1>
-        <h1>@availiabilityRule.Available</h1>
-        <h1>@availiabilityRule.School</h1>
-        <a class="navbar-brand" asp-area="" asp-controller="Availability" asp-action="Edit" asp-route-AvailabilityId="@availiabilityRule.Id" asp-route-weekNr="@ViewBag.weekNr" asp-route-year="@ViewBag.year"><i class="fa-solid fa-pencil"></i></a>
-        <a class="navbar-brand" asp-area="" asp-controller="Availability" asp-action="Delete" asp-route-AvailabilityId="@availiabilityRule.Id" asp-route-weekNr="@ViewBag.weekNr" asp-route-year="@ViewBag.year"><i class="fa-solid fa-trash"></i></a>
-    </div>
-}
+<table class="table">
+    <thead>
+        <tr>
+            <th>Dag</th>
+            <th>Starttijd</th>
+            <th>Eindtijd</th>
+            <th>Beschikbaar</th>
+            <th>School</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var availabilityRule in Model)
+        {
+            <tr>
+                <td>@availabilityRule.Date</td>
+                <td>@availabilityRule.StartTime</td>
+                <td>@availabilityRule.EndTime</td>
+                <td>@(availabilityRule.Available == 1 ? "Ja" : "Nee")</td>
+                <td>@(availabilityRule.School == 1 ? "Ja" : "Nee")</td>
+                <td>
+                    <a class="btn btn-sm" asp-area="" asp-controller="Availability" asp-action="Edit"
+                       asp-route-AvailabilityId="@availabilityRule.Id" asp-route-weekNr="@ViewBag.weekNr" asp-route-year="@ViewBag.year">
+                        <i class="fa-solid fa-pencil"></i>
+                    </a>
+                    <a class="btn btn-sm" asp-area="" asp-controller="Availability" asp-action="Delete"
+                       asp-route-AvailabilityId="@availabilityRule.Id" asp-route-weekNr="@ViewBag.weekNr" asp-route-year="@ViewBag.year">
+                        <i class="fa-solid fa-trash"></i>
+                    </a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

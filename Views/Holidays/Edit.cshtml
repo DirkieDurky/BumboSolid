@@ -57,14 +57,25 @@
 						<span asp-validation-for="LastDay" class="text-danger"></span>
 					</div>
 
+					@{
+						String year = Model.FirstDay.Year.ToString("0000");
+						String month = Model.FirstDay.Month.ToString("00");
+						String day = Model.FirstDay.Day.ToString("00");
+						String firstDay = year + "-" + month + "-" + day;
+
+						year = Model.LastDay.Year.ToString("0000");
+						month = Model.LastDay.Month.ToString("00");
+						day = Model.LastDay.Day.ToString("00");
+						String lastDay = year + "-" + month + "-" + day;
+					}
 					<script>
 						var year = new Date().getFullYear();
 						document.getElementById('firstday').setAttribute("min", year + "-01-01");
 						document.getElementById('firstday').setAttribute("max", year + "-12-31");
-						document.getElementById('firstday').value = @Model.FirstDay.Year + '-' + @Model.FirstDay.Month + '-' + @Model.FirstDay.Day;
+						document.getElementById('firstday').value = "@firstDay";
 						document.getElementById('lastday').setAttribute("min", year + "-01-01");
 						document.getElementById('lastday').setAttribute("max", year + "-12-31");
-						document.getElementById('lastday').value = @Model.LastDay.Year + '-' + @Model.LastDay.Month + '-' + @Model.LastDay.Day;
+						document.getElementById('lastday').value = "@lastDay";
 					</script>
 				</div>
 
