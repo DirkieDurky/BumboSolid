@@ -63,7 +63,7 @@
 		<p>@startDate.ToString("dd/MM/yyyy") - @endDate.ToString("dd/MM/yyyy")</p>
 	</div>
 	<div class="w-100">
-		<a class="new-btn" asp-action="Create" asp-route-weekid="@schedule.Id">Toevoegen</a>
+		<a class="new-btn" asp-controller="Shifts" asp-action="Create" asp-route-weekid="@schedule.Id">Toevoegen</a>
 	</div>
 </header>
 
@@ -90,33 +90,33 @@
 					{
 						if (hour > 6 && hour < 20) {
 							if (newSchedule[day, hour + 1] != null && newSchedule[day, hour - 1] != null) {
-								<a class="schedule-item-center">@Html.Raw(newSchedule[day, hour])</a>
+								<a class="schedule-item-center" asp-action="Details" asp-route-year="@schedule.Year" asp-route-week="@schedule.WeekNumber" asp-route-day="@day" asp-route-startTime="@hour" asp-route-endTime="@(hour + 1)">@Html.Raw(newSchedule[day, hour])</a>
 							}
 							else if (newSchedule[day, hour + 1] != null) {
-								<a class="schedule-item-top">@Html.Raw(newSchedule[day, hour])</a>
+								<a class="schedule-item-top" asp-action="Details" asp-route-year="@schedule.Year" asp-route-week="@schedule.WeekNumber" asp-route-day="@day" asp-route-startTime="@hour" asp-route-endTime="@(hour + 1)">@Html.Raw(newSchedule[day, hour])</a>
 							}
 							else if (newSchedule[day, hour - 1] != null)
 							{
-								<a class="schedule-item-bottom">@Html.Raw(newSchedule[day, hour])</a>
+								<a class="schedule-item-bottom" asp-action="Details" asp-route-year="@schedule.Year" asp-route-week="@schedule.WeekNumber" asp-route-day="@day" asp-route-startTime="@hour" asp-route-endTime="@(hour + 1)">@Html.Raw(newSchedule[day, hour])</a>
 							}
 							else {
-								<a class="schedule-item">@Html.Raw(newSchedule[day, hour])</a>
+								<a class="schedule-item" asp-action="Details" asp-route-year="@schedule.Year" asp-route-week="@schedule.WeekNumber" asp-route-day="@day" asp-route-startTime="@hour" asp-route-endTime="@(hour + 1)">@Html.Raw(newSchedule[day, hour])</a>
 							}
 						} else if (hour == 0) {
 							if (newSchedule[day, hour + 1] != null)
 							{
-								<a class="schedule-item-top">@Html.Raw(newSchedule[day, hour])</a>
+								<a class="schedule-item-top" asp-action="Details" asp-route-year="@schedule.Year" asp-route-week="@schedule.WeekNumber" asp-route-day="@day" asp-route-startTime="@hour" asp-route-endTime="@(hour + 1)">@Html.Raw(newSchedule[day, hour])</a>
 							} else {
-								<a class="schedule-item">@Html.Raw(newSchedule[day, hour])</a>
+								<a class="schedule-item" asp-action="Details" asp-route-year="@schedule.Year" asp-route-week="@schedule.WeekNumber" asp-route-day="@day" asp-route-startTime="@hour" asp-route-endTime="@(hour + 1)">@Html.Raw(newSchedule[day, hour])</a>
 							}
 						} else {
 							if (newSchedule[day, hour - 1] != null)
 							{
-								<a class="schedule-item-bottom">@Html.Raw(newSchedule[day, hour])</a>
+								<a class="schedule-item-bottom" asp-action="Details" asp-route-year="@schedule.Year" asp-route-week="@schedule.WeekNumber" asp-route-day="@day" asp-route-startTime="@hour" asp-route-endTime="@(hour + 1)">@Html.Raw(newSchedule[day, hour])</a>
 							}
 							else
 							{
-								<a class="schedule-item">@Html.Raw(newSchedule[day, hour])</a>
+								<a class="schedule-item" asp-action="Details" asp-route-year="@schedule.Year" asp-route-week="@schedule.WeekNumber" asp-route-day="@day" asp-route-startTime="@hour" asp-route-endTime="@(hour + 1)">@Html.Raw(newSchedule[day, hour])</a>
 							}
 						}
 					}

@@ -19,7 +19,7 @@ public class Shift
 
     public int? EmployeeId { get; set; }
 
-    public User? Employee { get; set; } = null!;
+    public virtual User? Employee { get; set; } = null!;
 
     public string? ExternalEmployeeName { get; set; }
 
