@@ -174,7 +174,7 @@ namespace BumboSolid.Controllers
 				if (shiftCreateViewModel.Shift.EmployeeId == -1) shiftCreateViewModel.Shift.EmployeeId = null;
 				_context.Add(shiftCreateViewModel.Shift);
 				await _context.SaveChangesAsync();
-				return RedirectToAction(nameof(Index));
+				return RedirectToAction("Index", "Schedules");
 			}
 			ViewBag.Departments = new SelectList(_context.Departments, "Name", "Name", shiftCreateViewModel.Shift.Department);
 			ViewBag.WeekDays = new SelectList(_context.Weeks, "Id", "Id", shiftCreateViewModel.Shift.WeekId);
