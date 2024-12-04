@@ -34,6 +34,10 @@ h6 {
     min-height: 5.5vh;
 }
 
+hr {
+    min-height: 0.3vh;
+}
+
 p {
     text-align: center;
 }
@@ -568,6 +572,7 @@ th, td {
 
 .slim-btn {
     width: revert;
+
 }
 
 .general-error-center ul{
@@ -591,20 +596,3 @@ th, td {
     .eye-btn i {
         font-size: 1.2em;
     }
-
-/* Schedule View Details Manager START */
-
-.icon-4 {
-	width: 1.5rem;
-	height: 1.5rem;
-}
-
-.no-a {
-	text-decoration: inherit;
-}
-
-.no-a:hover, .no-a:focus {
-	color: inherit;
-}
-
-/* Schedule View Details Manager END */
