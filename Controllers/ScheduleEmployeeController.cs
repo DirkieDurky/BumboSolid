@@ -30,7 +30,7 @@ namespace BumboSolid.Controllers
         [HttpGet("")]
 		public async Task<IActionResult> Schedule(int weekFromNow)
 		{
-            // Getting user id
+            // Getting user
             var user = await _userManager.GetUserAsync(User);
             int userId = user.Id;
 
