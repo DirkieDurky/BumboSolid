@@ -6,6 +6,7 @@ using BumboSolid.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authorization;
 using System.Text.RegularExpressions;
+using BumboSolid.Migrations;
 
 namespace BumboSolid.Controllers
 {
@@ -90,15 +91,14 @@ namespace BumboSolid.Controllers
                 ModelState.AddModelError(nameof(input.EmployedSince), employmentErrorMessage);
             }
 
-            // Check if the password meets the requirements
-            if (!Regex.IsMatch(input.Password, "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[!@#$%^&*()_+\\-=\\[\\]{}\\|`~];:'\",.<>)[A-Za-z\\d!@#$%^&*()_+\\-=\\[\\]{}\\|`~]{8,}$"))
+            if (!PasswordIsStrongEnough(input.Password))
             {
-                ModelState.AddModelError(nameof(input.Password), "Wachtwoord is niet niet sterk genoeg. Zorg dat je wachtwoord voldoet aan de volgende regels:\n" +
-                    "Minimaal 8 karakters\n" +
-                    "Minimaal 1 cijfer\n" +
-                    "Minimaal 1 kleine letter\n" +
-                    "Minimaal 1 hoofdletter\n" +
-                    "Minimaal 1 speciaal karakter (Één van de volgende: !@#$%^&*()_+-=[]{}|`~)");
+                ModelState.AddModelError(nameof(input.Password), "Wachtwoord is niet niet sterk genoeg. Zorg dat uw wachtwoord voldoet aan de volgende regels:\n" +
+                    "Minimaal 8 karakters.\n" +
+                    "Minimaal 1 cijfer.\n" +
+                    "Minimaal 1 kleine letter.\n" +
+                    "Minimaal 1 hoofdletter.\n" +
+                    "Minimaal 1 speciaal karakter. (Één van de volgende: !@#$%^&*()_+-=[]{}|`~)");
             }
 
             if (input.Password != input.ConfirmPassword)
@@ -124,6 +124,9 @@ namespace BumboSolid.Controllers
                     StreetNumber = input.StreetNumber,
                     BirthDate = input.BirthDate,
                     EmployedSince = input.EmployedSince,
+                    Departments = await _context.Departments
+                    .Where(d => input.SelectedDepartments.Contains(d.Name))
+                    .ToListAsync(),
                 };
 
                 var result = await _userManager.CreateAsync(user, input.Password);
@@ -246,13 +249,14 @@ namespace BumboSolid.Controllers
                     return View(model);
                 }
 
-                var passwordValidationResult = await _userManager.PasswordValidators
-                    .FirstOrDefault()
-                    .ValidateAsync(_userManager, null, model.Password);
-
-                foreach (var error in passwordValidationResult.Errors)
+                if (!PasswordIsStrongEnough(model.Password))
                 {
-                    ModelState.AddModelError(nameof(model.Password), error.Description);
+                    ModelState.AddModelError(nameof(model.Password), "Wachtwoord is niet niet sterk genoeg. Zorg dat uw wachtwoord voldoet aan de volgende regels:\n" +
+                        "Minimaal 8 karakters.\n" +
+                        "Minimaal 1 cijfer.\n" +
+                        "Minimaal 1 kleine letter.\n" +
+                        "Minimaal 1 hoofdletter.\n" +
+                        "Minimaal 1 speciaal karakter. (Één van de volgende: !@#$%^&*()_+-=[]{}|`~)");
                 }
 
                 if (ModelState.IsValid)
@@ -352,6 +356,12 @@ namespace BumboSolid.Controllers
             }
 
             return true;
+        }
+
+        public bool PasswordIsStrongEnough(string password)
+        {
+            string passwordRegex = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[!@#$%^&*()_+\\-=\\[\\]{}\\|`~;:'\",.<>])[A-Za-z\\d!@#$%^&*()_+\\-=\\[\\]{}\\|`~;:'\",.<>]{8,}$";
+            return Regex.IsMatch(password, passwordRegex);
         }
 
     }
