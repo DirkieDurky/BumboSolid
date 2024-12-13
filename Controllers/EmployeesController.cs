@@ -5,6 +5,7 @@ using BumboSolid.Data.Models;
 using BumboSolid.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authorization;
+using System.Text.RegularExpressions;
 
 namespace BumboSolid.Controllers
 {
@@ -90,13 +91,14 @@ namespace BumboSolid.Controllers
             }
 
             // Check if the password meets the requirements
-            var passwordValidationResult = await _userManager.PasswordValidators
-                .FirstOrDefault()
-                .ValidateAsync(_userManager, null, input.Password);
-
-            foreach (var error in passwordValidationResult.Errors)
+            if (!Regex.IsMatch(input.Password, "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[!@#$%^&*()_+\\-=\\[\\]{}\\|`~];:'\",.<>)[A-Za-z\\d!@#$%^&*()_+\\-=\\[\\]{}\\|`~]{8,}$"))
             {
-                ModelState.AddModelError(nameof(input.Password), error.Description);
+                ModelState.AddModelError(nameof(input.Password), "Wachtwoord is niet niet sterk genoeg. Zorg dat je wachtwoord voldoet aan de volgende regels:\n" +
+                    "Minimaal 8 karakters\n" +
+                    "Minimaal 1 cijfer\n" +
+                    "Minimaal 1 kleine letter\n" +
+                    "Minimaal 1 hoofdletter\n" +
+                    "Minimaal 1 speciaal karakter (Één van de volgende: !@#$%^&*()_+-=[]{}|`~)");
             }
 
             if (input.Password != input.ConfirmPassword)
