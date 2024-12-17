@@ -1,127 +1,165 @@
 ﻿@model BumboSolid.Models.SchedulesViewModel
 
 @{
-	ViewData["Title"] = "Rooster";
+    String[] daysOfTheWeek = { "Maandag", "Dinsdag", "Woensdag", "Donderdag", "Vrijdag", "Zaterdag", "Zondag" };
 
-	var schedule = Model.Weeks.First(w => w.Id == Model.WeekId);
+    var schedule = Model.Weeks.First(w => w.Id == Model.WeekId);
+    var shifts = schedule.Shifts;
+    var departments = shifts.Select(s => s.Department).Distinct();
 
-	DateTime startDate = FirstDateOfWeekISO8601(schedule.Year, schedule.WeekNumber);
-	DateTime endDate = startDate.AddDays(6);
-
-	var shifts = schedule.Shifts;
-
-	string[,] newSchedule = new string[7, 24];
-
-	foreach (var shift in shifts)
-	{
-		int hours = shift.EndTime.Hour - shift.StartTime.Hour;
-		if (shift.EndTime.Minute > 0)
-			hours++;
-
-		for (int i = 0; i < hours; i++)
-		{
-			if (newSchedule[shift.Weekday, shift.StartTime.Hour + i] != null)
-			{
-				newSchedule[shift.Weekday, shift.StartTime.Hour + i] += ", <br />";
-			}
-
-			String employeeName = shift.Employee != null ? shift.Employee.FirstName + " " + shift.Employee.LastName : shift.ExternalEmployeeName!;
-			newSchedule[shift.Weekday, shift.StartTime.Hour + i] += employeeName;
-		}
-	}
+    DateTime startDate = GetFirstDateOfWeek(schedule.Year, schedule.WeekNumber);
+    DateTime endDate = startDate.AddDays(6);
 }
 
 @functions {
-	public static DateTime FirstDateOfWeekISO8601(int year, int weekOfYear)
-	{
-		DateTime jan1 = new DateTime(year, 1, 1);
-		int daysOffset = DayOfWeek.Thursday - jan1.DayOfWeek;
-
-		DateTime firstThursday = jan1.AddDays(daysOffset);
-		var cal = System.Globalization.CultureInfo.CurrentCulture.Calendar;
-		int firstWeek = cal.GetWeekOfYear(firstThursday, System.Globalization.CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Monday);
-
-		var weekNum = weekOfYear;
-		if (firstWeek == 1)
-		{
-			weekNum -= 1;
-		}
-
-		var result = firstThursday.AddDays(weekNum * 7);
-		return result.AddDays(-3);
-	}
+    public static DateTime GetFirstDateOfWeek(int year, int weekOfYear)
+    {
+        var jan1 = new DateTime(year, 1, 1);
+        var daysOffset = (int)DayOfWeek.Monday - (int)jan1.DayOfWeek;
+        var firstMonday = jan1.AddDays(daysOffset > 0 ? daysOffset - 7 : daysOffset);
+        return firstMonday.AddDays((weekOfYear - 1) * 7);
+    }
 }
 
-<!-- TODO Voeg filter systeem toe bij rooster -->
-
 <header class="d-flex align-items-center gap-3 justify-content-center gap-3">
-	<div class="w-100 text-align text-end">
-		<a class="new-btn">Rooster Beheren</a>
-	</div>
-	<div class="mx-3 text-center text-nowrap">
-		<h1>Rooster</h1>
-		<p>@startDate.ToString("dd/MM/yyyy") - @endDate.ToString("dd/MM/yyyy")</p>
-	</div>
-	<div class="w-100">
-		<a class="new-btn" asp-controller="Shifts" asp-action="Create" asp-route-weekid="@schedule.Id">Toevoegen</a>
-	</div>
+    <div class="w-100 text-align text-end">
+        <a class="new-btn" asp-controller="">Rooster Beheren</a>
+    </div>
+    <div class="mx-3 text-center text-nowrap">
+        <h1>Rooster</h1>
+        <p>@startDate.ToString("dd/MM/yyyy") - @endDate.ToString("dd/MM/yyyy")</p>
+    </div>
+    <div class="w-100">
+        <a class="new-btn" asp-controller="Shifts" asp-action="Create" asp-route-weekid="@schedule.Id">Shift Toevoegen</a>
+    </div>
 </header>
 
-<div class="container p-1 border-solid-black border-radius-5 schedule-row-width-fix">
-	<div class="row schedule min-height-0 fw-bold-parent">
-		<div class="hour-minute-column"></div>
-		<div class="col mb-1">Maandag</div>
-		<div class="col mb-1">Dinsdag</div>
-		<div class="col mb-1">Woensdag</div>
-		<div class="col mb-1">Donderdag</div>
-		<div class="col mb-1">Vrijdag</div>
-		<div class="col mb-1">Zaterdag</div>
-		<div class="col mb-1">Zondag</div>
-	</div>
-	@for (int hour = 7; hour <= 20; hour++)
-	{
-		<hr class="schedule-hr" />
-		<div class="row schedule">
-			<div class="hour-minute-column">@hour:00</div>
-			@for (int day = 0; day < 7; day++)
-			{
-				<div class="col schedule-item-container">
-					@if (newSchedule[day, hour] != null)
-					{
-						if (hour > 6 && hour < 20) {
-							if (newSchedule[day, hour + 1] != null && newSchedule[day, hour - 1] != null) {
-								<a class="schedule-item-center" asp-controller="Shifts" asp-action="Details" asp-route-year="@schedule.Year" asp-route-week="@schedule.WeekNumber" asp-route-day="@day" asp-route-startTime="@hour" asp-route-endTime="@(hour + 1)">@Html.Raw(newSchedule[day, hour])</a>
-							}
-							else if (newSchedule[day, hour + 1] != null) {
-								<a class="schedule-item-top" asp-controller="Shifts" asp-action="Details" asp-route-year="@schedule.Year" asp-route-week="@schedule.WeekNumber" asp-route-day="@day" asp-route-startTime="@hour" asp-route-endTime="@(hour + 1)">@Html.Raw(newSchedule[day, hour])</a>
-							}
-							else if (newSchedule[day, hour - 1] != null)
-							{
-								<a class="schedule-item-bottom" asp-controller="Shifts" asp-action="Details" asp-route-year="@schedule.Year" asp-route-week="@schedule.WeekNumber" asp-route-day="@day" asp-route-startTime="@hour" asp-route-endTime="@(hour + 1)">@Html.Raw(newSchedule[day, hour])</a>
-							}
-							else {
-								<a class="schedule-item" asp-controller="Shifts" asp-action="Details" asp-route-year="@schedule.Year" asp-route-week="@schedule.WeekNumber" asp-route-day="@day" asp-route-startTime="@hour" asp-route-endTime="@(hour + 1)">@Html.Raw(newSchedule[day, hour])</a>
-							}
-						} else if (hour == 0) {
-							if (newSchedule[day, hour + 1] != null)
-							{
-								<a class="schedule-item-top" asp-controller="Shifts" asp-action="Details" asp-route-year="@schedule.Year" asp-route-week="@schedule.WeekNumber" asp-route-day="@day" asp-route-startTime="@hour" asp-route-endTime="@(hour + 1)">@Html.Raw(newSchedule[day, hour])</a>
-							} else {
-								<a class="schedule-item" asp-controller="Shifts" asp-action="Details" asp-route-year="@schedule.Year" asp-route-week="@schedule.WeekNumber" asp-route-day="@day" asp-route-startTime="@hour" asp-route-endTime="@(hour + 1)">@Html.Raw(newSchedule[day, hour])</a>
-							}
-						} else {
-							if (newSchedule[day, hour - 1] != null)
-							{
-								<a class="schedule-item-bottom" asp-action="Details" asp-route-year="@schedule.Year" asp-route-week="@schedule.WeekNumber" asp-route-day="@day" asp-route-startTime="@hour" asp-route-endTime="@(hour + 1)">@Html.Raw(newSchedule[day, hour])</a>
-							}
-							else
-							{
-								<a class="schedule-item" asp-action="Details" asp-route-year="@schedule.Year" asp-route-week="@schedule.WeekNumber" asp-route-day="@day" asp-route-startTime="@hour" asp-route-endTime="@(hour + 1)">@Html.Raw(newSchedule[day, hour])</a>
-							}
-						}
-					}
-				</div>
-			}
-		</div>
-	}
+<div class="schedule">
+    @foreach (var afdeling in departments)
+    {
+        <div class="dropdown-bar" onclick="toggleVisibility('@afdeling-content')" style="margin-bottom: 15px;">
+            <span>@afdeling<i class="fa-solid fa-chevron-up arrow"></i></span>
+        </div>
+        // add viewbag in controller to see which ones are opened
+        <div id="@afdeling-content" class="hidden">
+            <table class="schedule-table">
+                <thead>
+                    <tr>
+                        <th>Werknemer</th>
+                        @foreach (var day in daysOfTheWeek)
+                        {
+                            <th>@day</th>
+                        }
+                        <th>Totaal</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var shiftGroup in shifts.Where(s => s.Department == afdeling)
+                   .GroupBy(s => s.Employee))
+                    {
+                        <tr>
+                            <td>
+                                <div>
+                                    <a asp-controller="Shifts" asp-action="Details" asp-route-employee="@shiftGroup.First().Employee" asp-route-weekNumber ="@schedule.WeekNumber" class="shift-link">
+                                        @shiftGroup.Key
+                                    </a>
+                                </div>
+                            </td>
+
+                            @foreach (var day in daysOfTheWeek)
+                            {
+                                <td>
+                                    @foreach (var shift in shiftGroup.Where(s => s.Weekday == Array.IndexOf(daysOfTheWeek, day)))
+                                    {
+                                        <div>
+                                            <a asp-controller="Shifts" asp-action="Detail" asp-route-shiftId="@shift.Id" class="shift-link">
+                                                <i class="fa-regular fa-clock"></i> @shift.StartTime.ToString("HH:mm") - @shift.EndTime.ToString("HH:mm")
+                                            </a>
+                                        </div>
+                                    }
+                                </td>
+                            }
+
+                            @{
+                                var totalHoursWorked = shiftGroup.Sum(s => (s.EndTime - s.StartTime).TotalMinutes);
+                                var totalHoursPlanned = shiftGroup.Sum(s => (s.EndTime - s.StartTime).TotalMinutes);
+
+                                var totalTimeWorked = TimeSpan.FromMinutes(totalHoursWorked).ToString(@"hh\:mm");
+                                var totalTimePlanned = TimeSpan.FromMinutes(totalHoursPlanned).ToString(@"hh\:mm");
+                            }
+                            <td>
+                                <div><i class="fa-regular fa-clock"></i> @totalTimeWorked / @totalTimePlanned</div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
 </div>
+
+<style>
+    .shift-link {
+        text-decoration: none;
+        color: inherit;
+    }
+
+    /* .schedule { */
+    /*     margin-inline: 200px; */
+    /* } */
+
+    .dropdown-bar {
+        background-color: #d4d4d4;
+        padding: 10px;
+        cursor: pointer;
+        font-weight: bold;
+        border: 1px solid #ddd;
+        margin-block: 15px;
+    }
+
+    .schedule-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 10px;
+    }
+
+        .schedule-table th,
+        .schedule-table td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: center;
+            width: calc(100% / 9);
+        }
+
+        .schedule-table th {
+            background-color: #f4f4f4;
+        }
+
+    .hidden {
+        display: none;
+    }
+
+    .arrow {
+        transition: transform 0.5s ease;
+    }
+
+    .flipped {
+        /* transform: rotate(180deg); */
+        transform: scale(-1);
+    }
+</style>
+
+<script>
+    function toggleVisibility(id) {
+        var content = document.getElementById(id);
+        var arrow = content.previousElementSibling.querySelector('.arrow');
+
+        if (content.classList.contains('hidden')) {
+            content.classList.remove('hidden');
+            arrow.classList.add('flipped');
+        } else {
+            content.classList.add('hidden');
+            arrow.classList.remove('flipped');
+        }
+    }
+</script>
