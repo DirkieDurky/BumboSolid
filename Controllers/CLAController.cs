@@ -117,12 +117,7 @@ namespace BumboSolid.Controllers
             _logic.ValidateModel(claViewModel, ModelState);
             if (!ModelState.IsValid) return View(claViewModel);
 
-            int maxAvgMulti = claViewModel.MaxAvgDurationHours ? 60 : 1;
-            int maxTotalShiftMulti = claViewModel.MaxTotalShiftDurationHours ? 60 : 1;
-            int maxWorkDayMulti = claViewModel.MaxDayDurationHours ? 60 : 1;
-            int maxHolidayMulti = claViewModel.MaxHolidayDurationHours ? 60 : 1;
-            int maxWeekMulti = claViewModel.MaxWeekDurationHours ? 60 : 1;
-            int maxUninterruptedShiftMulti = claViewModel.MaxUninterruptedShiftDurationHours ? 60 : 1;
+            var modifiers = _logic.GetModifiers(claViewModel);
 
 
             var existingEntry = await _context.CLAEntries
@@ -451,44 +446,7 @@ namespace BumboSolid.Controllers
                 ModelState.AddModelError("", "U mag niet hier alle waardes leeggooien, gebruik daarvoor A.U.B. het verwijderen");
             }
 
-            if (claViewModel.MaxWorkDaysPerWeek.HasValue && claViewModel.MaxWorkDaysPerWeek.Value > 7)
-            {
-                ModelState.AddModelError("MaxWorkDaysPerWeek", "Er zijn slechts zeven dagen in een week.");
-            }
-
-            if (claViewModel.MaxWorkDurationPerDay.HasValue)
-                if ((claViewModel.MaxWorkDurationPerDay.Value > 1440 && !claViewModel.MaxDayDurationHours) ||
-                    (claViewModel.MaxWorkDurationPerDay.Value > 24 && claViewModel.MaxDayDurationHours))
-                {
-                    ModelState.AddModelError(nameof(claViewModel.MaxWorkDurationPerDay), "Er zit slechts 24 uur in een dag.");
-                }
-
-            if (claViewModel.MaxWorkDurationPerWeek.HasValue)
-                if ((claViewModel.MaxWorkDurationPerWeek.Value > 10080 && !claViewModel.MaxWeekDurationHours) ||
-                    (claViewModel.MaxWorkDurationPerWeek.Value > 168 && claViewModel.MaxWeekDurationHours))
-                {
-                    ModelState.AddModelError(nameof(claViewModel.MaxWorkDurationPerWeek), "Er zit slechts 168 uur in een week");
-                }
-
-            if (claViewModel.MaxWorkDurationPerHolidayWeek.HasValue)
-                if ((claViewModel.MaxWorkDurationPerHolidayWeek.Value > 10080 && !claViewModel.MaxHolidayDurationHours) ||
-                    (claViewModel.MaxWorkDurationPerHolidayWeek.Value > 168 && claViewModel.MaxHolidayDurationHours))
-                {
-                    ModelState.AddModelError(nameof(claViewModel.MaxWorkDurationPerHolidayWeek), "Er zit slechts 168 uur in een week");
-                }
-
-            if (claViewModel.MaxAvgWeeklyWorkDurationOverFourWeeks.HasValue)
-                if ((claViewModel.MaxAvgWeeklyWorkDurationOverFourWeeks.Value > 10080 && !claViewModel.MaxAvgDurationHours) ||
-                    (claViewModel.MaxAvgWeeklyWorkDurationOverFourWeeks.Value > 168 && claViewModel.MaxAvgDurationHours))
-                {
-                    ModelState.AddModelError(nameof(claViewModel.MaxAvgWeeklyWorkDurationOverFourWeeks), "Er zit slechts 168 uur in een week");
-                }
-
-            if (!claViewModel.BreakWorkDuration.HasValue && claViewModel.BreakMinBreakDuration.HasValue)
-            {
-                ModelState.AddModelError(nameof(claViewModel.BreakMinBreakDuration),
-                    "Minimale pauzetijd mag niet worden ingevuld wanneer maximale werkduur zonder pauzes leeg is");
-            }
+            _logic.ValidateModel(claViewModel, ModelState);
 
             NoMinuteDecimals(claViewModel);
 

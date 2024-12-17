@@ -10,6 +10,6 @@ namespace BumboSolid.HelperClasses
         public CLAEntry ViewModelToEntry(CLAManageViewModel model);
 
         public bool ValidateModel(CLAManageViewModel model, ModelStateDictionary modelState);
-
+        int[] GetModifiers(CLAManageViewModel model);
     }
 }

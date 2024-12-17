@@ -92,5 +92,48 @@ namespace BumboSolid.HelperClasses
             throw new NotImplementedException();
         }
 
+        // Grab the modifier booleans for whether values need to be multiplied/divided to minutes or hours
+        public int[] GetModifiers(CLAManageViewModel model)
+        {
+            int arraylength = 6;
+
+            var ints = new int[arraylength];
+
+            ints[0] = model.MaxAvgDurationHours ? 60 : 1;
+            ints[1] = model.MaxTotalShiftDurationHours ? 60 : 1;
+            ints[2] = model.MaxDayDurationHours ? 60 : 1;
+            ints[3] = model.MaxHolidayDurationHours ? 60 : 1;
+            ints[4] = model.MaxWeekDurationHours ? 60 : 1;
+            ints[5] = model.MaxUninterruptedShiftDurationHours ? 60 : 1;
+
+            return ints;
+        }
+
+        // Returns a list of which entries 
+        public List<string> ExistingConflictFields(CLAManageViewModel claViewModel, CLAEntry existingEntry)
+        {
+            var conflictFields = new List<string>();
+
+            // Checks individual fields for having entries in filled in agerange
+            if (existingEntry.MaxWorkDurationPerDay.HasValue && claViewModel.MaxWorkDurationPerDay.HasValue)
+                conflictFields.Add(nameof(claViewModel.MaxWorkDurationPerDay));
+            if (existingEntry.MaxWorkDaysPerWeek.HasValue && claViewModel.MaxWorkDaysPerWeek.HasValue)
+                conflictFields.Add(nameof(claViewModel.MaxWorkDaysPerWeek));
+            if (existingEntry.MaxWorkDurationPerWeek.HasValue && claViewModel.MaxWorkDurationPerWeek.HasValue)
+                conflictFields.Add(nameof(claViewModel.MaxWorkDurationPerWeek));
+            if (existingEntry.MaxWorkDurationPerHolidayWeek.HasValue && claViewModel.MaxWorkDurationPerHolidayWeek.HasValue)
+                conflictFields.Add(nameof(claViewModel.MaxWorkDurationPerHolidayWeek));
+            if (existingEntry.EarliestWorkTime.HasValue && claViewModel.EarliestWorkTime.HasValue)
+                conflictFields.Add(nameof(claViewModel.EarliestWorkTime));
+            if (existingEntry.LatestWorkTime.HasValue && claViewModel.LatestWorkTime.HasValue)
+                conflictFields.Add(nameof(claViewModel.LatestWorkTime));
+            if (existingEntry.MaxShiftDuration.HasValue && claViewModel.MaxShiftDuration.HasValue)
+                conflictFields.Add(nameof(claViewModel.MaxShiftDuration));
+            if (existingEntry.MaxAvgWeeklyWorkDurationOverFourWeeks.HasValue && claViewModel.MaxAvgWeeklyWorkDurationOverFourWeeks.HasValue)
+                conflictFields.Add(nameof(claViewModel.MaxAvgWeeklyWorkDurationOverFourWeeks));
+
+
+        }
+
     }
 }
