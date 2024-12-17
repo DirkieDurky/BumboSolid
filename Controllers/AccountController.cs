@@ -1,5 +1,4 @@
 ﻿using BumboSolid.Data.Models;
-using BumboSolid.Migrations;
 using BumboSolid.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -47,7 +46,7 @@ namespace BumboSolid.Controllers
                 }
                 if (User.IsInRole("Employee"))
                 {
-                    return Redirect("/Roosters");
+                    return Redirect("/RoosterMedewerker");
                 }
                 ViewBag.Error = "Geen rol";
                 return View(Input);

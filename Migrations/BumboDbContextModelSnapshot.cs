@@ -144,7 +144,7 @@ namespace BumboSolid.Migrations
 
             modelBuilder.Entity("BumboSolid.Data.Models.Factor", b =>
                 {
-                    b.Property<int>("PrognosisId")
+                    b.Property<int?>("PrognosisId")
                         .HasColumnType("int")
                         .HasColumnName("PrognosisID");
 
@@ -298,11 +298,40 @@ namespace BumboSolid.Migrations
                     b.HasIndex(new[] { "Department" }, "IX_Norm_Department");
 
                     b.ToTable("Norm", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Activity = "1 vak vullen",
+                            AvgDailyPerformances = (byte)5,
+                            Department = "Vakkenvullen",
+                            Duration = 300,
+                            PerVisitor = false
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Activity = "Kassa",
+                            AvgDailyPerformances = (byte)1,
+                            Department = "Kassa",
+                            Duration = 120,
+                            PerVisitor = true
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Activity = "Vers",
+                            AvgDailyPerformances = (byte)8,
+                            Department = "Vers",
+                            Duration = 45,
+                            PerVisitor = false
+                        });
                 });
 
             modelBuilder.Entity("BumboSolid.Data.Models.PrognosisDay", b =>
                 {
-                    b.Property<int>("PrognosisId")
+                    b.Property<int?>("PrognosisId")
                         .HasColumnType("int")
                         .HasColumnName("PrognosisID");
 
@@ -315,6 +344,50 @@ namespace BumboSolid.Migrations
                     b.HasKey("PrognosisId", "Weekday");
 
                     b.ToTable("PrognosisDay", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            PrognosisId = 1,
+                            Weekday = (byte)0,
+                            VisitorEstimate = 1000
+                        },
+                        new
+                        {
+                            PrognosisId = 1,
+                            Weekday = (byte)1,
+                            VisitorEstimate = 1000
+                        },
+                        new
+                        {
+                            PrognosisId = 1,
+                            Weekday = (byte)2,
+                            VisitorEstimate = 1000
+                        },
+                        new
+                        {
+                            PrognosisId = 1,
+                            Weekday = (byte)3,
+                            VisitorEstimate = 1000
+                        },
+                        new
+                        {
+                            PrognosisId = 1,
+                            Weekday = (byte)4,
+                            VisitorEstimate = 1000
+                        },
+                        new
+                        {
+                            PrognosisId = 1,
+                            Weekday = (byte)5,
+                            VisitorEstimate = 1000
+                        },
+                        new
+                        {
+                            PrognosisId = 1,
+                            Weekday = (byte)6,
+                            VisitorEstimate = 1000
+                        });
                 });
 
             modelBuilder.Entity("BumboSolid.Data.Models.PrognosisDepartment", b =>
@@ -341,13 +414,164 @@ namespace BumboSolid.Migrations
                     b.HasIndex(new[] { "PrognosisId", "Weekday" }, "IX_PrognosisDepartment_PrognosisID_Weekday");
 
                     b.ToTable("PrognosisDepartment", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            PrognosisId = 1,
+                            Department = "Kassa",
+                            Weekday = (byte)0,
+                            WorkHours = (short)4000
+                        },
+                        new
+                        {
+                            PrognosisId = 1,
+                            Department = "Vakkenvullen",
+                            Weekday = (byte)0,
+                            WorkHours = (short)4000
+                        },
+                        new
+                        {
+                            PrognosisId = 1,
+                            Department = "Vers",
+                            Weekday = (byte)0,
+                            WorkHours = (short)4000
+                        },
+                        new
+                        {
+                            PrognosisId = 1,
+                            Department = "Kassa",
+                            Weekday = (byte)1,
+                            WorkHours = (short)4000
+                        },
+                        new
+                        {
+                            PrognosisId = 1,
+                            Department = "Vakkenvullen",
+                            Weekday = (byte)1,
+                            WorkHours = (short)4000
+                        },
+                        new
+                        {
+                            PrognosisId = 1,
+                            Department = "Vers",
+                            Weekday = (byte)1,
+                            WorkHours = (short)4000
+                        },
+                        new
+                        {
+                            PrognosisId = 1,
+                            Department = "Kassa",
+                            Weekday = (byte)2,
+                            WorkHours = (short)4000
+                        },
+                        new
+                        {
+                            PrognosisId = 1,
+                            Department = "Vakkenvullen",
+                            Weekday = (byte)2,
+                            WorkHours = (short)4000
+                        },
+                        new
+                        {
+                            PrognosisId = 1,
+                            Department = "Vers",
+                            Weekday = (byte)2,
+                            WorkHours = (short)4000
+                        },
+                        new
+                        {
+                            PrognosisId = 1,
+                            Department = "Kassa",
+                            Weekday = (byte)3,
+                            WorkHours = (short)4000
+                        },
+                        new
+                        {
+                            PrognosisId = 1,
+                            Department = "Vakkenvullen",
+                            Weekday = (byte)3,
+                            WorkHours = (short)4000
+                        },
+                        new
+                        {
+                            PrognosisId = 1,
+                            Department = "Vers",
+                            Weekday = (byte)3,
+                            WorkHours = (short)4000
+                        },
+                        new
+                        {
+                            PrognosisId = 1,
+                            Department = "Kassa",
+                            Weekday = (byte)4,
+                            WorkHours = (short)4000
+                        },
+                        new
+                        {
+                            PrognosisId = 1,
+                            Department = "Vakkenvullen",
+                            Weekday = (byte)4,
+                            WorkHours = (short)4000
+                        },
+                        new
+                        {
+                            PrognosisId = 1,
+                            Department = "Vers",
+                            Weekday = (byte)4,
+                            WorkHours = (short)4000
+                        },
+                        new
+                        {
+                            PrognosisId = 1,
+                            Department = "Kassa",
+                            Weekday = (byte)5,
+                            WorkHours = (short)4000
+                        },
+                        new
+                        {
+                            PrognosisId = 1,
+                            Department = "Vakkenvullen",
+                            Weekday = (byte)5,
+                            WorkHours = (short)4000
+                        },
+                        new
+                        {
+                            PrognosisId = 1,
+                            Department = "Vers",
+                            Weekday = (byte)5,
+                            WorkHours = (short)4000
+                        },
+                        new
+                        {
+                            PrognosisId = 1,
+                            Department = "Kassa",
+                            Weekday = (byte)6,
+                            WorkHours = (short)4000
+                        },
+                        new
+                        {
+                            PrognosisId = 1,
+                            Department = "Vakkenvullen",
+                            Weekday = (byte)6,
+                            WorkHours = (short)4000
+                        },
+                        new
+                        {
+                            PrognosisId = 1,
+                            Department = "Vers",
+                            Weekday = (byte)6,
+                            WorkHours = (short)4000
+                        });
                 });
 
             modelBuilder.Entity("BumboSolid.Data.Models.Shift", b =>
                 {
                     b.Property<int>("Id")
-                        .HasColumnType("int")
-                        .HasColumnName("ID");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Department")
                         .IsRequired()
@@ -355,11 +579,13 @@ namespace BumboSolid.Migrations
                         .IsUnicode(false)
                         .HasColumnType("varchar(25)");
 
-                    b.Property<int?>("Employee")
-                        .HasColumnType("int");
+                    b.Property<int?>("EmployeeId")
+                        .HasColumnType("int")
+                        .HasColumnName("Employee");
 
                     b.Property<TimeOnly>("EndTime")
-                        .HasColumnType("time");
+                        .HasColumnType("time")
+                        .HasColumnName("EndTime");
 
                     b.Property<string>("ExternalEmployeeName")
                         .HasMaxLength(135)
@@ -370,16 +596,20 @@ namespace BumboSolid.Migrations
                         .HasColumnType("tinyint");
 
                     b.Property<TimeOnly>("StartTime")
-                        .HasColumnType("time");
+                        .HasColumnType("time")
+                        .HasColumnName("StartTime");
 
                     b.Property<int>("WeekId")
                         .HasColumnType("int")
                         .HasColumnName("WeekID");
 
                     b.Property<byte>("Weekday")
-                        .HasColumnType("tinyint");
+                        .HasColumnType("tinyint")
+                        .HasColumnName("Weekday");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("EmployeeId");
 
                     b.HasIndex(new[] { "Department" }, "IX_Shift_Department");
 
@@ -541,8 +771,13 @@ namespace BumboSolid.Migrations
             modelBuilder.Entity("BumboSolid.Data.Models.Week", b =>
                 {
                     b.Property<int>("Id")
-                        .HasColumnType("int")
-                        .HasColumnName("ID");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<byte>("HasSchedule")
+                        .HasColumnType("tinyint");
 
                     b.Property<byte>("WeekNumber")
                         .HasColumnType("tinyint");
@@ -553,6 +788,15 @@ namespace BumboSolid.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Week", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            HasSchedule = (byte)0,
+                            WeekNumber = (byte)50,
+                            Year = (short)2024
+                        });
                 });
 
             modelBuilder.Entity("Capability", b =>
@@ -831,6 +1075,12 @@ namespace BumboSolid.Migrations
                         .IsRequired()
                         .HasConstraintName("FK_Shift_Department");
 
+                    b.HasOne("BumboSolid.Data.Models.User", "Employee")
+                        .WithMany("Shifts")
+                        .HasForeignKey("EmployeeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .HasConstraintName("FK_Shift_Employee");
+
                     b.HasOne("BumboSolid.Data.Models.Week", "Week")
                         .WithMany("Shifts")
                         .HasForeignKey("WeekId")
@@ -838,6 +1088,8 @@ namespace BumboSolid.Migrations
                         .HasConstraintName("FK_Shift_Week");
 
                     b.Navigation("DepartmentNavigation");
+
+                    b.Navigation("Employee");
 
                     b.Navigation("Week");
                 });
@@ -951,6 +1203,8 @@ namespace BumboSolid.Migrations
                     b.Navigation("AvailabilityRules");
 
                     b.Navigation("FillRequests");
+
+                    b.Navigation("Shifts");
                 });
 
             modelBuilder.Entity("BumboSolid.Data.Models.Weather", b =>

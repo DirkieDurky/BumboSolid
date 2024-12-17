@@ -23,5 +23,5 @@ public partial class AvailabilityRule
 
 	public byte School { get; set; }
 
-	public virtual User EmployeeNavigation { get; set; } = null!;
+	public virtual User? EmployeeNavigation { get; set; } = null!;
 }

@@ -5,6 +5,7 @@ using BumboSolid.Data.Models;
 using BumboSolid.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authorization;
+using System.Text.RegularExpressions;
 using BumboSolid.Migrations;
 
 namespace BumboSolid.Controllers
@@ -90,23 +91,14 @@ namespace BumboSolid.Controllers
                 ModelState.AddModelError(nameof(input.EmployedSince), employmentErrorMessage);
             }
 
-            // Generate Username based on First and Last Name
-            string generatedUserName = await GenerateUserName(input.FirstName, input.LastName);
-
-            // Check if the username is valid
-            if (!IsValidUsername(generatedUserName, out var usernameErrorMessage))
+            if (!PasswordIsStrongEnough(input.Password))
             {
-                ModelState.AddModelError(nameof(input.FirstName), usernameErrorMessage);
-            }
-
-            // Check if the password meets the requirements
-            var passwordValidationResult = await _userManager.PasswordValidators
-                .FirstOrDefault()
-                .ValidateAsync(_userManager, null, input.Password);
-
-            foreach (var error in passwordValidationResult.Errors)
-            {
-                ModelState.AddModelError(nameof(input.Password), error.Description);
+                ModelState.AddModelError(nameof(input.Password), "Wachtwoord is niet niet sterk genoeg. Zorg dat uw wachtwoord voldoet aan de volgende regels:\n" +
+                    "Minimaal 8 karakters.\n" +
+                    "Minimaal 1 cijfer.\n" +
+                    "Minimaal 1 kleine letter.\n" +
+                    "Minimaal 1 hoofdletter.\n" +
+                    "Minimaal 1 speciaal karakter. (Één van de volgende: !@#$%^&*()_+-=[]{}|`~)");
             }
 
             if (input.Password != input.ConfirmPassword)
@@ -123,7 +115,7 @@ namespace BumboSolid.Controllers
             {
                 var user = new User
                 {
-                    UserName = generatedUserName,  // Use the generated unique username
+                    UserName = input.Email,
                     Email = input.Email,
                     FirstName = input.FirstName,
                     LastName = input.LastName,
@@ -132,13 +124,10 @@ namespace BumboSolid.Controllers
                     StreetNumber = input.StreetNumber,
                     BirthDate = input.BirthDate,
                     EmployedSince = input.EmployedSince,
-                };
-
-                var selectedDepartments = await _context.Departments
+                    Departments = await _context.Departments
                     .Where(d => input.SelectedDepartments.Contains(d.Name))
-                    .ToListAsync();
-
-                user.Departments = selectedDepartments;
+                    .ToListAsync(),
+                };
 
                 var result = await _userManager.CreateAsync(user, input.Password);
 
@@ -260,13 +249,14 @@ namespace BumboSolid.Controllers
                     return View(model);
                 }
 
-                var passwordValidationResult = await _userManager.PasswordValidators
-                    .FirstOrDefault()
-                    .ValidateAsync(_userManager, null, model.Password);
-
-                foreach (var error in passwordValidationResult.Errors)
+                if (!PasswordIsStrongEnough(model.Password))
                 {
-                    ModelState.AddModelError(nameof(model.Password), error.Description);
+                    ModelState.AddModelError(nameof(model.Password), "Wachtwoord is niet niet sterk genoeg. Zorg dat uw wachtwoord voldoet aan de volgende regels:\n" +
+                        "Minimaal 8 karakters.\n" +
+                        "Minimaal 1 cijfer.\n" +
+                        "Minimaal 1 kleine letter.\n" +
+                        "Minimaal 1 hoofdletter.\n" +
+                        "Minimaal 1 speciaal karakter. (Één van de volgende: !@#$%^&*()_+-=[]{}|`~)");
                 }
 
                 if (ModelState.IsValid)
@@ -368,46 +358,11 @@ namespace BumboSolid.Controllers
             return true;
         }
 
-        // Generate unique username based on firstname and lastname
-        private async Task<string> GenerateUserName(string firstName, string lastName)
+        public bool PasswordIsStrongEnough(string password)
         {
-            string baseUserName = $"{firstName}{lastName}".ToLower();
-
-            var existingUser = await _userManager.FindByNameAsync(baseUserName);
-
-            if (existingUser != null)
-            {
-                int suffix = 1;
-                string newUserName;
-
-                do
-                {
-                    newUserName = $"{baseUserName}{suffix}";
-                    existingUser = await _userManager.FindByNameAsync(newUserName);
-                    suffix++;
-                } while (existingUser != null);
-
-                return newUserName;
-            }
-
-            return baseUserName;
+            string passwordRegex = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[!@#$%^&*()_+\\-=\\[\\]{}\\|`~;:'\",.<>])[A-Za-z\\d!@#$%^&*()_+\\-=\\[\\]{}\\|`~;:'\",.<>]{8,}$";
+            return Regex.IsMatch(password, passwordRegex);
         }
-
-        private bool IsValidUsername(string username, out string errorMessage)
-        {
-            errorMessage = null;
-
-            var regex = new System.Text.RegularExpressions.Regex("^[a-zA-Z]+$");
-
-            if (!regex.IsMatch(username))
-            {
-                errorMessage = "Naam mag alleen letters bevatten.";
-                return false;
-            }
-
-            return true;
-        }
-
 
     }
 }

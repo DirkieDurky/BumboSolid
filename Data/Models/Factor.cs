@@ -5,7 +5,7 @@ namespace BumboSolid.Data.Models;
 
 public partial class Factor
 {
-    public int PrognosisId { get; set; }
+    public int? PrognosisId { get; set; }
 
     public string Type { get; set; } = null!;
 

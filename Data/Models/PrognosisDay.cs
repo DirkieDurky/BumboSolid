@@ -5,7 +5,7 @@ namespace BumboSolid.Data.Models;
 
 public partial class PrognosisDay
 {
-    public int PrognosisId { get; set; }
+    public int? PrognosisId { get; set; }
 
     public byte Weekday { get; set; }
 

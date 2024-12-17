@@ -11,6 +11,8 @@ public partial class Week
 
     public byte WeekNumber { get; set; }
 
+    public byte HasSchedule { get; set; }
+
     public virtual List<PrognosisDay> PrognosisDays { get; set; } = new List<PrognosisDay>();
 
     public virtual List<Shift> Shifts { get; set; } = new List<Shift>();

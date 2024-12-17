@@ -124,6 +124,7 @@ namespace BumboSolid.Controllers
             int maxWeekMulti = claViewModel.MaxWeekDurationHours ? 60 : 1;
             int maxUninterruptedShiftMulti = claViewModel.MaxUninterruptedShiftDurationHours ? 60 : 1;
 
+
             var existingEntry = await _context.CLAEntries
                 .FirstOrDefaultAsync(e =>
                     (e.AgeStart == claViewModel.AgeStart && e.AgeEnd == claViewModel.AgeEnd) ||
@@ -159,17 +160,17 @@ namespace BumboSolid.Controllers
                     return View(claViewModel);
                 }
 
-
+                //TODO: move logic to helper class, preferably in 2 methods
                 if (claViewModel.MaxAvgWeeklyWorkDurationOverFourWeeks.HasValue)
-                    existingEntry.MaxAvgWeeklyWorkDurationOverFourWeeks = claViewModel.MaxAvgWeeklyWorkDurationOverFourWeeks * maxAvgMulti;
+                    existingEntry.MaxAvgWeeklyWorkDurationOverFourWeeks = (int?)(claViewModel.MaxAvgWeeklyWorkDurationOverFourWeeks * maxAvgMulti);
                 if (claViewModel.MaxShiftDuration.HasValue)
-                    existingEntry.MaxShiftDuration = claViewModel.MaxShiftDuration * maxTotalShiftMulti;
+                    existingEntry.MaxShiftDuration = (int?)(claViewModel.MaxShiftDuration * maxTotalShiftMulti);
                 if (claViewModel.MaxWorkDurationPerDay.HasValue)
-                    existingEntry.MaxWorkDurationPerDay = claViewModel.MaxWorkDurationPerDay * maxWorkDayMulti;
+                    existingEntry.MaxWorkDurationPerDay = (int?)(claViewModel.MaxWorkDurationPerDay * maxWorkDayMulti);
                 if (claViewModel.MaxWorkDurationPerWeek.HasValue)
-                    existingEntry.MaxWorkDurationPerWeek = claViewModel.MaxWorkDurationPerWeek * maxWeekMulti;
+                    existingEntry.MaxWorkDurationPerWeek = (int?)(claViewModel.MaxWorkDurationPerWeek * maxWeekMulti);
                 if (claViewModel.MaxWorkDurationPerHolidayWeek.HasValue)
-                    existingEntry.MaxWorkDurationPerHolidayWeek = claViewModel.MaxWorkDurationPerHolidayWeek * maxHolidayMulti;
+                    existingEntry.MaxWorkDurationPerHolidayWeek = (int?)(claViewModel.MaxWorkDurationPerHolidayWeek * maxHolidayMulti);
                 if (claViewModel.MaxWorkDaysPerWeek.HasValue)
                     existingEntry.MaxWorkDaysPerWeek = claViewModel.MaxWorkDaysPerWeek;
                 if (claViewModel.LatestWorkTime.HasValue)
@@ -184,9 +185,9 @@ namespace BumboSolid.Controllers
                 {
                     breakEntry = new CLABreakEntry();
                     breakEntry.CLAEntryId = existingEntry.Id;
-                    breakEntry.WorkDuration = claViewModel.BreakWorkDuration.Value * maxUninterruptedShiftMulti;
+                    breakEntry.WorkDuration = (int)(claViewModel.BreakWorkDuration.Value * maxUninterruptedShiftMulti);
                     breakEntry.MinBreakDuration = claViewModel.BreakMinBreakDuration.HasValue ?
-                        claViewModel.BreakMinBreakDuration.Value : null;
+                        (int)(claViewModel.BreakMinBreakDuration.Value * minBreakTimeMulti) : null;
 
                     _context.CLAEntries.Update(existingEntry);
                     _context.CLABreakEntries.Add(breakEntry);
@@ -198,7 +199,7 @@ namespace BumboSolid.Controllers
 
                 if (breakEntry != null && !breakEntry.MinBreakDuration.HasValue && claViewModel.BreakMinBreakDuration.HasValue)
                 {
-                    breakEntry.MinBreakDuration = claViewModel.BreakMinBreakDuration;
+                    breakEntry.MinBreakDuration = (int?)(claViewModel.BreakMinBreakDuration * minBreakTimeMulti);
 
                     _context.CLABreakEntries.Update(breakEntry);
                     _context.SaveChanges();
@@ -210,20 +211,20 @@ namespace BumboSolid.Controllers
             else
             {
                 CLAEntry claEntry = new CLAEntry
-                {
+                {   //I know all the explicit casting is ugly, will be solved w helper class eventually.
                     AgeStart = claViewModel.AgeStart.HasValue ? claViewModel.AgeStart.Value : null,
                     AgeEnd = claViewModel.AgeEnd.HasValue ? claViewModel.AgeEnd.Value : null,
-                    MaxAvgWeeklyWorkDurationOverFourWeeks = claViewModel.MaxAvgWeeklyWorkDurationOverFourWeeks.HasValue ?
-                    (claViewModel.MaxAvgWeeklyWorkDurationOverFourWeeks * maxAvgMulti) : null,
+                    MaxAvgWeeklyWorkDurationOverFourWeeks = (int?)(claViewModel.MaxAvgWeeklyWorkDurationOverFourWeeks.HasValue ?
+                    (claViewModel.MaxAvgWeeklyWorkDurationOverFourWeeks * maxAvgMulti) : null),
                     MaxShiftDuration = claViewModel.MaxShiftDuration.HasValue ?
-                    (claViewModel.MaxShiftDuration.Value * maxTotalShiftMulti) : null,
+                    (int)(claViewModel.MaxShiftDuration.Value * maxTotalShiftMulti) : null,
                     MaxWorkDaysPerWeek = claViewModel.MaxWorkDaysPerWeek.HasValue ? claViewModel.MaxWorkDaysPerWeek.Value : null,
                     MaxWorkDurationPerDay = claViewModel.MaxWorkDurationPerDay.HasValue ?
-                    (claViewModel.MaxWorkDurationPerDay.Value * maxWorkDayMulti) : null,
+                    (int)(claViewModel.MaxWorkDurationPerDay.Value * maxWorkDayMulti) : null,
                     MaxWorkDurationPerHolidayWeek = claViewModel.MaxWorkDurationPerHolidayWeek.HasValue ?
-                    (claViewModel.MaxWorkDurationPerHolidayWeek.Value * maxHolidayMulti) : null,
+                    (int)(claViewModel.MaxWorkDurationPerHolidayWeek.Value * maxHolidayMulti) : null,
                     MaxWorkDurationPerWeek = claViewModel.MaxWorkDurationPerWeek.HasValue ?
-                    (claViewModel.MaxWorkDurationPerWeek.Value * maxWeekMulti) : null,
+                    (int)(claViewModel.MaxWorkDurationPerWeek.Value * maxWeekMulti) : null,
                     LatestWorkTime = claViewModel.LatestWorkTime.HasValue ? claViewModel.LatestWorkTime.Value : null,
                     EarliestWorkTime = claViewModel.EarliestWorkTime.HasValue ? claViewModel.EarliestWorkTime.Value : null
                 };
@@ -235,8 +236,9 @@ namespace BumboSolid.Controllers
                     CLABreakEntry breakEntry = new CLABreakEntry
                     {
                         CLAEntryId = claEntry.Id,
-                        WorkDuration = claViewModel.BreakWorkDuration.Value * maxUninterruptedShiftMulti,
-                        MinBreakDuration = claViewModel.BreakMinBreakDuration.HasValue ? claViewModel.BreakMinBreakDuration.Value : null
+                        WorkDuration = (int)(claViewModel.BreakWorkDuration.Value * maxUninterruptedShiftMulti),
+                        MinBreakDuration = claViewModel.BreakMinBreakDuration.HasValue ? 
+                            (int)(claViewModel.BreakMinBreakDuration.Value * minBreakTimeMulti) : null
                     };
                     _context.Add(breakEntry);
                     await _context.SaveChangesAsync();
@@ -247,6 +249,35 @@ namespace BumboSolid.Controllers
             TempData["Message"] = existingEntry != null ? "CAO regels zijn geupdated!" : "Nieuwe CAO regels succesvol toegevoegd!";
 
             return RedirectToAction(nameof(Index));
+        }
+
+        private void NoMinuteDecimals(CLAManageViewModel claViewModel)
+        {
+            if (claViewModel == null) return;
+
+            string regex = @"^\d+$";
+
+            if (claViewModel.MaxAvgWeeklyWorkDurationOverFourWeeks.HasValue && !claViewModel.MaxAvgDurationHours
+                && !Regex.IsMatch(claViewModel.MaxAvgWeeklyWorkDurationOverFourWeeks.Value.ToString(), regex))
+                ModelState.AddModelError(nameof(claViewModel.MaxAvgWeeklyWorkDurationOverFourWeeks), "Houd minuten alstublieft in hele getallen");
+            if (claViewModel.MaxShiftDuration.HasValue && !claViewModel.MaxTotalShiftDurationHours
+                && !Regex.IsMatch(claViewModel.MaxShiftDuration.Value.ToString(), regex))
+                ModelState.AddModelError(nameof(claViewModel.MaxShiftDuration), "Houd minuten alstublieft in hele getallen");
+            if (claViewModel.MaxWorkDurationPerDay.HasValue && !claViewModel.MaxDayDurationHours
+                && !Regex.IsMatch(claViewModel.MaxWorkDurationPerDay.Value.ToString(), regex))
+                ModelState.AddModelError(nameof(claViewModel.MaxWorkDurationPerDay), "Houd minuten alstublieft in hele getallen");
+            if (claViewModel.MaxWorkDurationPerHolidayWeek.HasValue && !claViewModel.MaxHolidayDurationHours
+                && !Regex.IsMatch(claViewModel.MaxWorkDurationPerHolidayWeek.Value.ToString(), regex))
+                ModelState.AddModelError(nameof(claViewModel.MaxWorkDurationPerHolidayWeek), "Houd minuten alstublieft in hele getallen");
+            if (claViewModel.MaxWorkDurationPerWeek.HasValue && !claViewModel.MaxWeekDurationHours
+                && !Regex.IsMatch(claViewModel.MaxWorkDurationPerWeek.Value.ToString(), regex))
+                ModelState.AddModelError(nameof(claViewModel.MaxWorkDurationPerWeek), "Houd minuten alstublieft in hele getallen");
+            if (claViewModel.BreakWorkDuration.HasValue && !claViewModel.MaxUninterruptedShiftDurationHours
+                && !Regex.IsMatch(claViewModel.BreakWorkDuration.Value.ToString(), regex))
+                ModelState.AddModelError(nameof(claViewModel.BreakWorkDuration), "Houd minuten alstublieft in hele getallen");
+            if (claViewModel.BreakMinBreakDuration.HasValue && !claViewModel.MinBreakTimeHours
+                && !Regex.IsMatch(claViewModel.BreakMinBreakDuration.Value.ToString(), regex))
+                ModelState.AddModelError(nameof(claViewModel.BreakMinBreakDuration), "Houd minuten alstublieft in hele getallen");
         }
 
         private void AddFieldErrors(List<string> conflictFields, CLAManageViewModel claViewModel)
@@ -308,26 +339,33 @@ namespace BumboSolid.Controllers
             var breakEntry = await _context.CLABreakEntries
                 .FirstOrDefaultAsync(e => e.CLAEntryId == claEntry.Id);
 
-            int maxAvgMulti = 60;
-            int maxTotalShiftMulti = 60;
-            int maxWorkDayMulti = 60;
-            int maxHolidayMulti = 60;
-            int maxWeekMulti = 60;
-            int maxUninterruptedMulti = 60;
+            decimal maxAvgMulti = 60;
+            decimal maxTotalShiftMulti = 60;
+            decimal maxWorkDayMulti = 60;
+            decimal maxHolidayMulti = 60;
+            decimal maxWeekMulti = 60;
+            decimal maxUninterruptedMulti = 60;
+            decimal minBreakTimeMulti = 60;
+
+            int minTime = 120;
 
             if (claEntry.MaxAvgWeeklyWorkDurationOverFourWeeks.HasValue)
-                maxAvgMulti = (claEntry.MaxAvgWeeklyWorkDurationOverFourWeeks % 60 == 0) ? 60 : 1;
+                maxAvgMulti = (claEntry.MaxAvgWeeklyWorkDurationOverFourWeeks >= minTime) ? 60 : 1;
             if (claEntry.MaxShiftDuration.HasValue)
-                maxTotalShiftMulti = (claEntry.MaxShiftDuration.Value % 60 == 0) ? 60 : 1;
+                maxTotalShiftMulti = (claEntry.MaxShiftDuration.Value >= minTime) ? 60 : 1;
             if (claEntry.MaxWorkDurationPerDay.HasValue)
-                maxWorkDayMulti = (claEntry.MaxWorkDurationPerDay % 60 == 0) ? 60 : 1;
+                maxWorkDayMulti = (claEntry.MaxWorkDurationPerDay >= minTime) ? 60 : 1;
             if (claEntry.MaxWorkDurationPerHolidayWeek.HasValue)
-                maxHolidayMulti = (claEntry.MaxWorkDurationPerHolidayWeek % 60 == 0) ? 60 : 1;
+                maxHolidayMulti = (claEntry.MaxWorkDurationPerHolidayWeek >= minTime) ? 60 : 1;
             if (claEntry.MaxWorkDurationPerWeek.HasValue)
-                maxWeekMulti = (claEntry.MaxWorkDurationPerWeek % 60 == 0) ? 60 : 1;
+                maxWeekMulti = (claEntry.MaxWorkDurationPerWeek >= minTime) ? 60 : 1;
 
             if (breakEntry != null)
-                maxUninterruptedMulti = breakEntry.WorkDuration % 60 == 0 ? 60 : 1;
+                maxUninterruptedMulti = breakEntry.WorkDuration >= minTime ? 60 : 1;
+
+            if (breakEntry != null && breakEntry.MinBreakDuration.HasValue)
+                minBreakTimeMulti = breakEntry.MinBreakDuration.Value >= minTime ? 60 : 1;
+            
 
             CLAManageViewModel claViewModel = new()
             {
@@ -360,7 +398,8 @@ namespace BumboSolid.Controllers
                 MaxDayDurationHours = maxWorkDayMulti == 60,
                 MaxHolidayDurationHours = maxHolidayMulti == 60,
                 MaxWeekDurationHours = maxWeekMulti == 60,
-                MaxUninterruptedShiftDurationHours = maxUninterruptedMulti == 60
+                MaxUninterruptedShiftDurationHours = maxUninterruptedMulti == 60,
+                MinBreakTimeHours = minBreakTimeMulti == 60
             };
 
 
@@ -407,23 +446,14 @@ namespace BumboSolid.Controllers
                 .Where(p => !notChecked.Contains(p.Name))
                 .Any(p => p.GetValue(claViewModel) != null);
 
-            bool noErrors = true;
             if (!hasValue)
             {
                 ModelState.AddModelError("", "U mag niet hier alle waardes leeggooien, gebruik daarvoor A.U.B. het verwijderen");
-                noErrors = false;
-            }
-
-            if (claViewModel.AgeStart.HasValue && claViewModel.AgeEnd.HasValue && (claViewModel.AgeStart > claViewModel.AgeEnd))
-            {
-                ModelState.AddModelError("AgeEnd", "De eind leeftijd moet hoger zijn dan de begin leeftijd");
-                noErrors = false;
             }
 
             if (claViewModel.MaxWorkDaysPerWeek.HasValue && claViewModel.MaxWorkDaysPerWeek.Value > 7)
             {
                 ModelState.AddModelError("MaxWorkDaysPerWeek", "Er zijn slechts zeven dagen in een week.");
-                noErrors = false;
             }
 
             if (claViewModel.MaxWorkDurationPerDay.HasValue)
@@ -431,7 +461,6 @@ namespace BumboSolid.Controllers
                     (claViewModel.MaxWorkDurationPerDay.Value > 24 && claViewModel.MaxDayDurationHours))
                 {
                     ModelState.AddModelError(nameof(claViewModel.MaxWorkDurationPerDay), "Er zit slechts 24 uur in een dag.");
-                    noErrors = false;
                 }
 
             if (claViewModel.MaxWorkDurationPerWeek.HasValue)
@@ -439,7 +468,6 @@ namespace BumboSolid.Controllers
                     (claViewModel.MaxWorkDurationPerWeek.Value > 168 && claViewModel.MaxWeekDurationHours))
                 {
                     ModelState.AddModelError(nameof(claViewModel.MaxWorkDurationPerWeek), "Er zit slechts 168 uur in een week");
-                    noErrors = false;
                 }
 
             if (claViewModel.MaxWorkDurationPerHolidayWeek.HasValue)
@@ -447,7 +475,6 @@ namespace BumboSolid.Controllers
                     (claViewModel.MaxWorkDurationPerHolidayWeek.Value > 168 && claViewModel.MaxHolidayDurationHours))
                 {
                     ModelState.AddModelError(nameof(claViewModel.MaxWorkDurationPerHolidayWeek), "Er zit slechts 168 uur in een week");
-                    noErrors = false;
                 }
 
             if (claViewModel.MaxAvgWeeklyWorkDurationOverFourWeeks.HasValue)
@@ -455,17 +482,17 @@ namespace BumboSolid.Controllers
                     (claViewModel.MaxAvgWeeklyWorkDurationOverFourWeeks.Value > 168 && claViewModel.MaxAvgDurationHours))
                 {
                     ModelState.AddModelError(nameof(claViewModel.MaxAvgWeeklyWorkDurationOverFourWeeks), "Er zit slechts 168 uur in een week");
-                    noErrors = false;
                 }
 
             if (!claViewModel.BreakWorkDuration.HasValue && claViewModel.BreakMinBreakDuration.HasValue)
             {
                 ModelState.AddModelError(nameof(claViewModel.BreakMinBreakDuration),
                     "Minimale pauzetijd mag niet worden ingevuld wanneer maximale werkduur zonder pauzes leeg is");
-                noErrors = false;
             }
 
-            if (!noErrors || !ModelState.IsValid) return View(claViewModel);
+            NoMinuteDecimals(claViewModel);
+
+            if (!ModelState.IsValid) return View(claViewModel);
 
             int maxAvgMulti = claViewModel.MaxAvgDurationHours ? 60 : 1;
             int maxTotalShiftMulti = claViewModel.MaxTotalShiftDurationHours ? 60 : 1;
@@ -473,19 +500,21 @@ namespace BumboSolid.Controllers
             int maxHolidayMulti = claViewModel.MaxHolidayDurationHours ? 60 : 1;
             int maxWeekMulti = claViewModel.MaxWeekDurationHours ? 60 : 1;
             int maxUninterruptedShiftMulti = claViewModel.MaxUninterruptedShiftDurationHours ? 60 : 1;
+            int minBreakTimeMulti = claViewModel.MinBreakTimeHours ? 60 : 1;
+
 
             claEntry.MaxAvgWeeklyWorkDurationOverFourWeeks = claViewModel.MaxAvgWeeklyWorkDurationOverFourWeeks.HasValue ?
-                (claViewModel.MaxAvgWeeklyWorkDurationOverFourWeeks * maxAvgMulti) : null;
+                (int?)(claViewModel.MaxAvgWeeklyWorkDurationOverFourWeeks * maxAvgMulti) : null;
             claEntry.MaxShiftDuration = claViewModel.MaxShiftDuration.HasValue ?
-                (claViewModel.MaxShiftDuration.Value * maxTotalShiftMulti) : null;
+                (int?)(claViewModel.MaxShiftDuration.Value * maxTotalShiftMulti) : null;
             claEntry.MaxWorkDaysPerWeek = claViewModel.MaxWorkDaysPerWeek.HasValue ?
                 claViewModel.MaxWorkDaysPerWeek.Value : null;
             claEntry.MaxWorkDurationPerDay = claViewModel.MaxWorkDurationPerDay.HasValue ?
-                (claViewModel.MaxWorkDurationPerDay.Value * maxWorkDayMulti) : null;
+                (int?)(claViewModel.MaxWorkDurationPerDay.Value * maxWorkDayMulti) : null;
             claEntry.MaxWorkDurationPerHolidayWeek = claViewModel.MaxWorkDurationPerHolidayWeek.HasValue ?
-                (claViewModel.MaxWorkDurationPerHolidayWeek.Value * maxHolidayMulti) : null;
+                (int?)(claViewModel.MaxWorkDurationPerHolidayWeek.Value * maxHolidayMulti) : null;
             claEntry.MaxWorkDurationPerWeek = claViewModel.MaxWorkDurationPerWeek.HasValue ?
-                (claViewModel.MaxWorkDurationPerWeek.Value * maxWeekMulti) : null;
+                (int?)(claViewModel.MaxWorkDurationPerWeek.Value * maxWeekMulti) : null;
             claEntry.LatestWorkTime = claViewModel.LatestWorkTime.HasValue ?
                 claViewModel.LatestWorkTime.Value : null;
             claEntry.EarliestWorkTime = claViewModel.EarliestWorkTime.HasValue ?
@@ -495,12 +524,13 @@ namespace BumboSolid.Controllers
             if (breakEntry != null && claViewModel.BreakWorkDuration.HasValue)
             {
                 _context.CLABreakEntries.Remove(breakEntry); //apparently needed
-                var updatedBreakEntry = new CLABreakEntry();
-
-                updatedBreakEntry.CLAEntryId = breakEntry.CLAEntryId;
-                updatedBreakEntry.WorkDuration = claViewModel.BreakWorkDuration.Value * maxUninterruptedShiftMulti;
-                updatedBreakEntry.MinBreakDuration = claViewModel.BreakMinBreakDuration.HasValue ?
-                    claViewModel.BreakMinBreakDuration : null;
+                var updatedBreakEntry = new CLABreakEntry
+                {
+                    CLAEntryId = breakEntry.CLAEntryId,
+                    WorkDuration = (int)(claViewModel.BreakWorkDuration.Value * maxUninterruptedShiftMulti),
+                    MinBreakDuration = claViewModel.BreakMinBreakDuration.HasValue ?
+                    (int)claViewModel.BreakMinBreakDuration : null
+                };
 
                 _context.CLABreakEntries.Add(updatedBreakEntry);
             }
@@ -513,9 +543,9 @@ namespace BumboSolid.Controllers
                 breakEntry = new CLABreakEntry
                 {
                     CLAEntryId = claEntry.Id,
-                    WorkDuration = claViewModel.BreakWorkDuration.Value * maxUninterruptedShiftMulti,
+                    WorkDuration = (int)(claViewModel.BreakWorkDuration.Value * maxUninterruptedShiftMulti),
                     MinBreakDuration = claViewModel.BreakMinBreakDuration.HasValue ?
-                        claViewModel.BreakMinBreakDuration : null
+                        (int)(claViewModel.BreakMinBreakDuration * minBreakTimeMulti) : null
                 };
                 _context.CLABreakEntries.Add(breakEntry);
             }

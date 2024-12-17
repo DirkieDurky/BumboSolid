@@ -62,7 +62,29 @@ namespace BumboSolid.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Employee",
+                name: "FactorType",
+                columns: table => new
+                {
+                    Type = table.Column<string>(type: "varchar(25)", unicode: false, maxLength: 25, nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_FactorType", x => x.Type);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Holiday",
+                columns: table => new
+                {
+                    Name = table.Column<string>(type: "varchar(25)", unicode: false, maxLength: 25, nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Holiday", x => x.Name);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "User",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
@@ -91,29 +113,7 @@ namespace BumboSolid.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Employee", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "FactorType",
-                columns: table => new
-                {
-                    Type = table.Column<string>(type: "varchar(25)", unicode: false, maxLength: 25, nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_FactorType", x => x.Type);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Holiday",
-                columns: table => new
-                {
-                    Name = table.Column<string>(type: "varchar(25)", unicode: false, maxLength: 25, nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Holiday", x => x.Name);
+                    table.PrimaryKey("PK_User", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -132,13 +132,14 @@ namespace BumboSolid.Migrations
                 name: "Week",
                 columns: table => new
                 {
-                    ID = table.Column<int>(type: "int", nullable: false),
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     Year = table.Column<short>(type: "smallint", nullable: false),
                     WeekNumber = table.Column<byte>(type: "tinyint", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Week", x => x.ID);
+                    table.PrimaryKey("PK_Week", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -202,6 +203,24 @@ namespace BumboSolid.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "HolidayDay",
+                columns: table => new
+                {
+                    Holiday_Name = table.Column<string>(type: "varchar(25)", unicode: false, maxLength: 25, nullable: false),
+                    Date = table.Column<DateOnly>(type: "date", nullable: false),
+                    Impact = table.Column<short>(type: "smallint", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_HolidayDay", x => new { x.Holiday_Name, x.Date });
+                    table.ForeignKey(
+                        name: "FK_HolidayDay_Holiday",
+                        column: x => x.Holiday_Name,
+                        principalTable: "Holiday",
+                        principalColumn: "Name");
+                });
+
+            migrationBuilder.CreateTable(
                 name: "AspNetUserClaims",
                 columns: table => new
                 {
@@ -215,9 +234,9 @@ namespace BumboSolid.Migrations
                 {
                     table.PrimaryKey("PK_AspNetUserClaims", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_AspNetUserClaims_Employee_UserId",
+                        name: "FK_AspNetUserClaims_User_UserId",
                         column: x => x.UserId,
-                        principalTable: "Employee",
+                        principalTable: "User",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -235,9 +254,9 @@ namespace BumboSolid.Migrations
                 {
                     table.PrimaryKey("PK_AspNetUserLogins", x => new { x.LoginProvider, x.ProviderKey });
                     table.ForeignKey(
-                        name: "FK_AspNetUserLogins_Employee_UserId",
+                        name: "FK_AspNetUserLogins_User_UserId",
                         column: x => x.UserId,
-                        principalTable: "Employee",
+                        principalTable: "User",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -259,9 +278,9 @@ namespace BumboSolid.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_AspNetUserRoles_Employee_UserId",
+                        name: "FK_AspNetUserRoles_User_UserId",
                         column: x => x.UserId,
-                        principalTable: "Employee",
+                        principalTable: "User",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -279,9 +298,9 @@ namespace BumboSolid.Migrations
                 {
                     table.PrimaryKey("PK_AspNetUserTokens", x => new { x.UserId, x.LoginProvider, x.Name });
                     table.ForeignKey(
-                        name: "FK_AspNetUserTokens_Employee_UserId",
+                        name: "FK_AspNetUserTokens_User_UserId",
                         column: x => x.UserId,
-                        principalTable: "Employee",
+                        principalTable: "User",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -305,7 +324,7 @@ namespace BumboSolid.Migrations
                     table.ForeignKey(
                         name: "FK_AvailabilityRule_Employee",
                         column: x => x.Employee,
-                        principalTable: "Employee",
+                        principalTable: "User",
                         principalColumn: "Id");
                 });
 
@@ -323,30 +342,14 @@ namespace BumboSolid.Migrations
                         name: "FK_Capability_Department",
                         column: x => x.Department,
                         principalTable: "Department",
-                        principalColumn: "Name");
+                        principalColumn: "Name",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_Capability_Employee",
                         column: x => x.Employee,
-                        principalTable: "Employee",
-                        principalColumn: "Id");
-                });
-
-            migrationBuilder.CreateTable(
-                name: "HolidayDay",
-                columns: table => new
-                {
-                    Holiday_Name = table.Column<string>(type: "varchar(25)", unicode: false, maxLength: 25, nullable: false),
-                    Date = table.Column<DateOnly>(type: "date", nullable: false),
-                    Impact = table.Column<short>(type: "smallint", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_HolidayDay", x => new { x.Holiday_Name, x.Date });
-                    table.ForeignKey(
-                        name: "FK_HolidayDay_Holiday",
-                        column: x => x.Holiday_Name,
-                        principalTable: "Holiday",
-                        principalColumn: "Name");
+                        principalTable: "User",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -364,14 +367,15 @@ namespace BumboSolid.Migrations
                         name: "FK_PrognosisDay_Week",
                         column: x => x.PrognosisID,
                         principalTable: "Week",
-                        principalColumn: "ID");
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
                 name: "Shift",
                 columns: table => new
                 {
-                    ID = table.Column<int>(type: "int", nullable: false),
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     WeekID = table.Column<int>(type: "int", nullable: false),
                     Weekday = table.Column<byte>(type: "tinyint", nullable: false),
                     Department = table.Column<string>(type: "varchar(25)", unicode: false, maxLength: 25, nullable: false),
@@ -383,17 +387,23 @@ namespace BumboSolid.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Shift", x => x.ID);
+                    table.PrimaryKey("PK_Shift", x => x.Id);
                     table.ForeignKey(
                         name: "FK_Shift_Department",
                         column: x => x.Department,
                         principalTable: "Department",
                         principalColumn: "Name");
                     table.ForeignKey(
+                        name: "FK_Shift_Employee",
+                        column: x => x.Employee,
+                        principalTable: "User",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
                         name: "FK_Shift_Week",
                         column: x => x.WeekID,
                         principalTable: "Week",
-                        principalColumn: "ID");
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -467,13 +477,13 @@ namespace BumboSolid.Migrations
                     table.ForeignKey(
                         name: "FK_FillRequest_Employee",
                         column: x => x.SubstituteEmployeeID,
-                        principalTable: "Employee",
+                        principalTable: "User",
                         principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_FillRequest_Shift",
                         column: x => x.ShiftID,
                         principalTable: "Shift",
-                        principalColumn: "ID");
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.InsertData(
@@ -508,6 +518,65 @@ namespace BumboSolid.Migrations
                     { (byte)4, (short)-25 },
                     { (byte)5, (short)-50 },
                     { (byte)6, (short)-75 }
+                });
+
+            migrationBuilder.InsertData(
+                table: "Week",
+                columns: new[] { "Id", "WeekNumber", "Year" },
+                values: new object[,]
+                {
+                    { 1, (byte)1, (short)2024 },
+                    { 2, (byte)2, (short)2024 }
+                });
+
+            migrationBuilder.InsertData(
+                table: "Norm",
+                columns: new[] { "ID", "Activity", "AvgDailyPerformances", "Department", "Duration", "PerVisitor" },
+                values: new object[,]
+                {
+                    { 1, "Stocking", (byte)5, "Vakkenvullen", 60, false },
+                    { 2, "Cashier", (byte)8, "Kassa", 45, false }
+                });
+
+            migrationBuilder.InsertData(
+                table: "PrognosisDay",
+                columns: new[] { "PrognosisID", "Weekday", "VisitorEstimate" },
+                values: new object[,]
+                {
+                    { 1, (byte)1, 0 },
+                    { 2, (byte)2, 0 }
+                });
+
+            migrationBuilder.InsertData(
+                table: "Shift",
+                columns: new[] { "Id", "Department", "Employee", "EndTime", "ExternalEmployeeName", "IsBreak", "StartTime", "WeekID", "Weekday" },
+                values: new object[,]
+                {
+                    { 3, "Kassa", null, new TimeOnly(17, 5, 0), "Alice Johnson", (byte)0, new TimeOnly(9, 0, 0), 2, (byte)2 },
+                    { 4, "Vakkenvullen", null, new TimeOnly(18, 5, 0), "Bob Brown", (byte)0, new TimeOnly(10, 55, 0), 2, (byte)5 },
+                    { 5, "Kassa", null, new TimeOnly(16, 5, 0), "Charlie Davis", (byte)0, new TimeOnly(8, 0, 0), 2, (byte)1 },
+                    { 6, "Vakkenvullen", null, new TimeOnly(19, 0, 0), "Diana Evans", (byte)0, new TimeOnly(11, 0, 0), 2, (byte)3 },
+                    { 7, "Kassa", null, new TimeOnly(15, 0, 0), "Ethan Foster", (byte)0, new TimeOnly(7, 0, 0), 2, (byte)0 },
+                    { 8, "Vakkenvullen", null, new TimeOnly(20, 0, 0), "Fiona Green", (byte)0, new TimeOnly(12, 0, 0), 2, (byte)4 },
+                    { 9, "Kassa", null, new TimeOnly(21, 5, 0), "George Harris", (byte)0, new TimeOnly(13, 0, 0), 2, (byte)6 },
+                    { 10, "Vakkenvullen", null, new TimeOnly(22, 30, 0), "Hannah Lee", (byte)0, new TimeOnly(14, 0, 0), 2, (byte)2 },
+                    { 11, "Kassa", null, new TimeOnly(23, 0, 0), "Ian Miller", (byte)0, new TimeOnly(15, 0, 0), 2, (byte)5 },
+                    { 12, "Vakkenvullen", null, new TimeOnly(0, 0, 0), "Julia Nelson", (byte)0, new TimeOnly(16, 0, 0), 2, (byte)1 },
+                    { 13, "Kassa", null, new TimeOnly(1, 0, 0), "Kevin Owens", (byte)0, new TimeOnly(17, 0, 0), 2, (byte)3 },
+                    { 14, "Vakkenvullen", null, new TimeOnly(2, 0, 0), "Laura Perez", (byte)0, new TimeOnly(18, 0, 0), 2, (byte)0 },
+                    { 15, "Kassa", null, new TimeOnly(3, 0, 0), "Michael Quinn", (byte)0, new TimeOnly(10, 0, 0), 2, (byte)4 },
+                    { 16, "Kassa", null, new TimeOnly(5, 30, 0), "Nina Roberts", (byte)0, new TimeOnly(20, 0, 0), 2, (byte)5 },
+                    { 17, "Vakkenvullen", null, new TimeOnly(5, 20, 0), "Oscar Scott", (byte)0, new TimeOnly(20, 0, 0), 2, (byte)5 },
+                    { 18, "Vakkenvullen", null, new TimeOnly(5, 10, 0), "Paula Turner", (byte)0, new TimeOnly(20, 0, 0), 2, (byte)5 }
+                });
+
+            migrationBuilder.InsertData(
+                table: "PrognosisDepartment",
+                columns: new[] { "Department", "PrognosisID", "Weekday", "WorkHours" },
+                values: new object[,]
+                {
+                    { "Kassa", 1, (byte)1, (short)0 },
+                    { "Vakkenvullen", 2, (byte)2, (short)0 }
                 });
 
             migrationBuilder.CreateIndex(
@@ -546,18 +615,6 @@ namespace BumboSolid.Migrations
                 name: "IX_Capability_Department",
                 table: "Capability",
                 column: "Department");
-
-            migrationBuilder.CreateIndex(
-                name: "EmailIndex",
-                table: "Employee",
-                column: "NormalizedEmail");
-
-            migrationBuilder.CreateIndex(
-                name: "UserNameIndex",
-                table: "Employee",
-                column: "NormalizedUserName",
-                unique: true,
-                filter: "[NormalizedUserName] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Factor_PrognosisID_Weekday",
@@ -605,9 +662,26 @@ namespace BumboSolid.Migrations
                 column: "Department");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Shift_Employee",
+                table: "Shift",
+                column: "Employee");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Shift_WeekID",
                 table: "Shift",
                 column: "WeekID");
+
+            migrationBuilder.CreateIndex(
+                name: "EmailIndex",
+                table: "User",
+                column: "NormalizedEmail");
+
+            migrationBuilder.CreateIndex(
+                name: "UserNameIndex",
+                table: "User",
+                column: "NormalizedUserName",
+                unique: true,
+                filter: "[NormalizedUserName] IS NOT NULL");
         }
 
         /// <inheritdoc />
@@ -665,9 +739,6 @@ namespace BumboSolid.Migrations
                 name: "Weather");
 
             migrationBuilder.DropTable(
-                name: "Employee");
-
-            migrationBuilder.DropTable(
                 name: "Shift");
 
             migrationBuilder.DropTable(
@@ -678,6 +749,9 @@ namespace BumboSolid.Migrations
 
             migrationBuilder.DropTable(
                 name: "Department");
+
+            migrationBuilder.DropTable(
+                name: "User");
 
             migrationBuilder.DropTable(
                 name: "Week");
