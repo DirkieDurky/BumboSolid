@@ -1,0 +1,101 @@
+﻿@model BumboSolid.Data.Models.Shift
+
+@{
+    String[] daysOfTheWeek = { "Maandag", "Dinsdag", "Woensdag", "Donderdag", "Vrijdag", "Zaterdag", "Zondag" };
+
+    var schedule = Model.Week;
+
+    DateTime date = GetDate(schedule.Year, schedule.WeekNumber, Model.Weekday);
+}
+
+@functions {
+    public static DateTime GetDate(int year, int weekOfYear, byte weekday)
+    {
+        var jan1 = new DateTime(year, 1, 1);
+        var daysOffset = (int)DayOfWeek.Monday - (int)jan1.DayOfWeek;
+        var firstMonday = jan1.AddDays(daysOffset > 0 ? daysOffset - 7 : daysOffset);
+        var weekStartDate = firstMonday.AddDays((weekOfYear - 1) * 7);
+
+        return weekStartDate.AddDays(weekday - 1);
+    }
+}
+
+<header class="d-flex align-items-center gap-3 justify-content-center gap-3">
+    <div class="w-100 text-align text-end">
+        <a class="new-btn" asp-controller="Schedules" asp-action="Index">Terug</a>
+    </div>
+    <div class="mx-3 text-center text-nowrap">
+        <h1>Rooster Details</h1>
+        <p>@Model.EmployeeName</p>
+        <p>@date.ToString("dd/MM/yyyy")</p>
+    </div>
+    <div class="w-100">
+
+    </div>
+</header>
+
+<div>
+    <table class="schedule-table">
+        <thead>
+            <tr>
+                <th>Afdeling</th>
+                <th>Tijdslot</th>
+                <th>Extern</th>
+                <th>Acties</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>@Model.Department</td>
+                <td><i class="fa-regular fa-clock"></i> @Model.StartTime.ToString("HH:mm") - @Model.EndTime.ToString("HH:mm")</td>
+                <td>@(Model.Employee == null ? "Nee" : "Ja")</td>
+                <td>
+                    <a asp-controller="Shifts" asp-action="Edit" asp-route-id="@Model.Id"><i class="fa-solid fa-pencil"></i></a>
+                    <a asp-controller="Shifts" asp-action="Delete" asp-route-id="@Model.Id"><i class="fa-solid fa-trash"></i></a>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+
+<style>
+    .shift-link {
+        text-decoration: none;
+        color: inherit;
+    }
+
+    .schedule-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 20px 0;
+        font-size: 16px;
+        text-align: left;
+    }
+
+        .schedule-table thead th {
+            background-color: #f4f4f4;
+            color: #333;
+            font-weight: bold;
+            border-bottom: 2px solid #ddd;
+            padding: 10px;
+        }
+
+        .schedule-table tbody tr {
+            border-bottom: 1px solid #ddd;
+        }
+
+            .schedule-table tbody tr:nth-child(even) {
+                background-color: #f9f9f9;
+            }
+
+        .schedule-table td {
+            padding: 10px;
+        }
+
+        .schedule-table tbody tr:hover {
+            background-color: #f1f1f1;
+        }
+</style>
+
+

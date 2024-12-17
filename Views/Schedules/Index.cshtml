@@ -55,7 +55,7 @@
                 </thead>
                 <tbody>
                     @foreach (var shiftGroup in shifts.Where(s => s.Department == afdeling)
-                   .GroupBy(s => s.Employee))
+                   .GroupBy(s => s.EmployeeName))
                     {
                         <tr>
                             <td>

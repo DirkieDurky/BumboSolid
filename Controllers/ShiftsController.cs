@@ -67,8 +67,23 @@ namespace BumboSolid.Controllers
 			return View(viewModel);
 		}
 
-		// GET: Shifts/Details/5
-		[HttpGet("Rooster Details")]
+        [HttpGet("ShiftDetail")]
+        public async Task<IActionResult> Detail(int shiftId)
+        {
+            var shift = await _context.Shifts
+                .Include(s => s.Week)
+                .Include(s => s.Employee)
+                .FirstOrDefaultAsync(s => s.Id == shiftId);
+
+            if (shift == null)
+            {
+                return NotFound();
+            }
+            return View(shift);
+        }
+
+        // GET: Shifts/Details/5
+        [HttpGet("Rooster Details")]
 		public IActionResult Details(short year, short week, int day, int startTime, int endTime)
 		{
 			TimeOnly startTimeTime = new(startTime, 0);
