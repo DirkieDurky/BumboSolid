@@ -33,7 +33,11 @@ namespace BumboSolid.Controllers
 
 			DateOnly startDate = weekStart;
 
-			return View(_context.AvailabilityRules);
+			var availabilityRules = _context.AvailabilityRules
+                                     .Where(rule => rule.Employee == userId)
+                                     .ToList();
+
+            return View(availabilityRules);
         }
 
 		// GET: AvailiabilityController/Create

@@ -16,37 +16,44 @@
     </a>
 </div>
 
-<table class="table">
-    <thead>
-        <tr>
-            <th>Dag</th>
-            <th>Starttijd</th>
-            <th>Eindtijd</th>
-            <th>Beschikbaar</th>
-            <th>School</th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var availabilityRule in Model)
-        {
+@if(Model.Any())
+{
+    <table class="table">
+        <thead>
             <tr>
-                <td>@availabilityRule.Date</td>
-                <td>@availabilityRule.StartTime</td>
-                <td>@availabilityRule.EndTime</td>
-                <td>@(availabilityRule.Available == 1 ? "Ja" : "Nee")</td>
-                <td>@(availabilityRule.School == 1 ? "Ja" : "Nee")</td>
-                <td>
-                    <a class="btn btn-sm" asp-area="" asp-controller="Availability" asp-action="Edit"
-                       asp-route-AvailabilityId="@availabilityRule.Id" asp-route-weekNr="@ViewBag.weekNr" asp-route-year="@ViewBag.year">
-                        <i class="fa-solid fa-pencil"></i>
-                    </a>
-                    <a class="btn btn-sm" asp-area="" asp-controller="Availability" asp-action="Delete"
-                       asp-route-AvailabilityId="@availabilityRule.Id" asp-route-weekNr="@ViewBag.weekNr" asp-route-year="@ViewBag.year">
-                        <i class="fa-solid fa-trash"></i>
-                    </a>
-                </td>
+                <th>Dag</th>
+                <th>Starttijd</th>
+                <th>Eindtijd</th>
+                <th>Beschikbaar</th>
+                <th>School</th>
+                <th></th>
             </tr>
-        }
-    </tbody>
-</table>
+        </thead>
+        <tbody>
+            @foreach (var availabilityRule in Model)
+            {
+                <tr>
+                    <td>@availabilityRule.Date</td>
+                    <td>@availabilityRule.StartTime</td>
+                    <td>@availabilityRule.EndTime</td>
+                    <td>@(availabilityRule.Available == 1 ? "Ja" : "Nee")</td>
+                    <td>@(availabilityRule.School == 1 ? "Ja" : "Nee")</td>
+                    <td>
+                        <a class="btn btn-sm" asp-area="" asp-controller="Availability" asp-action="Edit"
+                           asp-route-AvailabilityId="@availabilityRule.Id" asp-route-weekNr="@ViewBag.weekNr" asp-route-year="@ViewBag.year">
+                            <i class="fa-solid fa-pencil"></i>
+                        </a>
+                        <a class="btn btn-sm" asp-area="" asp-controller="Availability" asp-action="Delete"
+                           asp-route-AvailabilityId="@availabilityRule.Id" asp-route-weekNr="@ViewBag.weekNr" asp-route-year="@ViewBag.year">
+                            <i class="fa-solid fa-trash"></i>
+                        </a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <h3>U hebt nog geen beschikbaarheid opgegeven.</h3>
+}
