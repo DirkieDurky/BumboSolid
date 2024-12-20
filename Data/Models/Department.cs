@@ -13,5 +13,8 @@ public partial class Department
 
     public virtual List<Shift> Shifts { get; set; } = new List<Shift>();
 
+    public virtual List<ClockedHours> ClockedHours { get; set; } = new List<ClockedHours>();
+
+
     public virtual List<User> Employees { get; set; } = new List<User>();
 }
