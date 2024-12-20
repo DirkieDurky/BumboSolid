@@ -16,7 +16,7 @@
         var firstMonday = jan1.AddDays(daysOffset > 0 ? daysOffset - 7 : daysOffset);
         var weekStartDate = firstMonday.AddDays((weekOfYear - 1) * 7);
 
-        return weekStartDate.AddDays(weekday - 1);
+        return weekStartDate.AddDays(weekday);
     }
 }
 
@@ -25,7 +25,7 @@
         <a class="new-btn" asp-controller="Schedules" asp-action="Index">Terug</a>
     </div>
     <div class="mx-3 text-center text-nowrap">
-        <h1>Rooster Details</h1>
+        <h1>Shift Details</h1>
         <p>@Model.EmployeeName</p>
         <p>@date.ToString("dd/MM/yyyy")</p>
     </div>
@@ -38,6 +38,7 @@
     <table class="schedule-table">
         <thead>
             <tr>
+                <th>Dag</th>
                 <th>Afdeling</th>
                 <th>Tijdslot</th>
                 <th>Extern</th>
@@ -46,6 +47,7 @@
         </thead>
         <tbody>
             <tr>
+                <td>@daysOfTheWeek[Model.Weekday]</td>
                 <td>@Model.Department</td>
                 <td><i class="fa-regular fa-clock"></i> @Model.StartTime.ToString("HH:mm") - @Model.EndTime.ToString("HH:mm")</td>
                 <td>@(Model.Employee == null ? "Nee" : "Ja")</td>
@@ -58,44 +60,5 @@
     </table>
 </div>
 
-
-<style>
-    .shift-link {
-        text-decoration: none;
-        color: inherit;
-    }
-
-    .schedule-table {
-        width: 100%;
-        border-collapse: collapse;
-        margin: 20px 0;
-        font-size: 16px;
-        text-align: left;
-    }
-
-        .schedule-table thead th {
-            background-color: #f4f4f4;
-            color: #333;
-            font-weight: bold;
-            border-bottom: 2px solid #ddd;
-            padding: 10px;
-        }
-
-        .schedule-table tbody tr {
-            border-bottom: 1px solid #ddd;
-        }
-
-            .schedule-table tbody tr:nth-child(even) {
-                background-color: #f9f9f9;
-            }
-
-        .schedule-table td {
-            padding: 10px;
-        }
-
-        .schedule-table tbody tr:hover {
-            background-color: #f1f1f1;
-        }
-</style>
 
 

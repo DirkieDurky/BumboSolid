@@ -37,7 +37,7 @@
 <div class="schedule">
     @foreach (var afdeling in departments)
     {
-        <div class="dropdown-bar" onclick="toggleVisibility('@afdeling-content')" style="margin-bottom: 15px;">
+        <div class="dropdown-bar" onclick="toggleVisibility('@afdeling-content')">
             <span>@afdeling<i class="fa-solid fa-chevron-up arrow"></i></span>
         </div>
         // add viewbag in controller to see which ones are opened
@@ -97,57 +97,6 @@
         </div>
     }
 </div>
-
-<style>
-    .shift-link {
-        text-decoration: none;
-        color: inherit;
-    }
-
-    /* .schedule { */
-    /*     margin-inline: 200px; */
-    /* } */
-
-    .dropdown-bar {
-        background-color: #d4d4d4;
-        padding: 10px;
-        cursor: pointer;
-        font-weight: bold;
-        border: 1px solid #ddd;
-        margin-block: 15px;
-    }
-
-    .schedule-table {
-        width: 100%;
-        border-collapse: collapse;
-        margin-top: 10px;
-    }
-
-        .schedule-table th,
-        .schedule-table td {
-            border: 1px solid #ddd;
-            padding: 8px;
-            text-align: center;
-            width: calc(100% / 9);
-        }
-
-        .schedule-table th {
-            background-color: #f4f4f4;
-        }
-
-    .hidden {
-        display: none;
-    }
-
-    .arrow {
-        transition: transform 0.5s ease;
-    }
-
-    .flipped {
-        /* transform: rotate(180deg); */
-        transform: scale(-1);
-    }
-</style>
 
 <script>
     function toggleVisibility(id) {
