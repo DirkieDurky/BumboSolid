@@ -1,0 +1,62 @@
+﻿@model BumboSolid.Models.ClockedHoursViewModel
+
+@{
+	ViewData["Title"] = "Klokken";
+}
+
+<header class="d-flex align-items-center gap-3 justify-content-center gap-3">
+	<div class="mx-3 text-center text-nowrap">
+		<h1>Uren Klokken</h1>
+		<p>@Model.StartDate - @Model.EndDate</p>
+	</div>
+</header>
+
+<body>
+	<div class="d-flex justify-content-between align-items-center gap-3">
+		<div class="d-flex align-items-center gap-2">
+			<form asp-controller="ClockedHours" asp-action="ClockIn" method="post" class="d-flex align-items-center gap-2">
+				<button type="submit" class="new-btn">Inklokken</button>
+				<select id="department" name="selectedDepartments" class="form-select">
+					@foreach (var department in Model.Departments)
+					{
+						<option value="@department.Name">@department.Name</option>
+					}
+				</select>
+			</form>
+		</div>
+		<div>
+			<form asp-controller="ClockedHours" asp-action="ClockOut" method="post">
+				<button type="submit" class="new-btn">Uitklokken</button>
+			</form>
+		</div>
+	</div>
+
+	<br />
+
+	<div class="row schedule min-height-0 fw-bold-parent">
+		<div class="col mb-1">Dag</div>
+		<div class="col mb-1">Afdeling</div>
+		<div class="col mb-1">Starttijd</div>
+		<div class="col mb-1">Eindtijd</div>
+		<div class="col mb-1"></div>
+	</div>
+
+	<hr />
+
+	@foreach (var clockedHours in Model.ClockedHours)
+	{
+		<div class="row schedule min-height-0">
+			<div class="col mb-1">@Model.WeekdayDictionary[clockedHours.Weekday]</div>
+			<div class="col mb-1">@clockedHours.Department</div>
+			<div class="col mb-1">
+				@(clockedHours.StartTime == TimeOnly.MinValue ? "-" : clockedHours.StartTime.ToString())
+			</div>
+			<div class="col mb-1">
+				@(clockedHours.EndTime == TimeOnly.MinValue ? "-" : clockedHours.EndTime.ToString())
+			</div>
+			<div class="col mb-1">
+				<a class="new-btn" asp-controller="" asp-action="">Pauze</a>
+			</div>
+		</div>
+	}
+</body>
