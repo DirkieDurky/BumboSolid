@@ -34,7 +34,7 @@ namespace BumboSolid.Controllers
             var clockedHours = await _context.ClockedHours
                 .Where(s => s.Employee == user)
                 .OrderByDescending(s => s.Weekday)
-                .OrderByDescending(s => s.StartTime)
+                .ThenByDescending(s => s.StartTime)
                 .ToListAsync();
 
             var weekdayDictionary = new Dictionary<byte, string>
@@ -94,6 +94,18 @@ namespace BumboSolid.Controllers
                 };
                 _context.Add(currentWeek);
                 _context.SaveChanges();
+            }
+
+            var lastActiveShift = await _context.ClockedHours
+                .Where(ch => ch.EmployeeId == userId)
+                .OrderByDescending(s => s.Weekday)
+                .ThenByDescending(s => s.StartTime).FirstOrDefaultAsync();
+
+            if (lastActiveShift != null && lastActiveShift.EndTime == TimeOnly.MinValue)
+            {
+                lastActiveShift.EndTime = TimeOnly.FromDateTime(DateTime.Now);
+                _context.ClockedHours.Update(lastActiveShift);
+                await _context.SaveChangesAsync();
             }
 
             var newClockedHour = new ClockedHours
