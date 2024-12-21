@@ -29,11 +29,27 @@ namespace BumboSolid.Controllers
 
 			int year = DateTime.Now.Year;
 			int weekNr = new CultureInfo("en-US").Calendar.GetWeekOfYear(DateTime.Now, CalendarWeekRule.FirstDay, DayOfWeek.Monday);
-			DateOnly startDate = FirstDateOfWeek(year, weekNr);
+
+			var currentWeek = await _context.Weeks
+				.Where(w => w.Year == year && w.WeekNumber == weekNr)
+				.FirstOrDefaultAsync();
+
+			if (currentWeek == null)
+			{
+				currentWeek = new Week
+				{
+					Year = (short)year,
+					WeekNumber = (byte)weekNr,
+				};
+
+				_context.Weeks.Add(currentWeek);
+				await _context.SaveChangesAsync();
+			}
+
+			int currentWeekId = currentWeek.Id;
 
 			var clockedHours = await _context.ClockedHours
-				.Where(ch => ch.Employee == user)
-				.OrderByDescending(ch => ch.Id)
+				.Where(ch => ch.EmployeeId == userId && ch.WeekId == currentWeekId)
 				.OrderByDescending(ch => ch.Weekday)
 				.ThenByDescending(ch => ch.StartTime)
 				.ToListAsync();
@@ -53,8 +69,8 @@ namespace BumboSolid.Controllers
 
 			ClockedHoursViewModel clockedHoursViewModel = new ClockedHoursViewModel()
 			{
-				StartDate = startDate,
-				EndDate = startDate.AddDays(6),
+				StartDate = FirstDateOfWeek(year, weekNr),
+				EndDate = FirstDateOfWeek(year, weekNr).AddDays(6),
 				ClockedHours = clockedHours,
 				WeekdayDictionary = weekdayDictionary,
 				Departments = departments,
@@ -159,6 +175,47 @@ namespace BumboSolid.Controllers
 			return RedirectToAction("Index");
 		}
 
+		[HttpGet("Overzicht")]
+		public async Task<IActionResult> Overview(int weekFromNow = 0)
+		{
+			var user = await _userManager.GetUserAsync(User);
+			int userId = user.Id;
+
+			DateTime targetDate = DateTime.Now.AddDays(weekFromNow * 7);
+			int year = targetDate.Year;
+			int weekNr = new CultureInfo("en-US").Calendar.GetWeekOfYear(targetDate, CalendarWeekRule.FirstDay, DayOfWeek.Monday);
+			DateOnly startDate = FirstDateOfWeek(year, weekNr);
+
+			var allClockedHours = await _context.ClockedHours
+				.Where(ch => ch.EmployeeId == userId && ch.Week.Year == year && ch.Week.WeekNumber == weekNr)
+				.OrderByDescending(ch => ch.WeekId)
+				.ThenByDescending(ch => ch.Weekday)
+				.ThenByDescending(ch => ch.StartTime)
+				.ToListAsync();
+
+			var weekdayDictionary = new Dictionary<byte, string>
+			{
+				{ 1, "Maandag" },
+				{ 2, "Dinsdag" },
+				{ 3, "Woensdag" },
+				{ 4, "Donderdag" },
+				{ 5, "Vrijdag" },
+				{ 6, "Zaterdag" },
+				{ 7, "Zondag" }
+			};
+
+			ClockedHoursOverviewViewModel overviewViewModel = new ClockedHoursOverviewViewModel
+			{
+				StartDate = startDate,
+				EndDate = startDate.AddDays(6),
+				ClockedHours = allClockedHours,
+				WeekdayDictionary = weekdayDictionary,
+				WeekFromNow = weekFromNow
+			};
+
+			return View(overviewViewModel);
+		}
+
 		DateOnly FirstDateOfWeek(int year, int week)
 		{
 			var jan1 = new DateOnly(year, 1, 1);
@@ -167,16 +224,6 @@ namespace BumboSolid.Controllers
 			if (firstDayOfWeek.Year < year) firstDayOfWeek = firstDayOfWeek.AddDays(7);
 
 			return firstDayOfWeek;
-		}
-
-		String Weekday(int year, int week, int day)
-		{
-			var jan1 = new DateOnly(year, 1, 1);
-			var firstDayOfWeek = jan1.AddDays((week - 1) * 7 - (int)jan1.DayOfWeek + (int)DayOfWeek.Monday);
-
-			if (firstDayOfWeek.Year < year) firstDayOfWeek = firstDayOfWeek.AddDays(7);
-
-			return firstDayOfWeek.AddDays(day).DayOfWeek.ToString();
 		}
 	}
 }

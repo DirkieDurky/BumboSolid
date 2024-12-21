@@ -5,10 +5,14 @@
 }
 
 <header class="d-flex align-items-center gap-3 justify-content-center gap-3">
+	<div class="w-100">
+		<a asp-controller="ClockedHours" asp-action="Overview" class="new-btn">Uren Overzicht</a>
+	</div>
 	<div class="mx-3 text-center text-nowrap">
 		<h1>Uren Klokken</h1>
 		<p>@Model.StartDate - @Model.EndDate</p>
 	</div>
+	<div class="w-100"></div>
 </header>
 
 <body>
@@ -55,7 +59,7 @@
 				@(clockedHours.EndTime == TimeOnly.MinValue ? "-" : clockedHours.EndTime.ToString())
 			</div>
 			<div class="col mb-1">
-				<a class="new-btn" asp-controller="" asp-action="">Pauze</a>
+				<a class="new-btn">Pauze</a>
 			</div>
 		</div>
 	}
