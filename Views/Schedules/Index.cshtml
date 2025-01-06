@@ -1,7 +1,7 @@
 ﻿@model BumboSolid.Models.SchedulesViewModel
 
 @{
-    String[] daysOfTheWeek = { "Maandag", "Dinsdag", "Woensdag", "Donderdag", "Vrijdag", "Zaterdag", "Zondag" };
+    string[] daysOfTheWeek = { "Maandag", "Dinsdag", "Woensdag", "Donderdag", "Vrijdag", "Zaterdag", "Zondag" };
 
     var schedule = Model.Weeks.First(w => w.Id == Model.WeekId);
     var shifts = schedule.Shifts;
@@ -21,26 +21,45 @@
     }
 }
 
-<header class="d-flex align-items-center gap-3 justify-content-center gap-3">
-    <div class="w-100 text-align text-end">
-        <a class="new-btn" asp-controller="">Rooster Beheren</a>
+<header class="d-flex justify-content-between align-items-center">
+    <div>
+        <a class="new-btn" asp-controller="Schedules">Rooster Beheren</a>
     </div>
-    <div class="mx-3 text-center text-nowrap">
-        <h1>Rooster</h1>
-        <p>@startDate.ToString("dd/MM/yyyy") - @endDate.ToString("dd/MM/yyyy")</p>
+    <div class="d-flex justify-content-center align-items-center">
+        <div>
+            @if (Model.PreviousWeekId != null)
+            {
+                <a class="new-btn" asp-controller="Schedules" asp-action="Index" asp-route-id="@Model.PreviousWeekId">Vorige Week</a>
+            }
+        </div>
+        <div>
+            <h1>Rooster</h1>
+            <p>@startDate.ToString("dd/MM/yyyy") - @endDate.ToString("dd/MM/yyyy")</p>
+        </div>
+        <div>
+            @if (Model.NextWeekId != null)
+            {
+                <a class="new-btn" asp-controller="Schedules" asp-action="Index" asp-route-id="@Model.NextWeekId">Volgende Week</a>
+            }
+        </div>
+        <div class="w-100">
+            @if (!Model.IsCurrentWeek)
+            {
+                <a class="new-btn" asp-controller="Schedules" asp-action="Index" asp-route-id="@Model.CurrentWeekNumber">Huidige Week</a>
+            }
+        </div>
     </div>
-    <div class="w-100">
+    <div>
         <a class="new-btn" asp-controller="Shifts" asp-action="Create" asp-route-weekid="@schedule.Id">Shift Toevoegen</a>
     </div>
 </header>
 
-<div class="schedule">
+<body class="schedule">
     @foreach (var afdeling in departments)
     {
         <div class="dropdown-bar" onclick="toggleVisibility('@afdeling-content')">
-            <span>@afdeling<i class="fa-solid fa-chevron-up arrow"></i></span>
+            <span>@afdeling <i class="fa-solid fa-chevron-up arrow"></i></span>
         </div>
-        // add viewbag in controller to see which ones are opened
         <div id="@afdeling-content" class="hidden">
             <table class="schedule-table">
                 <thead>
@@ -54,16 +73,22 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach (var shiftGroup in shifts.Where(s => s.Department == afdeling)
+                    @foreach (var shiftGroup in shifts
+                   .Where(s => s.Department == afdeling)
                    .GroupBy(s => s.EmployeeName))
                     {
                         <tr>
                             <td>
-                                <div>
-                                    <a asp-controller="Shifts" asp-action="Details" asp-route-employee="@shiftGroup.First().Employee" asp-route-weekNumber ="@schedule.WeekNumber" class="shift-link">
+                                @if (shiftGroup.First().EmployeeId.HasValue)
+                                {
+                                    <a asp-controller="Schedules" asp-action="EmployeeSchedule" asp-route-id="@schedule.Id" asp-route-employeeId="@shiftGroup.First().EmployeeId" class="shift-link">
                                         @shiftGroup.Key
                                     </a>
-                                </div>
+                                }
+                                else
+                                {
+                                    @shiftGroup.Key <span> (External)</span>
+                                }
                             </td>
 
                             @foreach (var day in daysOfTheWeek)
@@ -82,13 +107,10 @@
 
                             @{
                                 var totalHoursWorked = shiftGroup.Sum(s => (s.EndTime - s.StartTime).TotalMinutes);
-                                var totalHoursPlanned = shiftGroup.Sum(s => (s.EndTime - s.StartTime).TotalMinutes);
-
                                 var totalTimeWorked = TimeSpan.FromMinutes(totalHoursWorked).ToString(@"hh\:mm");
-                                var totalTimePlanned = TimeSpan.FromMinutes(totalHoursPlanned).ToString(@"hh\:mm");
                             }
                             <td>
-                                <div><i class="fa-regular fa-clock"></i> @totalTimeWorked / @totalTimePlanned</div>
+                                <div><i class="fa-regular fa-clock"></i> @totalTimeWorked</div>
                             </td>
                         </tr>
                     }
@@ -96,7 +118,7 @@
             </table>
         </div>
     }
-</div>
+</body>
 
 <script>
     function toggleVisibility(id) {

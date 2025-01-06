@@ -84,61 +84,20 @@ namespace BumboSolid.Controllers
 
         // GET: Shifts/Details/5
         [HttpGet("Rooster Details")]
-		public IActionResult Details(short year, short week, int day, int startTime, int endTime)
-		{
-			TimeOnly startTimeTime = new(startTime, 0);
-			TimeOnly endTimeTime = new(endTime, 0);
-
+        public IActionResult Details(short year, short week, int employeeId)
+        {
             var shifts = _context.Shifts
                 .Include(s => s.DepartmentNavigation)
                 .Include(s => s.Week)
                 .Include(s => s.Employee)
-                .Where(s => s.Week!.Year == year && s.Week.WeekNumber == week && s.Weekday == day && s.StartTime <= endTimeTime && s.EndTime >= startTimeTime)
+                .Where(s => s.Week!.Year == year && s.Week.WeekNumber == week && s.EmployeeId == employeeId)
                 .ToList();
 
             if (shifts == null)
             {
                 return NotFound();
             }
-
-            string dayName;
-
-            switch (day)
-            {
-                case 0:
-                    dayName = "Maandag";
-                    break;
-                case 1:
-                    dayName = "Dinsdag";
-                    break;
-                case 2:
-                    dayName = "Woensdag";
-                    break;
-                case 3:
-                    dayName = "Donderdag";
-                    break;
-                case 4:
-                    dayName = "Vrijdag";
-                    break;
-                case 5:
-                    dayName = "Zaterdag";
-                    break;
-                case 6:
-                    dayName = "Zondag";
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(day), "Invalid day of the week");
-            }
-
-            ScheduleViewDetailsViewModel scheduleViewDetailsViewModel = new()
-            {
-                Shifts = shifts,
-                Day = dayName,
-                StartTime = startTimeTime,
-                EndTime = endTimeTime,
-            };
-
-            return View(scheduleViewDetailsViewModel);
+            return View(shifts);
         }
 
         // GET: Shifts/Create

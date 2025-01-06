@@ -1,7 +1,4 @@
-﻿using BumboSolid.Data.Models;
-using System.ComponentModel.DataAnnotations;
-
-namespace BumboSolid.Models
+﻿namespace BumboSolid.Models
 {
     public class FillRequestViewModel
     {

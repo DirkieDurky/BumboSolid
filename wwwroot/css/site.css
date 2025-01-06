@@ -34,7 +34,7 @@ h6 {
     min-height: 5.5vh;
 }
 
-p {
+p, h1 {
     text-align: center;
 }
 
