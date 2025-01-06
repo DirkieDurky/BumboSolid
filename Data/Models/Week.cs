@@ -13,4 +13,7 @@ public partial class Week
     public virtual List<PrognosisDay> PrognosisDays { get; set; } = new List<PrognosisDay>();
 
     public virtual List<Shift> Shifts { get; set; } = new List<Shift>();
+
+    public virtual List<ClockedHours> ClockedHours { get; set; } = new List<ClockedHours>();
+
 }

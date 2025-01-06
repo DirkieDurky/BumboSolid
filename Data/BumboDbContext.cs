@@ -46,6 +46,8 @@ public partial class BumboDbContext : IdentityDbContext<User, IdentityRole<int>,
 
 	public virtual DbSet<Shift> Shifts { get; set; }
 
+	public virtual DbSet<ClockedHours> ClockedHours { get; set; }
+
 	public virtual DbSet<Weather> Weathers { get; set; }
 
 	public virtual DbSet<Week> Weeks { get; set; }
@@ -347,10 +349,45 @@ public partial class BumboDbContext : IdentityDbContext<User, IdentityRole<int>,
 				.HasForeignKey(d => d.EmployeeId)
 				.OnDelete(DeleteBehavior.Cascade)
 				.HasConstraintName("FK_Shift_Employee");
-
 		});
 
-		modelBuilder.Entity<Weather>(entity =>
+        modelBuilder.Entity<ClockedHours>(entity =>
+        {
+            entity.ToTable("ClockedHours");
+
+            entity.HasIndex(e => e.Department, "IX_ClockedHours_Department");
+
+            entity.HasIndex(e => e.WeekId, "IX_ClockedHours_WeekID");
+
+            entity.Property(e => e.EmployeeId).HasColumnName("Employee");
+            entity.Property(e => e.Weekday).HasColumnName("Weekday");
+            entity.Property(e => e.StartTime).HasColumnName("StartTime");
+            entity.Property(e => e.EndTime).HasColumnName("EndTime");
+            entity.Property(e => e.Department)
+                .HasMaxLength(25)
+                .IsUnicode(false);
+            entity.Property(e => e.ExternalEmployeeName)
+                .HasMaxLength(135)
+                .IsUnicode(false);
+            entity.Property(e => e.WeekId).HasColumnName("WeekID");
+
+            entity.HasOne(d => d.DepartmentNavigation).WithMany(p => p.ClockedHours)
+                .HasForeignKey(d => d.Department)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_ClockedHours_Department");
+
+            entity.HasOne(d => d.Week).WithMany(p => p.ClockedHours)
+                .HasForeignKey(d => d.WeekId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_ClockedHours_Week");
+
+            entity.HasOne(d => d.Employee).WithMany(p => p.ClockedHours)
+                .HasForeignKey(d => d.EmployeeId)
+                .OnDelete(DeleteBehavior.Cascade)
+                .HasConstraintName("FK_ClockedHours_Employee");
+        });
+
+        modelBuilder.Entity<Weather>(entity =>
 		{
 			entity.ToTable("Weather");
 

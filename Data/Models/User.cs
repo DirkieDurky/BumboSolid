@@ -30,6 +30,8 @@ public partial class User:IdentityUser<int>
 
     public virtual List<Shift> Shifts { get; set; } = new List<Shift>();
 
+    public virtual List<ClockedHours> ClockedHours { get; set; } = new List<ClockedHours>();
+
     // Added for custom display in dropdown
 	public string Name => $"{FirstName} {LastName}";
 }
