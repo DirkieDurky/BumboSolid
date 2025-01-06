@@ -1,59 +1,228 @@
-﻿@model BumboSolid.Models.EmployeeScheduleViewModel
+﻿@model BumboSolid.Models.EmployeeScheduleDetailsViewModel
 
 @{
-    ViewData["Title"] = "Rooster Medewerker";
+    string[] daysOfTheWeek = { "Maandag", "Dinsdag", "Woensdag", "Donderdag", "Vrijdag", "Zaterdag", "Zondag" };
+
+    var schedule = Model.Weeks.FirstOrDefault(w => w.Id == Model.WeekId);
+    if (schedule == null)
+    {
+        <p>Schedule not found for the selected week.</p>
+        return;
+    }
+
+    var shifts = schedule.Shifts;
+    DateTime startDate = GetFirstDateOfWeek(schedule.Year, schedule.WeekNumber);
+    DateTime endDate = startDate.AddDays(6);
 }
 
-<a asp-controller="ScheduleEmployee" asp-action="OutgoingFillRequests" asp-route-id="@ViewBag.FillRequestId" class="btn btn-primary">Uitgaande invalsverzoeken</a>
-<a asp-controller="ScheduleEmployee" asp-action="IncomingFillRequests" asp-route-id="@ViewBag.FillRequestId" class="btn btn-primary">Inkomende invalsverzoeken</a>
+@functions {
+    public static DateTime GetFirstDateOfWeek(int year, int weekOfYear)
+    {
+        var jan1 = new DateTime(year, 1, 1);
+        var daysOffset = (int)DayOfWeek.Monday - (int)jan1.DayOfWeek;
+        var firstMonday = jan1.AddDays(daysOffset > 0 ? daysOffset - 7 : daysOffset);
+        return firstMonday.AddDays((weekOfYear - 1) * 7);
+    }
+}
 
-<header class="d-flex align-items-center gap-3 justify-content-center gap-3">
-    <div class="w-100 text-align text-end">
-        <a class="new-btn" asp-controller="Availability" asp-action="Index" asp-route-weekStart="@(Model.StartDate)">Beschikbaarheid</a>
+<header class="d-flex flex-column align-items-center">
+    <div class="d-flex justify-content-center w-100 mb-3">
+        <a asp-controller="ScheduleEmployee" asp-action="OutgoingFillRequests" asp-route-id="@ViewBag.FillRequestId" class="btn btn-primary me-2">
+            Uitgaande invalsverzoeken
+        </a>
+        <a asp-controller="ScheduleEmployee" asp-action="IncomingFillRequests" asp-route-id="@ViewBag.FillRequestId" class="btn btn-primary">
+            Inkomende invalsverzoeken
+        </a>
     </div>
-    <div class="w-100">
-        <a class="new-btn" asp-controller="ScheduleEmployee" asp-route-weekFromNow="@(Model.WeekFromNoW-1)">Vorige Week</a>
-    </div>
-    <div class="mx-3 text-center text-nowrap">
-        <h1>Rooster</h1>
-        <p>@Model.FirstName @Model.LastName</p>
-        <p>@Model.StartDate - @Model.EndDate</p>
-    </div>
-    <div class="w-100 text-align text-end">
-        <a class="new-btn" asp-controller="ScheduleEmployee" asp-route-weekFromNow="@(Model.WeekFromNoW+1)">Volgende Week</a>
-    </div>
-    <div class="w-100">
-        @if (Model.WeekFromNoW != 0)
-        {
-            <a class="new-btn" asp-controller="ScheduleEmployee" asp-route-weekFromNow="0">Huidige Week</a>
-        }
+    <div class="d-flex justify-content-between w-100">
+        <div class="w-100"></div>
+        <div class="w-100 d-flex justify-content-center">
+            @if (Model.PreviousWeekId != null)
+            {
+                <a class="btn btn-primary" asp-action="Schedule" asp-route-id="@Model.PreviousWeekId">
+                    Previous Week
+                </a>
+            }
+        </div>
+        <div class="text-nowrap">
+            <h1 class="schedule-title">Schedule for @Model.EmployeeName</h1>
+        </div>
+        <div class="w-100 d-flex justify-content-center">
+            @if (Model.NextWeekId != null)
+            {
+                <a class="btn btn-primary" asp-action="Schedule" asp-route-id="@Model.NextWeekId">
+                    Next Week
+                </a>
+            }
+        </div>
+        <div class="w-100 d-flex justify-content-center">
+            @if (!Model.IsCurrentWeek)
+            {
+                <a class="btn btn-primary" asp-action="Schedule" asp-route-id="@Model.CurrentWeekNumber">
+                    Huidige Week
+                </a>
+            }
+        </div>
     </div>
 </header>
 
-<div class="row schedule min-height-0 fw-bold-parent">
-    <div class="col mb-1">Dag</div>
-    <div class="col mb-1">Afdeling</div>
-    <div class="col mb-1">Starttijd</div>
-    <div class="col mb-1">Eindtijd</div>
-    <div class="col mb-1"></div>
-    <div class="col mb-1"></div>
-</div>
 
-<hr />
-
-@foreach (var shift in Model.Shifts)
-{
-    <div class="row schedule min-height-0 fw-bold-parent">
-        <div class="col mb-1">@shift.Weekday</div>
-        <div class="col mb-1">@shift.Department</div>
-        <div class="col mb-1">@shift.StartTime</div>
-        <div class="col mb-1">@shift.EndTime</div>
-        <div class="col mb-1">
-            <a class="new-btn" asp-controller="ScheduleEmployee" asp-action="FillRequest" asp-route-id="@shift.Id">Ruilen</a>
+<body>
+    <div class="schedule-agenda">
+        <div class="days-header">
+            @foreach (var dayIndex in Enumerable.Range(0, 7))
+            {
+                var date = startDate.AddDays(dayIndex);
+                <div class="day-header">
+                    <h2>@daysOfTheWeek[dayIndex]</h2>
+                    <p>@date.ToString("dd-MM")</p>
+                </div>
+            }
         </div>
-        <div class="col mb-1">
-            <a class="new-btn">Afmelden</a>
+
+        <div class="shifts-row">
+            @foreach (var dayIndex in Enumerable.Range(0, 7))
+            {
+                var shiftsForDay = shifts.Where(s => s.Weekday == dayIndex && s.EmployeeId == Model.EmployeeId).ToList();
+                <div class="shift-column">
+                    @if (shiftsForDay.Any())
+                    {
+                        <ul class="shift-list">
+                            @foreach (var shift in shiftsForDay)
+                            {
+                                <li class="shift-item">
+                                    <div class="shift-details">
+                                        <span class="shift-time">
+                                            <i class="fa-regular fa-clock"></i> @shift.StartTime.ToString("HH:mm") - @shift.EndTime.ToString("HH:mm")
+                                        </span>
+                                        <span class="shift-department">@shift.Department</span>
+                                        <div class="shift-actions">
+                                            <a asp-controller="Shifts" asp-action="Edit" asp-route-id="@shift.Id" class="shift-link">
+                                                <i class="fa-solid fa-pencil"></i>
+                                            </a>
+                                            <a asp-controller="Shifts" asp-action="Delete" asp-route-id="@shift.Id" class="shift-link">
+                                                <i class="fa-solid fa-trash"></i>
+                                            </a>
+                                        </div>
+                                    </div>
+                                </li>
+                            }
+                        </ul>
+                    }
+                    else
+                    {
+                        <p class="no-shifts">Geen shifts voor deze dag.</p>
+                    }
+                </div>
+            }
         </div>
     </div>
+</body>
 
-}
+@* Temp styling, use for inspiration in css*@
+<style>
+    .schedule-agenda {
+        padding: 20px;
+        font-family: Arial, sans-serif;
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    .days-header {
+        display: flex;
+        justify-content: space-between;
+        gap: 10px;
+        font-size: 16px;
+        text-align: center;
+    }
+
+    .day-header {
+        flex: 1;
+        background-color: #e9e9e9;
+        padding: 10px;
+        border-radius: 5px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+        .day-header h2 {
+            font-size: 1rem;
+            margin-bottom: 5px;
+        }
+
+        .day-header p {
+            font-size: 0.9rem;
+            color: #777;
+        }
+
+    .shifts-row {
+        display: flex;
+        justify-content: space-between;
+        gap: 10px;
+    }
+
+    .shift-column {
+        flex: 1;
+        background-color: #f2f2f2;
+        padding: 15px;
+        border-radius: 8px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    .shift-list {
+        list-style-type: none;
+        padding: 0;
+    }
+
+    .shift-item {
+        background-color: #e2e2e2;
+        border-radius: 5px;
+        padding: 10px;
+        margin-bottom: 10px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    .shift-details {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .shift-time,
+    .shift-department {
+        font-size: 14px;
+        color: #555;
+    }
+
+    .shift-actions {
+        display: flex;
+        gap: 10px;
+        margin-top: 5px;
+    }
+
+    .shift-link {
+        text-decoration: none;
+        color: #007BFF;
+        font-size: 14px;
+    }
+
+        .shift-link:hover {
+            text-decoration: underline;
+        }
+
+    .no-shifts {
+        color: #888;
+        text-align: center;
+    }
+
+    .btn {
+        padding: 10px 15px;
+        font-size: 14px;
+    }
+
+    .schedule-title {
+        text-align: center;
+        font-size: 1.5rem;
+        margin: 0;
+    }
+</style>

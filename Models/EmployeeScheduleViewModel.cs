@@ -1,19 +1,11 @@
-﻿namespace BumboSolid.Models
+﻿using BumboSolid.Data.Models;
+
+namespace BumboSolid.Models;
+
+public class EmployeeScheduleViewModel
 {
-    public class EmployeeScheduleViewModel
-    {
-        public string FirstName { get; set; } = null!;
+	public required List<Shift> Shifts { get; set; }
 
-        public string LastName { get; set; }
-
-        public DateOnly StartDate { get; set; }
-
-        public DateOnly EndDate { get; set; }
-
-        public int WeekFromNoW { get; set; }
-
-        public virtual List<ShiftViewModel> Shifts { get; set; } = new List<ShiftViewModel>();
-
-
-    }
+	public byte Year { get; set; }
+	public byte Week { get; set; }
 }
