@@ -21,36 +21,52 @@
     }
 }
 
-<header class="d-flex justify-content-between align-items-center">
-    <div>
-        <a class="new-btn" asp-controller="Schedules">Rooster Beheren</a>
+<header class="d-flex flex-column align-items-center">
+    <div class="d-flex justify-content-around w-100 header-items">
+        <div>
+            <a class="btn btn-primary" asp-controller="Schedules">
+                Rooster Beheren
+            </a>
+        </div>
+        <div>
+            <a class="btn btn-primary" asp-controller="Shifts" asp-action="Create" asp-route-weekid="@schedule.Id">
+                Shift Toevoegen
+            </a>
+        </div>
     </div>
-    <div class="d-flex justify-content-center align-items-center">
+    <div class="d-flex justify-content-between w-100 header-items">
+        <div>
+        </div>
         <div>
             @if (Model.PreviousWeekId != null)
             {
-                <a class="new-btn" asp-controller="Schedules" asp-action="Index" asp-route-id="@Model.PreviousWeekId">Vorige Week</a>
+                <a class="btn btn-primary" asp-controller="Schedules" asp-action="Index" asp-route-id="@Model.PreviousWeekId">
+                    Vorige Week
+                </a>
             }
         </div>
-        <div>
+        <div class="text-center">
             <h1>Rooster</h1>
-            <p>@startDate.ToString("dd/MM/yyyy") - @endDate.ToString("dd/MM/yyyy")</p>
         </div>
         <div>
             @if (Model.NextWeekId != null)
             {
-                <a class="new-btn" asp-controller="Schedules" asp-action="Index" asp-route-id="@Model.NextWeekId">Volgende Week</a>
+                <a class="btn btn-primary" asp-controller="Schedules" asp-action="Index" asp-route-id="@Model.NextWeekId">
+                    Volgende Week
+                </a>
             }
         </div>
-        <div class="w-100">
+        <div>
             @if (!Model.IsCurrentWeek)
             {
-                <a class="new-btn" asp-controller="Schedules" asp-action="Index" asp-route-id="@Model.CurrentWeekNumber">Huidige Week</a>
+                <a class="btn btn-primary" asp-controller="Schedules" asp-action="Index" asp-route-id="@Model.CurrentWeekNumber">
+                    Huidige Week
+                </a>
             }
         </div>
     </div>
-    <div>
-        <a class="new-btn" asp-controller="Shifts" asp-action="Create" asp-route-weekid="@schedule.Id">Shift Toevoegen</a>
+    <div class="justify-content-center">
+        <p>@startDate.ToString("dd/MM/yyyy") - @endDate.ToString("dd/MM/yyyy")</p>
     </div>
 </header>
 

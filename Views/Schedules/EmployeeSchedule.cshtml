@@ -25,30 +25,30 @@
     }
 }
 
-<header class="d-flex align-items-center justify-content-between">
-    <div class="w-100 d-flex justify-content-center">
+<header class="d-flex align-items-center justify-content-between header-items">
+    <div>
         <a class="btn btn-primary" asp-controller="Schedules" asp-action="Index">Back</a>
     </div>
-    <div class="w-100 d-flex justify-content-center">
+    <div>
         @if (Model.PreviousWeekId != null)
         {
             <a class="btn btn-primary" asp-controller="Schedules" asp-action="EmployeeSchedule" asp-route-id="@Model.PreviousWeekId" asp-route-employeeId="@Model.EmployeeId">
-                Previous Week
+                Vorige Week
             </a>
         }
     </div>
     <div class="text-nowrap">
         <h1 class="schedule-title">Schedule for @Model.EmployeeName</h1>
     </div>
-    <div class="w-100 d-flex justify-content-center">
+    <div>
         @if (Model.NextWeekId != null)
         {
             <a class="btn btn-primary" asp-controller="Schedules" asp-action="EmployeeSchedule" asp-route-id="@Model.NextWeekId" asp-route-employeeId="@Model.EmployeeId">
-                Next Week
+                Volgende Week
             </a>
         }
     </div>
-    <div class="w-100 d-flex justify-content-center">
+    <div>
         @if (!Model.IsCurrentWeek)
         {
             <a class="btn btn-primary" asp-controller="Schedules" asp-action="EmployeeSchedule" asp-route-id="@Model.CurrentWeekNumber" asp-route-employeeId="@Model.EmployeeId">
@@ -87,14 +87,21 @@
                                             <i class="fa-regular fa-clock"></i> @shift.StartTime.ToString("HH:mm") - @shift.EndTime.ToString("HH:mm")
                                         </span>
                                         <span class="shift-department">@shift.Department</span>
-                                        <div class="shift-actions">
-                                            <a asp-controller="Shifts" asp-action="Edit" asp-route-id="@shift.Id" class="shift-link">
-                                                <i class="fa-solid fa-pencil"></i>
+                                        <div class="shift-actions d-flex flex-column align-items-center">
+                                            <a asp-controller="Shifts" asp-action="Edit" asp-route-id="@shift.Id" class="btn btn-outline-primary w-100">
+                                                <div class="d-flex flex-column align-items-center">
+                                                    <i class="fa-solid fa-pencil"></i>
+                                                    <span>Bewerken</span>
+                                                </div>
                                             </a>
-                                            <a asp-controller="Shifts" asp-action="Delete" asp-route-id="@shift.Id" class="shift-link">
-                                                <i class="fa-solid fa-trash"></i>
+                                            <a asp-controller="Shifts" asp-action="Delete" asp-route-id="@shift.Id" class="btn btn-outline-danger w-100">
+                                                <div class="d-flex flex-column align-items-center">
+                                                    <i class="fa-solid fa-trash"></i>
+                                                    <span>Verwijderen</span>
+                                                </div>
                                             </a>
                                         </div>
+
                                     </div>
                                 </li>
                             }

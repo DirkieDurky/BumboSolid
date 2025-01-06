@@ -26,36 +26,43 @@
 }
 
 <header class="d-flex flex-column align-items-center">
-    <div class="d-flex justify-content-center w-100 mb-3">
-        <a asp-controller="ScheduleEmployee" asp-action="OutgoingFillRequests" asp-route-id="@ViewBag.FillRequestId" class="btn btn-primary me-2">
-            Uitgaande invalsverzoeken
-        </a>
-        <a asp-controller="ScheduleEmployee" asp-action="IncomingFillRequests" asp-route-id="@ViewBag.FillRequestId" class="btn btn-primary">
-            Inkomende invalsverzoeken
-        </a>
+    <div class="d-flex justify-content-around w-100 header-items mb-2">
+        <div>
+            <a asp-controller="ScheduleEmployee" asp-action="OutgoingFillRequests" asp-route-id="@ViewBag.FillRequestId" class="btn btn-primary">
+                Uitgaande invalsverzoeken
+            </a>
+        </div>
+        <div>
+            <a asp-controller="ScheduleEmployee" asp-action="IncomingFillRequests" asp-route-id="@ViewBag.FillRequestId" class="btn btn-primary">
+                Inkomende invalsverzoeken
+            </a>
+        </div>
     </div>
-    <div class="d-flex justify-content-between w-100">
-        <div class="w-100"></div>
-        <div class="w-100 d-flex justify-content-center">
+    <div class="d-flex justify-content-between w-100 header-items">
+        <div></div>
+        <div>
             @if (Model.PreviousWeekId != null)
             {
                 <a class="btn btn-primary" asp-action="Schedule" asp-route-id="@Model.PreviousWeekId">
-                    Previous Week
+                    Vorige Week
                 </a>
             }
         </div>
         <div class="text-nowrap">
-            <h1 class="schedule-title">Schedule for @Model.EmployeeName</h1>
+            <div>
+                <h1 class="schedule-title">Rooster voor</h1>
+                <h1 class="schedule-title">@Model.EmployeeName</h1>
+            </div>
         </div>
-        <div class="w-100 d-flex justify-content-center">
+        <div>
             @if (Model.NextWeekId != null)
             {
                 <a class="btn btn-primary" asp-action="Schedule" asp-route-id="@Model.NextWeekId">
-                    Next Week
+                    Volgende Week
                 </a>
             }
         </div>
-        <div class="w-100 d-flex justify-content-center">
+        <div>
             @if (!Model.IsCurrentWeek)
             {
                 <a class="btn btn-primary" asp-action="Schedule" asp-route-id="@Model.CurrentWeekNumber">
@@ -98,10 +105,16 @@
                                         <span class="shift-department">@shift.Department</span>
                                         <div class="shift-actions d-flex flex-column align-items-center">
                                             <a asp-controller="ScheduleEmployee" asp-action="FillRequest" asp-route-id="@shift.Id" class="btn btn-outline-primary w-100">
-                                                <i class="fa-solid fa-exchange-alt"></i> Ruilen
+                                                <div class="d-flex flex-column align-items-center">
+                                                    <i class="fa-solid fa-exchange-alt"></i>
+                                                    <span>Ruilen</span>
+                                                </div>
                                             </a>
                                             <a asp-controller="ScheduleEmployee" asp-action="CancelShift" asp-route-id="@shift.Id" class="btn btn-outline-danger w-100">
-                                                <i class="fa-solid fa-ban"></i> Afmelden
+                                                <div class="d-flex flex-column align-items-center">
+                                                    <i class="fa-solid fa-ban"></i>
+                                                    <span>Afmelden</span>
+                                                </div>
                                             </a>
                                         </div>
                                     </div>

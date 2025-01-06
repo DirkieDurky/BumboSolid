@@ -1,6 +1,5 @@
 ﻿.schedule-agenda {
     padding: 20px;
-    font-family: Arial, sans-serif;
     display: flex;
     flex-direction: column;
     gap: 20px;
@@ -22,15 +21,15 @@
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
-    .day-header h2 {
-        font-size: 1rem;
-        margin-bottom: 5px;
-    }
+.day-header h2 {
+    font-size: 1rem;
+    margin-bottom: 5px;
+}
 
-    .day-header p {
-        font-size: 0.9rem;
-        color: #777;
-    }
+.day-header p {
+    font-size: 0.9rem;
+    color: #777;
+}
 
 .shifts-row {
     display: flex;
@@ -83,9 +82,9 @@
     font-size: 14px;
 }
 
-    .shift-link:hover {
-        text-decoration: underline;
-    }
+.shift-link:hover {
+    text-decoration: underline;
+}
 
 .no-shifts {
     color: #888;
@@ -102,3 +101,11 @@
     font-size: 1.5rem;
     margin: 0;
 }
+
+.header-items div {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
