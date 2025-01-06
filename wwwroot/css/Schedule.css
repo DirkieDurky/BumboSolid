@@ -102,7 +102,7 @@
     margin: 0;
 }
 
-.header-items div {
+.header-items > div {
     width: 100%;
     display: flex;
     justify-content: center;
