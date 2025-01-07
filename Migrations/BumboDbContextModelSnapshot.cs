@@ -1356,7 +1356,7 @@ namespace BumboSolid.Migrations
             modelBuilder.Entity("BumboSolid.Data.Models.Week", b =>
                 {
                     b.Navigation("Absences");
-                    
+
                     b.Navigation("ClockedHours");
 
                     b.Navigation("PrognosisDays");
