@@ -13,256 +13,325 @@ using System.Globalization;
 
 namespace BumboSolid.Controllers
 {
-	[Authorize(Roles = "Manager")]
-	[Route("Rooster")]
-	public class ShiftsController : Controller
-	{
-		private readonly BumboDbContext _context;
+    [Authorize(Roles = "Manager")]
+    [Route("Shifts")]
+    public class ShiftsController : Controller
+    {
+        private readonly BumboDbContext _context;
 
-		public ShiftsController(BumboDbContext context)
-		{
-			_context = context;
-		}
+        public ShiftsController(BumboDbContext context)
+        {
+            _context = context;
+        }
 
-		// GET: Shifts
-		[HttpGet("")]
-		[HttpGet("{id:int?}")]
-		public async Task<IActionResult> Index(int? id)
-		{
-			if (id == null)
-			{
-				CultureInfo ci = new CultureInfo("nl-NL");
-				Calendar calendar = ci.Calendar;
+        // GET: Shifts
+        [HttpGet("")]
+        [HttpGet("{id:int?}")]
+        public async Task<IActionResult> Index(int? id)
+        {
+            if (id == null)
+            {
+                CultureInfo ci = new CultureInfo("nl-NL");
+                Calendar calendar = ci.Calendar;
 
-				//Add week entry for next week
-				DateTime nextWeek = DateTime.Now.AddDays(7);
-				short year = (short)nextWeek.Year;
-				byte week = (byte)calendar.GetWeekOfYear(nextWeek, ci.DateTimeFormat.CalendarWeekRule, ci.DateTimeFormat.FirstDayOfWeek);
+                //Add week entry for next week
+                DateTime nextWeek = DateTime.Now.AddDays(7);
+                short year = (short)nextWeek.Year;
+                byte week = (byte)calendar.GetWeekOfYear(nextWeek, ci.DateTimeFormat.CalendarWeekRule, ci.DateTimeFormat.FirstDayOfWeek);
 
-				var currentWeek = _context.Weeks.FirstOrDefault(w => w.Year == year && w.WeekNumber == week);
-				if (currentWeek == null)
-				{
-					currentWeek = new Week()
-					{
-						Year = year,
-						WeekNumber = week,
-					};
-					_context.Add(currentWeek);
-					_context.SaveChanges();
-				}
-				id = currentWeek.Id;
-			}
+                var currentWeek = _context.Weeks.FirstOrDefault(w => w.Year == year && w.WeekNumber == week);
+                if (currentWeek == null)
+                {
+                    currentWeek = new Week()
+                    {
+                        Year = year,
+                        WeekNumber = week,
+                    };
+                    _context.Add(currentWeek);
+                    _context.SaveChanges();
+                }
+                id = currentWeek.Id;
+            }
 
-			var viewModel = new SchedulesViewModel
-			{
-				Weeks = await _context.Weeks
-					.Include(w => w.Shifts)
-						.ThenInclude(s => s.Employee)
-					.OrderByDescending(p => p.Year)
-						.ThenByDescending(p => p.WeekNumber)
-						.ToListAsync(),
-				WeekId = (int)id,
-			};
+            var viewModel = new SchedulesViewModel
+            {
+                Weeks = await _context.Weeks
+                    .Include(w => w.Shifts)
+                        .ThenInclude(s => s.Employee)
+                    .OrderByDescending(p => p.Year)
+                        .ThenByDescending(p => p.WeekNumber)
+                        .ToListAsync(),
+                WeekId = (int)id,
+            };
 
-			return View(viewModel);
-		}
+            return View(viewModel);
+        }
 
-		// GET: Shifts/Details/5
-		public async Task<IActionResult> Details(int? id)
-		{
-			if (id == null)
-			{
-				return NotFound();
-			}
+        // GET: Shifts/Details/5
+        [HttpGet("Rooster Details")]
+        public IActionResult Details(short year, short week, int day, int startTime, int endTime)
+        {
+            TimeOnly startTimeTime = new(startTime, 0);
+            TimeOnly endTimeTime = new(endTime, 0);
 
-			var shift = await _context.Shifts
-				.Include(s => s.DepartmentNavigation)
-				.Include(s => s.Week)
-				.FirstOrDefaultAsync(m => m.Id == id);
-			if (shift == null)
-			{
-				return NotFound();
-			}
+            var shifts = _context.Shifts
+                .Include(s => s.DepartmentNavigation)
+                .Include(s => s.Week)
+                .Include(s => s.Employee)
+                .Where(s => s.Week!.Year == year && s.Week.WeekNumber == week && s.Weekday == day && s.StartTime <= endTimeTime && s.EndTime >= startTimeTime)
+                .ToList();
 
-			return View(shift);
-		}
+            if (shifts == null)
+            {
+                return NotFound();
+            }
 
-		// GET: Shifts/Create
-		[HttpGet("MedewerkerInplannen/{weekId:int}")]
-		public async Task<IActionResult> Create(int weekId)
-		{
-			var week = _context.Weeks.First(w => w.Id == weekId);
+            string dayName;
 
-			ViewBag.Departments = new SelectList(_context.Departments, "Name", "Name");
-			ViewBag.WeekDays = new SelectList(new List<string> { "Maandag", "Dinsdag", "Woensdag", "Donderdag", "Vrijdag", "Zaterdag", "Zondag" });
+            switch (day)
+            {
+                case 0:
+                    dayName = "Maandag";
+                    break;
+                case 1:
+                    dayName = "Dinsdag";
+                    break;
+                case 2:
+                    dayName = "Woensdag";
+                    break;
+                case 3:
+                    dayName = "Donderdag";
+                    break;
+                case 4:
+                    dayName = "Vrijdag";
+                    break;
+                case 5:
+                    dayName = "Zaterdag";
+                    break;
+                case 6:
+                    dayName = "Zondag";
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(day), "Invalid day of the week");
+            }
 
-			var employeeRole = await _context.Roles
-				.Where(r => r.Name == "Employee")
-				.Select(r => r.Id)
-				.FirstOrDefaultAsync();
+            ScheduleViewDetailsViewModel scheduleViewDetailsViewModel = new()
+            {
+                Shifts = shifts,
+                Day = dayName,
+                StartTime = startTimeTime,
+                EndTime = endTimeTime,
+            };
 
-			var employees = await _context.UserRoles
-				.Where(ur => ur.RoleId == employeeRole)
-				.Select(ur => ur.UserId)
-				.ToListAsync();
+            return View(scheduleViewDetailsViewModel);
+        }
 
-			Dictionary<Int32, String> employeeUsers = _context.Users
-				.Where(u => employees.Contains(u.Id))
-				.Include(u => u.AvailabilityRules).ToList()
-				.ToDictionary(u => u.Id, u => u.FirstName);
+        // GET: Shifts/Create
+        [HttpGet("MedewerkerInplannen/{weekId:int}")]
+        public async Task<IActionResult> Create(int weekId)
+        {
+            var week = _context.Weeks.First(w => w.Id == weekId);
 
-			var viewModel = new ShiftCreateViewModel
-			{
-				Employees = employeeUsers,
-				Shift = new Shift(),
-				Week = week,
-			};
+            ViewBag.Departments = new SelectList(_context.Departments, "Name", "Name");
+            ViewBag.WeekDays = new SelectList(new List<string> { "Maandag", "Dinsdag", "Woensdag", "Donderdag", "Vrijdag", "Zaterdag", "Zondag" });
 
-			employeeUsers.Add(-1, "Extern filiaal");
+            var employeeRole = await _context.Roles
+                .Where(r => r.Name == "Employee")
+                .Select(r => r.Id)
+                .FirstOrDefaultAsync();
 
-			return View(viewModel);
-		}
+            var employees = await _context.UserRoles
+                .Where(ur => ur.RoleId == employeeRole)
+                .Select(ur => ur.UserId)
+                .ToListAsync();
 
-		// POST: Shifts/Create
-		// To protect from overposting attacks, enable the specific properties you want to bind to.
-		// For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-		[ValidateAntiForgeryToken]
-		[HttpPost("MedewerkerInplannen/{weekId:int}")]
-		public async Task<IActionResult> Create(int weekId, ShiftCreateViewModel shiftCreateViewModel)
-		{
-			if (ModelState.IsValid)
-			{
-				if (shiftCreateViewModel.Shift.EmployeeId == -1) shiftCreateViewModel.Shift.EmployeeId = null;
-				_context.Add(shiftCreateViewModel.Shift);
-				await _context.SaveChangesAsync();
-				return RedirectToAction(nameof(Index));
-			}
-			ViewBag.Departments = new SelectList(_context.Departments, "Name", "Name", shiftCreateViewModel.Shift.Department);
-			ViewBag.WeekDays = new SelectList(_context.Weeks, "Id", "Id", shiftCreateViewModel.Shift.WeekId);
-			return View(shiftCreateViewModel);
-		}
+            Dictionary<Int32, String> employeeUsers = _context.Users
+                .Where(u => employees.Contains(u.Id))
+                .Include(u => u.AvailabilityRules).ToList()
+                .ToDictionary(u => u.Id, u => u.FirstName);
 
-		// GET: Shifts/Edit/5
-		[HttpGet("Bewerken/{id:int}")]
-		public async Task<IActionResult> Edit(int? id)
-		{
-			if (id == null || _context.Shifts.FirstOrDefault(s => s.Id == id) == null)
-			{
-				return NotFound();
-			}
+            var viewModel = new ShiftCreateViewModel
+            {
+                Employees = employeeUsers,
+                Shift = new Shift(),
+                Week = week,
+            };
 
-			Shift shift = _context.Shifts.Include(s => s.Week).First(s => s.Id == id);
+            employeeUsers.Add(-1, "Extern filiaal");
 
-			ViewBag.Departments = new SelectList(_context.Departments, "Name", "Name");
-			ViewBag.WeekDays = new SelectList(new List<string> { "Maandag", "Dinsdag", "Woensdag", "Donderdag", "Vrijdag", "Zaterdag", "Zondag" });
+            return View(viewModel);
+        }
 
-			var employeeRole = await _context.Roles
-				.Where(r => r.Name == "Employee")
-				.Select(r => r.Id)
-				.FirstOrDefaultAsync();
+        // POST: Shifts/Create
+        // To protect from overposting attacks, enable the specific properties you want to bind to.
+        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [HttpPost("MedewerkerInplannen/{weekId:int}")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Create(int weekId, ShiftCreateViewModel shiftCreateViewModel)
+        {
+            if (ModelState.IsValid)
+            {
+                if (shiftCreateViewModel.Shift.EndTime <= shiftCreateViewModel.Shift.StartTime)
+                {
+                    ViewBag.Error = "De eindtijd moet later zijn dan de starttijd.";
+                }
+                else
+                {
+                    if (shiftCreateViewModel.Shift.EmployeeId == -1) shiftCreateViewModel.Shift.EmployeeId = null;
+                    _context.Add(shiftCreateViewModel.Shift);
+                    await _context.SaveChangesAsync();
+                    return RedirectToAction("Index", "Schedules");
+                }
+            }
 
-			var employees = await _context.UserRoles
-				.Where(ur => ur.RoleId == employeeRole)
-				.Select(ur => ur.UserId)
-				.ToListAsync();
+            var week = _context.Weeks.First(w => w.Id == weekId);
 
-			Dictionary<Int32, String> employeeUsers = _context.Users
-				.Where(u => employees.Contains(u.Id))
-				.Include(u => u.AvailabilityRules).ToList()
-				.ToDictionary(u => u.Id, u => u.FirstName);
+            var employeeRole = await _context.Roles
+                .Where(r => r.Name == "Employee")
+                .Select(r => r.Id)
+                .FirstOrDefaultAsync();
 
-			var viewModel = new ShiftCreateViewModel
-			{
-				Employees = employeeUsers,
-				Shift = shift,
-				Week = shift.Week,
-			};
+            var employees = await _context.UserRoles
+                .Where(ur => ur.RoleId == employeeRole)
+                .Select(ur => ur.UserId)
+                .ToListAsync();
 
-			employeeUsers.Add(-1, "Extern filiaal");
-			if (shift.EmployeeId == null) shift.EmployeeId = -1;
+            Dictionary<Int32, String> employeeUsers = _context.Users
+                .Where(u => employees.Contains(u.Id))
+                .Include(u => u.AvailabilityRules).ToList()
+                .ToDictionary(u => u.Id, u => u.FirstName);
 
-			return View(viewModel);
-		}
+            shiftCreateViewModel.Week = week;
+            shiftCreateViewModel.Employees = employeeUsers;
 
-		// POST: Shifts/Edit/5
-		// To protect from overposting attacks, enable the specific properties you want to bind to.
-		// For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+            ViewBag.Departments = new SelectList(_context.Departments, "Name", "Name", shiftCreateViewModel.Shift.Department);
+            ViewBag.WeekDays = new SelectList(new List<string> { "Maandag", "Dinsdag", "Woensdag", "Donderdag", "Vrijdag", "Zaterdag", "Zondag" });
 
-		[HttpPost("Bewerken/{id:int}")]
-		[ValidateAntiForgeryToken]
-		public async Task<IActionResult> Edit(int id, ShiftCreateViewModel shiftCreateViewModel)
-		{
-			if (id != shiftCreateViewModel.Shift.Id)
-			{
-				return NotFound();
-			}
+            return View(shiftCreateViewModel);
+        }
 
-			if (ModelState.IsValid)
-			{
-				try
-				{
-					if (shiftCreateViewModel.Shift.EmployeeId == -1) shiftCreateViewModel.Shift.EmployeeId = null;
-					_context.Update(shiftCreateViewModel.Shift);
-					await _context.SaveChangesAsync();
-				}
-				catch (DbUpdateConcurrencyException)
-				{
-					if (!ShiftExists(shiftCreateViewModel.Shift.Id))
-					{
-						return NotFound();
-					}
-					else
-					{
-						throw;
-					}
-				}
-				return RedirectToAction(nameof(Index));
-			}
-			ViewBag.Departments = new SelectList(_context.Departments, "Name", "Name", shiftCreateViewModel.Shift.Department);
-			ViewBag.WeekDays = new SelectList(_context.Weeks, "Id", "Id", shiftCreateViewModel.Shift.WeekId);
-			return View(shiftCreateViewModel);
-		}
 
-		// GET: Shifts/Delete/5
-		[HttpGet("Verwijderen/{id:int}")]
-		public async Task<IActionResult> Delete(int? id)
-		{
-			if (id == null)
-			{
-				return NotFound();
-			}
+        // GET: Shifts/Edit/5
+        [HttpGet("Bewerken/{id:int}")]
+        public async Task<IActionResult> Edit(int? id)
+        {
+            if (id == null || _context.Shifts.FirstOrDefault(s => s.Id == id) == null)
+            {
+                return NotFound();
+            }
 
-			var shift = await _context.Shifts
-				.Include(s => s.DepartmentNavigation)
-				.Include(s => s.Week)
-				.FirstOrDefaultAsync(m => m.Id == id);
-			if (shift == null)
-			{
-				return NotFound();
-			}
+            Shift shift = _context.Shifts.Include(s => s.Week).First(s => s.Id == id);
 
-			return View(shift);
-		}
+            ViewBag.Departments = new SelectList(_context.Departments, "Name", "Name");
+            ViewBag.WeekDays = new SelectList(new List<string> { "Maandag", "Dinsdag", "Woensdag", "Donderdag", "Vrijdag", "Zaterdag", "Zondag" });
 
-		// POST: Shifts/Delete/5
-		[ActionName("Delete")]
-		[HttpPost("Verwijderen/{id:int}")]
-		[ValidateAntiForgeryToken]
-		public async Task<IActionResult> DeleteConfirmed(int id)
-		{
-			var shift = await _context.Shifts.FindAsync(id);
-			if (shift != null)
-			{
-				_context.Shifts.Remove(shift);
-			}
+            var employeeRole = await _context.Roles
+                .Where(r => r.Name == "Employee")
+                .Select(r => r.Id)
+                .FirstOrDefaultAsync();
 
-			await _context.SaveChangesAsync();
-			return RedirectToAction(nameof(Index));
-		}
+            var employees = await _context.UserRoles
+                .Where(ur => ur.RoleId == employeeRole)
+                .Select(ur => ur.UserId)
+                .ToListAsync();
 
-		private bool ShiftExists(int id)
-		{
-			return _context.Shifts.Any(e => e.Id == id);
-		}
-	}
+            Dictionary<Int32, String> employeeUsers = _context.Users
+                .Where(u => employees.Contains(u.Id))
+                .Include(u => u.AvailabilityRules).ToList()
+                .ToDictionary(u => u.Id, u => u.FirstName);
+
+            var viewModel = new ShiftCreateViewModel
+            {
+                Employees = employeeUsers,
+                Shift = shift,
+                Week = shift.Week,
+            };
+
+            employeeUsers.Add(-1, "Extern filiaal");
+            if (shift.EmployeeId == null) shift.EmployeeId = -1;
+
+            return View(viewModel);
+        }
+
+        // POST: Shifts/Edit/5
+        // To protect from overposting attacks, enable the specific properties you want to bind to.
+        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+
+        [HttpPost("Bewerken/{id:int}")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(int id, ShiftCreateViewModel shiftCreateViewModel)
+        {
+            if (id != shiftCreateViewModel.Shift.Id)
+            {
+                return NotFound();
+            }
+
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    if (shiftCreateViewModel.Shift.EmployeeId == -1) shiftCreateViewModel.Shift.EmployeeId = null;
+                    _context.Update(shiftCreateViewModel.Shift);
+                    await _context.SaveChangesAsync();
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    if (!ShiftExists(shiftCreateViewModel.Shift.Id))
+                    {
+                        return NotFound();
+                    }
+                    else
+                    {
+                        throw;
+                    }
+                }
+                return RedirectToAction("Index", "Schedules");
+            }
+            ViewBag.Departments = new SelectList(_context.Departments, "Name", "Name", shiftCreateViewModel.Shift.Department);
+            ViewBag.WeekDays = new SelectList(_context.Weeks, "Id", "Id", shiftCreateViewModel.Shift.WeekId);
+            return View(shiftCreateViewModel);
+        }
+
+        // GET: Shifts/Delete/5
+        [HttpGet("Verwijderen/{id:int}")]
+        public async Task<IActionResult> Delete(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var shift = await _context.Shifts
+                .Include(s => s.DepartmentNavigation)
+                .Include(s => s.Week)
+                .FirstOrDefaultAsync(m => m.Id == id);
+            if (shift == null)
+            {
+                return NotFound();
+            }
+
+            return View(shift);
+        }
+
+        // POST: Shifts/Delete/5
+        [ActionName("Delete")]
+        [HttpPost("Verwijderen/{id:int}")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteConfirmed(int id)
+        {
+            var shift = await _context.Shifts.FindAsync(id);
+            if (shift != null)
+            {
+                _context.Shifts.Remove(shift);
+            }
+
+            await _context.SaveChangesAsync();
+            return RedirectToAction("Index", "Schedules");
+        }
+
+        private bool ShiftExists(int id)
+        {
+            return _context.Shifts.Any(e => e.Id == id);
+        }
+    }
 }

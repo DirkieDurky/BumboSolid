@@ -6,7 +6,7 @@
 
 	<form asp-controller="Availability" asp-action="Delete" asp-route-id="@Model.Id" method="post" class="d-inline">
 		<input type="hidden" id="year" name="year" value="@ViewBag.Year" />
-		<input type="hidden" id="weekNr" name="weekNr" value="@ViewBag.WeekNr" /
+		<input type="hidden" id="weekNr" name="weekNr" value="@ViewBag.WeekNr" />
 		<input type="hidden" asp-for="Id" />
 		<a asp-controller="Availability" asp-action="Index" asp-route-Year=@ViewBag.Year asp-route-WeekNr=@ViewBag.WeekNr class="btn early-btn btn-secondary w-100">Annuleren</a>
 		<button type="submit" class="btn early-btn btn-danger w-100">Verwijderen</button>

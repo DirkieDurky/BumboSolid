@@ -12,7 +12,14 @@
 	<header>
 		<nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
 			<div class="container-fluid">
-				<a class="navbar-brand" asp-area="" asp-controller="Prognoses" asp-action="">BumboSolid</a>
+				@if (User.IsInRole("Manager"))
+				{
+					<a class="navbar-brand" asp-area="" asp-controller="Prognoses" asp-action="">BumboSolid</a>
+				}
+				else if (User.IsInRole("Employee"))
+				{
+					<a class="navbar-brand" asp-area="" asp-controller="ScheduleEmployee" asp-action="Schedule">BumboSolid</a>
+				}
 				<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
 						aria-expanded="false" aria-label="Toggle navigation">
 					<span class="navbar-toggler-icon"></span>
@@ -24,23 +31,22 @@
 								<a class="nav-link text-dark" asp-area="" asp-controller="Prognoses" asp-action="">Prognoses</a>
 							</li>
 							<li class="nav-item">
-								<a class="nav-link text-dark" asp-area="" asp-controller="Shifts" asp-action="Index">Roosters</a>
+								<a class="nav-link text-dark" asp-area="" asp-controller="Schedules" asp-action="Index">Roosters</a>
 							</li>
 							<li class="nav-item">
-							<a class="nav-link text-dark" asp-area="" asp-controller="CAO" asp-action="">CAO regels</a>
-						</li>
+								<a class="nav-link text-dark" asp-area="" asp-controller="CAO" asp-action="">CAO regels</a>
+							</li>
 							<li class="nav-item">
 								<a class="nav-link text-dark" asp-area="" asp-controller="Employees" asp-action="Index">Medewerkers</a>
 							</li>
 						} else if (User.IsInRole("Employee")) {
 							<li class="nav-item">
-								<a class="nav-link text-dark" asp-area="" asp-controller="ScheduleEmployee" asp-action="Schedule">Rooster Medewerker</a>
+								<a class="nav-link text-dark" asp-area="" asp-controller="ScheduleEmployee" asp-action="Schedule">Rooster</a>
 							</li>
 							<li class="nav-item">
-								<a class="nav-link text-dark" asp-area="" asp-controller="Availability" asp-action="Index">Beschikbaarheid</a>
+								<a class="nav-link text-dark" asp-area="" asp-controller="ScheduleEmployee" asp-action="Schedule">Klokken</a>
 							</li>
 						}
-
 					</ul>
 
 					@if (User.Identity.IsAuthenticated)
@@ -61,7 +67,7 @@
 		<main role="main" class="pb-3">
 			@RenderBody()
 		</main>
-	</div
+	</div>
 	<script src="~/lib/jquery/dist/jquery.min.js"></script>
 	<script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
 	<script src="~/js/site.js" asp-append-version="true"></script>

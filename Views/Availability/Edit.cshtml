@@ -1,4 +1,5 @@
-﻿@model BumboSolid.Models.AvailabilityRuleViewModel
+﻿@using System.Diagnostics
+@model BumboSolid.Data.Models.AvailabilityRule
 
 @{
 	ViewData["Title"] = "Edit";
@@ -17,16 +18,9 @@
 			<input type="hidden" asp-for="Id" value="@Model.Id" />
 
 			<div class="form-group">
-				<label for="Day" class="control-label">Dag</label>
-				<select id="Day" name="Day" class="form-control">
-					<option value="Monday" selected="@(Model.Day == "Monday" ? "selected" : null)">Maandag</option>
-					<option value="Tuesday" selected="@(Model.Day == "Tuesday" ? "selected" : null)">Dinsdag</option>
-					<option value="Wednesday" selected="@(Model.Day == "Wednesday" ? "selected" : null)">Woensdag</option>
-					<option value="Thursday" selected="@(Model.Day == "Thursday" ? "selected" : null)">Donderdag</option>
-					<option value="Friday" selected="@(Model.Day == "Friday" ? "selected" : null)">Vrijdag</option>
-					<option value="Saturday" selected="@(Model.Day == "Saturday" ? "selected" : null)">Zaterdag</option>
-					<option value="Sunday" selected="@(Model.Day == "Sunday" ? "selected" : null)">Zondag</option>
-				</select>
+				<label asp-for="Date" class="control-label">Datum</label>
+				<input asp-for="Date" id="date" class="form-control" value=@Model.Date />
+				<span asp-validation-for="Date" class="text-danger"></span>
 			</div>
 
 			<div class="d-flex flex-row">
@@ -59,3 +53,14 @@
 		</form>
 	</div>
 </div>
+@{
+	String format = "00";
+	String year = Model.Date.Year.ToString();
+	String month = Model.Date.Month.ToString(format);
+	String day = Model.Date.Day.ToString(format);
+	String date = year + "-" + month + "-" + day;
+}
+<script>
+	var year = new Date().getFullYear();
+	document.getElementById('date').value = "@date";
+</script>

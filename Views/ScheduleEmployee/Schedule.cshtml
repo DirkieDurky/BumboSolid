@@ -10,7 +10,7 @@
 
 <header class="d-flex align-items-center gap-3 justify-content-center gap-3">
 	<div class="w-100 text-align text-end">
-		<a class="new-btn" asp-controller="Availability">Beschikbaarheid</a>
+		<a class="new-btn" asp-controller="Availability" asp-action="Index" asp-route-weekStart="@(Model.StartDate)">Beschikbaarheid</a>
 	</div>
 	<div class="w-100">
 		<a class="new-btn" asp-controller="ScheduleEmployee" asp-route-weekFromNow="@(Model.WeekFromNoW-1)">Vorige Week</a>

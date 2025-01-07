@@ -48,6 +48,8 @@ public partial class BumboDbContext : IdentityDbContext<User, IdentityRole<int>,
 
 	public virtual DbSet<Shift> Shifts { get; set; }
 
+	public virtual DbSet<ClockedHours> ClockedHours { get; set; }
+
 	public virtual DbSet<Weather> Weathers { get; set; }
 
 	public virtual DbSet<Week> Weeks { get; set; }
@@ -164,12 +166,12 @@ public partial class BumboDbContext : IdentityDbContext<User, IdentityRole<int>,
 				.UsingEntity<Dictionary<string, object>>(
 					"Capability",
 					r => r.HasOne<Department>().WithMany()
-						.HasForeignKey("Department")
-						.OnDelete(DeleteBehavior.Cascade)
+				.HasForeignKey("Department")
+				.OnDelete(DeleteBehavior.Cascade)
 						.HasConstraintName("FK_Capability_Department"),
 					l => l.HasOne<User>().WithMany()
-						.HasForeignKey("Employee")
-						.OnDelete(DeleteBehavior.Cascade)
+				.HasForeignKey("Employee")
+				.OnDelete(DeleteBehavior.Cascade)
 						.HasConstraintName("FK_Capability_Employee"),
 					j =>
 					{
@@ -178,7 +180,7 @@ public partial class BumboDbContext : IdentityDbContext<User, IdentityRole<int>,
 						j.IndexerProperty<string>("Department")
 							.HasMaxLength(25)
 							.IsUnicode(false);
-					});
+		});
 		});
 
 
@@ -374,10 +376,45 @@ public partial class BumboDbContext : IdentityDbContext<User, IdentityRole<int>,
 				.HasForeignKey(d => d.EmployeeId)
 				.OnDelete(DeleteBehavior.Cascade)
 				.HasConstraintName("FK_Shift_Employee");
-
 		});
 
-		modelBuilder.Entity<Weather>(entity =>
+        modelBuilder.Entity<ClockedHours>(entity =>
+        {
+            entity.ToTable("ClockedHours");
+
+            entity.HasIndex(e => e.Department, "IX_ClockedHours_Department");
+
+            entity.HasIndex(e => e.WeekId, "IX_ClockedHours_WeekID");
+
+            entity.Property(e => e.EmployeeId).HasColumnName("Employee");
+            entity.Property(e => e.Weekday).HasColumnName("Weekday");
+            entity.Property(e => e.StartTime).HasColumnName("StartTime");
+            entity.Property(e => e.EndTime).HasColumnName("EndTime");
+            entity.Property(e => e.Department)
+                .HasMaxLength(25)
+                .IsUnicode(false);
+            entity.Property(e => e.ExternalEmployeeName)
+                .HasMaxLength(135)
+                .IsUnicode(false);
+            entity.Property(e => e.WeekId).HasColumnName("WeekID");
+
+            entity.HasOne(d => d.DepartmentNavigation).WithMany(p => p.ClockedHours)
+                .HasForeignKey(d => d.Department)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_ClockedHours_Department");
+
+            entity.HasOne(d => d.Week).WithMany(p => p.ClockedHours)
+                .HasForeignKey(d => d.WeekId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_ClockedHours_Week");
+
+            entity.HasOne(d => d.Employee).WithMany(p => p.ClockedHours)
+                .HasForeignKey(d => d.EmployeeId)
+                .OnDelete(DeleteBehavior.Cascade)
+                .HasConstraintName("FK_ClockedHours_Employee");
+        });
+
+        modelBuilder.Entity<Weather>(entity =>
 		{
 			entity.ToTable("Weather");
 
@@ -398,51 +435,64 @@ public partial class BumboDbContext : IdentityDbContext<User, IdentityRole<int>,
 			new Weather { Id = 5, Impact = -50 },
 			new Weather { Id = 6, Impact = -75 }
 		);
+
+		//Seeddata
 		modelBuilder.Entity<FactorType>().HasData(
 			new FactorType { Type = "Feestdagen" },
 			new FactorType { Type = "Weer" },
 			new FactorType { Type = "Overig" }
 		);
+
 		modelBuilder.Entity<Department>().HasData(
-			new Department() { Name = "Kassa" },
+			new Department()
+			{
+				Name = "Kassa",
+			},
 			new Department() { Name = "Vakkenvullen" },
 			new Department() { Name = "Vers" }
 		);
+
 		modelBuilder.Entity<Norm>().HasData(
-			new Norm { Id = 1, Activity = "Stocking", Duration = 60, AvgDailyPerformances = 5, Department = "Vakkenvullen" },
-			new Norm { Id = 2, Activity = "Cashier", Duration = 45, AvgDailyPerformances = 8, Department = "Kassa" }
+			new Norm { Id = 1, Activity = "1 vak vullen", Duration = 300, AvgDailyPerformances = 5, Department = "Vakkenvullen" },
+			new Norm { Id = 2, Activity = "Kassa", Duration = 120, AvgDailyPerformances = 1, PerVisitor = true, Department = "Kassa" },
+			new Norm { Id = 3, Activity = "Vers", Duration = 45, AvgDailyPerformances = 8, Department = "Vers" }
 		);
+
+		modelBuilder.Entity<Week>().HasData(
+			new Week { Id = 1, Year = 2024, WeekNumber = 50 }
+		);
+
 		modelBuilder.Entity<PrognosisDay>().HasData(
-			new PrognosisDay { PrognosisId = 1, Weekday = 1 },
-			new PrognosisDay { PrognosisId = 2, Weekday = 2 }
+			new PrognosisDay { PrognosisId = 1, Weekday = 0, VisitorEstimate = 1000 },
+			new PrognosisDay { PrognosisId = 1, Weekday = 1, VisitorEstimate = 1000 },
+			new PrognosisDay { PrognosisId = 1, Weekday = 2, VisitorEstimate = 1000 },
+			new PrognosisDay { PrognosisId = 1, Weekday = 3, VisitorEstimate = 1000 },
+			new PrognosisDay { PrognosisId = 1, Weekday = 4, VisitorEstimate = 1000 },
+			new PrognosisDay { PrognosisId = 1, Weekday = 5, VisitorEstimate = 1000 },
+			new PrognosisDay { PrognosisId = 1, Weekday = 6, VisitorEstimate = 1000 }
 		);
 		modelBuilder.Entity<PrognosisDepartment>().HasData(
-			new PrognosisDepartment { PrognosisId = 1, Department = "Kassa", Weekday = 1 },
-			new PrognosisDepartment { PrognosisId = 2, Department = "Vakkenvullen", Weekday = 2 }
-		);
-		modelBuilder.Entity<Shift>().HasData(
-			//DUMMYDATA SHIFT START
-			new Shift { Id = 3, Weekday = 2, StartTime = new TimeOnly(9, 0), EndTime = new TimeOnly(17, 5), Department = "Kassa", ExternalEmployeeName = "Alice Johnson", WeekId = 2 },
-			new Shift { Id = 4, Weekday = 5, StartTime = new TimeOnly(10, 55), EndTime = new TimeOnly(18, 5), Department = "Vakkenvullen", ExternalEmployeeName = "Bob Brown", WeekId = 2 },
-			new Shift { Id = 5, Weekday = 1, StartTime = new TimeOnly(8, 0), EndTime = new TimeOnly(16, 5), Department = "Kassa", ExternalEmployeeName = "Charlie Davis", WeekId = 2 },
-			new Shift { Id = 6, Weekday = 3, StartTime = new TimeOnly(11, 0), EndTime = new TimeOnly(19, 0), Department = "Vakkenvullen", ExternalEmployeeName = "Diana Evans", WeekId = 2 },
-			new Shift { Id = 7, Weekday = 0, StartTime = new TimeOnly(7, 0), EndTime = new TimeOnly(15, 0), Department = "Kassa", ExternalEmployeeName = "Ethan Foster", WeekId = 2 },
-			new Shift { Id = 8, Weekday = 4, StartTime = new TimeOnly(12, 0), EndTime = new TimeOnly(20, 0), Department = "Vakkenvullen", ExternalEmployeeName = "Fiona Green", WeekId = 2 },
-			new Shift { Id = 9, Weekday = 6, StartTime = new TimeOnly(13, 0), EndTime = new TimeOnly(21, 5), Department = "Kassa", ExternalEmployeeName = "George Harris", WeekId = 2 },
-			new Shift { Id = 10, Weekday = 2, StartTime = new TimeOnly(14, 0), EndTime = new TimeOnly(22, 30), Department = "Vakkenvullen", ExternalEmployeeName = "Hannah Lee", WeekId = 2 },
-			new Shift { Id = 11, Weekday = 5, StartTime = new TimeOnly(15, 0), EndTime = new TimeOnly(23, 0), Department = "Kassa", ExternalEmployeeName = "Ian Miller", WeekId = 2 },
-			new Shift { Id = 12, Weekday = 1, StartTime = new TimeOnly(16, 0), EndTime = new TimeOnly(0, 0), Department = "Vakkenvullen", ExternalEmployeeName = "Julia Nelson", WeekId = 2 },
-			new Shift { Id = 13, Weekday = 3, StartTime = new TimeOnly(17, 0), EndTime = new TimeOnly(1, 0), Department = "Kassa", ExternalEmployeeName = "Kevin Owens", WeekId = 2 },
-			new Shift { Id = 14, Weekday = 0, StartTime = new TimeOnly(18, 0), EndTime = new TimeOnly(2, 0), Department = "Vakkenvullen", ExternalEmployeeName = "Laura Perez", WeekId = 2 },
-			new Shift { Id = 15, Weekday = 4, StartTime = new TimeOnly(10, 0), EndTime = new TimeOnly(3, 0), Department = "Kassa", ExternalEmployeeName = "Michael Quinn", WeekId = 2 },
-			new Shift { Id = 16, Weekday = 5, StartTime = new TimeOnly(20, 0), EndTime = new TimeOnly(5, 30), Department = "Kassa", ExternalEmployeeName = "Nina Roberts", WeekId = 2 },
-			new Shift { Id = 17, Weekday = 5, StartTime = new TimeOnly(20, 0), EndTime = new TimeOnly(5, 20), Department = "Vakkenvullen", ExternalEmployeeName = "Oscar Scott", WeekId = 2 },
-			new Shift { Id = 18, Weekday = 5, StartTime = new TimeOnly(20, 0), EndTime = new TimeOnly(5, 10), Department = "Vakkenvullen", ExternalEmployeeName = "Paula Turner", WeekId = 2 }
-			//DUMMYDATA SHIFT END
-			);
-		modelBuilder.Entity<Week>().HasData(
-			new Week { Id = 1, Year = 2024, WeekNumber = 1 },
-			new Week { Id = 2, Year = 2024, WeekNumber = 2 }
+			new PrognosisDepartment { PrognosisId = 1, Department = "Kassa", Weekday = 0, WorkHours = 4000 },
+			new PrognosisDepartment { PrognosisId = 1, Department = "Vakkenvullen", Weekday = 0, WorkHours = 4000 },
+			new PrognosisDepartment { PrognosisId = 1, Department = "Vers", Weekday = 0, WorkHours = 4000 },
+			new PrognosisDepartment { PrognosisId = 1, Department = "Kassa", Weekday = 1, WorkHours = 4000 },
+			new PrognosisDepartment { PrognosisId = 1, Department = "Vakkenvullen", Weekday = 1, WorkHours = 4000 },
+			new PrognosisDepartment { PrognosisId = 1, Department = "Vers", Weekday = 1, WorkHours = 4000 },
+			new PrognosisDepartment { PrognosisId = 1, Department = "Kassa", Weekday = 2, WorkHours = 4000 },
+			new PrognosisDepartment { PrognosisId = 1, Department = "Vakkenvullen", Weekday = 2, WorkHours = 4000 },
+			new PrognosisDepartment { PrognosisId = 1, Department = "Vers", Weekday = 2, WorkHours = 4000 },
+			new PrognosisDepartment { PrognosisId = 1, Department = "Kassa", Weekday = 3, WorkHours = 4000 },
+			new PrognosisDepartment { PrognosisId = 1, Department = "Vakkenvullen", Weekday = 3, WorkHours = 4000 },
+			new PrognosisDepartment { PrognosisId = 1, Department = "Vers", Weekday = 3, WorkHours = 4000 },
+			new PrognosisDepartment { PrognosisId = 1, Department = "Kassa", Weekday = 4, WorkHours = 4000 },
+			new PrognosisDepartment { PrognosisId = 1, Department = "Vakkenvullen", Weekday = 4, WorkHours = 4000 },
+			new PrognosisDepartment { PrognosisId = 1, Department = "Vers", Weekday = 4, WorkHours = 4000 },
+			new PrognosisDepartment { PrognosisId = 1, Department = "Kassa", Weekday = 5, WorkHours = 4000 },
+			new PrognosisDepartment { PrognosisId = 1, Department = "Vakkenvullen", Weekday = 5, WorkHours = 4000 },
+			new PrognosisDepartment { PrognosisId = 1, Department = "Vers", Weekday = 5, WorkHours = 4000 },
+			new PrognosisDepartment { PrognosisId = 1, Department = "Kassa", Weekday = 6, WorkHours = 4000 },
+			new PrognosisDepartment { PrognosisId = 1, Department = "Vakkenvullen", Weekday = 6, WorkHours = 4000 },
+			new PrognosisDepartment { PrognosisId = 1, Department = "Vers", Weekday = 6, WorkHours = 4000 }
 		);
 
 		OnModelCreatingPartial(modelBuilder);

@@ -1,4 +1,4 @@
-﻿@model BumboSolid.Models.AvailabilityRuleViewModel
+﻿@model BumboSolid.Data.Models.AvailabilityRule
 
 @{
     ViewData["Title"] = "Create";
@@ -16,16 +16,9 @@
 			<input type="hidden" id="weekNr" name="weekNr" value="@ViewBag.WeekNr" />
 
 			<div class="form-group">
-				<label for="Day" class="control-label">Dag</label>
-				<select id="Day" name="Day" class="form-control">
-					<option value="Monday">Maandag</option>
-					<option value="Tuesday">Dinsdag</option>
-					<option value="Wednesday">Woensdag</option>
-					<option value="Thursday">Donderdag</option>
-					<option value="Friday">Vrijdag</option>
-					<option value="Saturday">Zaterdag</option>
-					<option value="Sunday">Zondag</option>
-				</select>
+				<label asp-for="Date" class="control-label">Datum</label>
+				<input asp-for="Date" id="firstday" class="form-control" value=null />
+				<span asp-validation-for="Date" class="text-danger"></span>
 			</div>
 
 			<div class="d-flex flex-row">

@@ -1,60 +1,49 @@
-﻿@model BumboSolid.Data.Models.Shift
+﻿@model BumboSolid.Models.ScheduleViewDetailsViewModel;
 
 @{
-    ViewData["Title"] = "Details";
+	ViewData["Title"] = "Rooster Details";
 }
 
-<h1>Details</h1>
+<header class="d-flex align-items-center gap-3 justify-content-center gap-3">
+	<div class="w-100 text-align text-end">
+		<a class="new-btn" asp-controller="Schedules" asp-action="Index">Terug</a>
+	</div>
+	<div class="mx-3 text-center text-nowrap">
+		<h1>Rooster Details</h1>
+		<p>@Model.Day @Model.StartTime - @Model.EndTime</p>
+	</div>
+	<div class="w-100">
+	</div>
+</header>
 
-<div>
-    <h4>Shift</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Weekday)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Weekday)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.StartTime)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.StartTime)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.EndTime)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.EndTime)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.EmployeeId)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.EmployeeId)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.ExternalEmployeeName)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.ExternalEmployeeName)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.DepartmentNavigation)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.DepartmentNavigation.Name)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Week)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Week.Id)
-        </dd>
-    </dl>
-</div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> |
-    <a asp-action="Index">Back to List</a>
+<div class="row">
+	<div class="col-md-2 fw-bold p-0 pe-3">Medewerker</div>
+	<div class="col-md-2 fw-bold p-0 pe-3">Afdeling</div>
+	<div class="col-md-2 fw-bold p-0 pe-3">Starttijd</div>
+	<div class="col-md-2 fw-bold p-0 pe-3">Eindtijd</div>
+	<div class="col-md-2 fw-bold p-0 pe-3">Extern</div>
+	<div class="col-md-2"></div>
+	<hr class="m-0" />
+	@foreach (var shift in Model.Shifts)
+	{
+		@if (shift.Employee != null) {
+			<div class="col-md-2 p-0 pe-3 my-2">@(shift.Employee.FirstName + " " + shift.Employee.LastName)</div>
+		} else {
+			<div class="col-md-2 p-0 pe-3 my-2">@(shift.ExternalEmployeeName)</div>
+		}
+
+		<div class="col-md-2 p-0 pe-3 my-2">@shift.Department</div>
+		<div class="col-md-2 p-0 pe-3 my-2">@shift.StartTime</div>
+		<div class="col-md-2 p-0 pe-3 my-2">@shift.EndTime</div>
+		<div class="col-md-2 p-0 pe-3 my-2">@(shift.Employee == null ? "ja" : "nee")</div>
+		<div class="col-md-2 p-0 pe-3 my-2 justify-content-center">
+			<a class="no-a" asp-action="Edit" asp-route-id="@shift.Id">
+				<img class="weather-image icon-4 me-3" src="/images/pencil-solid.svg">
+			</a>
+			<a class="no-a" asp-action="Delete" asp-route-id="@shift.Id">
+				<img class="weather-image icon-4" src="/images/trash-solid.svg">
+			</a>
+		</div>
+		<hr class="m-0" />
+	}
 </div>
