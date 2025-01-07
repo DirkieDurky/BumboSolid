@@ -18,6 +18,8 @@ public partial class BumboDbContext : IdentityDbContext<User, IdentityRole<int>,
 	{
 	}
 
+	public virtual DbSet<Absence> Absences { get; set; }
+
 	public virtual DbSet<AvailabilityRule> AvailabilityRules { get; set; }
 
 	public virtual DbSet<CLABreakEntry> CLABreakEntries { get; set; }
@@ -50,8 +52,6 @@ public partial class BumboDbContext : IdentityDbContext<User, IdentityRole<int>,
 
 	public virtual DbSet<Week> Weeks { get; set; }
 
-    public virtual DbSet<Absence> Absences { get; set; }
-
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 	{
 		if (!optionsBuilder.IsConfigured)
@@ -63,6 +63,35 @@ public partial class BumboDbContext : IdentityDbContext<User, IdentityRole<int>,
 	protected override void OnModelCreating(ModelBuilder modelBuilder)
 	{
 		base.OnModelCreating(modelBuilder);
+
+
+		modelBuilder.Entity<Absence>(entity =>
+		{
+			entity.ToTable("Absence");
+
+			entity.HasIndex(e => e.ShiftId, "IX_Absence_ShiftID");
+
+			entity.HasIndex(e => e.EmployeeId, "IX_Absence_EmployeeID");
+
+			entity.Property(e => e.Id);
+
+			entity.Property(e => e.ShiftId).HasColumnName("ShiftID");
+			entity.Property(e => e.EmployeeId).HasColumnName("EmployeeID");
+
+			entity.Property(e => e.AbsentDescription)
+				.HasMaxLength(255)
+				.IsUnicode(false)
+				.HasColumnName("Absent_Description");
+
+			entity.HasOne(d => d.Shift).WithMany(p => p.Absences)
+				  .HasForeignKey(d => d.ShiftId)
+				  .OnDelete(DeleteBehavior.ClientSetNull)
+				  .HasConstraintName("FK_Absence_Week");
+
+			entity.HasOne(d => d.Employee).WithMany(p => p.Absences)
+				.HasForeignKey(d => d.EmployeeId)
+				.HasConstraintName("FK_Absence_Employee");
+		});
 
 		modelBuilder.Entity<AvailabilityRule>(entity =>
 		{
@@ -347,29 +376,7 @@ public partial class BumboDbContext : IdentityDbContext<User, IdentityRole<int>,
 
 		});
 
-        modelBuilder.Entity<Absence>(entity =>
-        {
-            entity.ToTable("Absence");
-
-            entity.Property(e => e.Id);
-
-            entity.Property(e => e.AbsentDescription)
-                .HasMaxLength(255)
-                .IsUnicode(false)
-                .HasColumnName("Absent_Description");
-
-            entity.HasOne(d => d.Week).WithMany(p => p.Absences)
-                  .HasForeignKey(d => d.WeekId)
-                  .OnDelete(DeleteBehavior.ClientSetNull)
-                  .HasConstraintName("FK_Shift_Week");
-
-            entity.HasOne(d => d.Employee).WithMany(p => p.Absences)
-                .HasForeignKey(d => d.EmployeeId)
-                .OnDelete(DeleteBehavior.Cascade)
-                .HasConstraintName("FK_Shift_Employee");
-        });
-
-        modelBuilder.Entity<Weather>(entity =>
+		modelBuilder.Entity<Weather>(entity =>
 		{
 			entity.ToTable("Weather");
 

@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BumboSolid.Migrations
 {
     [DbContext(typeof(BumboDbContext))]
-    [Migration("20241203195415_absence")]
+    [Migration("20250107131957_absence")]
     partial class absence
     {
         /// <inheritdoc />
@@ -40,25 +40,24 @@ namespace BumboSolid.Migrations
                         .HasColumnName("Absent_Description");
 
                     b.Property<int?>("EmployeeId")
-                        .HasColumnType("int");
+                        .HasColumnType("int")
+                        .HasColumnName("EmployeeID");
 
                     b.Property<TimeOnly>("EndTime")
                         .HasColumnType("time");
 
+                    b.Property<int>("ShiftId")
+                        .HasColumnType("int")
+                        .HasColumnName("ShiftID");
+
                     b.Property<TimeOnly>("StartTime")
                         .HasColumnType("time");
 
-                    b.Property<int>("WeekId")
-                        .HasColumnType("int");
-
-                    b.Property<byte>("Weekday")
-                        .HasColumnType("tinyint");
-
                     b.HasKey("Id");
 
-                    b.HasIndex("EmployeeId");
+                    b.HasIndex(new[] { "EmployeeId" }, "IX_Absence_EmployeeID");
 
-                    b.HasIndex("WeekId");
+                    b.HasIndex(new[] { "ShiftId" }, "IX_Absence_ShiftID");
 
                     b.ToTable("Absence", (string)null);
                 });
@@ -999,18 +998,17 @@ namespace BumboSolid.Migrations
                     b.HasOne("BumboSolid.Data.Models.User", "Employee")
                         .WithMany("Absences")
                         .HasForeignKey("EmployeeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .HasConstraintName("FK_Shift_Employee");
+                        .HasConstraintName("FK_Absence_Employee");
 
-                    b.HasOne("BumboSolid.Data.Models.Week", "Week")
+                    b.HasOne("BumboSolid.Data.Models.Shift", "Shift")
                         .WithMany("Absences")
-                        .HasForeignKey("WeekId")
+                        .HasForeignKey("ShiftId")
                         .IsRequired()
-                        .HasConstraintName("FK_Shift_Week");
+                        .HasConstraintName("FK_Absence_Week");
 
                     b.Navigation("Employee");
 
-                    b.Navigation("Week");
+                    b.Navigation("Shift");
                 });
 
             modelBuilder.Entity("BumboSolid.Data.Models.AvailabilityRule", b =>
@@ -1259,6 +1257,8 @@ namespace BumboSolid.Migrations
 
             modelBuilder.Entity("BumboSolid.Data.Models.Shift", b =>
                 {
+                    b.Navigation("Absences");
+
                     b.Navigation("FillRequests");
                 });
 
@@ -1280,8 +1280,6 @@ namespace BumboSolid.Migrations
 
             modelBuilder.Entity("BumboSolid.Data.Models.Week", b =>
                 {
-                    b.Navigation("Absences");
-
                     b.Navigation("PrognosisDays");
 
                     b.Navigation("Shifts");

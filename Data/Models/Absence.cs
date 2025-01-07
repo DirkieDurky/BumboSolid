@@ -4,9 +4,7 @@
     {
         public int Id { get; set; }
 
-        public int WeekId { get; set; }
-
-        public byte Weekday { get; set; }
+        public int ShiftId { get; set; }
 
         public TimeOnly StartTime { get; set; }
 
@@ -16,8 +14,8 @@
 
         public int? EmployeeId { get; set; }
 
-        public User? Employee { get; set; } = null!;
+		public virtual Shift Shift { get; set; } = null!;
 
-        public virtual Week? Week { get; set; } = null!;
-    }
+		public virtual User? Employee { get; set; }
+	}
 }
