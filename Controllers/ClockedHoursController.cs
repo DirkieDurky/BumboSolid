@@ -5,16 +5,18 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Globalization;
-using BumboSolid.Migrations;
+using Microsoft.AspNetCore.Authorization;
 
 namespace BumboSolid.Controllers
 {
-	public class ClockedHoursController : Controller
+    [Authorize(Roles = "Employee")]
+    [Route("Uren klokken")]
+    public class ClockedHoursController : Controller
 	{
 		private readonly BumboDbContext _context;
 		private readonly UserManager<User> _userManager;
 
-		public ClockedHoursController(BumboDbContext context, UserManager<User> userManager)
+        public ClockedHoursController(BumboDbContext context, UserManager<User> userManager)
 		{
 			_context = context;
 			_userManager = userManager;
@@ -25,7 +27,7 @@ namespace BumboSolid.Controllers
 		public async Task<IActionResult> Index()
 		{
 			var user = await _userManager.GetUserAsync(User);
-			int userId = user.Id;
+			int userId = user!.Id;
 
 			int year = DateTime.Now.Year;
 			int weekNr = new CultureInfo("en-US").Calendar.GetWeekOfYear(DateTime.Now, CalendarWeekRule.FirstDay, DayOfWeek.Monday);
@@ -84,7 +86,7 @@ namespace BumboSolid.Controllers
 		public async Task<IActionResult> ClockIn(List<string> selectedDepartments)
 		{
 			var user = await _userManager.GetUserAsync(User);
-			int userId = user.Id;
+			int userId = user!.Id;
 
 			int year = DateTime.Now.Year;
 			int weekNr = new CultureInfo("en-US").Calendar.GetWeekOfYear(DateTime.Now, CalendarWeekRule.FirstDay, DayOfWeek.Monday);
@@ -143,11 +145,11 @@ namespace BumboSolid.Controllers
 			return RedirectToAction("Index");
 		}
 
-		[HttpPost("Uitklokken")]
+		[HttpGet("Uitklokken")]
 		public async Task<IActionResult> ClockOut()
 		{
 			var user = await _userManager.GetUserAsync(User);
-			int userId = user.Id;
+			int userId = user!.Id;
 
 			var currentClockedHour = await _context.ClockedHours
 				.Where(ch => ch.EmployeeId == userId)
@@ -161,7 +163,7 @@ namespace BumboSolid.Controllers
 				return RedirectToAction("Index");
 			}
 
-			if (currentClockedHour.EndTime != TimeOnly.MinValue)
+			if (currentClockedHour.EndTime != null)
 			{
 				ModelState.AddModelError(string.Empty, "Deze dienst is al uit geklokt.");
 				return RedirectToAction("Index");
@@ -179,7 +181,7 @@ namespace BumboSolid.Controllers
 		public async Task<IActionResult> Overview(int weekFromNow = 0)
 		{
 			var user = await _userManager.GetUserAsync(User);
-			int userId = user.Id;
+			int userId = user!.Id;
 
 			DateTime targetDate = DateTime.Now.AddDays(weekFromNow * 7);
 			int year = targetDate.Year;
@@ -216,7 +218,110 @@ namespace BumboSolid.Controllers
 			return View(overviewViewModel);
 		}
 
-		DateOnly FirstDateOfWeek(int year, int week)
+        [HttpGet("Pauzeren")]
+        public async Task<IActionResult> Pause()
+        {
+            var user = await _userManager.GetUserAsync(User);
+            int userId = user!.Id;
+
+            var currentClockedHour = await _context.ClockedHours
+                .Where(ch => ch.EmployeeId == userId)
+                .OrderByDescending(ch => ch.Id)
+                .ThenByDescending(ch => ch.Weekday)
+                .ThenByDescending(ch => ch.StartTime)
+				.FirstOrDefaultAsync();
+
+            if (currentClockedHour == null)
+            {
+                ModelState.AddModelError(string.Empty, "Geen actieve dienst gevonden om uit te klokken.");
+                return RedirectToAction("Index");
+            }
+
+            if (currentClockedHour.EndTime != null)
+            {
+                ModelState.AddModelError(string.Empty, "Deze dienst is al uit geklokt.");
+                return RedirectToAction("Index");
+            }
+
+            currentClockedHour.EndTime = TimeOnly.FromDateTime(DateTime.Now);
+
+            _context.ClockedHours.Update(currentClockedHour);
+
+            var newClockedHour = new ClockedHours
+			{
+				WeekId = currentClockedHour.WeekId,
+				Weekday = (byte)DateTime.Now.DayOfWeek,
+				Department = currentClockedHour.Department,
+				StartTime = TimeOnly.FromDateTime(DateTime.Now),
+				EmployeeId = userId,
+				IsBreak = 1
+			};
+
+			_context.ClockedHours.Add(newClockedHour);
+			await _context.SaveChangesAsync();
+
+            return RedirectToAction("Index");
+        }
+
+        [HttpGet("Hervatten")]
+        public async Task<IActionResult> Unpause()
+        {
+            var user = await _userManager.GetUserAsync(User);
+            int userId = user!.Id;
+
+            var pauseEntry = await _context.ClockedHours
+                .Where(ch => ch.EmployeeId == userId && ch.IsBreak == 1)
+                .OrderByDescending(ch => ch.Id)
+                .ThenByDescending(ch => ch.Weekday)
+                .ThenByDescending(ch => ch.StartTime)
+				.FirstOrDefaultAsync();
+
+            if (pauseEntry == null)
+            {
+                ModelState.AddModelError(string.Empty, "Geen actieve dienst gevonden om uit te klokken.");
+                return RedirectToAction("Index");
+            }
+
+            if (pauseEntry.EndTime != null)
+            {
+                ModelState.AddModelError(string.Empty, "De pauze is al gemarkeerd als voorbij");
+                return RedirectToAction("Index");
+            }
+
+            pauseEntry.EndTime = TimeOnly.FromDateTime(DateTime.Now);
+
+            _context.ClockedHours.Update(pauseEntry);
+
+            var lastClockedHour = await _context.ClockedHours
+                .Where(ch => ch.EmployeeId == userId && ch.IsBreak == 0)
+                .OrderByDescending(ch => ch.Id)
+                .ThenByDescending(ch => ch.Weekday)
+                .ThenByDescending(ch => ch.StartTime)
+                .FirstOrDefaultAsync();
+
+            if (lastClockedHour == null)
+            {
+                ModelState.AddModelError(string.Empty, "Geen actieve dienst gevonden om te hervatten");
+                return RedirectToAction("Index");
+            }
+
+            var newClockedHour = new ClockedHours
+            {
+                WeekId = lastClockedHour.WeekId,
+                Weekday = (byte)DateTime.Now.DayOfWeek,
+                Department = lastClockedHour.Department,
+                StartTime = TimeOnly.FromDateTime(DateTime.Now),
+                EmployeeId = userId,
+                IsBreak = 0
+            };
+
+            _context.ClockedHours.Add(newClockedHour);
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction("Index");
+        }
+
+        DateOnly FirstDateOfWeek(int year, int week)
 		{
 			var jan1 = new DateOnly(year, 1, 1);
 			var firstDayOfWeek = jan1.AddDays((week - 1) * 7 - (int)jan1.DayOfWeek + (int)DayOfWeek.Monday);
