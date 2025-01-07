@@ -294,30 +294,50 @@ namespace BumboSolid.Controllers
             if (shift == null) return NotFound();
 
 			// Check if the whole shift has to go or just a bit
-			if (shift.StartTime <= absentViewModel.StartTime && shift.EndTime >= absentViewModel.StartTime) _context.Shifts.Remove(shift);
+			if (absentViewModel.StartTime <= shift.StartTime && absentViewModel.EndTime >= shift.EndTime) _context.Shifts.Remove(shift);
+			// Check if the shift has to be split
+			else if (absentViewModel.StartTime > shift.StartTime && absentViewModel.EndTime < shift.EndTime)
+			{
+				Shift newShift = new Shift()
+				{
+					StartTime = absentViewModel.EndTime,
+					EndTime = shift.EndTime,
+					WeekId = shift.WeekId,
+					Week = shift.Week,
+					Weekday = shift.Weekday,
+					Department = shift.Department,
+					EmployeeId = shift.EmployeeId,
+					Employee = shift.Employee,
+					DepartmentNavigation = shift.DepartmentNavigation
+				};
+
+				shift.EndTime = absentViewModel.StartTime;
+
+				_context.Shifts.Add(newShift);
+				_context.Shifts.Update(shift);
+			}
 			else
 			{
-				shift.StartTime = absentViewModel.StartTime;
-				shift.EndTime = absentViewModel.EndTime;
+				if (shift.StartTime < absentViewModel.StartTime) shift.EndTime = absentViewModel.StartTime;
+				else shift.StartTime = absentViewModel.EndTime;
 				_context.Shifts.Update(shift);
 			}
 
 			// Creating absent
-			FillRequest absent = new FillRequest()
+			Absence absent = new Absence()
 			{
-				ShiftId = absentViewModel.ShiftId,
-				//AbsentDescription = absentViewModel.Description
-            };
-            foreach (var modelState in ViewData.ModelState.Values)
-            {
-                foreach (ModelError error in modelState.Errors)
-                {
-                    Console.WriteLine(error.ErrorMessage);
-                }
-            }
+				StartTime = absentViewModel.StartTime,
+				EndTime = absentViewModel.EndTime,
+				AbsentDescription = absentViewModel.Description,
+				Employee = await _userManager.GetUserAsync(User),
+				WeekId = shift.WeekId,
+				Week = shift.Week,
+				Weekday = shift.Weekday
+			};
+
             if (ModelState.IsValid)
             {
-                _context.FillRequests.Add(absent);
+                _context.Absences.Add(absent);
                 _context.SaveChanges();
             }
 

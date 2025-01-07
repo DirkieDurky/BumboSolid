@@ -353,6 +353,34 @@ namespace BumboSolid.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Absence",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    WeekID = table.Column<int>(type: "int", nullable: false),
+                    Weekday = table.Column<int>(type: "int", nullable: false),
+                    StartTime = table.Column<TimeOnly>(type: "time", nullable: false),
+                    EndTime = table.Column<TimeOnly>(type: "time", nullable: false),
+                    Absent_Description = table.Column<string>(type: "varchar(255)", unicode: false, maxLength: 255, nullable: true),
+                    EmployeeID = table.Column<int>(type: "int", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Absence", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Absence_Employee",
+                        column: x => x.EmployeeID,
+                        principalTable: "User",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_Absence_Week",
+                        column: x => x.WeekID,
+                        principalTable: "Week",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
                 name: "PrognosisDay",
                 columns: table => new
                 {
@@ -459,33 +487,6 @@ namespace BumboSolid.Migrations
                         columns: x => new { x.PrognosisID, x.Weekday },
                         principalTable: "PrognosisDay",
                         principalColumns: new[] { "PrognosisID", "Weekday" });
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Absence",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    ShiftID = table.Column<int>(type: "int", nullable: false),
-                    StartTime = table.Column<TimeOnly>(type: "time", nullable: false),
-                    EndTime = table.Column<TimeOnly>(type: "time", nullable: false),
-                    Absent_Description = table.Column<string>(type: "varchar(255)", unicode: false, maxLength: 255, nullable: true),
-                    EmployeeID = table.Column<int>(type: "int", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Absence", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Absence_Employee",
-                        column: x => x.EmployeeID,
-                        principalTable: "User",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_Absence_Week",
-                        column: x => x.ShiftID,
-                        principalTable: "Shift",
-                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -612,9 +613,9 @@ namespace BumboSolid.Migrations
                 column: "EmployeeID");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Absence_ShiftID",
+                name: "IX_Absence_WeekID",
                 table: "Absence",
-                column: "ShiftID");
+                column: "WeekID");
 
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",

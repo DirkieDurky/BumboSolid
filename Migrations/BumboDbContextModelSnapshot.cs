@@ -43,18 +43,22 @@ namespace BumboSolid.Migrations
                     b.Property<TimeOnly>("EndTime")
                         .HasColumnType("time");
 
-                    b.Property<int>("ShiftId")
-                        .HasColumnType("int")
-                        .HasColumnName("ShiftID");
-
                     b.Property<TimeOnly>("StartTime")
                         .HasColumnType("time");
+
+                    b.Property<int>("WeekId")
+                        .HasColumnType("int")
+                        .HasColumnName("WeekID");
+
+                    b.Property<int>("Weekday")
+                        .HasColumnType("int")
+                        .HasColumnName("Weekday");
 
                     b.HasKey("Id");
 
                     b.HasIndex(new[] { "EmployeeId" }, "IX_Absence_EmployeeID");
 
-                    b.HasIndex(new[] { "ShiftId" }, "IX_Absence_ShiftID");
+                    b.HasIndex(new[] { "WeekId" }, "IX_Absence_WeekID");
 
                     b.ToTable("Absence", (string)null);
                 });
@@ -997,15 +1001,15 @@ namespace BumboSolid.Migrations
                         .HasForeignKey("EmployeeId")
                         .HasConstraintName("FK_Absence_Employee");
 
-                    b.HasOne("BumboSolid.Data.Models.Shift", "Shift")
+                    b.HasOne("BumboSolid.Data.Models.Week", "Week")
                         .WithMany("Absences")
-                        .HasForeignKey("ShiftId")
+                        .HasForeignKey("WeekId")
                         .IsRequired()
                         .HasConstraintName("FK_Absence_Week");
 
                     b.Navigation("Employee");
 
-                    b.Navigation("Shift");
+                    b.Navigation("Week");
                 });
 
             modelBuilder.Entity("BumboSolid.Data.Models.AvailabilityRule", b =>
@@ -1254,8 +1258,6 @@ namespace BumboSolid.Migrations
 
             modelBuilder.Entity("BumboSolid.Data.Models.Shift", b =>
                 {
-                    b.Navigation("Absences");
-
                     b.Navigation("FillRequests");
                 });
 
@@ -1277,6 +1279,8 @@ namespace BumboSolid.Migrations
 
             modelBuilder.Entity("BumboSolid.Data.Models.Week", b =>
                 {
+                    b.Navigation("Absences");
+
                     b.Navigation("PrognosisDays");
 
                     b.Navigation("Shifts");

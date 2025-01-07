@@ -69,13 +69,14 @@ public partial class BumboDbContext : IdentityDbContext<User, IdentityRole<int>,
 		{
 			entity.ToTable("Absence");
 
-			entity.HasIndex(e => e.ShiftId, "IX_Absence_ShiftID");
+			entity.HasIndex(e => e.WeekId, "IX_Absence_WeekID");
 
 			entity.HasIndex(e => e.EmployeeId, "IX_Absence_EmployeeID");
 
 			entity.Property(e => e.Id);
 
-			entity.Property(e => e.ShiftId).HasColumnName("ShiftID");
+			entity.Property(e => e.WeekId).HasColumnName("WeekID");
+			entity.Property(e => e.Weekday).HasColumnName("Weekday");
 			entity.Property(e => e.EmployeeId).HasColumnName("EmployeeID");
 
 			entity.Property(e => e.AbsentDescription)
@@ -83,10 +84,10 @@ public partial class BumboDbContext : IdentityDbContext<User, IdentityRole<int>,
 				.IsUnicode(false)
 				.HasColumnName("Absent_Description");
 
-			entity.HasOne(d => d.Shift).WithMany(p => p.Absences)
-				  .HasForeignKey(d => d.ShiftId)
-				  .OnDelete(DeleteBehavior.ClientSetNull)
-				  .HasConstraintName("FK_Absence_Week");
+			entity.HasOne(d => d.Week).WithMany(p => p.Absences)
+			.HasForeignKey(d => d.WeekId)
+			.OnDelete(DeleteBehavior.ClientSetNull)
+			.HasConstraintName("FK_Absence_Week");
 
 			entity.HasOne(d => d.Employee).WithMany(p => p.Absences)
 				.HasForeignKey(d => d.EmployeeId)
