@@ -186,7 +186,6 @@ namespace BumboSolid.Controllers
 				}
 
 				// Getting shift user (TODO external employee makes fill request might crash)
-				//var shiftUser = _context.Users.Where(i => i.Id == shift.Id).FirstOrDefault();
 				var shiftUser = _context.Users.Where(i => i.Id == shift.EmployeeId).FirstOrDefault();
 
 				if (validShift == true)
