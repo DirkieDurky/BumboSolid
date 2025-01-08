@@ -74,7 +74,8 @@ namespace BumboSolid.Controllers
                 PreviousWeekId = previousWeek?.Id,
                 NextWeekId = nextWeek?.Id,
                 CurrentWeekNumber = currentWeekNumber,
-                IsCurrentWeek = (currentWeek.Year == currentYear && currentWeek.WeekNumber == currentWeekNumber)
+                IsCurrentWeek = (currentWeek.Year == currentYear && currentWeek.WeekNumber == currentWeekNumber),
+                HasSchedule = currentWeek.HasSchedule == 0 ? false : true
             };
             return View(viewModel);
         }
@@ -146,18 +147,11 @@ namespace BumboSolid.Controllers
             return View(viewModel);
         }
 
-        // GET: Shifts/Create
-        [HttpGet("Aanmaken")]
-        public IActionResult Create()
-        {
-            return View();
-        }
-
         // POST: Shifts/Create
         [HttpPost("Aanmaken")]
         public IActionResult Create(int? id)
         {
-            CultureInfo ci = new CultureInfo("nl-NL");
+            CultureInfo ci = new("nl-NL");
             Calendar calendar = ci.Calendar;
 
             DateTime nextWeek = DateTime.Now.AddDays(7);

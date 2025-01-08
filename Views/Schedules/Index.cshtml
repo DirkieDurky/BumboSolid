@@ -22,20 +22,12 @@
 }
 
 <header class="d-flex flex-column align-items-center">
-    <div class="d-flex justify-content-around w-100 header-items mb-2">
-        <div>
-            <a class="btn btn-primary" asp-controller="Schedules">
-                Rooster Beheren
-            </a>
-        </div>
-        <div>
-            <a class="btn btn-primary" asp-controller="Shifts" asp-action="Create" asp-route-weekid="@schedule.Id">
-                Shift Toevoegen
-            </a>
-        </div>
-    </div>
     <div class="d-flex justify-content-between w-100 header-items">
-        <div></div>
+        <div>
+            <a class="btn btn-secondary" asp-controller="Schedules" asp-action="Index">
+                Terug
+            </a>
+        </div>
         <div>
             @if (Model.PreviousWeekId != null)
             {
@@ -69,72 +61,93 @@
     </div>
 </header>
 
-<body class="schedule">
-    @foreach (var afdeling in departments)
-    {
-        <div class="dropdown-bar" onclick="toggleVisibility('@afdeling-content')">
-            <span>@afdeling <i class="fa-solid fa-chevron-up arrow"></i></span>
+@if (!Model.HasSchedule)
+{
+    <body>
+        <div class="d-flex flex-column align-items-center">
+            <h3>Er is nog geen rooster aangemaakt.</h3>
+            <br />
+            <br />
+            <h4>Maak er een aan!</h4>
+            <br />
+            <a asp-action="Create" class="btn btn-success">Nieuw Rooster Aanmaken</a>
         </div>
-        <div id="@afdeling-content" class="hidden">
-            <table class="schedule-table">
-                <thead>
-                    <tr>
-                        <th>Werknemer</th>
-                        @foreach (var day in daysOfTheWeek)
-                        {
-                            <th>@day</th>
-                        }
-                        <th>Totaal</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var shiftGroup in shifts
-                   .Where(s => s.Department == afdeling)
-                   .GroupBy(s => s.EmployeeName))
-                    {
+    </body>
+}
+else
+{
+    <body class="schedule">
+        <div class="d-flex justify-content-center">
+            <a class="btn btn-su" asp-controller="Shifts" asp-action="Create" asp-route-weekid="@schedule.Id">
+                Shift Toevoegen
+            </a>
+        </div>
+        <br />
+        @foreach (var afdeling in departments)
+        {
+            <div class="dropdown-bar" onclick="toggleVisibility('@afdeling-content')">
+                <span>@afdeling <i class="fa-solid fa-chevron-up arrow"></i></span>
+            </div>
+            <div id="@afdeling-content" class="hidden">
+                <table class="schedule-table">
+                    <thead>
                         <tr>
-                            <td>
-                                @if (shiftGroup.First().EmployeeId.HasValue)
-                                {
-                                    <a asp-controller="Schedules" asp-action="EmployeeSchedule" asp-route-id="@schedule.Id" asp-route-employeeId="@shiftGroup.First().EmployeeId" class="shift-link">
-                                        @shiftGroup.Key
-                                    </a>
-                                }
-                                else
-                                {
-                                    @shiftGroup.Key <span> (External)</span>
-                                }
-                            </td>
-
+                            <th>Werknemer</th>
                             @foreach (var day in daysOfTheWeek)
                             {
+                                <th>@day</th>
+                            }
+                            <th>Totaal</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var shiftGroup in shifts
+                       .Where(s => s.Department == afdeling)
+                       .GroupBy(s => s.EmployeeName))
+                        {
+                            <tr>
                                 <td>
-                                    @foreach (var shift in shiftGroup.Where(s => s.Weekday == Array.IndexOf(daysOfTheWeek, day)))
+                                    @if (shiftGroup.First().EmployeeId.HasValue)
                                     {
-                                        <div>
-                                            <a asp-controller="Shifts" asp-action="Detail" asp-route-shiftId="@shift.Id" class="shift-link">
-                                                <i class="fa-regular fa-clock"></i> @shift.StartTime.ToString("HH:mm") - @shift.EndTime.ToString("HH:mm")
-                                            </a>
-                                        </div>
+                                        <a asp-controller="Schedules" asp-action="EmployeeSchedule" asp-route-id="@schedule.Id" asp-route-employeeId="@shiftGroup.First().EmployeeId" class="shift-link">
+                                            @shiftGroup.Key
+                                        </a>
+                                    }
+                                    else
+                                    {
+                                        @shiftGroup.Key <span> (External)</span>
                                     }
                                 </td>
-                            }
 
-                            @{
-                                var totalHoursWorked = shiftGroup.Sum(s => (s.EndTime - s.StartTime).TotalMinutes);
-                                var totalTimeWorked = TimeSpan.FromMinutes(totalHoursWorked).ToString(@"hh\:mm");
-                            }
-                            <td>
-                                <div><i class="fa-regular fa-clock"></i> @totalTimeWorked</div>
-                            </td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
-        </div>
-    }
-</body>
+                                @foreach (var day in daysOfTheWeek)
+                                {
+                                    <td>
+                                        @foreach (var shift in shiftGroup.Where(s => s.Weekday == Array.IndexOf(daysOfTheWeek, day)))
+                                        {
+                                            <div>
+                                                <a asp-controller="Shifts" asp-action="Detail" asp-route-shiftId="@shift.Id" class="shift-link">
+                                                    <i class="fa-regular fa-clock"></i> @shift.StartTime.ToString("HH:mm") - @shift.EndTime.ToString("HH:mm")
+                                                </a>
+                                            </div>
+                                        }
+                                    </td>
+                                }
 
+                                @{
+                                    var totalHoursWorked = shiftGroup.Sum(s => (s.EndTime - s.StartTime).TotalMinutes);
+                                    var totalTimeWorked = TimeSpan.FromMinutes(totalHoursWorked).ToString(@"hh\:mm");
+                                }
+                                <td>
+                                    <div><i class="fa-regular fa-clock"></i> @totalTimeWorked</div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </body>
+}
 <script>
     function toggleVisibility(id) {
         var content = document.getElementById(id);

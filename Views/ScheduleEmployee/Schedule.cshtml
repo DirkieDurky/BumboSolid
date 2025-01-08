@@ -6,7 +6,6 @@
     var schedule = Model.Weeks.FirstOrDefault(w => w.Id == Model.WeekId);
     if (schedule == null)
     {
-        <p>Schedule not found for the selected week.</p>
         return;
     }
 
@@ -27,6 +26,9 @@
 
 <header class="d-flex flex-column align-items-center">
     <div class="d-flex justify-content-around w-100 header-items mb-2">
+        
+    </div>
+    <div class="d-flex justify-content-between w-100 header-items">
         <div>
             <a asp-controller="ScheduleEmployee" asp-action="OutgoingFillRequests" asp-route-id="@ViewBag.FillRequestId" class="btn btn-primary">
                 Uitgaande invalsverzoeken
@@ -37,9 +39,6 @@
                 Inkomende invalsverzoeken
             </a>
         </div>
-    </div>
-    <div class="d-flex justify-content-between w-100 header-items">
-        <div></div>
         <div>
             @if (Model.PreviousWeekId != null)
             {
@@ -70,6 +69,7 @@
                 </a>
             }
         </div>
+        <div></div>
     </div>
 </header>
 
