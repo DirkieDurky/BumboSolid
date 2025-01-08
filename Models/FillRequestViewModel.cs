@@ -5,6 +5,8 @@ namespace BumboSolid.Models
 {
     public class FillRequestViewModel
     {
+		public int? Id { get; set; }
+
 		public DateOnly Date { get; set; }
 
 		public String Day { get; set; }
@@ -15,9 +17,12 @@ namespace BumboSolid.Models
 
 		public TimeOnly EndTime { get; set; }
 
-		public string? Status { get; set; }
+        public string? Status { get; set; }
 
 		public string? Name { get; set; }
 
-	}
+		public Shift? Shift { get; set; }
+
+        public User? SubstituteEmployee { get; set; }
+    }
 }

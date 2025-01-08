@@ -12,6 +12,7 @@ using BumboSolid.Models;
 using System.Globalization;
 using System.Diagnostics;
 using static System.Runtime.InteropServices.JavaScript.JSType;
+using Humanizer;
 
 namespace BumboSolid.Controllers
 {
@@ -61,7 +62,7 @@ namespace BumboSolid.Controllers
 				}
 			}
 
-			ViewBag.FillRequests = _context.FillRequests.Where(f => f.Accepted == 0 && f.SubstituteEmployee != null && f.Shift.WeekId == currentWeek.Id).ToList().Count;
+			ViewBag.FillRequests = _context.FillRequests.Where(f => f.Accepted == 0 && f.SubstituteEmployee != null).ToList().Count;
 
 			var viewModel = new SchedulesViewModel
 			{
@@ -161,6 +162,7 @@ namespace BumboSolid.Controllers
 
 				id = currentWeek.Id;
 			}
+
 			return RedirectToAction("Index", new { id });
 		}
 
@@ -168,9 +170,94 @@ namespace BumboSolid.Controllers
         [HttpGet("Invalsverzoeken")]
         public IActionResult FillRequests()
         {
-			List<FillRequest> fillRequests = _context.FillRequests.Where(f => f.Accepted == 0 && f.SubstituteEmployee != null).ToList();
+			List<FillRequestViewModel> fillRequestViewModels = new List<FillRequestViewModel>();
+			foreach(var fillRequest in _context.FillRequests.Where(f => f.Accepted == 0 && f.SubstituteEmployee != null).Include(f => f.Shift).Include(f => f.Shift.Week).Include(f => f.Shift.Employee).Include(f => f.SubstituteEmployee))
+			{
+				// Getting Shift and Week
+				var shift = fillRequest.Shift;
+				var week = shift.Week;
 
-            return View(fillRequests);
+                // Getting correct date and day
+                var jan1 = new DateOnly(week.Year, 1, 1);
+                DateOnly date = jan1.AddDays(DayOfWeek.Monday - jan1.DayOfWeek).AddDays((week.WeekNumber - 1) * 7).AddDays((int)shift.Weekday - (int)DayOfWeek.Monday);
+
+                string[] days = ["Monday", "Tuesdday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+
+                // Creating FillReuestViewModel
+                fillRequestViewModels.Add(new FillRequestViewModel()
+                {
+                    Date = date,
+                    Day = days[shift.Weekday],
+                    StartTime = shift.StartTime,
+                    EndTime = shift.EndTime,
+                    Department = shift.Department,
+                    Shift = shift,
+					SubstituteEmployee = fillRequest.SubstituteEmployee,
+					Id = fillRequest.Id,
+                });
+            }
+
+            return View(fillRequestViewModels);
+        }
+
+        //GET: Shifts/AnswerFillRequest
+        [HttpGet("Invalsverzoek Antwoorden")]
+        public IActionResult AnswerFillRequest(int id, string status)
+        {
+			FillRequest fillRequest = _context.FillRequests.Where(f => f.Id == id).Include(f => f.Shift).Include(f => f.Shift.Week).Include(f => f.Shift.Employee).Include(f => f.SubstituteEmployee).FirstOrDefault();
+
+            if (fillRequest == null) return NotFound();
+
+            // Getting Shift and Week
+            var shift = fillRequest.Shift;
+            var week = shift.Week;
+
+            // Getting correct date and day
+            var jan1 = new DateOnly(week.Year, 1, 1);
+            DateOnly date = jan1.AddDays(DayOfWeek.Monday - jan1.DayOfWeek).AddDays((week.WeekNumber - 1) * 7).AddDays((int)shift.Weekday - (int)DayOfWeek.Monday);
+
+            string[] days = ["Monday", "Tuesdday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+
+            FillRequestViewModel fillRequestViewModel = new()
+			{
+                Date = date,
+                Day = days[shift.Weekday],
+                StartTime = shift.StartTime,
+                EndTime = shift.EndTime,
+                Department = shift.Department,
+                Shift = shift,
+                SubstituteEmployee = fillRequest.SubstituteEmployee,
+                Id = fillRequest.Id,
+            };
+
+			ViewBag.Answer = status;
+
+            return View(fillRequestViewModel);
+        }
+
+        //POST: Shifts/AnswerFillRequest
+        [HttpPost("Invalsverzoek Antwoorden")]
+        public IActionResult AnswerFillRequestConfirm(int id, string Status)
+        {
+            FillRequest fillRequest = _context.FillRequests.Where(f => f.Id == id).Include(f => f.Shift).Include(f => f.Shift.Employee).Include(f => f.SubstituteEmployee).FirstOrDefault();
+
+            if (fillRequest == null) return NotFound();
+
+			// Accept FillRequest
+			if (Status.Equals("accepteren"))
+			{
+                Shift shift = fillRequest.Shift;
+                shift.Employee = fillRequest.SubstituteEmployee;
+				fillRequest.Accepted = 1;
+
+                _context.Shifts.Update(shift);
+                _context.FillRequests.Update(fillRequest);
+            }
+            else _context.FillRequests.Remove(fillRequest);
+
+            _context.SaveChanges();
+
+            return RedirectToAction("FillRequests");
         }
     }
 }
