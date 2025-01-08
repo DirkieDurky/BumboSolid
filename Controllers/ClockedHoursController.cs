@@ -5,225 +5,354 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Globalization;
-using BumboSolid.Migrations;
+using Microsoft.AspNetCore.Authorization;
 
 namespace BumboSolid.Controllers
 {
-	public class ClockedHoursController : Controller
-	{
-		private readonly BumboDbContext _context;
-		private readonly UserManager<User> _userManager;
+    [Authorize(Roles = "Employee")]
+    [Route("Uren klokken")]
+    public class ClockedHoursController : Controller
+    {
+        private readonly BumboDbContext _context;
+        private readonly UserManager<User> _userManager;
 
-		public ClockedHoursController(BumboDbContext context, UserManager<User> userManager)
-		{
-			_context = context;
-			_userManager = userManager;
-		}
+        public ClockedHoursController(BumboDbContext context, UserManager<User> userManager)
+        {
+            _context = context;
+            _userManager = userManager;
+        }
 
-		// GET: ScheduleEmployeeController
-		[HttpGet("Klokken")]
-		public async Task<IActionResult> Index()
-		{
-			var user = await _userManager.GetUserAsync(User);
-			int userId = user.Id;
+        // GET: ScheduleEmployeeController
+        [HttpGet("Klokken")]
+        public async Task<IActionResult> Index()
+        {
+            var user = await _userManager.GetUserAsync(User);
+            int userId = user!.Id;
 
-			int year = DateTime.Now.Year;
-			int weekNr = new CultureInfo("en-US").Calendar.GetWeekOfYear(DateTime.Now, CalendarWeekRule.FirstDay, DayOfWeek.Monday);
+            int year = DateTime.Now.Year;
+            int weekNr = new CultureInfo("en-US").Calendar.GetWeekOfYear(DateTime.Now, CalendarWeekRule.FirstDay, DayOfWeek.Monday);
 
-			var currentWeek = await _context.Weeks
-				.Where(w => w.Year == year && w.WeekNumber == weekNr)
-				.FirstOrDefaultAsync();
+            var currentWeek = await _context.Weeks
+                .Where(w => w.Year == year && w.WeekNumber == weekNr)
+                .FirstOrDefaultAsync();
 
-			if (currentWeek == null)
-			{
-				currentWeek = new Week
-				{
-					Year = (short)year,
-					WeekNumber = (byte)weekNr,
-				};
+            if (currentWeek == null)
+            {
+                currentWeek = new Week
+                {
+                    Year = (short)year,
+                    WeekNumber = (byte)weekNr,
+                };
 
-				_context.Weeks.Add(currentWeek);
-				await _context.SaveChangesAsync();
-			}
+                _context.Weeks.Add(currentWeek);
+                await _context.SaveChangesAsync();
+            }
 
-			int currentWeekId = currentWeek.Id;
+            int currentWeekId = currentWeek.Id;
 
-			var clockedHours = await _context.ClockedHours
-				.Where(ch => ch.EmployeeId == userId && ch.WeekId == currentWeekId)
-				.OrderByDescending(ch => ch.Weekday)
-				.ThenByDescending(ch => ch.StartTime)
-				.ToListAsync();
+            var clockedHours = await _context.ClockedHours
+                .Where(ch => ch.EmployeeId == userId && ch.WeekId == currentWeekId)
+                .OrderByDescending(ch => ch.Weekday)
+                .ThenByDescending(ch => ch.StartTime)
+                .ToListAsync();
 
-			var weekdayDictionary = new Dictionary<byte, string>
-			{
-				{ 1, "Maandag" },
-				{ 2, "Dinsdag" },
-				{ 3, "Woensdag" },
-				{ 4, "Donderdag" },
-				{ 5, "Vrijdag" },
-				{ 6, "Zaterdag" },
-				{ 7, "Zondag" }
-			};
+            var weekdayDictionary = new Dictionary<byte, string>
+            {
+                { 1, "Maandag" },
+                { 2, "Dinsdag" },
+                { 3, "Woensdag" },
+                { 4, "Donderdag" },
+                { 5, "Vrijdag" },
+                { 6, "Zaterdag" },
+                { 7, "Zondag" }
+            };
 
-			var departments = await _context.Departments.ToListAsync();
+            var departments = await _context.Departments.ToListAsync();
 
-			ClockedHoursViewModel clockedHoursViewModel = new ClockedHoursViewModel()
-			{
-				StartDate = FirstDateOfWeek(year, weekNr),
-				EndDate = FirstDateOfWeek(year, weekNr).AddDays(6),
-				ClockedHours = clockedHours,
-				WeekdayDictionary = weekdayDictionary,
-				Departments = departments,
-				SelectedDepartments = new List<string> { departments.FirstOrDefault()?.Name }
-			};
+            var lastClockedHour = await _context.ClockedHours
+                .Where(ch => ch.EmployeeId == userId)
+                .OrderByDescending(ch => ch.Id)
+                .ThenByDescending(ch => ch.Weekday)
+                .ThenByDescending(ch => ch.StartTime).FirstOrDefaultAsync();
 
-			return View(clockedHoursViewModel);
-		}
+            var lastDepartment = lastClockedHour == null ? null : await _context.Departments
+                .Where(d => d.Name == lastClockedHour.Department)
+                .FirstOrDefaultAsync();
 
-		[HttpPost("Inklokken")]
-		public async Task<IActionResult> ClockIn(List<string> selectedDepartments)
-		{
-			var user = await _userManager.GetUserAsync(User);
-			int userId = user.Id;
+            ClockedHoursViewModel clockedHoursViewModel = new ClockedHoursViewModel()
+            {
+                StartDate = FirstDateOfWeek(year, weekNr),
+                EndDate = FirstDateOfWeek(year, weekNr).AddDays(6),
+                ClockedHours = clockedHours,
+                WeekdayDictionary = weekdayDictionary,
+                Departments = departments,
+                SelectedDepartments = new List<string> { departments.FirstOrDefault()?.Name },
+                LastDepartment = lastDepartment,
+            };
 
-			int year = DateTime.Now.Year;
-			int weekNr = new CultureInfo("en-US").Calendar.GetWeekOfYear(DateTime.Now, CalendarWeekRule.FirstDay, DayOfWeek.Monday);
-			DateOnly startDate = FirstDateOfWeek(year, weekNr);
+            return View(clockedHoursViewModel);
+        }
 
-			if (selectedDepartments == null || !selectedDepartments.Any())
-			{
-				ModelState.AddModelError(string.Empty, "Kies eerst een afdeling.");
-				return View();
-			}
+        [HttpPost("Inklokken")]
+        public async Task<IActionResult> ClockIn(List<string> selectedDepartments)
+        {
+            var user = await _userManager.GetUserAsync(User);
+            int userId = user!.Id;
 
-			var departments = await _context.Departments
-				.Where(d => selectedDepartments.Contains(d.Name))
-				.ToListAsync();
+            //Clock out old clockedHour
+            var currentClockedHour = await _context.ClockedHours
+                .Where(ch => ch.EmployeeId == userId)
+                .OrderByDescending(ch => ch.Id)
+                .ThenByDescending(ch => ch.Weekday)
+                .ThenByDescending(ch => ch.StartTime).FirstOrDefaultAsync();
 
-			var currentWeek = await _context.Weeks.Where(w => w.Year == year && w.WeekNumber == weekNr).FirstOrDefaultAsync();
+            if (currentClockedHour != null && currentClockedHour.EndTime == null)
+            {
+                currentClockedHour.EndTime = TimeOnly.FromDateTime(DateTime.Now);
+                _context.ClockedHours.Update(currentClockedHour);
+            }
 
-			if (currentWeek == null)
-			{
-				currentWeek = new Week()
-				{
-					Year = (short)year,
-					WeekNumber = (byte)weekNr,
-				};
-				_context.Add(currentWeek);
-				_context.SaveChanges();
-			}
+            int year = DateTime.Now.Year;
+            int weekNr = new CultureInfo("en-US").Calendar.GetWeekOfYear(DateTime.Now, CalendarWeekRule.FirstDay, DayOfWeek.Monday);
+            DateOnly startDate = FirstDateOfWeek(year, weekNr);
 
-			var lastClockedHours = await _context.ClockedHours
-				.Where(ch => ch.EmployeeId == userId)
-				.OrderByDescending(ch => ch.Id)
-				.ThenByDescending(ch => ch.Weekday)
-				.ThenByDescending(ch => ch.StartTime)
-				.FirstOrDefaultAsync();
+            if (selectedDepartments == null || !selectedDepartments.Any())
+            {
+                ModelState.AddModelError(string.Empty, "Kies eerst een afdeling.");
+                return View();
+            }
 
-			if (lastClockedHours != null && lastClockedHours.EndTime == TimeOnly.MinValue)
-			{
-				lastClockedHours.EndTime = TimeOnly.FromDateTime(DateTime.Now);
-				_context.ClockedHours.Update(lastClockedHours);
-				await _context.SaveChangesAsync();
-			}
+            var departments = await _context.Departments
+                .Where(d => selectedDepartments.Contains(d.Name))
+                .ToListAsync();
 
-			var newClockedHour = new ClockedHours
-			{
-				WeekId = currentWeek.Id,
-				Weekday = (byte)DateTime.Now.DayOfWeek,
-				Department = departments.FirstOrDefault()?.Name,
-				StartTime = TimeOnly.FromDateTime(DateTime.Now),
-				EmployeeId = userId,
-				IsBreak = 0
-			};
+            var currentWeek = await _context.Weeks.Where(w => w.Year == year && w.WeekNumber == weekNr).FirstOrDefaultAsync();
 
-			_context.ClockedHours.Add(newClockedHour);
-			await _context.SaveChangesAsync();
+            if (currentWeek == null)
+            {
+                currentWeek = new Week()
+                {
+                    Year = (short)year,
+                    WeekNumber = (byte)weekNr,
+                };
+                _context.Add(currentWeek);
+                _context.SaveChanges();
+            }
 
-			return RedirectToAction("Index");
-		}
+            var lastClockedHours = await _context.ClockedHours
+                .Where(ch => ch.EmployeeId == userId)
+                .OrderByDescending(ch => ch.Id)
+                .ThenByDescending(ch => ch.Weekday)
+                .ThenByDescending(ch => ch.StartTime)
+                .FirstOrDefaultAsync();
 
-		[HttpPost("Uitklokken")]
-		public async Task<IActionResult> ClockOut()
-		{
-			var user = await _userManager.GetUserAsync(User);
-			int userId = user.Id;
+            if (lastClockedHours != null && lastClockedHours.EndTime == TimeOnly.MinValue)
+            {
+                lastClockedHours.EndTime = TimeOnly.FromDateTime(DateTime.Now);
+                _context.ClockedHours.Update(lastClockedHours);
+                await _context.SaveChangesAsync();
+            }
 
-			var currentClockedHour = await _context.ClockedHours
-				.Where(ch => ch.EmployeeId == userId)
-				.OrderByDescending(ch => ch.Id)
-				.ThenByDescending(ch => ch.Weekday)
-				.ThenByDescending(ch => ch.StartTime).FirstOrDefaultAsync();
+            var newClockedHour = new ClockedHours
+            {
+                WeekId = currentWeek.Id,
+                Weekday = (byte)DateTime.Now.DayOfWeek,
+                Department = departments.FirstOrDefault()?.Name,
+                StartTime = TimeOnly.FromDateTime(DateTime.Now),
+                EmployeeId = userId,
+                IsBreak = 0
+            };
 
-			if (currentClockedHour == null)
-			{
-				ModelState.AddModelError(string.Empty, "Geen actieve dienst gevonden om uit te klokken.");
-				return RedirectToAction("Index");
-			}
+            _context.ClockedHours.Add(newClockedHour);
+            await _context.SaveChangesAsync();
 
-			if (currentClockedHour.EndTime != TimeOnly.MinValue)
-			{
-				ModelState.AddModelError(string.Empty, "Deze dienst is al uit geklokt.");
-				return RedirectToAction("Index");
-			}
+            return RedirectToAction("Index");
+        }
 
-			currentClockedHour.EndTime = TimeOnly.FromDateTime(DateTime.Now);
+        [HttpGet("Uitklokken")]
+        public async Task<IActionResult> ClockOut()
+        {
+            var user = await _userManager.GetUserAsync(User);
+            int userId = user!.Id;
 
-			_context.ClockedHours.Update(currentClockedHour);
-			await _context.SaveChangesAsync();
+            var currentClockedHour = await _context.ClockedHours
+                .Where(ch => ch.EmployeeId == userId)
+                .OrderByDescending(ch => ch.Id)
+                .ThenByDescending(ch => ch.Weekday)
+                .ThenByDescending(ch => ch.StartTime).FirstOrDefaultAsync();
 
-			return RedirectToAction("Index");
-		}
+            if (currentClockedHour == null)
+            {
+                ModelState.AddModelError(string.Empty, "Geen actieve dienst gevonden om uit te klokken.");
+                return RedirectToAction("Index");
+            }
 
-		[HttpGet("Overzicht")]
-		public async Task<IActionResult> Overview(int weekFromNow = 0)
-		{
-			var user = await _userManager.GetUserAsync(User);
-			int userId = user.Id;
+            if (currentClockedHour.EndTime != null)
+            {
+                ModelState.AddModelError(string.Empty, "Deze dienst is al uit geklokt.");
+                return RedirectToAction("Index");
+            }
 
-			DateTime targetDate = DateTime.Now.AddDays(weekFromNow * 7);
-			int year = targetDate.Year;
-			int weekNr = new CultureInfo("en-US").Calendar.GetWeekOfYear(targetDate, CalendarWeekRule.FirstDay, DayOfWeek.Monday);
-			DateOnly startDate = FirstDateOfWeek(year, weekNr);
+            currentClockedHour.EndTime = TimeOnly.FromDateTime(DateTime.Now);
 
-			var allClockedHours = await _context.ClockedHours
-				.Where(ch => ch.EmployeeId == userId && ch.Week.Year == year && ch.Week.WeekNumber == weekNr)
-				.OrderByDescending(ch => ch.WeekId)
-				.ThenByDescending(ch => ch.Weekday)
-				.ThenByDescending(ch => ch.StartTime)
-				.ToListAsync();
+            _context.ClockedHours.Update(currentClockedHour);
+            await _context.SaveChangesAsync();
 
-			var weekdayDictionary = new Dictionary<byte, string>
-			{
-				{ 1, "Maandag" },
-				{ 2, "Dinsdag" },
-				{ 3, "Woensdag" },
-				{ 4, "Donderdag" },
-				{ 5, "Vrijdag" },
-				{ 6, "Zaterdag" },
-				{ 7, "Zondag" }
-			};
+            return RedirectToAction("Index");
+        }
 
-			ClockedHoursOverviewViewModel overviewViewModel = new ClockedHoursOverviewViewModel
-			{
-				StartDate = startDate,
-				EndDate = startDate.AddDays(6),
-				ClockedHours = allClockedHours,
-				WeekdayDictionary = weekdayDictionary,
-				WeekFromNow = weekFromNow
-			};
+        [HttpGet("Overzicht")]
+        public async Task<IActionResult> Overview(int weekFromNow = 0)
+        {
+            var user = await _userManager.GetUserAsync(User);
+            int userId = user!.Id;
 
-			return View(overviewViewModel);
-		}
+            DateTime targetDate = DateTime.Now.AddDays(weekFromNow * 7);
+            int year = targetDate.Year;
+            int weekNr = new CultureInfo("en-US").Calendar.GetWeekOfYear(targetDate, CalendarWeekRule.FirstDay, DayOfWeek.Monday);
+            DateOnly startDate = FirstDateOfWeek(year, weekNr);
 
-		DateOnly FirstDateOfWeek(int year, int week)
-		{
-			var jan1 = new DateOnly(year, 1, 1);
-			var firstDayOfWeek = jan1.AddDays((week - 1) * 7 - (int)jan1.DayOfWeek + (int)DayOfWeek.Monday);
+            var allClockedHours = await _context.ClockedHours
+                .Where(ch => ch.EmployeeId == userId && ch.Week.Year == year && ch.Week.WeekNumber == weekNr)
+                .OrderByDescending(ch => ch.WeekId)
+                .ThenByDescending(ch => ch.Weekday)
+                .ThenByDescending(ch => ch.StartTime)
+                .ToListAsync();
 
-			if (firstDayOfWeek.Year < year) firstDayOfWeek = firstDayOfWeek.AddDays(7);
+            var weekdayDictionary = new Dictionary<byte, string>
+            {
+                { 1, "Maandag" },
+                { 2, "Dinsdag" },
+                { 3, "Woensdag" },
+                { 4, "Donderdag" },
+                { 5, "Vrijdag" },
+                { 6, "Zaterdag" },
+                { 7, "Zondag" }
+            };
 
-			return firstDayOfWeek;
-		}
-	}
+            ClockedHoursOverviewViewModel overviewViewModel = new ClockedHoursOverviewViewModel
+            {
+                StartDate = startDate,
+                EndDate = startDate.AddDays(6),
+                ClockedHours = allClockedHours,
+                WeekdayDictionary = weekdayDictionary,
+                WeekFromNow = weekFromNow
+            };
+
+            return View(overviewViewModel);
+        }
+
+        [HttpGet("Pauzeren")]
+        public async Task<IActionResult> Pause()
+        {
+            var user = await _userManager.GetUserAsync(User);
+            int userId = user!.Id;
+
+            var currentClockedHour = await _context.ClockedHours
+                .Where(ch => ch.EmployeeId == userId)
+                .OrderByDescending(ch => ch.Id)
+                .ThenByDescending(ch => ch.Weekday)
+                .ThenByDescending(ch => ch.StartTime)
+                .FirstOrDefaultAsync();
+
+            if (currentClockedHour == null)
+            {
+                ModelState.AddModelError(string.Empty, "Geen actieve dienst gevonden om uit te klokken.");
+                return RedirectToAction("Index");
+            }
+
+            if (currentClockedHour.EndTime != null)
+            {
+                ModelState.AddModelError(string.Empty, "Deze dienst is al uit geklokt.");
+                return RedirectToAction("Index");
+            }
+
+            currentClockedHour.EndTime = TimeOnly.FromDateTime(DateTime.Now);
+
+            _context.ClockedHours.Update(currentClockedHour);
+
+            var newClockedHour = new ClockedHours
+            {
+                WeekId = currentClockedHour.WeekId,
+                Weekday = (byte)DateTime.Now.DayOfWeek,
+                Department = currentClockedHour.Department,
+                StartTime = TimeOnly.FromDateTime(DateTime.Now),
+                EmployeeId = userId,
+                IsBreak = 1
+            };
+
+            _context.ClockedHours.Add(newClockedHour);
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction("Index");
+        }
+
+        [HttpGet("Hervatten")]
+        public async Task<IActionResult> Unpause()
+        {
+            var user = await _userManager.GetUserAsync(User);
+            int userId = user!.Id;
+
+            var pauseEntry = await _context.ClockedHours
+                .Where(ch => ch.EmployeeId == userId && ch.IsBreak == 1)
+                .OrderByDescending(ch => ch.Id)
+                .ThenByDescending(ch => ch.Weekday)
+                .ThenByDescending(ch => ch.StartTime)
+                .FirstOrDefaultAsync();
+
+            if (pauseEntry == null)
+            {
+                ModelState.AddModelError(string.Empty, "Geen actieve dienst gevonden om uit te klokken.");
+                return RedirectToAction("Index");
+            }
+
+            if (pauseEntry.EndTime != null)
+            {
+                ModelState.AddModelError(string.Empty, "De pauze is al gemarkeerd als voorbij");
+                return RedirectToAction("Index");
+            }
+
+            pauseEntry.EndTime = TimeOnly.FromDateTime(DateTime.Now);
+
+            _context.ClockedHours.Update(pauseEntry);
+
+            var lastClockedHour = await _context.ClockedHours
+                .Where(ch => ch.EmployeeId == userId && ch.IsBreak == 0)
+                .OrderByDescending(ch => ch.Id)
+                .ThenByDescending(ch => ch.Weekday)
+                .ThenByDescending(ch => ch.StartTime)
+                .FirstOrDefaultAsync();
+
+            if (lastClockedHour == null)
+            {
+                ModelState.AddModelError(string.Empty, "Geen actieve dienst gevonden om te hervatten");
+                return RedirectToAction("Index");
+            }
+
+            var newClockedHour = new ClockedHours
+            {
+                WeekId = lastClockedHour.WeekId,
+                Weekday = (byte)DateTime.Now.DayOfWeek,
+                Department = lastClockedHour.Department,
+                StartTime = TimeOnly.FromDateTime(DateTime.Now),
+                EmployeeId = userId,
+                IsBreak = 0
+            };
+
+            _context.ClockedHours.Add(newClockedHour);
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction("Index");
+        }
+
+        DateOnly FirstDateOfWeek(int year, int week)
+        {
+            var jan1 = new DateOnly(year, 1, 1);
+            var firstDayOfWeek = jan1.AddDays((week - 1) * 7 - (int)jan1.DayOfWeek + (int)DayOfWeek.Monday);
+
+            if (firstDayOfWeek.Year < year) firstDayOfWeek = firstDayOfWeek.AddDays(7);
+
+            return firstDayOfWeek;
+        }
+    }
 }

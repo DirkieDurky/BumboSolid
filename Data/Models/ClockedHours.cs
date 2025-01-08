@@ -15,7 +15,7 @@ public class ClockedHours
 
 	public TimeOnly StartTime { get; set; }
 
-	public TimeOnly EndTime { get; set; }
+	public TimeOnly? EndTime { get; set; }
 
 	public int? EmployeeId { get; set; }
 

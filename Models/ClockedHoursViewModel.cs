@@ -15,5 +15,7 @@ namespace BumboSolid.Models
 		public List<Department> Departments { get; set; } = new List<Department>();
 
 		public List<string> SelectedDepartments { get; set; } = new List<string>();
+
+		public Department? LastDepartment { get; set; }
 	}
 }

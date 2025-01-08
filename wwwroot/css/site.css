@@ -387,7 +387,6 @@ p {
 
 .table {
 	border-spacing: 1rem 0;
-	display: block;
 }
 
 	.table > tbody {
