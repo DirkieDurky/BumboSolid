@@ -23,7 +23,7 @@
                 <select id="department" name="selectedDepartments" class="form-select">
                     @foreach (var department in Model.Departments)
                     {
-                        <option value="@department.Name">@department.Name</option>
+                        <option value="@department.Name" selected="@(department == Model.LastDepartment)">@department.Name</option>
                     }
                 </select>
             </form>
