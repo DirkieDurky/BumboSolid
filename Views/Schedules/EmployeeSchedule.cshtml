@@ -1,15 +1,12 @@
-﻿@model BumboSolid.Models.EmployeeScheduleDetailsViewModel
+﻿@model BumboSolid.Models.EmployeeScheduleViewModel
 
 @{
     string[] daysOfTheWeek = { "Maandag", "Dinsdag", "Woensdag", "Donderdag", "Vrijdag", "Zaterdag", "Zondag" };
 
     var schedule = Model.Weeks.FirstOrDefault(w => w.Id == Model.WeekId);
-    if (schedule == null)
-    {
-        return;
-    }
-
+    if (schedule == null) return;
     var shifts = schedule.Shifts;
+
     DateTime startDate = GetFirstDateOfWeek(schedule.Year, schedule.WeekNumber);
     DateTime endDate = startDate.AddDays(6);
 }
@@ -29,28 +26,27 @@
         <a class="btn btn-secondary" asp-controller="Schedules" asp-action="Index">Back</a>
     </div>
     <div>
-        @if (Model.PreviousWeekId != null)
-        {
-            <a class="btn btn-primary" asp-controller="Schedules" asp-action="EmployeeSchedule" asp-route-id="@Model.PreviousWeekId" asp-route-employeeId="@Model.EmployeeId">
-                Vorige Week
-            </a>
-        }
+        <a class="btn btn-primary @(Model.PreviousWeekId == null ? "disabled" : "")"
+           asp-controller="Schedules" asp-action="EmployeeSchedule"
+           asp-route-id="@Model.PreviousWeekId" asp-route-employeeId="@Model.EmployeeId">
+            Vorige Week
+        </a>
     </div>
     <div class="text-nowrap">
-        <h1 class="schedule-title">Schedule for @Model.EmployeeName</h1>
+        <h1>Rooster voor @Model.EmployeeName</h1>
     </div>
     <div>
-        @if (Model.NextWeekId != null)
-        {
-            <a class="btn btn-primary" asp-controller="Schedules" asp-action="EmployeeSchedule" asp-route-id="@Model.NextWeekId" asp-route-employeeId="@Model.EmployeeId">
-                Volgende Week
-            </a>
-        }
+        <a class="btn btn-primary @(Model.NextWeekId == null ? "disabled" : "")"
+           asp-controller="Schedules" asp-action="EmployeeSchedule"
+           asp-route-id="@Model.NextWeekId" asp-route-employeeId="@Model.EmployeeId">
+            Volgende Week
+        </a>
     </div>
     <div>
         @if (!Model.IsCurrentWeek)
         {
-            <a class="btn btn-primary" asp-controller="Schedules" asp-action="EmployeeSchedule" asp-route-id="@Model.CurrentWeekNumber" asp-route-employeeId="@Model.EmployeeId">
+            <a class="btn btn-primary" asp-controller="Schedules" asp-action="EmployeeSchedule"
+               asp-route-id="@Model.CurrentWeekNumber" asp-route-employeeId="@Model.EmployeeId">
                 Huidige Week
             </a>
         }
@@ -73,36 +69,23 @@
         <div class="shifts-row">
             @foreach (var dayIndex in Enumerable.Range(0, 7))
             {
-                var shiftsForDay = shifts.Where(s => s.Weekday == dayIndex && s.EmployeeId == Model.EmployeeId).ToList();
+                var shiftsForDay = shifts.Where(s => s.Weekday == dayIndex && s.EmployeeId == Model.EmployeeId).OrderBy(s => s.StartTime).ToList();
                 <div class="shift-column">
                     @if (shiftsForDay.Any())
                     {
                         <ul class="shift-list">
                             @foreach (var shift in shiftsForDay)
                             {
+                                <a asp-controller="Shifts" asp-action="Edit" asp-route-returnUrl="@Context.Request.Path" asp-route-id="@shift.Id" class="w-100 shift-link">
                                 <li class="shift-item">
                                     <div class="shift-details">
                                         <span class="shift-time">
                                             <i class="fa-regular fa-clock"></i> @shift.StartTime.ToString("HH:mm") - @shift.EndTime.ToString("HH:mm")
                                         </span>
                                         <span class="shift-department">@shift.Department</span>
-                                        <div class="shift-actions d-flex flex-column align-items-center">
-                                            <a asp-controller="Shifts" asp-action="Edit" asp-route-id="@shift.Id" class="btn btn-outline-primary w-100">
-                                                <div class="d-flex flex-column align-items-center">
-                                                    <i class="fa-solid fa-pencil"></i>
-                                                    <span>Bewerken</span>
-                                                </div>
-                                            </a>
-                                            <a asp-controller="Shifts" asp-action="Delete" asp-route-id="@shift.Id" class="btn btn-outline-danger w-100">
-                                                <div class="d-flex flex-column align-items-center">
-                                                    <i class="fa-solid fa-trash"></i>
-                                                    <span>Verwijderen</span>
-                                                </div>
-                                            </a>
-                                        </div>
-
                                     </div>
                                 </li>
+                                </a>
                             }
                         </ul>
                     }

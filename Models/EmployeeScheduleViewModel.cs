@@ -1,11 +1,16 @@
 ﻿using BumboSolid.Data.Models;
 
-namespace BumboSolid.Models;
-
-public class EmployeeScheduleViewModel
+namespace BumboSolid.Models
 {
-	public required List<Shift> Shifts { get; set; }
-
-	public byte Year { get; set; }
-	public byte Week { get; set; }
+    public class EmployeeScheduleViewModel
+    {
+        public List<Week> Weeks = [];
+        public required string EmployeeName { get; set; }
+        public int EmployeeId { get; set; }
+        public int WeekId { get; set; }
+        public int? PreviousWeekId { get; set; }
+        public int? NextWeekId { get; set; }
+        public int CurrentWeekNumber { get; set; }
+        public bool IsCurrentWeek { get; set; }
+    }
 }

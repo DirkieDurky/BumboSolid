@@ -1,10 +1,5 @@
 ﻿@model BumboSolid.Data.Models.Shift
 
-@{
-	ViewData["Title"] = "Delete";
-}
-
-
 <header class="d-flex align-items-center gap-3 justify-content-center gap-3">
 	<div class="w-100 text-align text-end">
 	</div>
@@ -17,10 +12,11 @@
 
 <div class="row justify-content-center">
 	<h4 class="col-md-12 text-center">Weet je zeker dat je deze shift wil verwijderen?</h4>
-	<a class="new-btn col-md-3 me-2" asp-controller="Schedules" asp-action="Index" asp-route-id="@Model.Week!.Id">Terug</a>
+	<a class="new-btn" href="@ViewBag.ReturnUrl">Terug</a>
 	<div class="col-md-3 p-0 ms-2">
 		<form asp-action="Delete">
 			<input type="hidden" asp-for="Id" />
+			<input type="hidden" name="returnUrl" value="@ViewBag.ReturnUrl" />
 			<input type="submit" value="Verwijderen" class="new-btn w-100" />
 		</form>
 	</div>

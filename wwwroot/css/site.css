@@ -480,6 +480,10 @@ th, td {
     color: inherit;
 }
 
+    .shift-link:hover {
+        text-decoration: underline;
+    }
+
 .dropdown-bar {
     background-color: #d4d4d4;
     padding: 10px;
@@ -487,6 +491,7 @@ th, td {
     font-weight: bold;
     border: 1px solid #ddd;
     margin-block: 15px;
+    border-radius: 10px;
 }
 
 .schedule-table {
@@ -495,8 +500,7 @@ th, td {
     margin-top: 10px;
 }
 
-    .schedule-table th,
-    .schedule-table td {
+    .schedule-table th, .schedule-table td {
         border: 1px solid #ddd;
         padding: 8px;
         text-align: center;
@@ -520,8 +524,7 @@ th, td {
 }
 
 .flipped {
-     transform: rotate(180deg); 
-/*    transform: scale(-1);*/
+    transform: rotate(180deg);
 }
 
 .schedule-table thead th {
@@ -599,9 +602,9 @@ th, td {
 .shift-item {
     background-color: #e2e2e2;
     border-radius: 5px;
-    padding: 10px;
-    margin-bottom: 10px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    padding: 15px;
+    margin-bottom: 15px;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.4);
 }
 
 .shift-details {
@@ -610,8 +613,7 @@ th, td {
     align-items: center;
 }
 
-.shift-time,
-.shift-department {
+.shift-time, .shift-department {
     font-size: 14px;
     color: #555;
 }
@@ -622,23 +624,9 @@ th, td {
     margin-top: 5px;
 }
 
-.shift-link {
-    text-decoration: none;
-    color: #007BFF;
-}
-
-    .shift-link:hover {
-        text-decoration: underline;
-    }
-
 .no-shifts {
     color: #888;
     text-align: center;
-}
-
-.schedule-title {
-    text-align: center;
-    margin: 0;
 }
 
 .header-items > div {
@@ -647,6 +635,7 @@ th, td {
     justify-content: center;
     align-items: center;
 }
+
 
 /* Schedule View Manager END */
 

@@ -1,4 +1,4 @@
-﻿@model BumboSolid.Models.EmployeeScheduleDetailsViewModel
+﻿@model BumboSolid.Models.EmployeeScheduleViewModel
 
 @{
     string[] daysOfTheWeek = { "Maandag", "Dinsdag", "Woensdag", "Donderdag", "Vrijdag", "Zaterdag", "Zondag" };
@@ -25,41 +25,22 @@
 }
 
 <header class="d-flex flex-column align-items-center">
-    <div class="d-flex justify-content-around w-100 header-items mb-2">
-        
-    </div>
     <div class="d-flex justify-content-between w-100 header-items">
+        <div></div>
         <div>
-            <a asp-controller="ScheduleEmployee" asp-action="OutgoingFillRequests" asp-route-id="@ViewBag.FillRequestId" class="btn btn-primary">
-                Uitgaande invalsverzoeken
+            <a class="btn btn-primary @(Model.PreviousWeekId == null ? "disabled" : "")"
+               asp-action="Schedule" asp-route-id="@Model.PreviousWeekId">
+                Vorige Week
             </a>
-        </div>
-        <div>
-            <a asp-controller="ScheduleEmployee" asp-action="IncomingFillRequests" asp-route-id="@ViewBag.FillRequestId" class="btn btn-primary">
-                Inkomende invalsverzoeken
-            </a>
-        </div>
-        <div>
-            @if (Model.PreviousWeekId != null)
-            {
-                <a class="btn btn-primary" asp-action="Schedule" asp-route-id="@Model.PreviousWeekId">
-                    Vorige Week
-                </a>
-            }
         </div>
         <div class="text-nowrap">
-            <div>
-                <h1 class="schedule-title">Rooster voor</h1>
-                <h1 class="schedule-title">@Model.EmployeeName</h1>
-            </div>
+                <h1>Rooster</h1>
         </div>
         <div>
-            @if (Model.NextWeekId != null)
-            {
-                <a class="btn btn-primary" asp-action="Schedule" asp-route-id="@Model.NextWeekId">
-                    Volgende Week
-                </a>
-            }
+            <a class="btn btn-primary @(Model.NextWeekId == null ? "disabled" : "")"
+               asp-action="Schedule" asp-route-id="@Model.NextWeekId">
+                Volgende Week
+            </a>
         </div>
         <div>
             @if (!Model.IsCurrentWeek)
@@ -69,10 +50,8 @@
                 </a>
             }
         </div>
-        <div></div>
     </div>
 </header>
-
 
 <body>
     <div class="schedule-agenda">
@@ -103,18 +82,12 @@
                                             <i class="fa-regular fa-clock"></i> @shift.StartTime.ToString("HH:mm") - @shift.EndTime.ToString("HH:mm")
                                         </span>
                                         <span class="shift-department">@shift.Department</span>
-                                        <div class="shift-actions d-flex flex-column align-items-center">
+                                        <div class="shift-actions d-flex align-items-center">
                                             <a asp-controller="ScheduleEmployee" asp-action="FillRequest" asp-route-id="@shift.Id" class="btn btn-outline-primary w-100">
-                                                <div class="d-flex flex-column align-items-center">
-                                                    <i class="fa-solid fa-exchange-alt"></i>
-                                                    <span>Ruilen</span>
-                                                </div>
+                                                <i class="fa-solid fa-exchange-alt"></i>
                                             </a>
                                             <a asp-controller="ScheduleEmployee" asp-action="CancelShift" asp-route-id="@shift.Id" class="btn btn-outline-danger w-100">
-                                                <div class="d-flex flex-column align-items-center">
-                                                    <i class="fa-solid fa-ban"></i>
-                                                    <span>Afmelden</span>
-                                                </div>
+                                                <i class="fa-solid fa-ban"></i>
                                             </a>
                                         </div>
                                     </div>

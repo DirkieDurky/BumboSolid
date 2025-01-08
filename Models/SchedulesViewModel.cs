@@ -11,5 +11,6 @@ namespace BumboSolid.Models
         public int CurrentWeekNumber { get; set; }
 		public bool IsCurrentWeek { get; set; }
 		public bool HasSchedule { get; set; }
+		public List<Department>? Departments { get; set; }
     }
 }

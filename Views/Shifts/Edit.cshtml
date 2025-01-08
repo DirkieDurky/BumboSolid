@@ -1,40 +1,25 @@
 ﻿@model BumboSolid.Models.ShiftCreateViewModel
 
 @{
-    ViewData["Title"] = "Edit";
+    string[] daysOfTheWeek = { "Maandag", "Dinsdag", "Woensdag", "Donderdag", "Vrijdag", "Zaterdag", "Zondag" };
 
-    Int16 year = Model.Week.Year;
-    Int16 week = Model.Week.WeekNumber;
-    DateTime startDate = FirstDateOfWeekISO8601(year, week);
+    DateTime startDate = GetFirstDateOfWeek(Model.Week.Year, Model.Week.WeekNumber);
     DateTime endDate = startDate.AddDays(6);
-
-    String[] daysOfTheWeek = { "Maandag", "Dinsdag", "Woensdag", "Donderdag", "Vrijdag", "Zaterdag", "Zondag" };
 }
 
 @functions {
-    public static DateTime FirstDateOfWeekISO8601(int year, int weekOfYear)
+    public static DateTime GetFirstDateOfWeek(int year, int weekOfYear)
     {
-        DateTime jan1 = new DateTime(year, 1, 1);
-        int daysOffset = DayOfWeek.Thursday - jan1.DayOfWeek;
-
-        DateTime firstThursday = jan1.AddDays(daysOffset);
-        var cal = System.Globalization.CultureInfo.CurrentCulture.Calendar;
-        int firstWeek = cal.GetWeekOfYear(firstThursday, System.Globalization.CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Monday);
-
-        var weekNum = weekOfYear;
-        if (firstWeek == 1)
-        {
-            weekNum -= 1;
-        }
-
-        var result = firstThursday.AddDays(weekNum * 7);
-        return result.AddDays(-3);
+        var jan1 = new DateTime(year, 1, 1);
+        var daysOffset = (int)DayOfWeek.Monday - (int)jan1.DayOfWeek;
+        var firstMonday = jan1.AddDays(daysOffset > 0 ? daysOffset - 7 : daysOffset);
+        return firstMonday.AddDays((weekOfYear - 1) * 7);
     }
 }
 
 <header class="d-flex align-items-center gap-3 justify-content-center gap-3">
     <div class="w-100 text-align text-end">
-        <a class="new-btn" asp-controller="Schedules" asp-action="Index" asp-route-id="@Model.Week.Id">Terug</a>
+        <a class="new-btn" href="@ViewBag.ReturnUrl">Terug</a>
     </div>
     <div class="mx-3 text-center text-nowrap">
         <h1>Shift bewerken</h1>
@@ -50,6 +35,7 @@
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input asp-for="Shift.Id" type="hidden" value="@Model.Shift.Id" />
             <input asp-for="Shift.WeekId" type="hidden" value="@Model.Week.Id" />
+            <input type="hidden" name="returnUrl" value="@ViewBag.ReturnUrl" />
             <div class="row pb-2">
                 <div class="form-group col-md-6">
                     <label class="control-label fw-bold">Medewerker</label>

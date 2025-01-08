@@ -15,7 +15,7 @@
 			<div class="container-fluid">
 				@if (User.IsInRole("Manager"))
 				{
-					<a class="navbar-brand" asp-area="" asp-controller="Prognoses" asp-action="">BumboSolid</a>
+					<a class="navbar-brand" asp-area="" asp-controller="Prognoses" asp-action="Index">BumboSolid</a>
 				}
 				else if (User.IsInRole("Employee"))
 				{

@@ -21,87 +21,53 @@ namespace BumboSolid.Controllers
             _context = context;
         }
 
-        // GET: Shifts
         [HttpGet("")]
-        [HttpGet("{id:int?}")]
         public async Task<IActionResult> Index(int? id)
         {
-            var currentWeek = await _context.Weeks
-                .Include(w => w.Shifts)
-                .ThenInclude(s => s.Employee)
-                .FirstOrDefaultAsync(w => w.Id == id);
-
-            var culture = new CultureInfo("nl-NL");
-            var today = DateTime.Now;
-            var currentYear = (short)today.Year;
-            var currentWeekNumber = (byte)culture.Calendar.GetWeekOfYear(today, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Monday);
+            var currentWeek = await GetCurrentWeek(id);
 
             if (currentWeek == null)
             {
-                currentWeek = await _context.Weeks
-                    .Include(w => w.Shifts)
-                    .ThenInclude(s => s.Employee)
-                    .FirstOrDefaultAsync(w => w.Year == currentYear && w.WeekNumber == currentWeekNumber && w.HasSchedule == 1);
-
-                if (currentWeek == null) return RedirectToAction("Create");
+                return RedirectToAction("Create");
             }
 
-            var previousWeek = await _context.Weeks
-                .Where(w =>
-                    (w.Year == currentWeek.Year && w.WeekNumber == currentWeek.WeekNumber - 1) ||
-                    (w.Year == currentWeek.Year - 1 && currentWeek.WeekNumber == 1 && w.WeekNumber == 52))
-                .OrderByDescending(w => w.Year)
-                .ThenByDescending(w => w.WeekNumber)
-                .FirstOrDefaultAsync();
+            var viewModel = await GetSchedulesViewModel(currentWeek);
+            return View(viewModel);
+        }
 
-            var nextWeek = await _context.Weeks
-                .Where(w =>
-                    (w.Year == currentWeek.Year && w.WeekNumber == currentWeek.WeekNumber + 1) ||
-                    (w.Year == currentWeek.Year + 1 && currentWeek.WeekNumber == 52 && w.WeekNumber == 1))
-                .OrderBy(w => w.Year)
-                .ThenBy(w => w.WeekNumber)
-                .FirstOrDefaultAsync();
+        [HttpGet("{id:int?}")]
+        public async Task<IActionResult> Schedule(int? id)
+        {
+            var currentWeek = await GetCurrentWeek(id);
 
-            var viewModel = new SchedulesViewModel
+            if (currentWeek == null)
             {
-                Weeks = await _context.Weeks
-                    .Include(w => w.Shifts)
-                    .ThenInclude(s => s.Employee)
-                    .OrderByDescending(w => w.Year)
-                    .ThenByDescending(w => w.WeekNumber)
-                    .ToListAsync(),
-                WeekId = currentWeek.Id,
-                PreviousWeekId = previousWeek?.Id,
-                NextWeekId = nextWeek?.Id,
-                CurrentWeekNumber = currentWeekNumber,
-                IsCurrentWeek = (currentWeek.Year == currentYear && currentWeek.WeekNumber == currentWeekNumber),
-                HasSchedule = currentWeek.HasSchedule == 0 ? false : true
-            };
+                return RedirectToAction("Create");
+            }
+
+            var viewModel = await GetSchedulesViewModel(currentWeek);
             return View(viewModel);
         }
 
         [HttpGet("{employeeId:int}/{id:int?}")]
         public async Task<IActionResult> EmployeeSchedule(int? id, int employeeId)
         {
-            var currentWeek = await _context.Weeks
-                .Include(w => w.Shifts)
-                .ThenInclude(s => s.Employee)
-                .FirstOrDefaultAsync(w => w.Id == id);
+            var currentWeek = await GetCurrentWeek(id);
+
+            if (currentWeek == null)
+            {
+                return RedirectToAction("Create");
+            }
+
+            var employeeShifts = await _context.Shifts
+                .Where(s => s.EmployeeId == employeeId && s.WeekId == currentWeek.Id)
+                .Include(s => s.Employee)
+                .ToListAsync();
 
             var culture = new CultureInfo("nl-NL");
             var today = DateTime.Now;
             var currentYear = (short)today.Year;
             var currentWeekNumber = (byte)culture.Calendar.GetWeekOfYear(today, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Monday);
-
-            if (currentWeek == null)
-            {
-                currentWeek = await _context.Weeks
-                    .Include(w => w.Shifts)
-                    .ThenInclude(s => s.Employee)
-                    .FirstOrDefaultAsync(w => w.Year == currentYear && w.WeekNumber == currentWeekNumber && w.HasSchedule == 1);
-
-                if (currentWeek == null) return RedirectToAction("Create");
-            }
 
             var previousWeek = await _context.Weeks
                 .Where(w =>
@@ -119,12 +85,7 @@ namespace BumboSolid.Controllers
                 .ThenBy(w => w.WeekNumber)
                 .FirstOrDefaultAsync();
 
-            var employeeShifts = await _context.Shifts
-                .Where(s => s.EmployeeId == employeeId && s.WeekId == currentWeek.Id)
-                .Include(s => s.Employee)
-                .ToListAsync();
-
-            var viewModel = new EmployeeScheduleDetailsViewModel
+            var viewModel = new EmployeeScheduleViewModel
             {
                 Weeks = await _context.Weeks
                     .Include(w => w.Shifts)
@@ -134,9 +95,9 @@ namespace BumboSolid.Controllers
                     .ToListAsync(),
                 EmployeeId = employeeId,
                 EmployeeName = _context.Employees
-        .Where(e => e.Id == employeeId)
-        .Select(e => e.Name)
-        .FirstOrDefault() ?? "Unknown",
+                    .Where(e => e.Id == employeeId)
+                    .Select(e => e.Name)
+                    .FirstOrDefault() ?? "Unknown",
                 WeekId = currentWeek.Id,
                 PreviousWeekId = previousWeek?.Id,
                 NextWeekId = nextWeek?.Id,
@@ -225,6 +186,74 @@ namespace BumboSolid.Controllers
                 id = currentWeek.Id;
             }
             return RedirectToAction("Index", new { id });
+        }
+
+        private async Task<Week> GetCurrentWeek(int? id)
+        {
+            var culture = new CultureInfo("nl-NL");
+            var today = DateTime.Now;
+            var currentYear = (short)today.Year;
+            var currentWeekNumber = (byte)culture.Calendar.GetWeekOfYear(today, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Monday);
+
+            var currentWeek = await _context.Weeks
+                .Include(w => w.Shifts)
+                .ThenInclude(s => s.Employee)
+                .FirstOrDefaultAsync(w => w.Id == id);
+
+            if (currentWeek == null)
+            {
+                currentWeek = await _context.Weeks
+                    .Include(w => w.Shifts)
+                    .ThenInclude(s => s.Employee)
+                    .FirstOrDefaultAsync(w => w.Year == currentYear && w.WeekNumber == currentWeekNumber && w.HasSchedule == 1);
+
+                if (currentWeek == null) return null;
+            }
+
+            return currentWeek;
+        }
+
+        private async Task<SchedulesViewModel> GetSchedulesViewModel(Week currentWeek)
+        {
+            var culture = new CultureInfo("nl-NL");
+            var today = DateTime.Now;
+            var currentYear = (short)today.Year;
+            var currentWeekNumber = (byte)culture.Calendar.GetWeekOfYear(today, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Monday);
+
+            var previousWeek = await _context.Weeks
+                .Where(w =>
+                    (w.Year == currentWeek.Year && w.WeekNumber == currentWeek.WeekNumber - 1) ||
+                    (w.Year == currentWeek.Year - 1 && currentWeek.WeekNumber == 1 && w.WeekNumber == 52))
+                .OrderByDescending(w => w.Year)
+                .ThenByDescending(w => w.WeekNumber)
+                .FirstOrDefaultAsync();
+
+            var nextWeek = await _context.Weeks
+                .Where(w =>
+                    (w.Year == currentWeek.Year && w.WeekNumber == currentWeek.WeekNumber + 1) ||
+                    (w.Year == currentWeek.Year + 1 && currentWeek.WeekNumber == 52 && w.WeekNumber == 1))
+                .OrderBy(w => w.Year)
+                .ThenBy(w => w.WeekNumber)
+                .FirstOrDefaultAsync();
+
+            var departments = _context.Departments.ToList();
+
+            return new SchedulesViewModel
+            {
+                Weeks = await _context.Weeks
+                    .Include(w => w.Shifts)
+                    .ThenInclude(s => s.Employee)
+                    .OrderByDescending(w => w.Year)
+                    .ThenByDescending(w => w.WeekNumber)
+                    .ToListAsync(),
+                WeekId = currentWeek.Id,
+                PreviousWeekId = previousWeek?.Id,
+                NextWeekId = nextWeek?.Id,
+                CurrentWeekNumber = currentWeekNumber,
+                IsCurrentWeek = (currentWeek.Year == currentYear && currentWeek.WeekNumber == currentWeekNumber),
+                HasSchedule = currentWeek.HasSchedule != 0,
+                Departments = departments
+            };
         }
     }
 }

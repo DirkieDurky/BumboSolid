@@ -70,7 +70,7 @@ namespace BumboSolid.Controllers
                 .Include(s => s.Employee)
                 .ToListAsync();
 
-            var viewModel = new EmployeeScheduleDetailsViewModel
+            var viewModel = new EmployeeScheduleViewModel
             {
                 Weeks = await _context.Weeks
                     .Include(w => w.Shifts)
