@@ -1,0 +1,44 @@
+﻿@model IEnumerable<BumboSolid.Data.Models.FillRequest>
+@{
+	ViewData["Title"] = "Rooster";
+}
+
+<!-- TODO Voeg filter systeem toe bij rooster -->
+
+<header class="d-flex align-items-center gap-3 justify-content-center gap-3">
+	<div class="w-100 text-align text-end">
+		<a class="new-btn">Rooster Beheren</a>
+	</div>
+	<div class="mx-3 text-center text-nowrap">
+		<h1>Rooster</h1>
+		<p>@startDate.ToString("dd/MM/yyyy") - @endDate.ToString("dd/MM/yyyy")</p>
+	</div>
+	<div class="w-100">
+		<a class="new-btn" asp-controller="Shifts" asp-action="Create" asp-route-weekid="@schedule.Id">Toevoegen</a>
+	</div>
+</header>
+
+@if (ViewBag.FillRequests > 0)
+{
+	<a class="new-btn" asp-controller="Schedules" asp-action="FillRequests">
+		<p class="fw-bold">Personeel willen voor elkaar invallen</p>
+		<p>Klik op deze notificatie om dit keuren.</p>
+	</a>
+}
+
+<div class="container p-1 border-solid-black border-radius-5 schedule-row-width-fix">
+	<div class="row schedule min-height-0 fw-bold-parent">
+		<div class="hour-minute-column"></div>
+		<div class="col mb-1">Maandag</div>
+		<div class="col mb-1">Dinsdag</div>
+		<div class="col mb-1">Woensdag</div>
+		<div class="col mb-1">Donderdag</div>
+		<div class="col mb-1">Vrijdag</div>
+		<div class="col mb-1">Zaterdag</div>
+		<div class="col mb-1">Zondag</div>
+	</div>
+	@for (int hour = 7; hour <= 20; hour++)
+	{
+		
+	}
+</div>

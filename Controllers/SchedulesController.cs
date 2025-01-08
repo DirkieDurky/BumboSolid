@@ -61,6 +61,8 @@ namespace BumboSolid.Controllers
 				}
 			}
 
+			ViewBag.FillRequests = _context.FillRequests.Where(f => f.Accepted == 0 && f.SubstituteEmployee != null && f.Shift.WeekId == currentWeek.Id).ToList().Count;
+
 			var viewModel = new SchedulesViewModel
 			{
 				Weeks = await _context.Weeks
@@ -161,5 +163,14 @@ namespace BumboSolid.Controllers
 			}
 			return RedirectToAction("Index", new { id });
 		}
-	}
+
+        // GET: Shifts/FillRequests
+        [HttpGet("Invalsverzoeken")]
+        public IActionResult FillRequests()
+        {
+			List<FillRequest> fillRequests = _context.FillRequests.Where(f => f.Accepted == 0 && f.SubstituteEmployee != null).ToList();
+
+            return View(fillRequests);
+        }
+    }
 }
