@@ -92,12 +92,7 @@ namespace BumboSolid.Controllers
 
             if (!PasswordIsStrongEnough(input.Password))
             {
-                ModelState.AddModelError(nameof(input.Password), "Wachtwoord is niet niet sterk genoeg. Zorg dat uw wachtwoord voldoet aan de volgende regels:\n" +
-                    "Minimaal 8 karakters.\n" +
-                    "Minimaal 1 cijfer.\n" +
-                    "Minimaal 1 kleine letter.\n" +
-                    "Minimaal 1 hoofdletter.\n" +
-                    "Minimaal 1 speciaal karakter. (Één van de volgende: !@#$%^&*()_+-=[]{}|`~)");
+                ModelState.AddModelError(nameof(input.Password), "Wachtwoord is niet sterk genoeg. Zorg dat uw wachtwoord voldoet aan de aangegeven regels. Het speciale karakter moet één van de volgende karakters zijn (!@#$%^&*()_+-=[]{}|`~)");
             }
 
             if (input.Password != input.ConfirmPassword)
