@@ -5,6 +5,8 @@ namespace BumboSolid.Models
 {
     public class FillRequestViewModel
     {
+		public int? Id { get; set; }
+
 		public DateOnly Date { get; set; }
 
 		public String Day { get; set; }
