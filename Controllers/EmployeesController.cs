@@ -6,7 +6,6 @@ using BumboSolid.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authorization;
 using System.Text.RegularExpressions;
-using BumboSolid.Migrations;
 
 namespace BumboSolid.Controllers
 {
