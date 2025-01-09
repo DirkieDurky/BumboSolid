@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace BumboSolid.Migrations
 {
     /// <inheritdoc />
-    public partial class Init : Migration
+    public partial class fillrequestkey : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -135,7 +135,8 @@ namespace BumboSolid.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Year = table.Column<short>(type: "smallint", nullable: false),
-                    WeekNumber = table.Column<byte>(type: "tinyint", nullable: false)
+                    WeekNumber = table.Column<byte>(type: "tinyint", nullable: false),
+                    HasSchedule = table.Column<byte>(type: "tinyint", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -353,6 +354,42 @@ namespace BumboSolid.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "ClockedHours",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    WeekID = table.Column<int>(type: "int", nullable: false),
+                    Weekday = table.Column<byte>(type: "tinyint", nullable: false),
+                    Department = table.Column<string>(type: "varchar(25)", unicode: false, maxLength: 25, nullable: false),
+                    StartTime = table.Column<TimeOnly>(type: "time", nullable: false),
+                    EndTime = table.Column<TimeOnly>(type: "time", nullable: false),
+                    Employee = table.Column<int>(type: "int", nullable: true),
+                    ExternalEmployeeName = table.Column<string>(type: "varchar(135)", unicode: false, maxLength: 135, nullable: true),
+                    IsBreak = table.Column<byte>(type: "tinyint", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ClockedHours", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ClockedHours_Department",
+                        column: x => x.Department,
+                        principalTable: "Department",
+                        principalColumn: "Name");
+                    table.ForeignKey(
+                        name: "FK_ClockedHours_Employee",
+                        column: x => x.Employee,
+                        principalTable: "User",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_ClockedHours_Week",
+                        column: x => x.WeekID,
+                        principalTable: "Week",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
                 name: "PrognosisDay",
                 columns: table => new
                 {
@@ -465,7 +502,8 @@ namespace BumboSolid.Migrations
                 name: "FillRequest",
                 columns: table => new
                 {
-                    ID = table.Column<int>(type: "int", nullable: false),
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     ShiftID = table.Column<int>(type: "int", nullable: false),
                     SubstituteEmployeeID = table.Column<int>(type: "int", nullable: true),
                     Absent_Description = table.Column<string>(type: "varchar(255)", unicode: false, maxLength: 255, nullable: true),
@@ -473,7 +511,7 @@ namespace BumboSolid.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_FillRequest", x => x.ID);
+                    table.PrimaryKey("PK_FillRequest", x => x.Id);
                     table.ForeignKey(
                         name: "FK_FillRequest_Employee",
                         column: x => x.SubstituteEmployeeID,
@@ -522,20 +560,17 @@ namespace BumboSolid.Migrations
 
             migrationBuilder.InsertData(
                 table: "Week",
-                columns: new[] { "Id", "WeekNumber", "Year" },
-                values: new object[,]
-                {
-                    { 1, (byte)1, (short)2024 },
-                    { 2, (byte)2, (short)2024 }
-                });
+                columns: new[] { "Id", "HasSchedule", "WeekNumber", "Year" },
+                values: new object[] { 1, (byte)0, (byte)50, (short)2024 });
 
             migrationBuilder.InsertData(
                 table: "Norm",
                 columns: new[] { "ID", "Activity", "AvgDailyPerformances", "Department", "Duration", "PerVisitor" },
                 values: new object[,]
                 {
-                    { 1, "Stocking", (byte)5, "Vakkenvullen", 60, false },
-                    { 2, "Cashier", (byte)8, "Kassa", 45, false }
+                    { 1, "1 vak vullen", (byte)5, "Vakkenvullen", 300, false },
+                    { 2, "Kassa", (byte)1, "Kassa", 120, true },
+                    { 3, "Vers", (byte)8, "Vers", 45, false }
                 });
 
             migrationBuilder.InsertData(
@@ -543,31 +578,13 @@ namespace BumboSolid.Migrations
                 columns: new[] { "PrognosisID", "Weekday", "VisitorEstimate" },
                 values: new object[,]
                 {
-                    { 1, (byte)1, 0 },
-                    { 2, (byte)2, 0 }
-                });
-
-            migrationBuilder.InsertData(
-                table: "Shift",
-                columns: new[] { "Id", "Department", "Employee", "EndTime", "ExternalEmployeeName", "IsBreak", "StartTime", "WeekID", "Weekday" },
-                values: new object[,]
-                {
-                    { 3, "Kassa", null, new TimeOnly(17, 5, 0), "Alice Johnson", (byte)0, new TimeOnly(9, 0, 0), 2, (byte)2 },
-                    { 4, "Vakkenvullen", null, new TimeOnly(18, 5, 0), "Bob Brown", (byte)0, new TimeOnly(10, 55, 0), 2, (byte)5 },
-                    { 5, "Kassa", null, new TimeOnly(16, 5, 0), "Charlie Davis", (byte)0, new TimeOnly(8, 0, 0), 2, (byte)1 },
-                    { 6, "Vakkenvullen", null, new TimeOnly(19, 0, 0), "Diana Evans", (byte)0, new TimeOnly(11, 0, 0), 2, (byte)3 },
-                    { 7, "Kassa", null, new TimeOnly(15, 0, 0), "Ethan Foster", (byte)0, new TimeOnly(7, 0, 0), 2, (byte)0 },
-                    { 8, "Vakkenvullen", null, new TimeOnly(20, 0, 0), "Fiona Green", (byte)0, new TimeOnly(12, 0, 0), 2, (byte)4 },
-                    { 9, "Kassa", null, new TimeOnly(21, 5, 0), "George Harris", (byte)0, new TimeOnly(13, 0, 0), 2, (byte)6 },
-                    { 10, "Vakkenvullen", null, new TimeOnly(22, 30, 0), "Hannah Lee", (byte)0, new TimeOnly(14, 0, 0), 2, (byte)2 },
-                    { 11, "Kassa", null, new TimeOnly(23, 0, 0), "Ian Miller", (byte)0, new TimeOnly(15, 0, 0), 2, (byte)5 },
-                    { 12, "Vakkenvullen", null, new TimeOnly(0, 0, 0), "Julia Nelson", (byte)0, new TimeOnly(16, 0, 0), 2, (byte)1 },
-                    { 13, "Kassa", null, new TimeOnly(1, 0, 0), "Kevin Owens", (byte)0, new TimeOnly(17, 0, 0), 2, (byte)3 },
-                    { 14, "Vakkenvullen", null, new TimeOnly(2, 0, 0), "Laura Perez", (byte)0, new TimeOnly(18, 0, 0), 2, (byte)0 },
-                    { 15, "Kassa", null, new TimeOnly(3, 0, 0), "Michael Quinn", (byte)0, new TimeOnly(10, 0, 0), 2, (byte)4 },
-                    { 16, "Kassa", null, new TimeOnly(5, 30, 0), "Nina Roberts", (byte)0, new TimeOnly(20, 0, 0), 2, (byte)5 },
-                    { 17, "Vakkenvullen", null, new TimeOnly(5, 20, 0), "Oscar Scott", (byte)0, new TimeOnly(20, 0, 0), 2, (byte)5 },
-                    { 18, "Vakkenvullen", null, new TimeOnly(5, 10, 0), "Paula Turner", (byte)0, new TimeOnly(20, 0, 0), 2, (byte)5 }
+                    { 1, (byte)0, 1000 },
+                    { 1, (byte)1, 1000 },
+                    { 1, (byte)2, 1000 },
+                    { 1, (byte)3, 1000 },
+                    { 1, (byte)4, 1000 },
+                    { 1, (byte)5, 1000 },
+                    { 1, (byte)6, 1000 }
                 });
 
             migrationBuilder.InsertData(
@@ -575,8 +592,27 @@ namespace BumboSolid.Migrations
                 columns: new[] { "Department", "PrognosisID", "Weekday", "WorkHours" },
                 values: new object[,]
                 {
-                    { "Kassa", 1, (byte)1, (short)0 },
-                    { "Vakkenvullen", 2, (byte)2, (short)0 }
+                    { "Kassa", 1, (byte)0, (short)4000 },
+                    { "Kassa", 1, (byte)1, (short)4000 },
+                    { "Kassa", 1, (byte)2, (short)4000 },
+                    { "Kassa", 1, (byte)3, (short)4000 },
+                    { "Kassa", 1, (byte)4, (short)4000 },
+                    { "Kassa", 1, (byte)5, (short)4000 },
+                    { "Kassa", 1, (byte)6, (short)4000 },
+                    { "Vakkenvullen", 1, (byte)0, (short)4000 },
+                    { "Vakkenvullen", 1, (byte)1, (short)4000 },
+                    { "Vakkenvullen", 1, (byte)2, (short)4000 },
+                    { "Vakkenvullen", 1, (byte)3, (short)4000 },
+                    { "Vakkenvullen", 1, (byte)4, (short)4000 },
+                    { "Vakkenvullen", 1, (byte)5, (short)4000 },
+                    { "Vakkenvullen", 1, (byte)6, (short)4000 },
+                    { "Vers", 1, (byte)0, (short)4000 },
+                    { "Vers", 1, (byte)1, (short)4000 },
+                    { "Vers", 1, (byte)2, (short)4000 },
+                    { "Vers", 1, (byte)3, (short)4000 },
+                    { "Vers", 1, (byte)4, (short)4000 },
+                    { "Vers", 1, (byte)5, (short)4000 },
+                    { "Vers", 1, (byte)6, (short)4000 }
                 });
 
             migrationBuilder.CreateIndex(
@@ -615,6 +651,21 @@ namespace BumboSolid.Migrations
                 name: "IX_Capability_Department",
                 table: "Capability",
                 column: "Department");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ClockedHours_Department",
+                table: "ClockedHours",
+                column: "Department");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ClockedHours_Employee",
+                table: "ClockedHours",
+                column: "Employee");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ClockedHours_WeekID",
+                table: "ClockedHours",
+                column: "WeekID");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Factor_PrognosisID_Weekday",
@@ -710,6 +761,9 @@ namespace BumboSolid.Migrations
 
             migrationBuilder.DropTable(
                 name: "CLABreakEntry");
+
+            migrationBuilder.DropTable(
+                name: "ClockedHours");
 
             migrationBuilder.DropTable(
                 name: "Factor");
