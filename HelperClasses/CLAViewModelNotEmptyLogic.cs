@@ -16,7 +16,7 @@ namespace BumboSolid.HelperClasses
                 nameof(model.AgeStart), nameof(model.AgeEnd), nameof(model.MaxAvgDurationHours),
                 nameof(model.MaxDayDurationHours), nameof(model.MaxHolidayDurationHours),
                 nameof(model.MaxWeekDurationHours), nameof(model.MaxTotalShiftDurationHours),
-                nameof(model.MaxUninterruptedShiftDurationHours), nameof(model.Id)
+                nameof(model.MaxUninterruptedShiftDurationHours), nameof(model.MinBreakTimeHours), nameof(model.Id)
             }; 
 
             bool hasValue = model.GetType()
