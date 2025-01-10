@@ -4,10 +4,6 @@
 	ViewData["Title"] = "Rooster Medewerker";
 }
 
-<!--Thses are temporary buttons to help test while there is no schedule-->
-<a asp-controller="ScheduleEmployee" asp-action="OutgoingFillRequests" asp-route-id="@ViewBag.FillRequestId" class="btn btn-primary">Uitgaande invalsverzoeken</a>
-<a asp-controller="ScheduleEmployee" asp-action="IncomingFillRequests" asp-route-id="@ViewBag.FillRequestId" class="btn btn-primary">Inkomende invalsverzoeken</a>
-
 <header class="d-flex align-items-center gap-3 justify-content-center gap-3">
 	<div class="w-100 text-align text-end">
 		<a class="new-btn" asp-controller="Availability" asp-action="Index" asp-route-weekStart="@(Model.StartDate)">Beschikbaarheid</a>
@@ -17,7 +13,6 @@
 	</div>
 	<div class="mx-3 text-center text-nowrap">
 		<h1>Rooster</h1>
-		<p>@Model.FirstName @Model.LastName</p>
 		<p>@Model.StartDate - @Model.EndDate</p>
 	</div>
 	<div class="w-100 text-align text-end">
@@ -28,30 +23,47 @@
 	</div>
 </header>
 
-<div class="row schedule min-height-0 fw-bold-parent">
-	<div class="col mb-1">Dag</div>
-	<div class="col mb-1">Afdeling</div>
-	<div class="col mb-1">Starttijd</div>
-	<div class="col mb-1">Eindtijd</div>
-	<div class="col mb-1"></div>
-	<div class="col mb-1"></div>
-</div>
-
-<hr/>
-
-@foreach(var shift in Model.Shifts) 
+@if (Model.Shifts.Count != 0)
 {
-	<div class="row schedule min-height-0 fw-bold-parent">
-		<div class="col mb-1">@shift.Weekday</div>
-		<div class="col mb-1">@shift.Department</div>
-		<div class="col mb-1">@shift.StartTime</div>
-		<div class="col mb-1">@shift.EndTime</div>
-		<div class="col mb-1">
-			<a class="new-btn" asp-controller="ScheduleEmployee" asp-action="FillRequest" asp-route-id="@shift.Id">Ruilen</a>
-		</div>
-		<div class="col mb-1">
-			<a class="new-btn">Afmelden</a>
-		</div>
-	</div>
+	<div class="row">
+		<div class="col-md-2 fw-bold p-0 pe-3">Dag</div>
+		<div class="col-md-2 fw-bold p-0 pe-3">Afdeling</div>
+		<div class="col-md-2 fw-bold p-0 pe-3">Starttijd</div>
+		<div class="col-md-2 fw-bold p-0 pe-3">Eindtijd</div>
+		<div class="col-md-4"></div>
 
+		<hr class="m-0 my-2" />
+
+		@foreach (var shift in Model.Shifts)
+		{
+			string weekday = shift.Weekday switch {
+				"Monday" => "Maandag",
+				"Tuesday" => "Dinsdag",
+				"Wednesday" => "Woensdag",
+				"Thursday" => "Donderdag",
+				"Friday" => "Vrijdag",
+				"Saturday" => "Zaterdag",
+				"Sunday" => "Zondag",
+				_ => "Onbekende Dag"
+			};
+
+			<div class="col-md-2 p-0 pe-3 left-center-text">@weekday</div>
+			<div class="col-md-2 p-0 pe-3 left-center-text">@shift.Department</div>
+			<div class="col-md-2 p-0 pe-3 left-center-text">@shift.StartTime</div>
+			<div class="col-md-2 p-0 pe-3 left-center-text">@shift.EndTime</div>
+			<div class="col-md-4 p-0 pe-3 d-flex justify-content-center">
+				<a class="new-btn px-3 me-3" asp-controller="ScheduleEmployee" asp-action="FillRequest" asp-route-id="@shift.Id">Ruilen</a>
+				<a class="new-btn px-3">Afmelden</a>
+			</div>
+
+			<hr class="m-0 my-2" />
+		}
+	</div>
+}
+else
+{
+	<div class="text-center pt-3">
+		<h1>Geen Rooster</h1>
+		<p>Er is deze week geen rooster voor jou.</p>
+	</div>
 }

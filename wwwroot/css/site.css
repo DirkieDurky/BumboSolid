@@ -473,6 +473,27 @@ th, td {
 		color: white;
 	}
 
+.selected-btn {
+	border: 2px solid black;
+	font-weight: bold;
+}
+
+.left-center-text {
+	position: relative;
+	display: flex;
+	align-items: center;
+}
+
+.col-md-divseven {
+	flex: 0 0 auto;
+	width: 14%;
+}
+
+.col-md-divsevenremainder {
+	flex: 0 0 auto;
+	width: 16%;
+}
+
 /* Schedule View Manager START */
 .hour-minute-column {
 	width: 3rem;
