@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace BumboSolid.Migrations
 {
     /// <inheritdoc />
-    public partial class fillrequestkey : Migration
+    public partial class Init : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -363,7 +363,7 @@ namespace BumboSolid.Migrations
                     Weekday = table.Column<byte>(type: "tinyint", nullable: false),
                     Department = table.Column<string>(type: "varchar(25)", unicode: false, maxLength: 25, nullable: false),
                     StartTime = table.Column<TimeOnly>(type: "time", nullable: false),
-                    EndTime = table.Column<TimeOnly>(type: "time", nullable: false),
+                    EndTime = table.Column<TimeOnly>(type: "time", nullable: true),
                     Employee = table.Column<int>(type: "int", nullable: true),
                     ExternalEmployeeName = table.Column<string>(type: "varchar(135)", unicode: false, maxLength: 135, nullable: true),
                     IsBreak = table.Column<byte>(type: "tinyint", nullable: false)
