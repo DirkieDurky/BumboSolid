@@ -205,7 +205,7 @@ namespace BumboSolid.Controllers
                 currentWeek = await _context.Weeks
                     .Include(w => w.Shifts)
                     .ThenInclude(s => s.Employee)
-                    .FirstOrDefaultAsync(w => w.Year == currentYear && w.WeekNumber == currentWeekNumber && w.HasSchedule == 1);
+                    .FirstOrDefaultAsync(w => w.Year == currentYear && w.WeekNumber == currentWeekNumber);
 
                 if (currentWeek == null) return null;
             }

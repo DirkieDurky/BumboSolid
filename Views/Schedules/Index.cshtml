@@ -64,9 +64,12 @@
             <br />
             <h4>Maak er een aan!</h4>
             <br />
-            <a class="btn btn-success" asp-action="Create">
-                Nieuw Rooster Aanmaken
-            </a>
+            <form asp-action="Create">
+                <div class="form-group">
+                    <input type="hidden" name="id" value="@Model.WeekId" />
+                    <input type="submit" value="Nieuw Rooster Aanmaken" class="btn btn-success" />
+                </div>
+            </form>
         </div>
     </body>
 }
