@@ -262,7 +262,7 @@ namespace BumboSolid.Controllers
 
             if (breakEntry != null && breakEntry.MinBreakDuration.HasValue)
                 minBreakTimeMulti = breakEntry.MinBreakDuration.Value >= minTime ? 60 : 1;
-            
+
 
             CLAManageViewModel claViewModel = new()
             {
@@ -326,26 +326,6 @@ namespace BumboSolid.Controllers
             {
                 TempData["Message"] = "CAO regel niet gevonden, aanpassen geannuleerd.";
                 return RedirectToAction(nameof(Index));
-            }
-
-            //Since all fields are nullable (and ID isn't chosen by user),
-            //we have to check whether anything has been filled in anywhere...
-            var notChecked = new List<String>
-            {
-                nameof(claViewModel.AgeStart), nameof(claViewModel.AgeEnd), nameof(claViewModel.MaxAvgDurationHours),
-                nameof(claViewModel.MaxDayDurationHours), nameof(claViewModel.MaxHolidayDurationHours),
-                nameof(claViewModel.MaxWeekDurationHours), nameof(claViewModel.MaxTotalShiftDurationHours),
-                nameof(claViewModel.MaxUninterruptedShiftDurationHours), nameof(claViewModel.Id)
-            }; //these on their own don't add any information
-
-            bool hasValue = claViewModel.GetType()
-                .GetProperties()
-                .Where(p => !notChecked.Contains(p.Name))
-                .Any(p => p.GetValue(claViewModel) != null);
-
-            if (!hasValue)
-            {
-                ModelState.AddModelError("", "U mag niet hier alle waardes leeggooien, gebruik daarvoor A.U.B. het verwijderen");
             }
 
            foreach(ICLALogic rule in _logicRules)
