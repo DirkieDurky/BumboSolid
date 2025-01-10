@@ -1,7 +1,7 @@
 html {
-    font-size: 14px;
-    position: relative;
-    min-height: 100%;
+	font-size: 14px;
+	position: relative;
+	height: 100%;
 }
 
 @media (min-width: 768px) {
@@ -386,8 +386,7 @@ p, h1 {
 }
 
 .table {
-    border-spacing: 1rem 0;
-    display: block;
+	border-spacing: 1rem 0;
 }
 
     .table > tbody {
@@ -473,6 +472,27 @@ th, td {
         background-color: black;
         color: white;
     }
+
+.selected-btn {
+	border: 2px solid black;
+	font-weight: bold;
+}
+
+.left-center-text {
+	position: relative;
+	display: flex;
+	align-items: center;
+}
+
+.col-md-divseven {
+	flex: 0 0 auto;
+	width: 14%;
+}
+
+.col-md-divsevenremainder {
+	flex: 0 0 auto;
+	width: 16%;
+}
 
 /* Schedule View Manager START */
 .shift-link {
