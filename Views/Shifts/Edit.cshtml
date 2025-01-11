@@ -40,7 +40,7 @@
                 <div class="form-group col-md-6">
                     <label class="control-label fw-bold">Medewerker</label>
                     <select asp-for="Shift.EmployeeId" class="form-control p-1 border-solid-black" onchange="updateEmployeeName(this)">
-                        @foreach (KeyValuePair<Int32, String> employee in Model.Employees)
+                        @foreach (var employee in Model.Employees)
                         {
                             <option value="@employee.Key">@employee.Value</option>
                         }

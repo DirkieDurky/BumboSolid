@@ -19,7 +19,7 @@
 				}
 				else if (User.IsInRole("Employee"))
 				{
-					<a class="navbar-brand" asp-area="" asp-controller="ScheduleEmployee" asp-action="Schedule">BumboSolid</a>
+					<a class="navbar-brand" asp-area="" asp-controller="ScheduleEmployee" asp-action="EmployeeSchedule">BumboSolid</a>
 				}
 				<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
 						aria-expanded="false" aria-label="Toggle navigation">
@@ -32,7 +32,7 @@
 								<a class="nav-link text-dark" asp-area="" asp-controller="Prognoses" asp-action="">Prognoses</a>
 							</li>
 							<li class="nav-item">
-								<a class="nav-link text-dark" asp-area="" asp-controller="Schedules" asp-action="Index">Roosters</a>
+								<a class="nav-link text-dark" asp-area="" asp-controller="ScheduleManager" asp-action="OverviewSchedule">Roosters</a>
 							</li>
 							<li class="nav-item">
 								<a class="nav-link text-dark" asp-area="" asp-controller="CAO" asp-action="">CAO regels</a>
@@ -42,7 +42,7 @@
 							</li>
 						} else if (User.IsInRole("Employee")) {
 							<li class="nav-item">
-								<a class="nav-link text-dark" asp-area="" asp-controller="ScheduleEmployee" asp-action="Schedule">Rooster</a>
+								<a class="nav-link text-dark" asp-area="" asp-controller="ScheduleEmployee" asp-action="EmployeeSchedule">Rooster</a>
 							</li>
 							<li class="nav-item">
 								<a class="nav-link text-dark" asp-area="" asp-controller="ClockedHours" asp-action="Index">Klokken</a>

@@ -24,7 +24,7 @@ namespace BumboSolid.Controllers
 
         // GET: ScheduleEmployeeController
         [HttpGet("")]
-        public async Task<IActionResult> Schedule(int? id)
+        public async Task<IActionResult> EmployeeSchedule(int? id)
         {
             var user = await _userManager.GetUserAsync(User);
             int userId = user.Id;
@@ -252,7 +252,7 @@ namespace BumboSolid.Controllers
 
             // Check if there is not already an open FillRequest for this Shift
             var fillRequests = _context.FillRequests.Where(s => s.ShiftId == id).ToList();
-            foreach (FillRequest request in fillRequests) if (request.Accepted == 0) return RedirectToAction(nameof(Schedule));
+            foreach (FillRequest request in fillRequests) if (request.Accepted == 0) return RedirectToAction(nameof(EmployeeSchedule));
 
             FillRequest fillRequest = new FillRequest()
             {
@@ -264,10 +264,10 @@ namespace BumboSolid.Controllers
             {
                 _context.FillRequests.Add(fillRequest);
                 _context.SaveChanges();
-                return RedirectToAction(nameof(Schedule));
+                return RedirectToAction(nameof(EmployeeSchedule));
             }
 
-            return RedirectToAction(nameof(Schedule));
+            return RedirectToAction(nameof(EmployeeSchedule));
         }
 
         // Get the date of the first day of the week

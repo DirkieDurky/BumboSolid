@@ -29,7 +29,7 @@
         <div></div>
         <div>
             <a class="btn btn-primary @(Model.PreviousWeekId == null ? "disabled" : "")"
-               asp-action="Schedule" asp-route-id="@Model.PreviousWeekId">
+               asp-action="EmployeeSchedule" asp-route-id="@Model.PreviousWeekId">
                 Vorige Week
             </a>
         </div>
@@ -38,14 +38,14 @@
         </div>
         <div>
             <a class="btn btn-primary @(Model.NextWeekId == null ? "disabled" : "")"
-               asp-action="Schedule" asp-route-id="@Model.NextWeekId">
+               asp-action="EmployeeSchedule" asp-route-id="@Model.NextWeekId">
                 Volgende Week
             </a>
         </div>
         <div>
             @if (!Model.IsCurrentWeek)
             {
-                <a class="btn btn-primary" asp-action="Schedule" asp-route-id="@Model.CurrentWeekNumber">
+                <a class="btn btn-primary" asp-action="EmployeeSchedule">
                     Huidige Week
                 </a>
             }
@@ -53,23 +53,25 @@
     </div>
 </header>
 
+
 <body>
     <div class="schedule-agenda">
         <div class="days-header">
-            @foreach (var dayIndex in Enumerable.Range(0, 7))
+            @foreach (var day in daysOfTheWeek)
             {
+                var dayIndex = Array.IndexOf(daysOfTheWeek, day);
                 var date = startDate.AddDays(dayIndex);
                 <div class="day-header">
-                    <h2>@daysOfTheWeek[dayIndex]</h2>
+                    <h2>@day</h2>
                     <p>@date.ToString("dd-MM")</p>
                 </div>
             }
         </div>
 
         <div class="shifts-row">
-            @foreach (var dayIndex in Enumerable.Range(0, 7))
+            @foreach (var day in daysOfTheWeek)
             {
-                var shiftsForDay = shifts.Where(s => s.Weekday == dayIndex && s.EmployeeId == Model.EmployeeId).ToList();
+                var shiftsForDay = shifts.Where(s => s.Weekday == Array.IndexOf(daysOfTheWeek, day) && s.EmployeeId == Model.EmployeeId).OrderBy(s => s.StartTime).ToList();
                 <div class="shift-column">
                     @if (shiftsForDay.Any())
                     {

@@ -5,59 +5,46 @@ using BumboSolid.Data;
 using Microsoft.AspNetCore.Authorization;
 using BumboSolid.Models;
 using System.Globalization;
+using System.Text.RegularExpressions;
 
 namespace BumboSolid.Controllers
 {
     [Authorize(Roles = "Manager")]
     [Route("Rooster")]
-    public class SchedulesController : Controller
+    public class ScheduleManagerController(BumboDbContext context) : Controller
     {
-        private readonly BumboDbContext _context;
-        private static TimeOnly openingTime = new TimeOnly(7, 0);
-        private static TimeOnly closingTime = new TimeOnly(20, 0);
+        private readonly BumboDbContext _context = context;
+        private static readonly TimeOnly openingTime = new(7, 0);
+        private static readonly TimeOnly closingTime = new(20, 0);
 
-        public SchedulesController(BumboDbContext context)
-        {
-            _context = context;
-        }
-
-        [HttpGet("")]
-        public async Task<IActionResult> Index(int? id)
+        [HttpGet("Overzicht/{id:int?}")]
+        public async Task<IActionResult> OverviewSchedule(int? id)
         {
             var currentWeek = await GetCurrentWeek(id);
 
-            if (currentWeek == null)
-            {
-                return RedirectToAction("Create");
-            }
+            if (currentWeek == null) return RedirectToAction(nameof(Create));
 
             var viewModel = await GetSchedulesViewModel(currentWeek);
             return View(viewModel);
         }
 
-        [HttpGet("{id:int?}")]
-        public async Task<IActionResult> Schedule(int? id)
+        [HttpGet("Schema/{id:int?}")]
+        public async Task<IActionResult> ManagerSchedule(int? id)
         {
             var currentWeek = await GetCurrentWeek(id);
 
-            if (currentWeek == null)
-            {
-                return RedirectToAction("Create");
-            }
+            if (currentWeek == null) return RedirectToAction(nameof(Create));
 
             var viewModel = await GetSchedulesViewModel(currentWeek);
             return View(viewModel);
         }
 
-        [HttpGet("{employeeId:int}/{id:int?}")]
-        public async Task<IActionResult> EmployeeSchedule(int? id, int employeeId)
+        [HttpGet("WedewerkerSchema/{employeeId:int}/{id:int?}")]
+        public async Task<IActionResult> ManagerEmployeeSchedule(int? id, int employeeId)
         {
             var currentWeek = await GetCurrentWeek(id);
 
-            if (currentWeek == null)
-            {
-                return RedirectToAction("Create");
-            }
+            if (currentWeek == null) return RedirectToAction(nameof(Create));
 
             var employeeShifts = await _context.Shifts
                 .Where(s => s.EmployeeId == employeeId && s.WeekId == currentWeek.Id)
@@ -94,98 +81,84 @@ namespace BumboSolid.Controllers
                     .ThenByDescending(w => w.WeekNumber)
                     .ToListAsync(),
                 EmployeeId = employeeId,
-                EmployeeName = _context.Employees
+                EmployeeName = await _context.Employees
                     .Where(e => e.Id == employeeId)
                     .Select(e => e.Name)
-                    .FirstOrDefault() ?? "Unknown",
+                    .FirstOrDefaultAsync() ?? "Unknown",
                 WeekId = currentWeek.Id,
                 PreviousWeekId = previousWeek?.Id,
                 NextWeekId = nextWeek?.Id,
                 CurrentWeekNumber = currentWeekNumber,
                 IsCurrentWeek = (currentWeek.Year == currentYear && currentWeek.WeekNumber == currentWeekNumber)
             };
-
             return View(viewModel);
         }
 
         // POST: Shifts/Create
-        [HttpPost("Aanmaken")]
-        public IActionResult Create(int? id)
+        [HttpPost("Aanmaken/{id:int?}")]
+        public async Task<IActionResult> Create(int id, string returnUrl)
         {
-            CultureInfo ci = new("nl-NL");
-            Calendar calendar = ci.Calendar;
-
-            DateTime nextWeek = DateTime.Now.AddDays(7);
-            short year = (short)nextWeek.Year;
-            byte week = (byte)calendar.GetWeekOfYear(nextWeek, ci.DateTimeFormat.CalendarWeekRule, ci.DateTimeFormat.FirstDayOfWeek);
-
-            var currentWeek = _context.Weeks
+            var currentWeek = await _context.Weeks
                 .Include(w => w.PrognosisDays)
                     .ThenInclude(pd => pd.PrognosisDepartments)
                         .ThenInclude(pd => pd.DepartmentNavigation)
-                .FirstOrDefault(w => w.Year == year && w.WeekNumber == week);
+                .FirstOrDefaultAsync(w => w.Id == id);
 
-            if (currentWeek != null)
+            if (currentWeek == null)
             {
-                id = currentWeek.Id;
+                return NotFound("Week not found.");
+            }
 
-                if (currentWeek.PrognosisDays.Count == 7)
+            short year = currentWeek.Year;
+            byte week = currentWeek.WeekNumber;
+
+            CultureInfo ci = new("nl-NL");
+            Calendar calendar = ci.Calendar;
+
+            if (currentWeek.PrognosisDays.Count == 7)
+            {
+                foreach (PrognosisDay day in currentWeek.PrognosisDays)
                 {
-                    foreach (PrognosisDay day in currentWeek.PrognosisDays)
+                    DateTime startOfYear = new(year, 1, 1);
+                    DateTime currentDay = calendar.AddWeeks(startOfYear, week - 1).AddDays(day.Weekday - (int)startOfYear.DayOfWeek + 1);
+                    DateOnly date = DateOnly.FromDateTime(currentDay);
+
+                    foreach (PrognosisDepartment department in day.PrognosisDepartments)
                     {
-                        DateTime startOfYear = new DateTime(year, 1, 1);
-                        DateTime currentDay = calendar.AddWeeks(startOfYear, week - 1).AddDays(day.Weekday - (int)startOfYear.DayOfWeek + 1);
-                        DateOnly date = DateOnly.FromDateTime(currentDay);
-                        foreach (PrognosisDepartment department in day.PrognosisDepartments)
+                        int remainingWorkHours = department.WorkHours;
+
+                        var availabilityRules = await _context.AvailabilityRules
+                            .Include(ar => ar.EmployeeNavigation)
+                                .ThenInclude(en => en!.Departments).ToListAsync();
+
+                        availabilityRules = availabilityRules.Where(ar => ar.Available == 1 && ar.Date == date && ar.EmployeeNavigation!.Departments.Contains(department.DepartmentNavigation))
+                            .OrderBy(ar => ar.StartTime)
+                                .ThenBy(ar => ar.EndTime - ar.StartTime).ToList();
+
+                        foreach (AvailabilityRule rule in availabilityRules)
                         {
-                            int remainingWorkHours = department.WorkHours;
+                            if (remainingWorkHours <= 0) break;
 
-                            var availabilityRules = _context.AvailabilityRules
-                                .Include(ar => ar.EmployeeNavigation)
-                                    .ThenInclude(en => en!.Departments).ToList();
+                            User employee = await _context.Employees.FirstAsync(e => e.Id == rule.Employee);
 
-                            availabilityRules = availabilityRules.Where(ar => ar.Available == 1 && ar.Date == date && ar.EmployeeNavigation!.Departments.Contains(department.DepartmentNavigation))
-                                .OrderBy(ar => ar.StartTime)
-                                    .ThenBy(ar => ar.EndTime - ar.StartTime).ToList();
-
-                            foreach (AvailabilityRule rule in availabilityRules)
+                            _context.Shifts.Add(new Shift()
                             {
-                                if (remainingWorkHours <= 0) break;
-                                User employee = _context.Employees.First(e => e.Id == rule.Employee);
-
-                                _context.Shifts.Add(new Shift()
-                                {
-                                    WeekId = currentWeek.Id,
-                                    Weekday = day.Weekday,
-                                    Department = department.Department,
-                                    StartTime = openingTime.CompareTo(rule.StartTime) > 0 ? openingTime : rule.StartTime,
-                                    EndTime = closingTime.CompareTo(rule.EndTime) < 0 ? closingTime : rule.EndTime,
-                                    EmployeeId = rule.Employee,
-                                    IsBreak = 0,
-                                });
-                                remainingWorkHours -= (rule.EndTime - rule.StartTime).Hours;
-                            }
+                                WeekId = currentWeek.Id,
+                                Weekday = day.Weekday,
+                                Department = department.Department,
+                                StartTime = openingTime.CompareTo(rule.StartTime) > 0 ? openingTime : rule.StartTime,
+                                EndTime = closingTime.CompareTo(rule.EndTime) < 0 ? closingTime : rule.EndTime,
+                                EmployeeId = rule.Employee,
+                                IsBreak = 0,
+                            });
+                            remainingWorkHours -= (rule.EndTime - rule.StartTime).Hours;
                         }
                     }
                 }
-
-                currentWeek.HasSchedule = 1;
-                _context.SaveChangesAsync();
             }
-            else
-            {
-                currentWeek = new Week()
-                {
-                    Year = year,
-                    WeekNumber = week,
-                    HasSchedule = 1,
-                };
-                _context.Add(currentWeek);
-                _context.SaveChanges();
-
-                id = currentWeek.Id;
-            }
-            return RedirectToAction("Index", new { id });
+            currentWeek.HasSchedule = 1;
+            await _context.SaveChangesAsync();
+            return returnUrl != null ? Redirect(returnUrl) : RedirectToAction(nameof(OverviewSchedule), new { id });
         }
 
         private async Task<Week> GetCurrentWeek(int? id)
@@ -249,7 +222,6 @@ namespace BumboSolid.Controllers
                 WeekId = currentWeek.Id,
                 PreviousWeekId = previousWeek?.Id,
                 NextWeekId = nextWeek?.Id,
-                CurrentWeekNumber = currentWeekNumber,
                 IsCurrentWeek = (currentWeek.Year == currentYear && currentWeek.WeekNumber == currentWeekNumber),
                 HasSchedule = currentWeek.HasSchedule != 0,
                 Departments = departments

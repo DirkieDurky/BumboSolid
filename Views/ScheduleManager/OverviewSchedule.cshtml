@@ -24,30 +24,30 @@
 <header class="d-flex flex-column align-items-center">
     <div class="d-flex justify-content-between w-100 header-items">
         <div>
-            <a class="btn btn-primary" asp-action="Schedule" asp-route-id="@Model.WeekId">
+            <a class="btn btn-primary" asp-action="ManagerSchedule" asp-route-id="@Model.WeekId">
                 Rooster
             </a>
         </div>
         <div>
             <a class="btn btn-primary @(Model.PreviousWeekId == null ? "disabled" : "")"
-               asp-action="Index" asp-route-id="@Model.PreviousWeekId">
+               asp-action="OverviewSchedule" asp-route-id="@Model.PreviousWeekId">
                 Vorige Week
             </a>
         </div>
         <div class="text-center d-flex flex-column align-items-center">
-            <h1>Rooster</h1>
+            <h1 class="text-nowrap">Rooster Overzicht</h1>
             <p>@startDate.ToString("dd/MM/yyyy") - @endDate.ToString("dd/MM/yyyy")</p>
         </div>
         <div>
             <a class="btn btn-primary @(Model.NextWeekId == null ? "disabled" : "")"
-               asp-action="Index" asp-route-id="@Model.NextWeekId">
+               asp-action="OverviewSchedule" asp-route-id="@Model.NextWeekId">
                 Volgende Week
             </a>
         </div>
         <div>
             @if (!Model.IsCurrentWeek)
             {
-                <a class="btn btn-primary" asp-action="Index" asp-route-id="@Model.CurrentWeekNumber">
+                <a class="btn btn-primary" asp-action="OverviewSchedule" asp-route-id="">
                     Huidige Week
                 </a>
             }
@@ -58,15 +58,13 @@
 @if (!Model.HasSchedule)
 {
     <body>
-        <div class="d-flex flex-column align-items-center">
+        <div class="d-flex flex-column align-items-center gap-5 m-5">
             <h3>Er is nog geen rooster aangemaakt.</h3>
-            <br />
-            <br />
             <h4>Maak er een aan!</h4>
-            <br />
             <form asp-action="Create">
                 <div class="form-group">
                     <input type="hidden" name="id" value="@Model.WeekId" />
+                    <input type="hidden" name="returnUrl" value="@Context.Request.Path" />
                     <input type="submit" value="Nieuw Rooster Aanmaken" class="btn btn-success" />
                 </div>
             </form>

@@ -24,13 +24,13 @@
 <header class="d-flex flex-column align-items-center">
     <div class="d-flex justify-content-between w-100 header-items">
         <div>
-            <a class="btn btn-secondary" asp-action="Index" asp-route-id="@Model.WeekId">
+            <a class="btn btn-secondary" asp-action="OverviewSchedule" asp-route-id="@Model.WeekId">
                 Terug
             </a>
         </div>
         <div>
             <a class="btn btn-primary @(!Model.PreviousWeekId.HasValue ? "disabled" : "")"
-               asp-action="Schedule" asp-route-id="@Model.PreviousWeekId">
+               asp-action="ManagerSchedule" asp-route-id="@Model.PreviousWeekId">
                 Vorige Week
             </a>
         </div>
@@ -40,14 +40,14 @@
         </div>
         <div>
             <a class="btn btn-primary @(!Model.NextWeekId.HasValue ? "disabled" : "")"
-               asp-action="Schedule" asp-route-id="@Model.NextWeekId">
+               asp-action="ManagerSchedule" asp-route-id="@Model.NextWeekId">
                 Volgende Week
             </a>
         </div>
         <div>
             @if (!Model.IsCurrentWeek)
             {
-                <a class="btn btn-primary" asp-action="Schedule" asp-route-id="@Model.CurrentWeekNumber">
+                <a class="btn btn-primary" asp-action="ManagerSchedule" asp-route-id="">
                     Huidige Week
                 </a>
             }
@@ -58,15 +58,16 @@
 @if (!Model.HasSchedule)
 {
     <body>
-        <div class="d-flex flex-column align-items-center">
+        <div class="d-flex flex-column align-items-center gap-5 m-5">
             <h3>Er is nog geen rooster aangemaakt.</h3>
-            <br />
-            <br />
             <h4>Maak er een aan!</h4>
-            <br />
-            <a class="btn btn-success" asp-action="Create">
-                Nieuw Rooster Aanmaken
-            </a>
+            <form asp-action="Create">
+                <div class="form-group">
+                    <input type="hidden" name="id" value="@Model.WeekId" />
+                    <input type="hidden" name="returnUrl" value="@Context.Request.Path" />
+                    <input type="submit" value="Nieuw Rooster Aanmaken" class="btn btn-success" />
+                </div>
+            </form>
         </div>
     </body>
 }
@@ -108,7 +109,7 @@ else
                                     <td>
                                         @if (shiftGroup.First().EmployeeId.HasValue)
                                         {
-                                            <a asp-controller="Schedules" asp-action="EmployeeSchedule" asp-route-id="@schedule.Id" asp-route-employeeId="@shiftGroup.First().EmployeeId" class="shift-link">
+                                            <a asp-action="ManagerEmployeeSchedule" asp-route-id="@schedule.Id" asp-route-employeeId="@shiftGroup.First().EmployeeId" class="shift-link">
                                                 @shiftGroup.Key
                                             </a>
                                         }
