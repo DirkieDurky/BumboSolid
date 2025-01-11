@@ -67,6 +67,7 @@ namespace BumboSolid.Controllers
 
             var employeeShifts = await _context.Shifts
                 .Where(s => s.EmployeeId == userId && s.WeekId == currentWeek.Id)
+                .Include(s => s.FillRequests)
                 .Include(s => s.Employee)
                 .ToListAsync();
 
