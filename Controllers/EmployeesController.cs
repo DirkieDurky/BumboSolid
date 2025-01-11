@@ -306,6 +306,14 @@ namespace BumboSolid.Controllers
 
             if (employee != null)
             {
+                // Delete refrences to employee
+                foreach (Shift shift in _context.Shifts.Where(e => e.Employee == employee).ToList())
+                {
+                    foreach (FillRequest fillRequest in _context.FillRequests.Where(s => s.Shift == shift).ToList()) _context.FillRequests.Remove(fillRequest);
+                    _context.Shifts.Remove(shift);
+                }
+                foreach (AvailabilityRule availabilityRule in _context.AvailabilityRules.Where(e => e.Employee == employee.Id).ToList()) _context.AvailabilityRules.Remove(availabilityRule);
+
                 _context.Employees.Remove(employee);
                 await _context.SaveChangesAsync();
             }

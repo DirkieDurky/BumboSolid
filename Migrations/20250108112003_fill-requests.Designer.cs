@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BumboSolid.Migrations
 {
     [DbContext(typeof(BumboDbContext))]
-    [Migration("20250107175751_MakeEndTimeNullable")]
-    partial class MakeEndTimeNullable
+    [Migration("20250108112003_fill-requests")]
+    partial class fillrequests
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -137,7 +137,7 @@ namespace BumboSolid.Migrations
                         .HasColumnType("int")
                         .HasColumnName("Employee");
 
-                    b.Property<TimeOnly?>("EndTime")
+                    b.Property<TimeOnly>("EndTime")
                         .HasColumnType("time")
                         .HasColumnName("EndTime");
 
@@ -262,8 +262,10 @@ namespace BumboSolid.Migrations
             modelBuilder.Entity("BumboSolid.Data.Models.FillRequest", b =>
                 {
                     b.Property<int>("Id")
-                        .HasColumnType("int")
-                        .HasColumnName("ID");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("AbsentDescription")
                         .HasMaxLength(255)
