@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace BumboSolid.Migrations
 {
     /// <inheritdoc />
-    public partial class fillrequests : Migration
+    public partial class extraemployee : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -363,7 +363,7 @@ namespace BumboSolid.Migrations
                     Weekday = table.Column<byte>(type: "tinyint", nullable: false),
                     Department = table.Column<string>(type: "varchar(25)", unicode: false, maxLength: 25, nullable: false),
                     StartTime = table.Column<TimeOnly>(type: "time", nullable: false),
-                    EndTime = table.Column<TimeOnly>(type: "time", nullable: false),
+                    EndTime = table.Column<TimeOnly>(type: "time", nullable: true),
                     Employee = table.Column<int>(type: "int", nullable: true),
                     ExternalEmployeeName = table.Column<string>(type: "varchar(135)", unicode: false, maxLength: 135, nullable: true),
                     IsBreak = table.Column<byte>(type: "tinyint", nullable: false)
@@ -561,7 +561,15 @@ namespace BumboSolid.Migrations
             migrationBuilder.InsertData(
                 table: "Week",
                 columns: new[] { "Id", "HasSchedule", "WeekNumber", "Year" },
-                values: new object[] { 1, (byte)0, (byte)50, (short)2024 });
+                values: new object[,]
+                {
+                    { 1, (byte)0, (byte)50, (short)2024 },
+                    { 2, (byte)0, (byte)1, (short)2025 },
+                    { 3, (byte)0, (byte)2, (short)2025 },
+                    { 4, (byte)0, (byte)3, (short)2025 },
+                    { 5, (byte)0, (byte)4, (short)2025 },
+                    { 6, (byte)0, (byte)5, (short)2025 }
+                });
 
             migrationBuilder.InsertData(
                 table: "Norm",

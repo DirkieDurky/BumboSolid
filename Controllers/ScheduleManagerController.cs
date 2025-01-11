@@ -233,7 +233,7 @@ namespace BumboSolid.Controllers
         public IActionResult FillRequests()
         {
             List<FillRequestViewModel> fillRequestViewModels = new List<FillRequestViewModel>();
-            foreach (var fillRequest in _context.FillRequests.Where(f => f.Accepted == 0 && f.SubstituteEmployee != null).Include(f => f.Shift).Include(f => f.Shift.Week).Include(f => f.Shift.Employee).Include(f => f.SubstituteEmployee))
+            foreach (var fillRequest in _context.FillRequests.Where(f => f.SubstituteEmployee != null).Include(f => f.Shift).Include(f => f.Shift.Week).Include(f => f.Shift.Employee).Include(f => f.SubstituteEmployee))
             {
                 // Getting Shift and Week
                 var shift = fillRequest.Shift;
@@ -310,10 +310,9 @@ namespace BumboSolid.Controllers
             {
                 Shift shift = fillRequest.Shift;
                 shift.Employee = fillRequest.SubstituteEmployee;
-                fillRequest.Accepted = 1;
 
                 _context.Shifts.Update(shift);
-                _context.FillRequests.Update(fillRequest);
+                _context.FillRequests.Remove(fillRequest);
             }
             else _context.FillRequests.Remove(fillRequest);
 

@@ -44,9 +44,9 @@ namespace BumboSolid.Controllers
                 currentWeek = await _context.Weeks
                     .Include(w => w.Shifts)
                     .ThenInclude(s => s.Employee)
-                    .FirstOrDefaultAsync(w => w.Year == currentYear && w.WeekNumber == currentWeekNumber && w.HasSchedule == 1);
+                    .FirstOrDefaultAsync(w => w.Year == currentYear && w.WeekNumber == currentWeekNumber);
 
-                if (currentWeek == null) return RedirectToAction("Create");
+                if (currentWeek == null) return NotFound();
             }
 
             var previousWeek = await _context.Weeks
@@ -75,6 +75,7 @@ namespace BumboSolid.Controllers
                 Weeks = await _context.Weeks
                     .Include(w => w.Shifts)
                     .ThenInclude(s => s.Employee)
+                    .ThenInclude(f => f.FillRequests)
                     .OrderByDescending(w => w.Year)
                     .ThenByDescending(w => w.WeekNumber)
                     .ToListAsync(),
@@ -89,52 +90,7 @@ namespace BumboSolid.Controllers
                 CurrentWeekNumber = currentWeekNumber,
                 IsCurrentWeek = (currentWeek.Year == currentYear && currentWeek.WeekNumber == currentWeekNumber)
             };
-
             return View(viewModel);
-        }
-
-        // GET: ScheduleEmployeeController/OutgoingFillRequests
-        [HttpGet("Uitgaande invalsverzoeken")]
-        public async Task<IActionResult> OutgoingFillRequests()
-        {
-            // Getting user id
-            var user = await _userManager.GetUserAsync(User);
-            int userId = user.Id;
-
-            // Getting correct date
-            int year = DateTime.Now.Year;
-            int weekNr = new CultureInfo("en-US").Calendar.GetWeekOfYear(DateTime.Now, CalendarWeekRule.FirstDay, DayOfWeek.Monday) + weekFromNow;
-            DateOnly startDate = FirstDateOfWeek(year, weekNr);
-
-            // Getting shifts
-            List<ShiftViewModel> shifts = new List<ShiftViewModel>();
-            foreach (var shift in await _context.Shifts.Where(s => s.Employee == user && s.Week.Year == year && s.Week.WeekNumber == weekNr).ToListAsync())
-            {
-                shifts.Add(new ShiftViewModel()
-                {
-                    Id = shift.Id,
-
-                    Weekday = Weekday(year, weekNr, shift.Weekday),
-                    StartTime = shift.StartTime,
-                    EndTime = shift.EndTime,
-
-                    Department = shift.Department
-                });
-            }
-
-            EmployeeScheduleViewModel employeeScheduleViewModel = new EmployeeScheduleViewModel()
-            {
-                FirstName = user.FirstName,
-                LastName = user.LastName,
-
-                StartDate = startDate,
-                EndDate = startDate.AddDays(6),
-                WeekFromNoW = weekFromNow,
-
-                Shifts = shifts
-            };
-
-            return View(employeeScheduleViewModel);
         }
 
         // GET: ScheduleEmployeeController/OutgoingFillRequests
@@ -167,9 +123,7 @@ namespace BumboSolid.Controllers
                     Day = days[shift.Weekday],
                     StartTime = shift.StartTime,
                     EndTime = shift.EndTime,
-
-                    Department = shift.Department,
-                    Status = fillRequest.Accepted == 0 ? "Open" : "Geaccepteerd"
+                    Department = shift.Department
                 };
 
                 fillRequestViewModels.Add(fillRequestViewModel);
@@ -298,23 +252,21 @@ namespace BumboSolid.Controllers
             if (shift == null) return NotFound();
 
             // Check if there is not already an open FillRequest for this Shift
-            var fillRequests = _context.FillRequests.Where(s => s.ShiftId == id).ToList();
-            foreach (FillRequest request in fillRequests) if (request.Accepted == 0) return RedirectToAction(nameof(Schedule));
+            if (_context.FillRequests.Where(s => s.ShiftId == id).FirstOrDefault() != null) return RedirectToAction(nameof(EmployeeSchedule));
 
-            FillRequest fillRequest = new FillRequest()
+            FillRequest fillRequest = new()
             {
                 ShiftId = id,
-                Accepted = 0
             };
 
             if (ModelState.IsValid)
             {
                 _context.FillRequests.Add(fillRequest);
                 _context.SaveChanges();
-                return RedirectToAction(nameof(Schedule));
+                return RedirectToAction(nameof(EmployeeSchedule));
             }
 
-            return RedirectToAction(nameof(Schedule));
+            return RedirectToAction(nameof(EmployeeSchedule));
         }
 
         // GET: ScheduleEmployeeController/AcceptFillRequest/5
@@ -332,12 +284,11 @@ namespace BumboSolid.Controllers
         [HttpPost("Invalsverzoek accepteren")]
         public async Task<IActionResult> AcceptFillRequestConfirmed(int id)
         {
-            Console.WriteLine("test");
             var fillRequest = _context.FillRequests.FirstOrDefault(s => s.Id == id);
             if (fillRequest == null) return NotFound();
 
             // Check if this FillRequest has not already been accepted
-            if (fillRequest.SubstituteEmployee != null) return RedirectToAction(nameof(Schedule));
+            if (fillRequest.SubstituteEmployee != null) return RedirectToAction(nameof(EmployeeSchedule));
 
             // Check if the fillrequest does not break any CLA rules has to be implemented later when the heplerclasses have been implemented
 
@@ -347,10 +298,10 @@ namespace BumboSolid.Controllers
             {
                 _context.FillRequests.Update(fillRequest);
                 _context.SaveChanges();
-                return RedirectToAction(nameof(Schedule));
+                return RedirectToAction(nameof(EmployeeSchedule));
             }
 
-            return RedirectToAction(nameof(Schedule));
+            return RedirectToAction(nameof(EmployeeSchedule));
         }
 
         // Get the date of the first day of the week

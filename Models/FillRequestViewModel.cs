@@ -8,7 +8,7 @@ namespace BumboSolid.Models
 
 		public DateOnly Date { get; set; }
 
-		public String Day { get; set; }
+		public string Day { get; set; }
 
 		public string Department { get; set; }
 

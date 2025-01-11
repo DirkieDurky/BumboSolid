@@ -85,10 +85,10 @@
                                         </span>
                                         <span class="shift-department">@shift.Department</span>
                                         <div class="shift-actions d-flex align-items-center">
-                                            <a asp-controller="ScheduleEmployee" asp-action="FillRequest" asp-route-id="@shift.Id" class="btn btn-outline-primary w-100">
+                                            <a asp-action="SendFillRequest" asp-route-id="@shift.Id" class="btn btn-outline-primary w-100">
                                                 <i class="fa-solid fa-exchange-alt"></i>
                                             </a>
-                                            <a asp-controller="ScheduleEmployee" asp-action="CancelShift" asp-route-id="@shift.Id" class="btn btn-outline-danger w-100">
+                                            <a asp-action="CancelShift" asp-route-id="@shift.Id" class="btn btn-outline-danger w-100">
                                                 <i class="fa-solid fa-ban"></i>
                                             </a>
                                         </div>

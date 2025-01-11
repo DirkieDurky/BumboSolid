@@ -40,6 +40,9 @@
 							<li class="nav-item">
 								<a class="nav-link text-dark" asp-area="" asp-controller="Employees" asp-action="Index">Medewerkers</a>
 							</li>
+							<li class="nav-item">
+								<a class="nav-link text-dark" asp-area="" asp-controller="ScheduleManager" asp-action="FillRequests">Invalsverzoeken</a>
+							</li>
 						} else if (User.IsInRole("Employee")) {
 							<li class="nav-item">
 								<a class="nav-link text-dark" asp-area="" asp-controller="ScheduleEmployee" asp-action="EmployeeSchedule">Rooster</a>
