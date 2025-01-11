@@ -116,20 +116,18 @@ namespace BumboSolid.Controllers
 
                 string[] days = ["Monday", "Tuesdday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
 
-                // Creating FillReuestViewModel
-                FillRequestViewModel fillRequestViewModel = new FillRequestViewModel()
-                {
-                    Date = date,
-                    Day = days[shift.Weekday],
-                    StartTime = shift.StartTime,
-                    EndTime = shift.EndTime,
+				// Creating FillReuestViewModel
+				fillRequestViewModels.Add(new FillRequestViewModel()
+				{
+					Date = date,
+					Day = days[shift.Weekday],
+					StartTime = shift.StartTime,
+					EndTime = shift.EndTime,
 
-                    Department = shift.Department,
-                    Status = fillRequest.Accepted == 0 ? "Open" : "Geaccepteerd"
-                };
-
-                fillRequestViewModels.Add(fillRequestViewModel);
-            };
+					Department = shift.Department,
+					Status = fillRequest.Accepted == 0 ? "Open" : "Geaccepteerd"
+				});
+			};
 
             return View(fillRequestViewModels);
         }

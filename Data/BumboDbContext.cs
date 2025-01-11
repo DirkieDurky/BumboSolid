@@ -199,9 +199,9 @@ public partial class BumboDbContext : IdentityDbContext<User, IdentityRole<int>,
 
 		modelBuilder.Entity<FillRequest>(entity =>
 		{
-            entity.HasKey(e => e.Id);
+			entity.HasKey("Id");
 
-            entity.ToTable("FillRequest");
+			entity.ToTable("FillRequest");
 
 			entity.HasIndex(e => e.ShiftId, "IX_FillRequest_ShiftID");
 
