@@ -101,6 +101,50 @@ namespace BumboSolid.Controllers
             var user = await _userManager.GetUserAsync(User);
             int userId = user.Id;
 
+            // Getting correct date
+            int year = DateTime.Now.Year;
+            int weekNr = new CultureInfo("en-US").Calendar.GetWeekOfYear(DateTime.Now, CalendarWeekRule.FirstDay, DayOfWeek.Monday) + weekFromNow;
+            DateOnly startDate = FirstDateOfWeek(year, weekNr);
+
+            // Getting shifts
+            List<ShiftViewModel> shifts = new List<ShiftViewModel>();
+            foreach (var shift in await _context.Shifts.Where(s => s.Employee == user && s.Week.Year == year && s.Week.WeekNumber == weekNr).ToListAsync())
+            {
+                shifts.Add(new ShiftViewModel()
+                {
+                    Id = shift.Id,
+
+                    Weekday = Weekday(year, weekNr, shift.Weekday),
+                    StartTime = shift.StartTime,
+                    EndTime = shift.EndTime,
+
+                    Department = shift.Department
+                });
+            }
+
+            EmployeeScheduleViewModel employeeScheduleViewModel = new EmployeeScheduleViewModel()
+            {
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+
+                StartDate = startDate,
+                EndDate = startDate.AddDays(6),
+                WeekFromNoW = weekFromNow,
+
+                Shifts = shifts
+            };
+
+            return View(employeeScheduleViewModel);
+        }
+
+        // GET: ScheduleEmployeeController/OutgoingFillRequests
+        [HttpGet("Uitgaande invalsverzoeken")]
+        public async Task<IActionResult> OutgoingFillRequests()
+        {
+            // Getting user id
+            var user = await _userManager.GetUserAsync(User);
+            int userId = user.Id;
+
             var fillRequests = await _context.FillRequests.Where(s => _context.Shifts.Any(i => i.Id == s.ShiftId && i.EmployeeId == userId)).ToListAsync();
             List<FillRequestViewModel> fillRequestViewModels = new List<FillRequestViewModel>();
 
@@ -116,18 +160,20 @@ namespace BumboSolid.Controllers
 
                 string[] days = ["Monday", "Tuesdday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
 
-				// Creating FillReuestViewModel
-				fillRequestViewModels.Add(new FillRequestViewModel()
-				{
-					Date = date,
-					Day = days[shift.Weekday],
-					StartTime = shift.StartTime,
-					EndTime = shift.EndTime,
+                // Creating FillReuestViewModel
+                FillRequestViewModel fillRequestViewModel = new FillRequestViewModel()
+                {
+                    Date = date,
+                    Day = days[shift.Weekday],
+                    StartTime = shift.StartTime,
+                    EndTime = shift.EndTime,
 
-					Department = shift.Department,
-					Status = fillRequest.Accepted == 0 ? "Open" : "Geaccepteerd"
-				});
-			};
+                    Department = shift.Department,
+                    Status = fillRequest.Accepted == 0 ? "Open" : "Geaccepteerd"
+                };
+
+                fillRequestViewModels.Add(fillRequestViewModel);
+            };
 
             return View(fillRequestViewModels);
         }
@@ -165,6 +211,9 @@ namespace BumboSolid.Controllers
                     // shift starts during || shift starts later but ends earlier
                     if (yourShift.StartTime >= shift.StartTime && yourShift.StartTime <= shift.EndTime) validShift = false;
                 }
+
+                // Checking if this FillRequest has not already been taken
+                if (fillRequest.SubstituteEmployee != null) validShift = false;
 
                 // Checking if this shift does not break any CAO rules
                 var userAge = DateTime.Today.Year - user.BirthDate.Year;
@@ -206,19 +255,19 @@ namespace BumboSolid.Controllers
                     if (todayTotalMinutes > CLA.MaxWorkDurationPerDay) validShift = false;
                 }
 
-				// Getting shift user (TODO external employee makes fill request might crash)
-				var shiftUser = _context.Users.Where(i => i.Id == shift.EmployeeId).FirstOrDefault();
+                // Getting shift user (TODO external employee makes fill request might crash)
+                var shiftUser = _context.Users.Where(i => i.Id == shift.EmployeeId).FirstOrDefault();
 
                 if (validShift == true)
                 {
                     // Creating FillReuestViewModel
                     FillRequestViewModel fillRequestViewModel = new FillRequestViewModel()
                     {
+                        Id = fillRequest.Id,
                         Date = date,
                         Day = days[shift.Weekday],
                         StartTime = shift.StartTime,
                         EndTime = shift.EndTime,
-
                         Department = shift.Department,
                         Name = shiftUser.FirstName + " " + shiftUser.LastName
                     };
@@ -230,9 +279,9 @@ namespace BumboSolid.Controllers
             return View(fillRequestViewModels);
         }
 
-        // GET: ScheduleEmployeeController/FillRequest/5
+        // GET: ScheduleEmployeeController/SendFillRequest/5
         [HttpGet("Invalsverzoek versturen")]
-        public ActionResult FillRequest(int id)
+        public ActionResult SendFillRequest(int id)
         {
             var shift = _context.Shifts.FirstOrDefault(s => s.Id == id);
             if (shift == null) return NotFound();
@@ -240,17 +289,17 @@ namespace BumboSolid.Controllers
             return View(shift);
         }
 
-        // POST: ScheduleEmployeeController/FillRequest/5
+        // POST: ScheduleEmployeeController/SendFillRequest/5
         [ValidateAntiForgeryToken]
         [HttpPost("Invalsverzoek versturen")]
-        public ActionResult FillRequestConfirmed(int id)
+        public ActionResult SendFillRequestConfirmed(int id)
         {
             var shift = _context.Shifts.FirstOrDefault(s => s.Id == id);
             if (shift == null) return NotFound();
 
             // Check if there is not already an open FillRequest for this Shift
             var fillRequests = _context.FillRequests.Where(s => s.ShiftId == id).ToList();
-            foreach (FillRequest request in fillRequests) if (request.Accepted == 0) return RedirectToAction(nameof(EmployeeSchedule));
+            foreach (FillRequest request in fillRequests) if (request.Accepted == 0) return RedirectToAction(nameof(Schedule));
 
             FillRequest fillRequest = new FillRequest()
             {
@@ -262,10 +311,46 @@ namespace BumboSolid.Controllers
             {
                 _context.FillRequests.Add(fillRequest);
                 _context.SaveChanges();
-                return RedirectToAction(nameof(EmployeeSchedule));
+                return RedirectToAction(nameof(Schedule));
             }
 
-            return RedirectToAction(nameof(EmployeeSchedule));
+            return RedirectToAction(nameof(Schedule));
+        }
+
+        // GET: ScheduleEmployeeController/AcceptFillRequest/5
+        [HttpGet("Invalsverzoek accepteren")]
+        public ActionResult AcceptFillRequest(int id)
+        {
+            var fillRequest = _context.FillRequests.Include(f => f.Shift).FirstOrDefault(f => f.Id == id);
+            if (fillRequest == null) return NotFound();
+
+            return View(fillRequest);
+        }
+
+        // POST: ScheduleEmployeeController/AcceptFillRequest/5
+        [ValidateAntiForgeryToken]
+        [HttpPost("Invalsverzoek accepteren")]
+        public async Task<IActionResult> AcceptFillRequestConfirmed(int id)
+        {
+            Console.WriteLine("test");
+            var fillRequest = _context.FillRequests.FirstOrDefault(s => s.Id == id);
+            if (fillRequest == null) return NotFound();
+
+            // Check if this FillRequest has not already been accepted
+            if (fillRequest.SubstituteEmployee != null) return RedirectToAction(nameof(Schedule));
+
+            // Check if the fillrequest does not break any CLA rules has to be implemented later when the heplerclasses have been implemented
+
+            fillRequest.SubstituteEmployee = await _userManager.GetUserAsync(User);
+            Console.WriteLine(ModelState.IsValid);
+            if (ModelState.IsValid)
+            {
+                _context.FillRequests.Update(fillRequest);
+                _context.SaveChanges();
+                return RedirectToAction(nameof(Schedule));
+            }
+
+            return RedirectToAction(nameof(Schedule));
         }
 
         // Get the date of the first day of the week
