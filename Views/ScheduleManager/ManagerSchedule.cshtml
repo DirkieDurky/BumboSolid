@@ -45,12 +45,10 @@
             </a>
         </div>
         <div>
-            @if (!Model.IsCurrentWeek)
-            {
-                <a class="btn btn-primary" asp-action="ManagerSchedule" asp-route-id="">
-                    Huidige Week
-                </a>
-            }
+            <a class="btn btn-primary @(Model.IsCurrentWeek ? "disabled" : "")"
+               asp-action="ManagerSchedule" asp-route-id="">
+                Huidige Week
+            </a>
         </div>
     </div>
 </header>
