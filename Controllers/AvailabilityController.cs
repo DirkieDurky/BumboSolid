@@ -1,11 +1,8 @@
-﻿using System.Globalization;
-using BumboSolid.Data;
+﻿using BumboSolid.Data;
 using BumboSolid.Data.Models;
-using BumboSolid.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace BumboSolid.Controllers
 {
@@ -33,7 +30,11 @@ namespace BumboSolid.Controllers
 
 			DateOnly startDate = weekStart;
 
-			return View(_context.AvailabilityRules);
+			var availabilityRules = _context.AvailabilityRules
+                                     .Where(rule => rule.Employee == userId)
+                                     .ToList();
+
+            return View(availabilityRules);
         }
 
 		// GET: AvailiabilityController/Create

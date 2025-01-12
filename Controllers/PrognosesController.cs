@@ -4,7 +4,6 @@ using BumboSolid.Data;
 using BumboSolid.Data.Models;
 using System.Globalization;
 using BumboSolid.Models;
-using Microsoft.EntityFrameworkCore.Query.SqlExpressions;
 using Microsoft.AspNetCore.Authorization;
 
 namespace BumboSolid.Controllers
@@ -21,7 +20,7 @@ namespace BumboSolid.Controllers
 		}
 
 		// GET: Prognoses
-		[HttpGet("~/")]
+		[HttpGet("Index")]
 		[HttpGet("{id:int?}")]
 		public async Task<IActionResult> Index(int? id)
 		{

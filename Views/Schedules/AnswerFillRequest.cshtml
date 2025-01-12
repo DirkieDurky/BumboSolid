@@ -1,0 +1,57 @@
+﻿@model BumboSolid.Models.FillRequestViewModel
+
+@{
+    ViewData["Title"] = "Invalsverzoek Antwoorden";
+}
+
+<h3>Weet je zeker dat je dit invalsverzoek wilt @ViewBag.Answer?</h3>
+<div>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-2">
+            Datum
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Date)
+        </dd>
+        <dt class="col-sm-2">
+            Afdeling
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Shift.Department)
+        </dd>
+        <dt class="col-sm-2">
+            Starttijd
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Shift.StartTime)
+        </dd>
+        <dt class="col-sm-2">
+            Eindtijd
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Shift.EndTime)
+        </dd>
+        <dt class="col-sm-2">
+            Aanvrager
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Shift.Employee.FirstName)             
+            @Html.DisplayFor(model => model.Shift.Employee.LastName)
+        </dd>
+        <dt class="col-sm-2">
+            Invaller
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.SubstituteEmployee.FirstName)
+            @Html.DisplayFor(model => model.SubstituteEmployee.LastName)
+        </dd>
+    </dl>
+
+    <form asp-action="AnswerFillRequest" asp-route-id="@Model.Id" method="post">
+        <input type="hidden" asp-for="Id" />
+        <input type="hidden" asp-for="Status" />
+        <button type="submit" class="btn btn-danger"> @ViewBag.Answer</button>
+        <a asp-controller="Schedules" asp-action="FillRequests" class="btn early-btn btn-secondary">Annuleren</a>
+    </form>
+</div>

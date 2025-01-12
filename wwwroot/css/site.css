@@ -1,7 +1,7 @@
 html {
 	font-size: 14px;
 	position: relative;
-	min-height: 100%;
+	height: 100%;
 }
 
 @media (min-width: 768px) {
@@ -387,7 +387,6 @@ p {
 
 .table {
 	border-spacing: 1rem 0;
-	display: block;
 }
 
 	.table > tbody {
@@ -473,6 +472,27 @@ th, td {
 		background-color: black;
 		color: white;
 	}
+
+.selected-btn {
+	border: 2px solid black;
+	font-weight: bold;
+}
+
+.left-center-text {
+	position: relative;
+	display: flex;
+	align-items: center;
+}
+
+.col-md-divseven {
+	flex: 0 0 auto;
+	width: 14%;
+}
+
+.col-md-divsevenremainder {
+	flex: 0 0 auto;
+	width: 16%;
+}
 
 /* Schedule View Manager START */
 .hour-minute-column {

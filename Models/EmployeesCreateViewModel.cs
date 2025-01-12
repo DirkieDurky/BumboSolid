@@ -16,7 +16,7 @@ namespace BumboSolid.Models
         public string Password { get; set; }
 
         [Required]
-        [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
+        [Compare("Password", ErrorMessage = "Komt niet overeen met het wachtwoord.")]
         [DataType(DataType.Password)]
         [StringLength(256)]
         public string ConfirmPassword { get; set; }

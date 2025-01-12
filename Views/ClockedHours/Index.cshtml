@@ -1,0 +1,73 @@
+﻿@model BumboSolid.Models.ClockedHoursViewModel
+
+@{
+    ViewData["Title"] = "Klokken";
+}
+
+<header class="d-flex align-items-center gap-3 justify-content-center gap-3">
+    <div class="w-100">
+        <a asp-controller="ClockedHours" asp-action="Overview" class="new-btn">Uren Overzicht</a>
+    </div>
+    <div class="mx-3 text-center text-nowrap">
+        <h1>Uren Klokken</h1>
+        <p>@Model.StartDate - @Model.EndDate</p>
+    </div>
+    <div class="w-100"></div>
+</header>
+
+<body>
+    <div class="d-flex justify-content-between align-items-center gap-3">
+        <div class="d-flex align-items-center gap-2">
+            <form asp-controller="ClockedHours" asp-action="ClockIn" method="post" class="d-flex align-items-center gap-2">
+                <button type="submit" class="new-btn">Inklokken</button>
+                <select id="department" name="selectedDepartments" class="form-select">
+                    @foreach (var department in Model.Departments)
+                    {
+                        <option value="@department.Name" selected="@(department == Model.LastDepartment)">@department.Name</option>
+                    }
+                </select>
+            </form>
+        </div>
+    </div>
+
+    <br />
+
+    <table class="table w-100">
+        <thead>
+            <tr>
+                <th>Dag</th>
+                <th>Afdeling</th>
+                <th>Starttijd</th>
+                <th>Eindtijd</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var clockedHours in Model.ClockedHours)
+            {
+                <tr>
+                    <td class="col mb-1">@Model.WeekdayDictionary[clockedHours.Weekday]</td>
+                    <td class="col mb-1">@(clockedHours.IsBreak == 1 ? "Pauze" : clockedHours.Department)</td>
+                    <td class="col mb-1">
+                        @(clockedHours.StartTime == TimeOnly.MinValue ? "-" : clockedHours.StartTime.ToString())
+                    </td>
+                    <td class="col mb-1">
+                        @clockedHours.EndTime.ToString()
+                        @if (clockedHours.EndTime == null)
+                        {
+                            if (clockedHours.IsBreak == 1)
+                            {
+                                <a asp-controller="ClockedHours" asp-action="Unpause" class="new-btn">Shift hervatten</a>
+                                <a asp-controller="ClockedHours" asp-action="ClockOut" class="new-btn">Uitklokken</a>
+                            }
+                            else
+                            {
+                                <a asp-controller="ClockedHours" asp-action="Pause" class="new-btn">Pauze</a>
+                                <a asp-controller="ClockedHours" asp-action="ClockOut" class="new-btn">Uitklokken</a>
+                            }
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</body>

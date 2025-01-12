@@ -67,6 +67,14 @@
 	</div>
 </header>
 
+@if (ViewBag.FillRequests > 0)
+{
+	<a class="new-btn" asp-controller="Schedules" asp-action="FillRequests">
+		<p class="fw-bold">Personeel willen voor elkaar invallen</p>
+		<p>Klik op deze notificatie om dit keuren.</p>
+	</a>
+}
+
 <div class="container p-1 border-solid-black border-radius-5 schedule-row-width-fix">
 	<div class="row schedule min-height-0 fw-bold-parent">
 		<div class="hour-minute-column"></div>

@@ -6,7 +6,6 @@ using BumboSolid.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authorization;
 using System.Text.RegularExpressions;
-using BumboSolid.Migrations;
 
 namespace BumboSolid.Controllers
 {
@@ -93,12 +92,7 @@ namespace BumboSolid.Controllers
 
             if (!PasswordIsStrongEnough(input.Password))
             {
-                ModelState.AddModelError(nameof(input.Password), "Wachtwoord is niet niet sterk genoeg. Zorg dat uw wachtwoord voldoet aan de volgende regels:\n" +
-                    "Minimaal 8 karakters.\n" +
-                    "Minimaal 1 cijfer.\n" +
-                    "Minimaal 1 kleine letter.\n" +
-                    "Minimaal 1 hoofdletter.\n" +
-                    "Minimaal 1 speciaal karakter. (Één van de volgende: !@#$%^&*()_+-=[]{}|`~)");
+                ModelState.AddModelError(nameof(input.Password), "Wachtwoord is niet sterk genoeg. Zorg dat uw wachtwoord voldoet aan de aangegeven regels. Het speciale karakter moet één van de volgende karakters zijn (!@#$%^&*()_+-=[]{}|`~)");
             }
 
             if (input.Password != input.ConfirmPassword)
@@ -312,6 +306,14 @@ namespace BumboSolid.Controllers
 
             if (employee != null)
             {
+                // Delete refrences to employee
+                foreach (Shift shift in _context.Shifts.Where(e => e.Employee == employee).ToList())
+                {
+                    foreach (FillRequest fillRequest in _context.FillRequests.Where(s => s.Shift == shift).ToList()) _context.FillRequests.Remove(fillRequest);
+                    _context.Shifts.Remove(shift);
+                }
+                foreach (AvailabilityRule availabilityRule in _context.AvailabilityRules.Where(e => e.Employee == employee.Id).ToList()) _context.AvailabilityRules.Remove(availabilityRule);
+
                 _context.Employees.Remove(employee);
                 await _context.SaveChangesAsync();
             }
