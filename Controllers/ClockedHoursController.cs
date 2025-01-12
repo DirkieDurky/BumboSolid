@@ -201,19 +201,32 @@ namespace BumboSolid.Controllers
             return RedirectToAction("Index");
         }
 
-        [HttpGet("Overzicht")]
-        public async Task<IActionResult> Overview(int weekFromNow = 0)
+        [HttpGet("Overzicht/{weekId:int}")]
+        public async Task<IActionResult> Overview(int? weekId)
         {
             var user = await _userManager.GetUserAsync(User);
             int userId = user!.Id;
 
-            DateTime targetDate = DateTime.Now.AddDays(weekFromNow * 7);
-            int year = targetDate.Year;
-            int weekNr = new CultureInfo("en-US").Calendar.GetWeekOfYear(targetDate, CalendarWeekRule.FirstDay, DayOfWeek.Monday);
-            DateOnly startDate = FirstDateOfWeek(year, weekNr);
+            if (weekId == null)
+            {
+                CultureInfo ci = new CultureInfo("nl-NL");
+                Calendar calendar = ci.Calendar;
+
+                short year = (short)DateTime.Now.Year;
+                int weekNumber = (byte)calendar.GetWeekOfYear(DateTime.Now, ci.DateTimeFormat.CalendarWeekRule, ci.DateTimeFormat.FirstDayOfWeek);
+                weekId = _context.Weeks.First(w => w.Year == year && w.WeekNumber == weekNumber).Id;
+            }
+
+            var week = _context.Weeks.FirstOrDefault(week => week.Id == weekId);
+
+            if (week == null)
+            {
+                ModelState.AddModelError(string.Empty, "Geselecteerde week niet gevonden");
+                return RedirectToAction("Index", "Schedule");
+            }
 
             var allClockedHours = await _context.ClockedHours
-                .Where(ch => ch.EmployeeId == userId && ch.Week.Year == year && ch.Week.WeekNumber == weekNr)
+                .Where(ch => ch.EmployeeId == userId && ch.WeekId == weekId)
                 .OrderByDescending(ch => ch.WeekId)
                 .ThenByDescending(ch => ch.Weekday)
                 .ThenByDescending(ch => ch.StartTime)
@@ -230,13 +243,14 @@ namespace BumboSolid.Controllers
                 { 7, "Zondag" }
             };
 
+            DateOnly startDate = FirstDateOfWeek(week.Year, week.WeekNumber);
             ClockedHoursOverviewViewModel overviewViewModel = new ClockedHoursOverviewViewModel
             {
                 StartDate = startDate,
                 EndDate = startDate.AddDays(6),
                 ClockedHours = allClockedHours,
                 WeekdayDictionary = weekdayDictionary,
-                WeekFromNow = weekFromNow
+                WeekId = (int)weekId,
             };
 
             return View(overviewViewModel);

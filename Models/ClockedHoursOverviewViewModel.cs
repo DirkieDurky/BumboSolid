@@ -7,7 +7,7 @@ namespace BumboSolid.Models
     {
         public DateOnly StartDate { get; set; }
         public DateOnly EndDate { get; set; }
-        public int WeekFromNow { get; set; }
+        public int WeekId { get; set; }
         public List<ClockedHours> ClockedHours { get; set; }
         public Dictionary<byte, string> WeekdayDictionary { get; set; }
     }
