@@ -286,7 +286,7 @@ namespace BumboSolid.Controllers
             var newClockedHour = new ClockedHours
             {
                 WeekId = currentClockedHour.WeekId,
-                Weekday = (byte)DateTime.Now.DayOfWeek,
+                Weekday = ConvertDayOfWeekToStartOnMonday(DateTime.Now.DayOfWeek),
                 Department = currentClockedHour.Department,
                 StartTime = TimeOnly.FromDateTime(DateTime.Now),
                 EmployeeId = userId,
@@ -344,7 +344,7 @@ namespace BumboSolid.Controllers
             var newClockedHour = new ClockedHours
             {
                 WeekId = lastClockedHour.WeekId,
-                Weekday = (byte)DateTime.Now.DayOfWeek,
+                Weekday = ConvertDayOfWeekToStartOnMonday(DateTime.Now.DayOfWeek),
                 Department = lastClockedHour.Department,
                 StartTime = TimeOnly.FromDateTime(DateTime.Now),
                 EmployeeId = userId,

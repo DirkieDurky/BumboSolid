@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Globalization;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace BumboSolid.Controllers
 {
@@ -66,13 +67,13 @@ namespace BumboSolid.Controllers
 
             var weekdayDictionary = new Dictionary<byte, string>
             {
-                { 1, "Maandag" },
-                { 2, "Dinsdag" },
-                { 3, "Woensdag" },
-                { 4, "Donderdag" },
-                { 5, "Vrijdag" },
-                { 6, "Zaterdag" },
-                { 7, "Zondag" }
+                { 0, "Maandag" },
+                { 1, "Dinsdag" },
+                { 2, "Woensdag" },
+                { 3, "Donderdag" },
+                { 4, "Vrijdag" },
+                { 5, "Zaterdag" },
+                { 6, "Zondag" }
             };
 
             startDate = FirstDateOfWeek(week.Year, week.WeekNumber);
@@ -89,6 +90,114 @@ namespace BumboSolid.Controllers
             };
 
             return View(overviewViewModel);
+        }
+
+        [HttpGet("Bewerken/{id:int?}")]
+        public async Task<IActionResult> Edit(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var clockedHours = await _context.ClockedHours.FindAsync(id);
+            if (clockedHours == null)
+            {
+                return NotFound();
+            }
+
+            ViewBag.Departments = new SelectList(_context.Departments, "Name", "Name");
+            ViewBag.WeekDays = new SelectList(new List<string> { "Maandag", "Dinsdag", "Woensdag", "Donderdag", "Vrijdag", "Zaterdag", "Zondag" });
+            ViewBag.Employees = _context.Employees;
+            return View(clockedHours);
+        }
+
+        // POST: ClockedHours/Edit/5
+        // To protect from overposting attacks, enable the specific properties you want to bind to.
+        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [HttpPost("Bewerken/{id:int}")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(int id, ClockedHours clockedHours)
+        {
+            if (id != clockedHours.Id)
+            {
+                return NotFound();
+            }
+
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    _context.Update(clockedHours);
+                    await _context.SaveChangesAsync();
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    if (!ClockedHoursExists(clockedHours.Id))
+                    {
+                        return NotFound();
+                    }
+                    else
+                    {
+                        throw;
+                    }
+                }
+                return RedirectToAction(nameof(Overview), new { employeeId = clockedHours.EmployeeId });
+            }
+
+            ViewBag.Departments = new SelectList(_context.Departments, "Name", "Name");
+            ViewBag.WeekDays = new SelectList(new List<string> { "Maandag", "Dinsdag", "Woensdag", "Donderdag", "Vrijdag", "Zaterdag", "Zondag" });
+            ViewBag.Employees = _context.Employees;
+            return View(clockedHours);
+        }
+
+        // GET: ClockedHours/Delete/5
+        [HttpGet("Verwijderen/{id:int?}")]
+        public async Task<IActionResult> Delete(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var clockedHours = await _context.ClockedHours
+                .Include(c => c.Week)
+                .FirstOrDefaultAsync(m => m.Id == id);
+            if (clockedHours == null)
+            {
+                return NotFound();
+            }
+
+            return View(clockedHours);
+        }
+
+        // POST: ClockedHours/Delete/5
+        [HttpPost("Verwijderen/{id:int?}")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteConfirmed(int id)
+        {
+            var clockedHours = await _context.ClockedHours.FindAsync(id);
+            int? employeeId = null;
+            if (clockedHours != null)
+            {
+                employeeId = clockedHours.EmployeeId;
+                _context.ClockedHours.Remove(clockedHours);
+            }
+
+            await _context.SaveChangesAsync();
+            if (employeeId == null)
+            {
+                return RedirectToAction("Index", "Employees");
+            }
+            else
+            {
+                return RedirectToAction(nameof(Overview), new { employeeId });
+            }
+        }
+
+        private bool ClockedHoursExists(int id)
+        {
+            return _context.ClockedHours.Any(e => e.Id == id);
         }
 
         DateOnly FirstDateOfWeek(int year, int week)

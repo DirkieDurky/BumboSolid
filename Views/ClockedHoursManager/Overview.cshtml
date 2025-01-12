@@ -72,7 +72,7 @@ else
                 <tr>
                     <td>@Model.StartDate.AddDays(clockedHour.Weekday - 1).ToString("dd-MM-yyyy")</td>
                     <td>@Model.WeekdayDictionary[clockedHour.Weekday]</td>
-                    <td>@clockedHour.Department</td>
+                    <td>@(clockedHour.IsBreak == 1 ? "Pauze" : clockedHour.Department)</td>
                     <td>@clockedHour.StartTime</td>
                     <td>
                         @if (clockedHour.EndTime != TimeOnly.MinValue)
