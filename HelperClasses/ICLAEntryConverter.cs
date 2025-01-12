@@ -5,6 +5,7 @@ namespace BumboSolid.HelperClasses
 {
     public interface ICLAEntryConverter
     {
-        public CLAEntry ModelToEntry(CLAManageViewModel model);
+        void EnsureAgeRange(CLAEntry entry, CLAManageViewModel model);
+        public CLAEntry ModelToEntry(CLAManageViewModel model, CLAEntry entry);
     }
 }

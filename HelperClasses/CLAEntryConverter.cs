@@ -5,8 +5,22 @@ namespace BumboSolid.HelperClasses
 {
     public class CLAEntryConverter : ICLAEntryConverter
     {
+
+        public void EnsureAgeRange(CLAEntry entry, CLAManageViewModel model)
+        {
+            if (entry == null) return;
+            if (model == null) return;
+
+            if (model.AgeStart.HasValue || model.AgeEnd.HasValue) return;
+
+            var ageStart = entry.AgeStart;
+            var ageEnd = entry.AgeEnd;
+            model.AgeStart = ageStart;
+            model.AgeEnd = ageEnd;
+        }
+
         // Returns a CLAEntry with filled in values for what is filled in on the viewmodel
-        public CLAEntry ModelToEntry(CLAManageViewModel model)
+        public CLAEntry ModelToEntry(CLAManageViewModel model, CLAEntry entry)
         {
             int arraylength = 6;
 
@@ -17,26 +31,25 @@ namespace BumboSolid.HelperClasses
             int maxWorkDayMulti = model.MaxDayDurationHours ? 60 : 1;
             int maxHolidayMulti = model.MaxHolidayDurationHours ? 60 : 1;
             int maxWeekMulti = model.MaxWeekDurationHours ? 60 : 1;
-
-            CLAEntry entry = new CLAEntry
-            {
-                AgeStart = model.AgeStart.HasValue ? model.AgeStart.Value : null,
-                AgeEnd = model.AgeEnd.HasValue ? model.AgeEnd.Value : null,
-                MaxAvgWeeklyWorkDurationOverFourWeeks = (int?)(model.MaxAvgWeeklyWorkDurationOverFourWeeks.HasValue ?
-                    (model.MaxAvgWeeklyWorkDurationOverFourWeeks * maxAvgMulti) : null),
-                MaxShiftDuration = model.MaxShiftDuration.HasValue ?
-                    (int)(model.MaxShiftDuration.Value * maxTotalShiftMulti) : null,
-                MaxWorkDaysPerWeek = model.MaxWorkDaysPerWeek.HasValue ? model.MaxWorkDaysPerWeek.Value : null,
-                MaxWorkDurationPerDay = model.MaxWorkDurationPerDay.HasValue ?
-                    (int)(model.MaxWorkDurationPerDay.Value * maxWorkDayMulti) : null,
-                MaxWorkDurationPerHolidayWeek = model.MaxWorkDurationPerHolidayWeek.HasValue ?
-                    (int)(model.MaxWorkDurationPerHolidayWeek.Value * maxHolidayMulti) : null,
-                MaxWorkDurationPerWeek = model.MaxWorkDurationPerWeek.HasValue ?
-                    (int)(model.MaxWorkDurationPerWeek.Value * maxWeekMulti) : null,
-                LatestWorkTime = model.LatestWorkTime.HasValue ? model.LatestWorkTime.Value : null,
-                EarliestWorkTime = model.EarliestWorkTime.HasValue ? model.EarliestWorkTime.Value : null
-            };
+            
+            entry.AgeStart = model.AgeStart.HasValue ? model.AgeStart.Value : entry.AgeStart;
+            entry.AgeEnd = model.AgeEnd.HasValue ? model.AgeEnd.Value : entry.AgeEnd;
+            entry.MaxAvgWeeklyWorkDurationOverFourWeeks = (int?)(model.MaxAvgWeeklyWorkDurationOverFourWeeks.HasValue ?
+                (model.MaxAvgWeeklyWorkDurationOverFourWeeks * maxAvgMulti) : entry.MaxAvgWeeklyWorkDurationOverFourWeeks);
+            entry.MaxShiftDuration = model.MaxShiftDuration.HasValue ?
+                (int)(model.MaxShiftDuration.Value * maxTotalShiftMulti) : entry.MaxShiftDuration;
+            entry.MaxWorkDaysPerWeek = model.MaxWorkDaysPerWeek.HasValue ? model.MaxWorkDaysPerWeek.Value : entry.MaxWorkDaysPerWeek;
+            entry.MaxWorkDurationPerDay = model.MaxWorkDurationPerDay.HasValue ?
+                (int)(model.MaxWorkDurationPerDay.Value * maxWorkDayMulti) : entry.MaxWorkDurationPerDay;
+            entry.MaxWorkDurationPerHolidayWeek = model.MaxWorkDurationPerHolidayWeek.HasValue ?
+                (int)(model.MaxWorkDurationPerHolidayWeek.Value * maxHolidayMulti) : entry.MaxWorkDurationPerHolidayWeek;
+            entry.MaxWorkDurationPerWeek = model.MaxWorkDurationPerWeek.HasValue ?
+                (int)(model.MaxWorkDurationPerWeek.Value * maxWeekMulti) : entry.MaxWorkDurationPerWeek;
+            entry.LatestWorkTime = model.LatestWorkTime.HasValue ? model.LatestWorkTime.Value : entry.LatestWorkTime;
+            entry.EarliestWorkTime = model.EarliestWorkTime.HasValue ? model.EarliestWorkTime.Value : entry.EarliestWorkTime;
+            
             return entry;
         }
+
     }
 }

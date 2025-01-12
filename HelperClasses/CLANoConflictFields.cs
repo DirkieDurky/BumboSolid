@@ -6,7 +6,7 @@ namespace BumboSolid.HelperClasses
 {
     public class CLANoConflictFields : ICLANoConflictFields
     {
-        public bool NoConflicts(CLAEntry existingEntry, CLAManageViewModel model, ModelStateDictionary modelState)
+        public bool NoConflicts(CLAEntry existingEntry, CLAManageViewModel model, ModelStateDictionary modelState, CLABreakEntry? breakEntry)
         {
             if (existingEntry == null) return true;
             var conflictFields = new List<string>();
@@ -28,6 +28,14 @@ namespace BumboSolid.HelperClasses
                 conflictFields.Add(nameof(model.MaxShiftDuration));
             if (existingEntry.MaxAvgWeeklyWorkDurationOverFourWeeks.HasValue && model.MaxAvgWeeklyWorkDurationOverFourWeeks.HasValue)
                 conflictFields.Add(nameof(model.MaxAvgWeeklyWorkDurationOverFourWeeks));
+
+            if(breakEntry != null)
+            {
+                if (model.BreakWorkDuration.HasValue) // breakEntry.WorkDuration having a value is implied.
+                    conflictFields.Add(nameof(model.BreakWorkDuration));
+                if (breakEntry.MinBreakDuration.HasValue && model.BreakMinBreakDuration.HasValue)
+                    conflictFields.Add(nameof(breakEntry.MinBreakDuration));
+            }
 
             if (conflictFields.Count > 0)
             {

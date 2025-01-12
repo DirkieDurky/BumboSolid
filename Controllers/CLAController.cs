@@ -45,15 +45,17 @@ namespace BumboSolid.Controllers
         // Put in the different validation rules to be active.
         private List<ICLALogic> MakeLogic()
         {
-            List<ICLALogic> validateRules = new List<ICLALogic>();
-            validateRules.Add(new CLAAgeWithinRangeLogic());
-            validateRules.Add(new CLAgeEndAfterAgeStartLogic());
-            validateRules.Add(new CLASevenWeekDaysLogic());
-            validateRules.Add(new CLATimeInDayLogic());
-            validateRules.Add(new CLATimeInWeekLogic());
-            validateRules.Add(new CLAViewModelNotEmptyLogic());
-            validateRules.Add(new CLANoBreakWithoutWorkLimitLogic());
-            validateRules.Add(new CLANoMinuteDecimalsLogic());
+            List<ICLALogic> validateRules =
+            [
+                new CLAAgeWithinRangeLogic(),
+                new CLAgeEndAfterAgeStartLogic(),
+                new CLASevenWeekDaysLogic(),
+                new CLATimeInDayLogic(),
+                new CLATimeInWeekLogic(),
+                new CLAViewModelNotEmptyLogic(),
+                new CLANoBreakWithoutWorkLimitLogic(),
+                new CLANoMinuteDecimalsLogic(),
+            ];
             return validateRules;
         }
 
@@ -150,12 +152,12 @@ namespace BumboSolid.Controllers
 
             if (existingEntry != null)
             {
-                if (!_noOverwriteLogic.NoConflicts(existingEntry, claViewModel, ModelState)) return View(claViewModel);
-
-                existingEntry = _claEntryConverter.ModelToEntry(claViewModel); // Can overwrite because there are no conflicts.
-
                 var breakEntry = await _context.CLABreakEntries
                     .FirstOrDefaultAsync(e => e.CLAEntryId == existingEntry.Id);
+
+                if (!_noOverwriteLogic.NoConflicts(existingEntry, claViewModel, ModelState, breakEntry)) return View(claViewModel);
+
+                existingEntry = _claEntryConverter.ModelToEntry(claViewModel, existingEntry); // Can overwrite because there are no conflicts.
 
                 if (breakEntry == null && claViewModel.BreakWorkDuration.HasValue)
                 {
@@ -180,25 +182,30 @@ namespace BumboSolid.Controllers
 
                 _context.CLAEntries.Update(existingEntry);
                 _context.SaveChanges();
+
+                TempData["Message"] = "CAO regels zijn geupdated!";
+                return RedirectToAction(nameof(Index));
             }
-                
-                CLAEntry claEntry = _claEntryConverter.ModelToEntry(claViewModel);
-                _context.Add(claEntry);
+
+
+            CLAEntry claEntry = new CLAEntry();
+            claEntry = _claEntryConverter.ModelToEntry(claViewModel, claEntry);
+            _context.Add(claEntry);
+            await _context.SaveChangesAsync();
+
+            if (claViewModel.BreakWorkDuration.HasValue)
+            {
+                CLABreakEntry breakEntry = ModelToBreakEntry(claViewModel, claEntry.Id);
+                _context.Add(breakEntry);
                 await _context.SaveChangesAsync();
+            }
 
-                if (claViewModel.BreakWorkDuration.HasValue)
-                {
-                    CLABreakEntry breakEntry = ModelToBreakEntry(claViewModel, claEntry.Id);
-                    _context.Add(breakEntry);
-                    await _context.SaveChangesAsync();
-                }
-
-            TempData["Message"] = existingEntry != null ? "CAO regels zijn geupdated!" : "Nieuwe CAO regels succesvol toegevoegd!";
+            TempData["Message"] = "Nieuwe CAO regels succesvol toegevoegd!";
 
             return RedirectToAction(nameof(Index));
         }
 
-        
+
         // Same as ModelToEntry, but for optional break entries. Returns a CLABreakEntry ready to enter the database
         // Should only be entered when the viewmodel has a value for BreakWorkDuration, since breakentry is not allowed to exist without that.
         private CLABreakEntry ModelToBreakEntry(CLAManageViewModel model, int entryId)
@@ -317,6 +324,7 @@ namespace BumboSolid.Controllers
                 return RedirectToAction(nameof(Index));
             }
 
+
             var claEntry = await _context.CLAEntries.
                 FirstOrDefaultAsync(e => e.Id == claViewModel.Id);
             var breakEntry = await _context.CLABreakEntries.
@@ -327,39 +335,22 @@ namespace BumboSolid.Controllers
                 TempData["Message"] = "CAO regel niet gevonden, aanpassen geannuleerd.";
                 return RedirectToAction(nameof(Index));
             }
+            _claEntryConverter.EnsureAgeRange(claEntry, claViewModel);
 
-           foreach(ICLALogic rule in _logicRules)
+            foreach (ICLALogic rule in _logicRules)
             {
                 rule.ValidateModel(claViewModel, ModelState);
             }
 
             if (!ModelState.IsValid) return View(claViewModel);
 
-            int maxAvgMulti = claViewModel.MaxAvgDurationHours ? 60 : 1;
-            int maxTotalShiftMulti = claViewModel.MaxTotalShiftDurationHours ? 60 : 1;
-            int maxWorkDayMulti = claViewModel.MaxDayDurationHours ? 60 : 1;
-            int maxHolidayMulti = claViewModel.MaxHolidayDurationHours ? 60 : 1;
-            int maxWeekMulti = claViewModel.MaxWeekDurationHours ? 60 : 1;
+            
             int maxUninterruptedShiftMulti = claViewModel.MaxUninterruptedShiftDurationHours ? 60 : 1;
             int minBreakTimeMulti = claViewModel.MinBreakTimeHours ? 60 : 1;
 
 
-            claEntry.MaxAvgWeeklyWorkDurationOverFourWeeks = claViewModel.MaxAvgWeeklyWorkDurationOverFourWeeks.HasValue ?
-                (int?)(claViewModel.MaxAvgWeeklyWorkDurationOverFourWeeks * maxAvgMulti) : null;
-            claEntry.MaxShiftDuration = claViewModel.MaxShiftDuration.HasValue ?
-                (int?)(claViewModel.MaxShiftDuration.Value * maxTotalShiftMulti) : null;
-            claEntry.MaxWorkDaysPerWeek = claViewModel.MaxWorkDaysPerWeek.HasValue ?
-                claViewModel.MaxWorkDaysPerWeek.Value : null;
-            claEntry.MaxWorkDurationPerDay = claViewModel.MaxWorkDurationPerDay.HasValue ?
-                (int?)(claViewModel.MaxWorkDurationPerDay.Value * maxWorkDayMulti) : null;
-            claEntry.MaxWorkDurationPerHolidayWeek = claViewModel.MaxWorkDurationPerHolidayWeek.HasValue ?
-                (int?)(claViewModel.MaxWorkDurationPerHolidayWeek.Value * maxHolidayMulti) : null;
-            claEntry.MaxWorkDurationPerWeek = claViewModel.MaxWorkDurationPerWeek.HasValue ?
-                (int?)(claViewModel.MaxWorkDurationPerWeek.Value * maxWeekMulti) : null;
-            claEntry.LatestWorkTime = claViewModel.LatestWorkTime.HasValue ?
-                claViewModel.LatestWorkTime.Value : null;
-            claEntry.EarliestWorkTime = claViewModel.EarliestWorkTime.HasValue ?
-                claViewModel.EarliestWorkTime.Value : null;
+
+            _claEntryConverter.ModelToEntry(claViewModel, claEntry);
 
 
             if (breakEntry != null && claViewModel.BreakWorkDuration.HasValue)
@@ -370,7 +361,7 @@ namespace BumboSolid.Controllers
                     CLAEntryId = breakEntry.CLAEntryId,
                     WorkDuration = (int)(claViewModel.BreakWorkDuration.Value * maxUninterruptedShiftMulti),
                     MinBreakDuration = claViewModel.BreakMinBreakDuration.HasValue ?
-                    (int)claViewModel.BreakMinBreakDuration : null
+                    (int)claViewModel.BreakMinBreakDuration * minBreakTimeMulti : null
                 };
 
                 _context.CLABreakEntries.Add(updatedBreakEntry);
@@ -416,6 +407,20 @@ namespace BumboSolid.Controllers
             }
 
             return View(claEntry);
+        }
+
+        // Needed due to weird bug that is proving hard to find. Ensures that if agerange is lost, it is checked again.
+        private void EnsureAgeRange(CLAEntry claEntry, CLAManageViewModel model)
+        {
+            if (claEntry == null) return;
+            if (model == null) return;
+
+            if (model.AgeStart.HasValue || model.AgeEnd.HasValue) return;
+
+            var ageStart = claEntry.AgeStart;
+            var ageEnd = claEntry.AgeEnd;
+            model.AgeStart = ageStart;
+            model.AgeEnd = ageEnd;
         }
 
         // POST: CLA/Delete/5
