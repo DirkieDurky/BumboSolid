@@ -58,13 +58,13 @@ namespace BumboSolid.Controllers
 
             var weekdayDictionary = new Dictionary<byte, string>
             {
-                { 1, "Maandag" },
-                { 2, "Dinsdag" },
-                { 3, "Woensdag" },
-                { 4, "Donderdag" },
-                { 5, "Vrijdag" },
-                { 6, "Zaterdag" },
-                { 7, "Zondag" }
+                { 0, "Maandag" },
+                { 1, "Dinsdag" },
+                { 2, "Woensdag" },
+                { 3, "Donderdag" },
+                { 4, "Vrijdag" },
+                { 5, "Zaterdag" },
+                { 6, "Zondag" }
             };
 
             var departments = await _context.Departments.ToListAsync();
@@ -140,24 +140,10 @@ namespace BumboSolid.Controllers
                 _context.SaveChanges();
             }
 
-            var lastClockedHours = await _context.ClockedHours
-                .Where(ch => ch.EmployeeId == userId)
-                .OrderByDescending(ch => ch.Id)
-                .ThenByDescending(ch => ch.Weekday)
-                .ThenByDescending(ch => ch.StartTime)
-                .FirstOrDefaultAsync();
-
-            if (lastClockedHours != null && lastClockedHours.EndTime == TimeOnly.MinValue)
-            {
-                lastClockedHours.EndTime = TimeOnly.FromDateTime(DateTime.Now);
-                _context.ClockedHours.Update(lastClockedHours);
-                await _context.SaveChangesAsync();
-            }
-
             var newClockedHour = new ClockedHours
             {
                 WeekId = currentWeek.Id,
-                Weekday = (byte)DateTime.Now.DayOfWeek,
+                Weekday = ConvertDayOfWeekToStartOnMonday(DateTime.Now.DayOfWeek),
                 Department = departments.FirstOrDefault()?.Name,
                 StartTime = TimeOnly.FromDateTime(DateTime.Now),
                 EmployeeId = userId,
@@ -245,13 +231,13 @@ namespace BumboSolid.Controllers
 
             var weekdayDictionary = new Dictionary<byte, string>
             {
-                { 1, "Maandag" },
-                { 2, "Dinsdag" },
-                { 3, "Woensdag" },
-                { 4, "Donderdag" },
-                { 5, "Vrijdag" },
-                { 6, "Zaterdag" },
-                { 7, "Zondag" }
+                { 0, "Maandag" },
+                { 1, "Dinsdag" },
+                { 2, "Woensdag" },
+                { 3, "Donderdag" },
+                { 4, "Vrijdag" },
+                { 5, "Zaterdag" },
+                { 6, "Zondag" }
             };
 
             startDate = FirstDateOfWeek(week.Year, week.WeekNumber);
@@ -377,6 +363,12 @@ namespace BumboSolid.Controllers
             var firstDayOfWeek = jan1.AddDays((week - 1) * 7 - (int)jan1.DayOfWeek + (int)DayOfWeek.Monday);
 
             return firstDayOfWeek;
+        }
+
+        byte ConvertDayOfWeekToStartOnMonday(DayOfWeek dayOfWeek)
+        {
+            dayOfWeek -= 1;
+            return (byte)(dayOfWeek < 0 ? 6 : (byte)dayOfWeek);
         }
     }
 }

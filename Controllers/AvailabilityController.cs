@@ -1,11 +1,8 @@
-﻿using System.Globalization;
-using BumboSolid.Data;
+﻿using BumboSolid.Data;
 using BumboSolid.Data.Models;
-using BumboSolid.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace BumboSolid.Controllers
 {

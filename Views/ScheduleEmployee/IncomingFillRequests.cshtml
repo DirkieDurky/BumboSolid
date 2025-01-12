@@ -46,8 +46,7 @@
 			<div class="col-md-divseven p-0 pe-3 left-center-text left-center-text">@fillRequestViewModel.EndTime</div>
 			<div class="col-md-divseven p-0 pe-3 left-center-text left-center-text">@fillRequestViewModel.Name</div>
 			<div class="col-md-divsevenremainder p-0 pe-3 d-flex justify-content-center">
-				@* TODO add functionality *@
-				<a class="new-btn px-3 me-3">Accepteren</a>
+				<a class="new-btn px-3 me-" asp-controller="ScheduleEmployee" asp-action="AcceptFillRequest" asp-route-id="@fillRequestViewModel.Id">Accepteren</a>
 			</div>
 
 			<hr class="m-0 my-2" />
