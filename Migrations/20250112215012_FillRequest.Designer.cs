@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BumboSolid.Migrations
 {
     [DbContext(typeof(BumboDbContext))]
-    [Migration("20250108112003_fill-requests")]
-    partial class fillrequests
+    [Migration("20250112215012_FillRequest")]
+    partial class FillRequest
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -137,7 +137,7 @@ namespace BumboSolid.Migrations
                         .HasColumnType("int")
                         .HasColumnName("Employee");
 
-                    b.Property<TimeOnly>("EndTime")
+                    b.Property<TimeOnly?>("EndTime")
                         .HasColumnType("time")
                         .HasColumnName("EndTime");
 
