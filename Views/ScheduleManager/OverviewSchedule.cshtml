@@ -24,12 +24,12 @@
 <header class="d-flex flex-column align-items-center">
     <div class="d-flex justify-content-between w-100 header-items">
         <div>
-            <a class="btn btn-primary" asp-action="ManagerSchedule" asp-route-id="@Model.WeekId">
+            <a class="btn new-btn" asp-action="ManagerSchedule" asp-route-id="@Model.WeekId">
                 Rooster
             </a>
         </div>
         <div>
-            <a class="btn btn-primary @(Model.PreviousWeekId == null ? "disabled" : "")"
+            <a class="btn new-btn @(Model.PreviousWeekId == null ? "disabled" : "")"
                asp-action="OverviewSchedule" asp-route-id="@Model.PreviousWeekId">
                 Vorige Week
             </a>
@@ -39,13 +39,13 @@
             <p>@startDate.ToString("dd/MM/yyyy") - @endDate.ToString("dd/MM/yyyy")</p>
         </div>
         <div>
-            <a class="btn btn-primary @(Model.NextWeekId == null ? "disabled" : "")"
+            <a class="btn new-btn @(Model.NextWeekId == null ? "disabled" : "")"
                asp-action="OverviewSchedule" asp-route-id="@Model.NextWeekId">
                 Volgende Week
             </a>
         </div>
         <div>
-            <a class="btn btn-primary @(Model.IsCurrentWeek ? "disabled" : "")"
+            <a class="btn new-btn @(Model.IsCurrentWeek ? "disabled" : "")"
                asp-action="OverviewSchedule" asp-route-id="">
                 Huidige Week
             </a>
@@ -63,7 +63,7 @@
                 <div class="form-group">
                     <input type="hidden" name="id" value="@Model.WeekId" />
                     <input type="hidden" name="returnUrl" value="@Context.Request.Path" />
-                    <input type="submit" value="Nieuw Rooster Aanmaken" class="btn btn-success" />
+                    <input type="submit" value="Nieuw Rooster Aanmaken" class="btn new-btn" />
                 </div>
             </form>
         </div>

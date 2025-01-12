@@ -47,7 +47,7 @@
     <form asp-action="AnswerFillRequestConfirm" asp-route-id="@Model.Id" method="post">
         <input type="hidden" asp-for="Id" />
         <input type="hidden" asp-for="Status" />
-        <button type="submit" class="btn btn-danger"> @ViewBag.Answer</button>
-        <a asp-action="FillRequests" class="btn early-btn btn-secondary">Annuleren</a>
+        <button type="submit" class="btn new-btn"> @ViewBag.Answer</button>
+        <a asp-action="FillRequests" class="btn early-btn new-btn">Annuleren</a>
     </form>
 </div>

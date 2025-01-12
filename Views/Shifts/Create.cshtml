@@ -19,7 +19,9 @@
 
 <header class="d-flex align-items-center gap-3 justify-content-center gap-3">
 	<div class="w-100 text-align text-end">
-		<a class="new-btn" href="@ViewBag.ReturnUrl">Terug</a>
+		<a class="new-btn" asp-controller="ScheduleManager" asp-action="ManagerSchedule" asp-route-id="@Model.Week.Id">
+			Terug
+		</a>
 	</div>
 	<div class="mx-3 text-center text-nowrap">
 		<h1>Medewerker Inplannen</h1>
@@ -35,14 +37,13 @@
 			<input asp-for="Shift.WeekId" type="hidden" value="@Model.Week.Id" />
 			<input asp-for="Week.Year" type="hidden" value="@Model.Week.Year" />
 			<input asp-for="Week.WeekNumber" type="hidden" value="@Model.Week.WeekNumber" />
-			<input type="hidden" name="returnUrl" value="@ViewBag.ReturnUrl" />
 			<div class="row pb-2">
 				<div class="form-group col-md-6">
 					<label class="control-label fw-bold">Medewerker</label>
 					<select asp-for="Shift.EmployeeId" class="form-control p-1 border-solid-black" onchange="updateEmployeeName(this)">
 						@foreach (var employee in Model.Employees)
 						{
-							<option value="@employee.Key">@employee.Value</option>
+							<option value="@employee.Id">@employee.Name</option>
 						}
 					</select>
 				</div>

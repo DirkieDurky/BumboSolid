@@ -3,7 +3,11 @@
 @{
     string[] daysOfTheWeek = { "Maandag", "Dinsdag", "Woensdag", "Donderdag", "Vrijdag", "Zaterdag", "Zondag" };
 
-    DateTime startDate = GetFirstDateOfWeek(Model.Week.Year, Model.Week.WeekNumber);
+    var schedule = Model.Week;
+    if (schedule == null) return;
+
+    var shifts = schedule.Shifts;
+    DateTime startDate = GetFirstDateOfWeek(schedule.Year, schedule.WeekNumber);
     DateTime endDate = startDate.AddDays(6);
 }
 
@@ -19,7 +23,9 @@
 
 <header class="d-flex align-items-center gap-3 justify-content-center gap-3">
     <div class="w-100 text-align text-end">
-        <a class="new-btn" href="@ViewBag.ReturnUrl">Terug</a>
+        <a class="new-btn" asp-controller="ScheduleManager" asp-action="ManagerSchedule" asp-route-id="@Model.Week.Id">
+            Terug
+        </a>
     </div>
     <div class="mx-3 text-center text-nowrap">
         <h1>Shift bewerken</h1>
@@ -33,16 +39,17 @@
     <div class="col-md-8">
         <form asp-action="Edit">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input asp-for="Shift.Id" type="hidden" value="@Model.Shift.Id" />
-            <input asp-for="Shift.WeekId" type="hidden" value="@Model.Week.Id" />
-            <input type="hidden" name="returnUrl" value="@ViewBag.ReturnUrl" />
+            <input asp-for="Shift.Id" type="hidden" />
+
             <div class="row pb-2">
                 <div class="form-group col-md-6">
                     <label class="control-label fw-bold">Medewerker</label>
+
                     <select asp-for="Shift.EmployeeId" class="form-control p-1 border-solid-black" onchange="updateEmployeeName(this)">
+                        <option value="-1">Extern filiaal</option>
                         @foreach (var employee in Model.Employees)
                         {
-                            <option value="@employee.Key">@employee.Value</option>
+                            <option value="@employee.Id">@employee.Name</option>
                         }
                     </select>
                 </div>
@@ -58,13 +65,18 @@
             <div class="row">
                 <div class="form-group col-md-6 pb-2">
                     <label class="control-label fw-bold">Externe medewerker naam</label>
-                    <input asp-for="Shift.ExternalEmployeeName" class="form-control p-1 border-solid-black" />
+                    <input asp-for="Shift.ExternalEmployeeName" class="form-control p-1 border-solid-black" id="externalEmployeeName" disabled />
                     <span asp-validation-for="Shift.ExternalEmployeeName" class="text-danger"></span>
                 </div>
                 <div class="col-md-6"></div>
                 <div class="form-group col-md-6 pb-2">
                     <label class="control-label fw-bold">Afdeling</label>
-                    <select asp-for="Shift.Department" class="form-control p-1 border-solid-black" asp-items="ViewBag.Departments"></select>
+                    <select asp-for="Shift.Department" class="form-control p-1 border-solid-black">
+                        @foreach (var department in Model.Departments)
+                        {
+                            <option value="@department.Name">@department.Name</option>
+                        }
+                    </select>
                 </div>
                 <div class="col-md-6"></div>
                 <div class="form-group col-md-6 pb-2">
@@ -93,8 +105,12 @@
                 <input type="submit" value="Opslaan" class="new-btn w-100" />
             </div>
         </form>
+        <a class="new-btn w-100" asp-action="Delete" asp-route-id="@Model.Shift.Id">
+            Delete
+        </a>
     </div>
 </div>
+
 
 <!--TODO FIX WHEN WE GOT TIME-->
 @section Scripts {
@@ -116,5 +132,19 @@
                 document.getElementById('canWorkFor').innerText = "-:--";
             }
         }
+    </script>
+
+    <script>
+        function updateEmployeeName(selectElement) {
+            var selectedEmployeeName = selectElement.options[selectElement.selectedIndex].text;
+
+            if (selectedEmployeeName === "Extern filiaal") {
+                document.getElementById('externalEmployeeName').disabled = false;
+            } else {
+                document.getElementById('externalEmployeeName').disabled = true;
+                document.getElementById('externalEmployeeName').value = "";
+            }
+        }
+        updateEmployeeName(document.querySelector('select[name="Shift.EmployeeId"]'));
     </script>
 }

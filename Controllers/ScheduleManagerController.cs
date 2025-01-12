@@ -5,7 +5,6 @@ using BumboSolid.Data;
 using Microsoft.AspNetCore.Authorization;
 using BumboSolid.Models;
 using System.Globalization;
-using System.Text.RegularExpressions;
 
 namespace BumboSolid.Controllers
 {

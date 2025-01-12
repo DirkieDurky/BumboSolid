@@ -23,10 +23,10 @@
 
 <header class="d-flex align-items-center justify-content-between header-items mb-2">
     <div>
-        <a class="btn btn-secondary" asp-action="ManagerSchedule" asp-route-id="@Model.WeekId">Back</a>
+        <a class="btn new-btn" asp-action="ManagerSchedule" asp-route-id="@Model.WeekId">Back</a>
     </div>
     <div>
-        <a class="btn btn-primary @(Model.PreviousWeekId == null ? "disabled" : "")"
+        <a class="btn new-btn @(Model.PreviousWeekId == null ? "disabled" : "")"
            asp-action="ManagerEmployeeSchedule" asp-route-id="@Model.PreviousWeekId" asp-route-employeeId="@Model.EmployeeId">
             Vorige Week
         </a>
@@ -35,13 +35,13 @@
         <h1>Rooster voor @Model.EmployeeName</h1>
     </div>
     <div>
-        <a class="btn btn-primary @(Model.NextWeekId == null ? "disabled" : "")"
+        <a class="btn new-btn @(Model.NextWeekId == null ? "disabled" : "")"
            asp-action="ManagerEmployeeSchedule" asp-route-id="@Model.NextWeekId" asp-route-employeeId="@Model.EmployeeId">
             Volgende Week
         </a>
     </div>
     <div>
-        <a class="btn btn-primary @(Model.IsCurrentWeek ? "disabled" : "")"
+        <a class="btn new-btn @(Model.IsCurrentWeek ? "disabled" : "")"
            asp-action="ManagerEmployeeSchedule" asp-route-id="" asp-route-employeeId="@Model.EmployeeId">
             Huidige Week
         </a>
