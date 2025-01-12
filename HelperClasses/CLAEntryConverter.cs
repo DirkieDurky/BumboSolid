@@ -56,7 +56,7 @@ namespace BumboSolid.HelperClasses
         public CLABreakEntry ModelToBreakEntry(CLAManageViewModel model, int entryId, CLABreakEntry breakEntry)
         {
             int maxUninterruptedShiftMulti = model.MaxUninterruptedShiftDurationHours ? 60 : 1;
-            int minBreakTimeMulti = model.MaxUninterruptedShiftDurationHours ? 60 : 1;
+            int minBreakTimeMulti = model.MinBreakTimeHours ? 60 : 1;
 
             breakEntry.CLAEntryId = entryId;
             breakEntry.WorkDuration = (int)(model.BreakWorkDuration.Value * maxUninterruptedShiftMulti);
