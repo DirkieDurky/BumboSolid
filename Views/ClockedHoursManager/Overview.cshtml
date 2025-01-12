@@ -1,5 +1,7 @@
 ﻿@model BumboSolid.Models.ClockedHoursManagerOverviewViewModel
 
+<script src="https://kit.fontawesome.com/981e782106.js" crossorigin="anonymous"></script>
+
 @{
     ViewData["Title"] = "Uren Overzicht";
 
@@ -44,7 +46,6 @@
     <div class="d-flex justify-content-center align-items-center alert alert-danger">
         <span>Geen medewerker gevonden met het gegeven id</span>
     </div>
-
 }
 else if (!Model.ClockedHours.Any())
 {
@@ -62,6 +63,7 @@ else
                 <th>Afdeling</th>
                 <th>Starttijd</th>
                 <th>Eindtijd</th>
+                <th></th>
             </tr>
         </thead>
         <tbody>
@@ -81,6 +83,14 @@ else
                         {
                             <em>Actief</em>
                         }
+                    </td>
+                    <td>
+                        <a class="no-a" asp-controller="ClockedHoursManager" asp-action="Edit" asp-route-id="@clockedHour.Id">
+                            <i class="fa-solid fa-pencil fa-xl px-2"></i>
+                        </a>
+                        <a class="no-a" asp-controller="ClockedHoursManager" asp-action="Delete" asp-route-id="@clockedHour.Id">
+                            <i class="fa-solid fa-trash fa-xl px-2"></i>
+                        </a>
                     </td>
                 </tr>
             }
