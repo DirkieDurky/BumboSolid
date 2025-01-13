@@ -10,6 +10,7 @@ using BumboSolid.Data;
 using Microsoft.AspNetCore.Authorization;
 using BumboSolid.Models;
 using System.Globalization;
+using Microsoft.IdentityModel.Tokens;
 
 namespace BumboSolid.Controllers
 {
@@ -149,6 +150,7 @@ namespace BumboSolid.Controllers
                 .Where(u => employees.Contains(u.Id))
                 .Include(u => u.AvailabilityRules).ToList()
                 .ToDictionary(u => u.Id, u => u.FirstName);
+            employeeUsers.Add(-1, "Extern filiaal");
 
             var viewModel = new ShiftCreateViewModel
             {
@@ -156,8 +158,6 @@ namespace BumboSolid.Controllers
                 Shift = new Shift(),
                 Week = week,
             };
-
-            employeeUsers.Add(-1, "Extern filiaal");
 
             return View(viewModel);
         }
@@ -171,7 +171,11 @@ namespace BumboSolid.Controllers
         {
             if (ModelState.IsValid)
             {
-                if (shiftCreateViewModel.Shift.EndTime <= shiftCreateViewModel.Shift.StartTime)
+                if (shiftCreateViewModel.Shift.Employee == null && shiftCreateViewModel.Shift.ExternalEmployeeName.IsNullOrEmpty())
+                {
+                    ViewBag.Error = "Vul een medewerker in";
+                }
+                else if (shiftCreateViewModel.Shift.EndTime <= shiftCreateViewModel.Shift.StartTime)
                 {
                     ViewBag.Error = "De eindtijd moet later zijn dan de starttijd.";
                 }
@@ -200,6 +204,7 @@ namespace BumboSolid.Controllers
                 .Where(u => employees.Contains(u.Id))
                 .Include(u => u.AvailabilityRules).ToList()
                 .ToDictionary(u => u.Id, u => u.FirstName);
+            employeeUsers.Add(-1, "Extern filiaal");
 
             shiftCreateViewModel.Week = week;
             shiftCreateViewModel.Employees = employeeUsers;
