@@ -5,6 +5,8 @@ using BumboSolid.Data.Models;
 using BumboSolid.Data;
 using Microsoft.AspNetCore.Authorization;
 using BumboSolid.Models;
+using System.Globalization;
+using Microsoft.IdentityModel.Tokens;
 
 namespace BumboSolid.Controllers
 {
@@ -43,27 +45,22 @@ namespace BumboSolid.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(int weekId, ShiftCreateViewModel shiftCreateViewModel)
         {
+            var week = await _context.Weeks.FirstOrDefaultAsync(w => w.Id == weekId);
+            if (week == null) return NotFound();
+
+            shiftCreateViewModel.Week = week;
+            shiftCreateViewModel.Employees = await _context.Employees.ToListAsync();
+
+            ViewBag.Departments = new SelectList(_context.Departments, "Name", "Name", shiftCreateViewModel.Shift.Department);
+            ViewBag.WeekDays = new SelectList(new List<string> { "Maandag", "Dinsdag", "Woensdag", "Donderdag", "Vrijdag", "Zaterdag", "Zondag" });
+            
             if (!ModelState.IsValid)
             {
-                var week = await _context.Weeks.FirstOrDefaultAsync(w => w.Id == weekId);
-                if (week == null) return NotFound();
-
-                ViewBag.Departments = new SelectList(await _context.Departments.ToListAsync(), "Name", "Name");
-                shiftCreateViewModel.Week = week;
-                shiftCreateViewModel.Employees = await _context.Employees.ToListAsync();
-
                 return View(shiftCreateViewModel);
             }
             if (shiftCreateViewModel.Shift.EndTime <= shiftCreateViewModel.Shift.StartTime)
             {
                 ViewBag.Error = "De eindtijd moet later zijn dan de starttijd.";
-
-                var week = await _context.Weeks.FirstOrDefaultAsync(w => w.Id == weekId);
-                if (week == null) return NotFound();
-
-                ViewBag.Departments = new SelectList(await _context.Departments.ToListAsync(), "Name", "Name");
-                shiftCreateViewModel.Week = week;
-                shiftCreateViewModel.Employees = await _context.Employees.ToListAsync();
 
                 return View(shiftCreateViewModel);
             }
@@ -93,9 +90,10 @@ namespace BumboSolid.Controllers
             {
                 Shift = shift,
                 Employees = await _context.Employees.ToListAsync(),
-                Week = shift.Week,
-                Departments = await _context.Departments.ToListAsync()
+                Week = shift.Week
             };
+
+            ViewBag.Departments = new SelectList(_context.Departments, "Name", "Name");
 
             return View(viewModel);
         }
@@ -199,7 +197,7 @@ namespace BumboSolid.Controllers
             if (shift != null)
             {
                 var fillrequest = await _context.FillRequests.FirstOrDefaultAsync(f => f.ShiftId == id);
-                if(fillrequest != null)
+                if (fillrequest != null)
                     _context.FillRequests.Remove(fillrequest);
                 _context.Shifts.Remove(shift);
             }

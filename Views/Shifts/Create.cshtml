@@ -1,4 +1,5 @@
-﻿@model BumboSolid.Models.ShiftCreateViewModel
+﻿@using BumboSolid.Data.Models
+@model BumboSolid.Models.ShiftCreateViewModel
 
 @{
     string[] daysOfTheWeek = { "Maandag", "Dinsdag", "Woensdag", "Donderdag", "Vrijdag", "Zaterdag", "Zondag" };
@@ -18,110 +19,113 @@
 }
 
 <header class="d-flex align-items-center gap-3 justify-content-center gap-3">
-	<div class="w-100 text-align text-end">
-		<a class="new-btn" asp-controller="ScheduleManager" asp-action="ManagerSchedule" asp-route-id="@Model.Week.Id">
-			Terug
-		</a>
-	</div>
-	<div class="mx-3 text-center text-nowrap">
-		<h1>Medewerker Inplannen</h1>
-		<p>@startDate.ToString("dd/MM/yyyy") - @endDate.ToString("dd/MM/yyyy")</p>
-	</div>
-	<div class="w-100"></div>
+    <div class="w-100 text-align text-end">
+        <a class="new-btn" asp-controller="ScheduleManager" asp-action="ManagerSchedule" asp-route-id="@Model.Week.Id">Terug</a>
+    </div>
+    <div class="mx-3 text-center text-nowrap">
+        <h1>Medewerker Inplannen</h1>
+        <p>@startDate.ToString("dd/MM/yyyy") - @endDate.ToString("dd/MM/yyyy")</p>
+    </div>
+    <div class="w-100"></div>
 </header>
 
 <div class="row justify-content-center">
-	<div class="col-md-8">
-		<form asp-action="Create">
-			<div asp-validation-summary="ModelOnly" class="text-danger"></div>
-			<input asp-for="Shift.WeekId" type="hidden" value="@Model.Week.Id" />
-			<input asp-for="Week.Year" type="hidden" value="@Model.Week.Year" />
-			<input asp-for="Week.WeekNumber" type="hidden" value="@Model.Week.WeekNumber" />
-			<div class="row pb-2">
-				<div class="form-group col-md-6">
-					<label class="control-label fw-bold">Medewerker</label>
-					<select asp-for="Shift.EmployeeId" class="form-control p-1 border-solid-black" onchange="updateEmployeeName(this)">
-						@foreach (var employee in Model.Employees)
-						{
-							<option value="@employee.Id">@employee.Name</option>
-						}
-					</select>
-				</div>
-				<div class="form-group col-md-3">
-					<p class="fw-bold m-0">Heeft pauze over</p>
-					<p id="hasBreakIn">-:--</p>
-				</div>
-				<div class="form-group col-md-3">
-					<p class="fw-bold m-0">Mag nog werken</p>
-					<p id="canWorkFor">-:--</p>
-				</div>
-			</div>
-			<div class="row">
-				<div class="form-group col-md-6 pb-2">
-					<label class="control-label fw-bold">Externe medewerker naam</label>
-					<input asp-for="Shift.ExternalEmployeeName" class="form-control p-1 border-solid-black" />
-					<span asp-validation-for="Shift.ExternalEmployeeName" class="text-danger"></span>
-				</div>
-				<div class="col-md-6"></div>
-				<div class="form-group col-md-6 pb-2">
-					<label class="control-label fw-bold">Afdeling</label>
-					<select asp-for="Shift.Department" class="form-control p-1 border-solid-black" asp-items="ViewBag.Departments"></select>
-				</div>
-				<div class="col-md-6"></div>
-				<div class="form-group col-md-6 pb-2">
-					<label class="control-label fw-bold">Dag</label>
-					<select asp-for="Shift.Weekday" class="form-control p-1 border-solid-black">
-						@for (int i = 0; i < daysOfTheWeek.Length; i++)
-						{
-							<option value="@i">@daysOfTheWeek[i]</option>
-						}
-					</select>
-				</div>
-			</div>
-			<div class="row pb-3">
-				<div class="form-group col-md-6">
-					<label class="control-label fw-bold">Starttijd</label>
-					<input asp-for="Shift.StartTime" class="form-control  p-1 border-solid-black" type="time" value="null" />
-					<span asp-validation-for="Shift.StartTime" class="text-danger"></span>
-				</div>
-				<div class="form-group col-md-6">
-					<label class="control-label fw-bold">Eindtijd</label>
-					<input asp-for="Shift.EndTime" class="form-control  p-1 border-solid-black" type="time" value="null" />
-					<span asp-validation-for="Shift.EndTime" class="text-danger"></span>
-				</div>
-			</div>
-			<div class="form-group">
-				<input type="submit" value="Inplannen" class="new-btn w-100" />
-			</div>
-			@if (!string.IsNullOrEmpty(ViewBag.Error))
-			{
-				<div class="alert alert-danger mt-3">
-					@ViewBag.Error
-				</div>
-			}
-		</form>
-	</div>
+    <div class="col-md-8">
+        <form asp-action="Create">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input asp-for="Shift.WeekId" type="hidden" value="@Model.Week.Id" />
+            <input asp-for="Week.Year" type="hidden" value="@Model.Week.Year" />
+            <input asp-for="Week.WeekNumber" type="hidden" value="@Model.Week.WeekNumber" />
+            <div class="row pb-2">
+                <div class="form-group col-md-6">
+                    <label class="control-label fw-bold">Medewerker</label>
+                    <select id="employee-select" asp-for="Shift.EmployeeId" class="form-control p-1 border-solid-black" onchange="updateEmployeeName()">
+                        @foreach (User employee in Model.Employees)
+                        {
+                            <option value="@employee.Id">@(Model.Employees.Count(e=>e.Name == employee.Name) > 1 ? employee.Id : "") @employee.Name</option>
+                        }
+                        <option value="-1">Extern filiaal</option>
+                    </select>
+                </div>
+                <div class="form-group col-md-3">
+                    <p class="fw-bold m-0">Heeft pauze over</p>
+                    <p id="hasBreakIn">-:--</p>
+                </div>
+                <div class="form-group col-md-3">
+                    <p class="fw-bold m-0">Mag nog werken</p>
+                    <p id="canWorkFor">-:--</p>
+                </div>
+            </div>
+            <div class="row">
+                <div id="external-employee-container" class="form-group col-md-6 pb-2">
+                    <label class="control-label fw-bold">Externe medewerker naam</label>
+                    <input id="external-employee-name" asp-for="Shift.ExternalEmployeeName" class="form-control p-1 border-solid-black" type="hidden"/>
+                    <span asp-validation-for="Shift.ExternalEmployeeName" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="row">
+                <div class="form-group col-md-6 pb-2">
+                    <label class="control-label fw-bold">Afdeling</label>
+                    <select asp-for="Shift.Department" class="form-control p-1 border-solid-black" asp-items="ViewBag.Departments"></select>
+                </div>
+            </div>
+            <div class="row">
+                <div class="form-group col-md-6 pb-2">
+                    <label class="control-label fw-bold">Dag</label>
+                    <select asp-for="Shift.Weekday" class="form-control p-1 border-solid-black">
+                        @for (int i = 0; i < daysOfTheWeek.Length; i++)
+                        {
+                            <option value="@i">@daysOfTheWeek[i]</option>
+                        }
+                    </select>
+                </div>
+            </div>
+            <div class="row pb-3">
+                <div class="form-group col-md-6">
+                    <label class="control-label fw-bold">Starttijd</label>
+                    <input asp-for="Shift.StartTime" class="form-control  p-1 border-solid-black" type="time" value="null" />
+                    <span asp-validation-for="Shift.StartTime" class="text-danger"></span>
+                </div>
+                <div class="form-group col-md-6">
+                    <label class="control-label fw-bold">Eindtijd</label>
+                    <input asp-for="Shift.EndTime" class="form-control  p-1 border-solid-black" type="time" value="null" />
+                    <span asp-validation-for="Shift.EndTime" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Inplannen" class="new-btn w-100" />
+            </div>
+            @if (!string.IsNullOrEmpty(ViewBag.Error))
+            {
+                <div class="alert alert-danger mt-3">
+                    @ViewBag.Error
+                </div>
+            }
+        </form>
+    </div>
 </div>
 
 <!--TODO FIX WHEN WE GOT TIME-->
 @section Scripts {
-	@{
-		await Html.RenderPartialAsync("_ValidationScriptsPartial");
-	}
-	<script>
-		function updateEmployeeName(selectElement) {
-			var selectedEmployeeName = selectElement.options[selectElement.selectedIndex].text;
-			if (selectedEmployeeName === "Extern filiaal") {
-				document.getElementById('hasBreakIn').innerText = "-:--";
-			} else {
-				document.getElementById('hasBreakIn').innerText = "-:--";
-			}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script>
+        updateEmployeeName()
 
-			if (selectedEmployeeName === "Extern filiaal") {
-				document.getElementById('canWorkFor').innerText = "-:--";
-			} else {
-				document.getElementById('canWorkFor').innerText = "-:--";
-			}
-		}
-	</script>
+        function updateEmployeeName() {
+            let employeeSelect = document.getElementById("employee-select");
+            if (employeeSelect.options[employeeSelect.selectedIndex].text === "Extern filiaal") {
+                document.getElementById("external-employee-name").type = "text"
+                document.getElementById("external-employee-container").style.display = "block";
+                document.getElementById('hasBreakIn').innerText = "-:--";
+                document.getElementById('canWorkFor').innerText = "-:--";
+            } else {
+                document.getElementById("external-employee-name").type = "hidden"
+                document.getElementById("external-employee-container").style.display = "none";
+                document.getElementById('hasBreakIn').innerText = "-:--";
+                document.getElementById('canWorkFor').innerText = "-:--";
+            }
+        }
+    </script>
 }
