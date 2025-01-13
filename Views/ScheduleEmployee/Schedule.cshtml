@@ -52,7 +52,7 @@
 			<div class="col-md-2 p-0 pe-3 left-center-text">@shift.StartTime</div>
 			<div class="col-md-2 p-0 pe-3 left-center-text">@shift.EndTime</div>
 			<div class="col-md-4 p-0 pe-3 d-flex justify-content-center">
-				<a class="new-btn px-3 me-3" asp-controller="ScheduleEmployee" asp-action="FillRequest" asp-route-id="@shift.Id">Ruilen</a>
+				<a class="new-btn px-3 me-3" asp-controller="ScheduleEmployee" asp-action="SendFillRequest" asp-route-id="@shift.Id">Ruilen</a>
 				<a class="new-btn px-3">Afmelden</a>
 			</div>
 
