@@ -5,7 +5,6 @@ namespace BumboSolid.HelperClasses
 {
     public class CLASevenWeekDaysLogic : ICLALogic
     {
-
         public bool ValidateModel(CLAManageViewModel model, ModelStateDictionary modelState)
         {
             bool valid = true;

@@ -5,7 +5,6 @@ namespace BumboSolid.HelperClasses
 {
     public class CLAgeEndAfterAgeStartLogic : ICLALogic
     {
-
         // Have to ensure start age of a range is not a higher number than end age is.
         public bool ValidateModel(CLAManageViewModel model, ModelStateDictionary modelState)
         {

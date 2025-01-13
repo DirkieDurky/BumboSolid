@@ -5,7 +5,6 @@ namespace BumboSolid.HelperClasses
 {
     public class CLAViewModelNotEmptyLogic : ICLALogic
     {
-        
         // Since all fields are nullable (and ID isn't chosen by user),
         // we have to check whether anything has been filled in anywhere...
         public bool ValidateModel(CLAManageViewModel model, ModelStateDictionary modelState)

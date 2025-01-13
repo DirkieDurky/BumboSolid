@@ -7,6 +7,5 @@ namespace BumboSolid.HelperClasses
     public interface ICLALogic
     {
         public bool ValidateModel(CLAManageViewModel model, ModelStateDictionary modelState);
-        
     }
 }

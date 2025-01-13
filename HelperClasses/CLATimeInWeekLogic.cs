@@ -5,7 +5,6 @@ namespace BumboSolid.HelperClasses
 {
     public class CLATimeInWeekLogic : ICLALogic
     {
-
         // Three different rules use week time, decided to keep them in one class though.
         public bool ValidateModel(CLAManageViewModel model, ModelStateDictionary modelState)
         {

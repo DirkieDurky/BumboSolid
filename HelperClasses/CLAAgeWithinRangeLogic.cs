@@ -5,7 +5,6 @@ namespace BumboSolid.HelperClasses
 {
     public class CLAAgeWithinRangeLogic :ICLALogic
     {
-
         public bool ValidateModel(CLAManageViewModel model, ModelStateDictionary modelState)
         {
             bool valid_age = true;
