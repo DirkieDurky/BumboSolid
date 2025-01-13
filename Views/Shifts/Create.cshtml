@@ -59,6 +59,7 @@
                         {
                             <option value="@employee.Id">@(Model.Employees.Count(e=>e.Name == employee.Name) > 1 ? employee.Id : "") @employee.Name</option>
                         }
+                        <option value="-1">Extern filiaal</option>
                     </select>
                 </div>
                 <div class="form-group col-md-3">
