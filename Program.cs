@@ -2,7 +2,6 @@ using Microsoft.EntityFrameworkCore;
 using BumboSolid.Data;
 using Microsoft.AspNetCore.Identity;
 using BumboSolid.Data.Models;
-using Authorisation.Helpers;
 using BumboSolid.HelperClasses;
 
 var builder = WebApplication.CreateBuilder(args);

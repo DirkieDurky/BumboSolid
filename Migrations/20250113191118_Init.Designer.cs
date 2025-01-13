@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BumboSolid.Migrations
 {
     [DbContext(typeof(BumboDbContext))]
-    [Migration("20250112134637_Init")]
+    [Migration("20250113191118_Init")]
     partial class Init
     {
         /// <inheritdoc />
@@ -272,9 +272,6 @@ namespace BumboSolid.Migrations
                         .IsUnicode(false)
                         .HasColumnType("varchar(255)")
                         .HasColumnName("Absent_Description");
-
-                    b.Property<byte>("Accepted")
-                        .HasColumnType("tinyint");
 
                     b.Property<int>("ShiftId")
                         .HasColumnType("int")
@@ -854,6 +851,41 @@ namespace BumboSolid.Migrations
                             HasSchedule = (byte)0,
                             WeekNumber = (byte)50,
                             Year = (short)2024
+                        },
+                        new
+                        {
+                            Id = 2,
+                            HasSchedule = (byte)0,
+                            WeekNumber = (byte)1,
+                            Year = (short)2025
+                        },
+                        new
+                        {
+                            Id = 3,
+                            HasSchedule = (byte)0,
+                            WeekNumber = (byte)2,
+                            Year = (short)2025
+                        },
+                        new
+                        {
+                            Id = 4,
+                            HasSchedule = (byte)0,
+                            WeekNumber = (byte)3,
+                            Year = (short)2025
+                        },
+                        new
+                        {
+                            Id = 5,
+                            HasSchedule = (byte)0,
+                            WeekNumber = (byte)4,
+                            Year = (short)2025
+                        },
+                        new
+                        {
+                            Id = 6,
+                            HasSchedule = (byte)0,
+                            WeekNumber = (byte)5,
+                            Year = (short)2025
                         });
                 });
 
