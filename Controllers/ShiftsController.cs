@@ -146,11 +146,9 @@ namespace BumboSolid.Controllers
                 .Select(ur => ur.UserId)
                 .ToListAsync();
 
-            Dictionary<Int32, String> employeeUsers = _context.Users
+            var employeeUsers = _context.Users
                 .Where(u => employees.Contains(u.Id))
-                .Include(u => u.AvailabilityRules).ToList()
-                .ToDictionary(u => u.Id, u => u.FirstName);
-            employeeUsers.Add(-1, "Extern filiaal");
+                .Include(u => u.AvailabilityRules).ToList();
 
             var viewModel = new ShiftCreateViewModel
             {
@@ -200,11 +198,9 @@ namespace BumboSolid.Controllers
                 .Select(ur => ur.UserId)
                 .ToListAsync();
 
-            Dictionary<Int32, String> employeeUsers = _context.Users
+            var employeeUsers = _context.Users
                 .Where(u => employees.Contains(u.Id))
-                .Include(u => u.AvailabilityRules).ToList()
-                .ToDictionary(u => u.Id, u => u.FirstName);
-            employeeUsers.Add(-1, "Extern filiaal");
+                .Include(u => u.AvailabilityRules).ToList();
 
             shiftCreateViewModel.Week = week;
             shiftCreateViewModel.Employees = employeeUsers;
@@ -240,10 +236,9 @@ namespace BumboSolid.Controllers
                 .Select(ur => ur.UserId)
                 .ToListAsync();
 
-            Dictionary<Int32, String> employeeUsers = _context.Users
+            var employeeUsers = _context.Users
                 .Where(u => employees.Contains(u.Id))
-                .Include(u => u.AvailabilityRules).ToList()
-                .ToDictionary(u => u.Id, u => u.FirstName);
+                .Include(u => u.AvailabilityRules).ToList();
 
             var viewModel = new ShiftCreateViewModel
             {
@@ -252,7 +247,6 @@ namespace BumboSolid.Controllers
                 Week = shift.Week,
             };
 
-            employeeUsers.Add(-1, "Extern filiaal");
             if (shift.EmployeeId == null) shift.EmployeeId = -1;
 
             return View(viewModel);

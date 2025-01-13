@@ -1,4 +1,5 @@
-﻿@model BumboSolid.Models.ShiftCreateViewModel
+﻿@using BumboSolid.Data.Models
+@model BumboSolid.Models.ShiftCreateViewModel
 
 @{
     ViewData["Title"] = "Edit";
@@ -54,9 +55,9 @@
                 <div class="form-group col-md-6">
                     <label class="control-label fw-bold">Medewerker</label>
                     <select asp-for="Shift.EmployeeId" class="form-control p-1 border-solid-black" onchange="updateEmployeeName(this)">
-                        @foreach (KeyValuePair<Int32, String> employee in Model.Employees)
+                        @foreach (User employee in Model.Employees)
                         {
-                            <option value="@employee.Key">@employee.Value</option>
+                            <option value="@employee.Id">@(Model.Employees.Count(e => e.Name == employee.Name) > 1 ? employee.Id : "") @employee.Name</option>
                         }
                     </select>
                 </div>
@@ -116,17 +117,19 @@
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
     <script>
-        function updateEmployeeName(selectElement) {
-            var selectedEmployeeName = selectElement.options[selectElement.selectedIndex].text;
-            if (selectedEmployeeName === "Extern filiaal") {
-                document.getElementById('hasBreakIn').innerText = "-:--";
-            } else {
-                document.getElementById('hasBreakIn').innerText = "-:--";
-            }
+        updateEmployeeName()
 
-            if (selectedEmployeeName === "Extern filiaal") {
+        function updateEmployeeName() {
+            let employeeSelect = document.getElementById("employee-select");
+            if (employeeSelect.options[employeeSelect.selectedIndex].text === "Extern filiaal") {
+                document.getElementById("external-employee-name").type = "text"
+                document.getElementById("external-employee-container").style.display = "block";
+                document.getElementById('hasBreakIn').innerText = "-:--";
                 document.getElementById('canWorkFor').innerText = "-:--";
             } else {
+                document.getElementById("external-employee-name").type = "hidden"
+                document.getElementById("external-employee-container").style.display = "none";
+                document.getElementById('hasBreakIn').innerText = "-:--";
                 document.getElementById('canWorkFor').innerText = "-:--";
             }
         }
