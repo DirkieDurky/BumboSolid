@@ -1,15 +1,11 @@
 ﻿using System.Globalization;
-using System;
 using BumboSolid.Data;
 using BumboSolid.Data.Models;
 using BumboSolid.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.VisualBasic;
 using Microsoft.AspNetCore.Identity;
-using System.Runtime.Intrinsics.Arm;
-using System.Linq;
 
 namespace BumboSolid.Controllers
 {
@@ -28,46 +24,74 @@ namespace BumboSolid.Controllers
 
         // GET: ScheduleEmployeeController
         [HttpGet("")]
-        public async Task<IActionResult> Schedule(int weekFromNow)
+        public async Task<IActionResult> EmployeeSchedule(int? id)
         {
-            // Getting user id
             var user = await _userManager.GetUserAsync(User);
             int userId = user.Id;
 
-            // Getting correct date
-            int year = DateTime.Now.Year;
-            int weekNr = new CultureInfo("en-US").Calendar.GetWeekOfYear(DateTime.Now, CalendarWeekRule.FirstDay, DayOfWeek.Monday) + weekFromNow;
-            DateOnly startDate = FirstDateOfWeek(year, weekNr);
+            var currentWeek = await _context.Weeks
+                .Include(w => w.Shifts)
+                .ThenInclude(s => s.Employee)
+                .FirstOrDefaultAsync(w => w.Id == id);
 
-            // Getting shifts
-            List<ShiftViewModel> shifts = new List<ShiftViewModel>();
-            foreach (var shift in await _context.Shifts.Where(s => s.Employee == user && s.Week.Year == year && s.Week.WeekNumber == weekNr).ToListAsync())
+            var culture = new CultureInfo("nl-NL");
+            var today = DateTime.Now;
+            var currentYear = (short)today.Year;
+            var currentWeekNumber = (byte)culture.Calendar.GetWeekOfYear(today, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Monday);
+
+            if (currentWeek == null)
             {
-                shifts.Add(new ShiftViewModel()
-                {
-                    Id = shift.Id,
+                currentWeek = await _context.Weeks
+                    .Include(w => w.Shifts)
+                    .ThenInclude(s => s.Employee)
+                    .FirstOrDefaultAsync(w => w.Year == currentYear && w.WeekNumber == currentWeekNumber);
 
-                    Weekday = Weekday(year, weekNr, shift.Weekday),
-                    StartTime = shift.StartTime,
-                    EndTime = shift.EndTime,
-
-                    Department = shift.Department
-                });
+                if (currentWeek == null) return NotFound();
             }
 
-            EmployeeScheduleViewModel employeeScheduleViewModel = new EmployeeScheduleViewModel()
+            var previousWeek = await _context.Weeks
+                .Where(w =>
+                    (w.Year == currentWeek.Year && w.WeekNumber == currentWeek.WeekNumber - 1) ||
+                    (w.Year == currentWeek.Year - 1 && currentWeek.WeekNumber == 1 && w.WeekNumber == 52))
+                .OrderByDescending(w => w.Year)
+                .ThenByDescending(w => w.WeekNumber)
+                .FirstOrDefaultAsync();
+
+            var nextWeek = await _context.Weeks
+                .Where(w =>
+                    (w.Year == currentWeek.Year && w.WeekNumber == currentWeek.WeekNumber + 1) ||
+                    (w.Year == currentWeek.Year + 1 && currentWeek.WeekNumber == 52 && w.WeekNumber == 1))
+                .OrderBy(w => w.Year)
+                .ThenBy(w => w.WeekNumber)
+                .FirstOrDefaultAsync();
+
+            var employeeShifts = await _context.Shifts
+                .Where(s => s.EmployeeId == userId && s.WeekId == currentWeek.Id)
+                .Include(s => s.FillRequests)
+                .Include(s => s.Employee)
+                .ToListAsync();
+
+            var viewModel = new EmployeeScheduleViewModel
             {
-                FirstName = user.FirstName,
-                LastName = user.LastName,
-
-                StartDate = startDate,
-                EndDate = startDate.AddDays(6),
-                WeekFromNoW = weekFromNow,
-
-                Shifts = shifts
+                Weeks = await _context.Weeks
+                    .Include(w => w.Shifts)
+                    .ThenInclude(s => s.Employee)
+                    .ThenInclude(f => f.FillRequests)
+                    .OrderByDescending(w => w.Year)
+                    .ThenByDescending(w => w.WeekNumber)
+                    .ToListAsync(),
+                EmployeeId = userId,
+                EmployeeName = _context.Employees
+                .Where(e => e.Id == userId)
+                .Select(e => e.Name)
+                .FirstOrDefault() ?? "Unknown",
+                WeekId = currentWeek.Id,
+                PreviousWeekId = previousWeek?.Id,
+                NextWeekId = nextWeek?.Id,
+                CurrentWeekNumber = currentWeekNumber,
+                IsCurrentWeek = (currentWeek.Year == currentYear && currentWeek.WeekNumber == currentWeekNumber)
             };
-
-            return View(employeeScheduleViewModel);
+            return View(viewModel);
         }
 
         // GET: ScheduleEmployeeController/OutgoingFillRequests
@@ -100,9 +124,7 @@ namespace BumboSolid.Controllers
                     Day = days[shift.Weekday],
                     StartTime = shift.StartTime,
                     EndTime = shift.EndTime,
-
-                    Department = shift.Department,
-                    Status = fillRequest.Accepted == 0 ? "Open" : "Geaccepteerd"
+                    Department = shift.Department
                 };
 
                 fillRequestViewModels.Add(fillRequestViewModel);
@@ -231,23 +253,21 @@ namespace BumboSolid.Controllers
             if (shift == null) return NotFound();
 
             // Check if there is not already an open FillRequest for this Shift
-            var fillRequests = _context.FillRequests.Where(s => s.ShiftId == id).ToList();
-            foreach (FillRequest request in fillRequests) if (request.Accepted == 0) return RedirectToAction(nameof(Schedule));
+            if (_context.FillRequests.Where(s => s.ShiftId == id).FirstOrDefault() != null) return RedirectToAction(nameof(EmployeeSchedule));
 
-            FillRequest fillRequest = new FillRequest()
+            FillRequest fillRequest = new()
             {
                 ShiftId = id,
-                Accepted = 0
             };
 
             if (ModelState.IsValid)
             {
                 _context.FillRequests.Add(fillRequest);
                 _context.SaveChanges();
-                return RedirectToAction(nameof(Schedule));
+                return RedirectToAction(nameof(EmployeeSchedule));
             }
 
-            return RedirectToAction(nameof(Schedule));
+            return RedirectToAction(nameof(EmployeeSchedule));
         }
 
         // GET: ScheduleEmployeeController/AcceptFillRequest/5
@@ -265,12 +285,11 @@ namespace BumboSolid.Controllers
         [HttpPost("Invalsverzoek accepteren")]
         public async Task<IActionResult> AcceptFillRequestConfirmed(int id)
         {
-            Console.WriteLine("test");
             var fillRequest = _context.FillRequests.FirstOrDefault(s => s.Id == id);
             if (fillRequest == null) return NotFound();
 
             // Check if this FillRequest has not already been accepted
-            if (fillRequest.SubstituteEmployee != null) return RedirectToAction(nameof(Schedule));
+            if (fillRequest.SubstituteEmployee != null) return RedirectToAction(nameof(EmployeeSchedule));
 
             // Check if the fillrequest does not break any CLA rules has to be implemented later when the heplerclasses have been implemented
 
@@ -280,10 +299,10 @@ namespace BumboSolid.Controllers
             {
                 _context.FillRequests.Update(fillRequest);
                 _context.SaveChanges();
-                return RedirectToAction(nameof(Schedule));
+                return RedirectToAction(nameof(EmployeeSchedule));
             }
 
-            return RedirectToAction(nameof(Schedule));
+            return RedirectToAction(nameof(EmployeeSchedule));
         }
 
         // Get the date of the first day of the week

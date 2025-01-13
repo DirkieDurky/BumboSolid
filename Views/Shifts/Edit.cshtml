@@ -35,7 +35,7 @@
 
 <header class="d-flex align-items-center gap-3 justify-content-center gap-3">
     <div class="w-100 text-align text-end">
-        <a class="new-btn" asp-controller="Schedules" asp-action="Index" asp-route-id="@Model.Week.Id">Terug</a>
+        <a class="new-btn" asp-controller="ScheduleManager" asp-action="ManagerSchedule" asp-route-id="@Model.Week.Id">Terug</a>
     </div>
     <div class="mx-3 text-center text-nowrap">
         <h1>Shift bewerken</h1>
@@ -54,12 +54,12 @@
             <div class="row pb-2">
                 <div class="form-group col-md-6">
                     <label class="control-label fw-bold">Medewerker</label>
-                    <select id="employee-select" asp-for=" Shift.EmployeeId" class="form-control p-1 border-solid-black" onchange="updateEmployeeName()">
+                    <select id="employee-select" asp-for="Shift.EmployeeId" class="form-control p-1 border-solid-black" onchange="updateEmployeeName()">
                         @foreach (User employee in Model.Employees)
                         {
                             <option value="@employee.Id">@(Model.Employees.Count(e => e.Name == employee.Name) > 1 ? employee.Id : "") @employee.Name</option>
                         }
-                        <option value="-1">Extern filiaal</option>
+                        <option value="-1" selected="@(Model.Shift.EmployeeId == null)">Extern filiaal</option>
                     </select>
                 </div>
                 <div class="form-group col-md-3">
@@ -71,16 +71,20 @@
                     <p id="canWorkFor">-:--</p>
                 </div>
             </div>
-            <div>
+            <div class="row">
                 <div id="external-employee-container" class="form-group col-md-6 pb-2">
                     <label class="control-label fw-bold">Externe medewerker naam</label>
-                    <input id="external-employee-name" asp-for="Shift.ExternalEmployeeName" class="form-control p-1 border-solid-black" type="hidden"/>
+                    <input id="external-employee-name" asp-for="Shift.ExternalEmployeeName" class="form-control p-1 border-solid-black" type="hidden" />
                     <span asp-validation-for="Shift.ExternalEmployeeName" class="text-danger"></span>
                 </div>
+            </div>
+            <div class="row">
                 <div class="form-group col-md-6 pb-2">
                     <label class="control-label fw-bold">Afdeling</label>
-                    <select asp-for="Shift.Department" class="form-control p-1 border-solid-black" asp-items="ViewBag.Departments"></select>
+                    <select asp-for="Shift.Department" class="form-control p-1 border-solid-black" asp-items="@ViewBag.Departments"></select>
                 </div>
+            </div>
+            <div class="row">
                 <div class="form-group col-md-6 pb-2">
                     <label class="control-label fw-bold">Dag</label>
                     <select asp-for="Shift.Weekday" class="form-control p-1 border-solid-black">

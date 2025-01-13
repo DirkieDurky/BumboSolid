@@ -2,7 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using BumboSolid.Data;
 using Microsoft.AspNetCore.Identity;
 using BumboSolid.Data.Models;
-using Authorisation.Helpers;
+using BumboSolid.HelperClasses;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -42,6 +42,8 @@ builder.Services.ConfigureApplicationCookie(options =>
     options.ExpireTimeSpan = TimeSpan.FromDays(14);
     options.SlidingExpiration = true;
 });
+
+builder.Services.AddScoped<ICLALogic, CLALogic>();
 
 var app = builder.Build();
 

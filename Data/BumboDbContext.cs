@@ -431,7 +431,12 @@ public partial class BumboDbContext : IdentityDbContext<User, IdentityRole<int>,
 		);
 
 		modelBuilder.Entity<Week>().HasData(
-			new Week { Id = 1, Year = 2024, WeekNumber = 50 }
+			new Week { Id = 1, Year = 2024, WeekNumber = 50 },
+			new Week { Id = 2, Year = 2025, WeekNumber = 1 },
+			new Week { Id = 3, Year = 2025, WeekNumber = 2 },
+			new Week { Id = 4, Year = 2025, WeekNumber = 3 },
+			new Week { Id = 5, Year = 2025, WeekNumber = 4 },
+			new Week { Id = 6, Year = 2025, WeekNumber = 5 }
 		);
 
 		modelBuilder.Entity<PrognosisDay>().HasData(

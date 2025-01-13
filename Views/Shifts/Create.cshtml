@@ -2,40 +2,25 @@
 @model BumboSolid.Models.ShiftCreateViewModel
 
 @{
-    ViewData["Title"] = "Aanmaken";
+    string[] daysOfTheWeek = { "Maandag", "Dinsdag", "Woensdag", "Donderdag", "Vrijdag", "Zaterdag", "Zondag" };
 
-    Int16 year = Model.Week.Year;
-    Int16 week = Model.Week.WeekNumber;
-    DateTime startDate = FirstDateOfWeekISO8601(year, week);
+    DateTime startDate = GetFirstDateOfWeek(Model.Week.Year, Model.Week.WeekNumber);
     DateTime endDate = startDate.AddDays(6);
-
-    String[] daysOfTheWeek = { "Maandag", "Dinsdag", "Woensdag", "Donderdag", "Vrijdag", "Zaterdag", "Zondag" };
 }
 
 @functions {
-    public static DateTime FirstDateOfWeekISO8601(int year, int weekOfYear)
+    public static DateTime GetFirstDateOfWeek(int year, int weekOfYear)
     {
-        DateTime jan1 = new DateTime(year, 1, 1);
-        int daysOffset = DayOfWeek.Thursday - jan1.DayOfWeek;
-
-        DateTime firstThursday = jan1.AddDays(daysOffset);
-        var cal = System.Globalization.CultureInfo.CurrentCulture.Calendar;
-        int firstWeek = cal.GetWeekOfYear(firstThursday, System.Globalization.CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Monday);
-
-        var weekNum = weekOfYear;
-        if (firstWeek == 1)
-        {
-            weekNum -= 1;
-        }
-
-        var result = firstThursday.AddDays(weekNum * 7);
-        return result.AddDays(-3);
+        var jan1 = new DateTime(year, 1, 1);
+        var daysOffset = (int)DayOfWeek.Monday - (int)jan1.DayOfWeek;
+        var firstMonday = jan1.AddDays(daysOffset > 0 ? daysOffset - 7 : daysOffset);
+        return firstMonday.AddDays((weekOfYear - 1) * 7);
     }
 }
 
 <header class="d-flex align-items-center gap-3 justify-content-center gap-3">
     <div class="w-100 text-align text-end">
-        <a class="new-btn" asp-controller="Schedules" asp-action="Index" asp-route-id="@Model.Week.Id">Terug</a>
+        <a class="new-btn" asp-controller="ScheduleManager" asp-action="ManagerSchedule" asp-route-id="@Model.Week.Id">Terug</a>
     </div>
     <div class="mx-3 text-center text-nowrap">
         <h1>Medewerker Inplannen</h1>
@@ -71,16 +56,20 @@
                     <p id="canWorkFor">-:--</p>
                 </div>
             </div>
-            <div>
+            <div class="row">
                 <div id="external-employee-container" class="form-group col-md-6 pb-2">
                     <label class="control-label fw-bold">Externe medewerker naam</label>
                     <input id="external-employee-name" asp-for="Shift.ExternalEmployeeName" class="form-control p-1 border-solid-black" type="hidden"/>
                     <span asp-validation-for="Shift.ExternalEmployeeName" class="text-danger"></span>
                 </div>
+            </div>
+            <div class="row">
                 <div class="form-group col-md-6 pb-2">
                     <label class="control-label fw-bold">Afdeling</label>
                     <select asp-for="Shift.Department" class="form-control p-1 border-solid-black" asp-items="ViewBag.Departments"></select>
                 </div>
+            </div>
+            <div class="row">
                 <div class="form-group col-md-6 pb-2">
                     <label class="control-label fw-bold">Dag</label>
                     <select asp-for="Shift.Weekday" class="form-control p-1 border-solid-black">
