@@ -147,8 +147,6 @@ namespace BumboSolid.Controllers
                 existingShift.Department = shiftCreateViewModel.Shift.Department;
                 existingShift.Weekday = shiftCreateViewModel.Shift.Weekday;
 
-                _context.Entry(existingShift).State = EntityState.Modified;
-
                 await _context.SaveChangesAsync();
 
                 return RedirectToAction("ManagerSchedule", "ScheduleManager");

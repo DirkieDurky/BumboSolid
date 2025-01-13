@@ -1,5 +1,4 @@
-﻿@using BumboSolid.Data.Models
-@model BumboSolid.Models.ShiftCreateViewModel
+﻿@model BumboSolid.Models.ShiftCreateViewModel
 
 @{
     string[] daysOfTheWeek = { "Maandag", "Dinsdag", "Woensdag", "Donderdag", "Vrijdag", "Zaterdag", "Zondag" };
@@ -40,7 +39,7 @@
                 <div class="form-group col-md-6">
                     <label class="control-label fw-bold">Medewerker</label>
                     <select id="employee-select" asp-for="Shift.EmployeeId" class="form-control p-1 border-solid-black" onchange="updateEmployeeName()">
-                        @foreach (User employee in Model.Employees)
+                        @foreach (var employee in Model.Employees)
                         {
                             <option value="@employee.Id">@(Model.Employees.Count(e=>e.Name == employee.Name) > 1 ? employee.Id : "") @employee.Name</option>
                         }
@@ -59,7 +58,7 @@
             <div class="row">
                 <div id="external-employee-container" class="form-group col-md-6 pb-2">
                     <label class="control-label fw-bold">Externe medewerker naam</label>
-                    <input id="external-employee-name" asp-for="Shift.ExternalEmployeeName" class="form-control p-1 border-solid-black" type="hidden"/>
+                    <input id="external-employee-name" asp-for="Shift.ExternalEmployeeName" class="form-control p-1 border-solid-black" type="text" />
                     <span asp-validation-for="Shift.ExternalEmployeeName" class="text-danger"></span>
                 </div>
             </div>
@@ -105,26 +104,25 @@
     </div>
 </div>
 
-<!--TODO FIX WHEN WE GOT TIME-->
 @section Scripts {
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
     <script>
         updateEmployeeName()
-
-        function updateEmployeeName() {
+        function updateEmployeeName()
+        {
             let employeeSelect = document.getElementById("employee-select");
-            if (employeeSelect.options[employeeSelect.selectedIndex].text === "Extern filiaal") {
-                document.getElementById("external-employee-name").type = "text"
-                document.getElementById("external-employee-container").style.display = "block";
-                document.getElementById('hasBreakIn').innerText = "-:--";
-                document.getElementById('canWorkFor').innerText = "-:--";
-            } else {
-                document.getElementById("external-employee-name").type = "hidden"
-                document.getElementById("external-employee-container").style.display = "none";
-                document.getElementById('hasBreakIn').innerText = "-:--";
-                document.getElementById('canWorkFor').innerText = "-:--";
+            let selectedOptionText = employeeSelect.options[employeeSelect.selectedIndex].text;
+            let externalEmployeeNameField = document.getElementById("external-employee-name");
+
+            if (selectedOptionText === "Extern filiaal")
+            {
+                externalEmployeeNameField.disabled = false;
+            } else
+            {
+                externalEmployeeNameField.disabled = true;
+                externalEmployeeNameField.value = "";
             }
         }
     </script>
