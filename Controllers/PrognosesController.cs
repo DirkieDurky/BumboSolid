@@ -20,8 +20,8 @@ public class PrognosesController : Controller
     }
 
     // GET: Prognoses
-    [HttpGet("Index")]
-    [HttpGet("{id:int?}")]
+    [HttpGet("")]
+    [HttpGet("Index/{id:int?}")]
     public async Task<IActionResult> Index(int? id)
     {
         List<Week> prognoses = await _context.Weeks
@@ -233,58 +233,6 @@ public class PrognosesController : Controller
         }
         await _context.SaveChangesAsync();
         return RedirectToAction("Index", "Prognoses");
-    }
-
-    // GET: Prognoses/Bewerken/5
-    [HttpGet("Bewerken/{id:int?}")]
-    public async Task<IActionResult> Edit(int? id)
-    {
-        if (id == null)
-        {
-            return NotFound();
-        }
-
-        var prognosis = await _context.Weeks.FindAsync(id);
-        if (prognosis == null)
-        {
-            return NotFound();
-        }
-        return View(prognosis);
-    }
-
-    // POST: Prognoses/Bewerken/5
-    // To protect from overposting attacks, enable the specific properties you want to bind to.
-    // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-    [ValidateAntiForgeryToken]
-    [HttpPost("Bewerken/{id:int?}")]
-    public async Task<IActionResult> Edit(int id, [Bind("Id,Year,Week")] Week prognosis)
-    {
-        if (id != prognosis.Id)
-        {
-            return NotFound();
-        }
-
-        if (ModelState.IsValid)
-        {
-            try
-            {
-                _context.Update(prognosis);
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!PrognosisExists(prognosis.Id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-            return RedirectToAction(nameof(Index));
-        }
-        return View(prognosis);
     }
 
     private bool PrognosisExists(int id)

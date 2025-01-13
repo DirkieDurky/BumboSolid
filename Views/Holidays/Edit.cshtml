@@ -3,7 +3,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
 <script src="https://kit.fontawesome.com/981e782106.js" crossorigin="anonymous"></script>
 
-<form asp-controller="Feestdagen" asp-action="Bewerken" asp-route-id="@Model.Holiday.Name" method="post">
+<form asp-controller="Holidays" asp-action="Edit" asp-route-id="@Model.Holiday.Name" method="post">
     <div class="modal-body auto-margin">
         <h6>@Model.Holiday.Name</h6>
         <input type="hidden" asp-for="Holiday.Name" />
@@ -105,6 +105,6 @@
     </div>
     <div class="d-flex flex-row">
         <button type="submit" class="btn early-btn btn-primary me-3">Opslaan & Bijwerken</button>
-        <a type="button" class="btn early-btn btn-secondary" asp-controller="Feestdagen" asp-action="">Terug</a>
+        <a type="button" class="btn early-btn btn-secondary" asp-controller="Holidays" asp-action="Index">Terug</a>
     </div>
 </form>
