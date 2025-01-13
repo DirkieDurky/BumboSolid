@@ -1,53 +1,75 @@
 ﻿@model BumboSolid.Models.ClockedHoursOverviewViewModel
 
 @{
-	ViewData["Title"] = "Uren Overzicht";
+    ViewData["Title"] = "Uren Overzicht";
+
+    int previousWeekYear = Model.Year;
+    int previousWeekNumber = Model.WeekNumber - 1;
+    if (previousWeekNumber < 1) {
+        previousWeekYear -= 1;
+        previousWeekNumber = 52;
+    }
+
+    int nextWeekYear = Model.Year;
+    int nextWeekNumber = Model.WeekNumber + 1;
+    if (nextWeekNumber > 52)
+    {
+        nextWeekYear += 1;
+        nextWeekNumber = 1;
+    }
 }
 
 <header class="d-flex align-items-center gap-3 justify-content-center gap-3">
-	<div class="w-100">
-        <a class="new-btn" asp-controller="ClockedHours" asp-action="Overview" asp-route-weekFromNow="@(Model.WeekFromNow-1)">Vorige Week</a>
-	</div>
-	<div class="mx-3 text-center text-nowrap">
-		<h1>Uren Overzicht</h1>
-		<p>@Model.StartDate - @Model.EndDate</p>
-	</div>
-	<div class="w-100 text-align text-end">
-        <a class="new-btn" asp-controller="ClockedHours" asp-action="Overview" asp-route-weekFromNow="@(Model.WeekFromNow+1)">Volgende Week</a>
-	</div>
+    <div class="w-100">
+        <a class="new-btn" asp-controller="ClockedHours" asp-action="Overview" asp-route-year="@previousWeekYear" asp-route-weekNumber="@previousWeekNumber">Vorige Week</a>
+    </div>
+    <div class="mx-3 text-center text-nowrap">
+        <h1>Uren Overzicht</h1>
+        <p>@Model.StartDate - @Model.EndDate</p>
+    </div>
+    <div class="w-100 text-align text-end">
+        <a class="new-btn" asp-controller="ClockedHours" asp-action="Overview" asp-route-year="@nextWeekYear" asp-route-weekNumber="@nextWeekNumber">Volgende Week</a>
+    </div>
 </header>
 
 <br />
 
-<table class="table">
-    <thead>
-        <tr>
-            <th>Datum</th>
-            <th>Weekdag</th>
-            <th>Afdeling</th>
-            <th>Starttijd</th>
-            <th>Eindtijd</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var clockedHour in Model.ClockedHours)
-        {
+@if (!Model.ClockedHours.Any())
+{
+    Html.Raw("Er zijn voor de geselecteerde week nog geen uren geklokt.");
+}
+else
+{
+    <table class="table">
+        <thead>
             <tr>
-                <td>@Model.StartDate.AddDays(clockedHour.Weekday - 1).ToString("dd-MM-yyyy")</td>
-                <td>@Model.WeekdayDictionary[clockedHour.Weekday]</td>
-                <td>@clockedHour.Department</td>
-                <td>@clockedHour.StartTime</td>
-                <td>
-                    @if (clockedHour.EndTime != TimeOnly.MinValue)
-                    {
-                        @clockedHour.EndTime
-                    }
-                    else
-                    {
-                        <em>Actief</em>
-                    }
-                </td>
+                <th>Datum</th>
+                <th>Weekdag</th>
+                <th>Afdeling</th>
+                <th>Starttijd</th>
+                <th>Eindtijd</th>
             </tr>
-        }
-    </tbody>
-</table>
+        </thead>
+        <tbody>
+            @foreach (var clockedHour in Model.ClockedHours)
+            {
+                <tr>
+                    <td>@Model.StartDate.AddDays(clockedHour.Weekday - 1).ToString("dd-MM-yyyy")</td>
+                    <td>@Model.WeekdayDictionary[clockedHour.Weekday]</td>
+                    <td>@(clockedHour.IsBreak == 1 ? "Pauze" : clockedHour.Department)</td>
+                    <td>@clockedHour.StartTime</td>
+                    <td>
+                        @if (clockedHour.EndTime != TimeOnly.MinValue)
+                        {
+                            @clockedHour.EndTime
+                        }
+                        else
+                        {
+                            <em>Actief</em>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
