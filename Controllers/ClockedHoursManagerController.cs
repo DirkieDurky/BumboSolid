@@ -124,8 +124,18 @@ namespace BumboSolid.Controllers
                 return NotFound();
             }
 
+            ViewBag.Departments = new SelectList(_context.Departments, "Name", "Name");
+            ViewBag.WeekDays = new SelectList(new List<string> { "Maandag", "Dinsdag", "Woensdag", "Donderdag", "Vrijdag", "Zaterdag", "Zondag" });
+            ViewBag.Employees = _context.Employees;
+
             if (ModelState.IsValid)
             {
+                if (clockedHours.EndTime < clockedHours.StartTime)
+                {
+                    ViewBag.Error = "De eindtijd moet later of gelijk zijn aan de starttijd.";
+                    return View(clockedHours);
+                }
+
                 try
                 {
                     _context.Update(clockedHours);
@@ -145,9 +155,6 @@ namespace BumboSolid.Controllers
                 return RedirectToAction(nameof(Overview), new { employeeId = clockedHours.EmployeeId });
             }
 
-            ViewBag.Departments = new SelectList(_context.Departments, "Name", "Name");
-            ViewBag.WeekDays = new SelectList(new List<string> { "Maandag", "Dinsdag", "Woensdag", "Donderdag", "Vrijdag", "Zaterdag", "Zondag" });
-            ViewBag.Employees = _context.Employees;
             return View(clockedHours);
         }
 

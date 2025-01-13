@@ -16,6 +16,12 @@
     </div>
 </header>
 
+@if (ViewBag.Error != null)
+{
+    <div class="d-flex justify-content-center align-items-center alert alert-danger">
+        <span>@ViewBag.Error</span>
+    </div>
+}
 <hr />
 <div class="row">
     <div class="col-md-4">
