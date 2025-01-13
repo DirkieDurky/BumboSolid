@@ -13,7 +13,7 @@
                 <th>Leeftijd</th>
                 <th>Afdelingen</th>
                 <th>In dienst sinds</th>
-                <th></th>
+                <th>Acties</th>
             </tr>
         </thead>
         <tbody>
@@ -31,6 +31,7 @@
                     </td>
                     <td>@employee.EmployedSince.ToShortDateString()</td>
                     <td>
+                        <a class="navbar-brand" asp-controller="ScheduleManager" asp-action="ManagerEmployeeSchedule" asp-route-employeeId="@employee.Id"><i class="fa-solid fa-calendar"></i></a>
                         <a class="navbar-brand" asp-controller="ClockedHoursManager" asp-action="Overview" asp-route-employeeId="@employee.Id"><i class="fa-solid fa-clock"></i></a>
                         <a class="navbar-brand" asp-controller="Employees" asp-action="Edit" asp-route-id="@employee.Id"><i class="fa-solid fa-pencil"></i></a>
                         <a class="navbar-brand" asp-controller="Employees" asp-action="Delete" asp-route-id="@employee.Id"><i class="fa-solid fa-trash"></i></a>

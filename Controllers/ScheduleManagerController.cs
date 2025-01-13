@@ -93,7 +93,7 @@ namespace BumboSolid.Controllers
             return View(viewModel);
         }
 
-        // POST: Shifts/Create
+        // POST: Schedule/Create
         [HttpPost("Aanmaken/{id:int?}")]
         public async Task<IActionResult> Create(int id, string returnUrl)
         {

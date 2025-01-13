@@ -1,5 +1,4 @@
-﻿@using BumboSolid.Data.Models
-@model BumboSolid.Models.ShiftCreateViewModel
+﻿@model BumboSolid.Models.ShiftCreateViewModel
 
 @{
     ViewData["Title"] = "Edit";
@@ -55,7 +54,7 @@
                 <div class="form-group col-md-6">
                     <label class="control-label fw-bold">Medewerker</label>
                     <select id="employee-select" asp-for="Shift.EmployeeId" class="form-control p-1 border-solid-black" onchange="updateEmployeeName()">
-                        @foreach (User employee in Model.Employees)
+                        @foreach (var employee in Model.Employees)
                         {
                             <option value="@employee.Id">@(Model.Employees.Count(e => e.Name == employee.Name) > 1 ? employee.Id : "") @employee.Name</option>
                         }
@@ -108,7 +107,10 @@
                 </div>
             </div>
             <div class="form-group">
-                <input type="submit" value="Opslaan" class="new-btn w-100" />
+                <input type="submit" value="Opslaan" class="new-btn w-100 mt-3" />
+            </div>
+            <div>
+                <a asp-action="Delete" asp-route-id="@Model.Shift.Id" class="new-btn w-100 mt-3">Delete</a>
             </div>
         </form>
     </div>
