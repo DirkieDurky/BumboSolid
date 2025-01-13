@@ -1,0 +1,103 @@
+﻿@model BumboSolid.Models.EmployeeScheduleViewModel
+
+@{
+    string[] daysOfTheWeek = { "Maandag", "Dinsdag", "Woensdag", "Donderdag", "Vrijdag", "Zaterdag", "Zondag" };
+
+    var schedule = Model.Weeks.FirstOrDefault(w => w.Id == Model.WeekId);
+    if (schedule == null) return;
+
+    var shifts = schedule.Shifts;
+    DateTime startDate = GetFirstDateOfWeek(schedule.Year, schedule.WeekNumber);
+    DateTime endDate = startDate.AddDays(6);
+}
+
+@functions {
+    public static DateTime GetFirstDateOfWeek(int year, int weekOfYear)
+    {
+        var jan1 = new DateTime(year, 1, 1);
+        var daysOffset = (int)DayOfWeek.Monday - (int)jan1.DayOfWeek;
+        var firstMonday = jan1.AddDays(daysOffset > 0 ? daysOffset - 7 : daysOffset);
+        return firstMonday.AddDays((weekOfYear - 1) * 7);
+    }
+}
+
+<header class="d-flex flex-column align-items-center">
+    <div class="d-flex justify-content-between w-100 header-items">
+        <div></div>
+        <div>
+            <a class="btn new-btn @(Model.PreviousWeekId == null ? "disabled" : "")"
+               asp-action="EmployeeSchedule" asp-route-id="@Model.PreviousWeekId">
+                Vorige Week
+            </a>
+        </div>
+        <div class="text-nowrap">
+            <h1>Rooster</h1>
+        </div>
+        <div>
+            <a class="btn new-btn @(Model.NextWeekId == null ? "disabled" : "")"
+               asp-action="EmployeeSchedule" asp-route-id="@Model.NextWeekId">
+                Volgende Week
+            </a>
+        </div>
+        <div>
+            <a class="btn new-btn @(Model.IsCurrentWeek ? "disabled" : "")"
+               asp-action="EmployeeSchedule">
+                Huidige Week
+            </a>
+        </div>
+    </div>
+</header>
+
+
+<body>
+    <div class="schedule-agenda">
+        <div class="days-header">
+            @foreach (var day in daysOfTheWeek)
+            {
+                var dayIndex = Array.IndexOf(daysOfTheWeek, day);
+                var date = startDate.AddDays(dayIndex);
+                <div class="day-header">
+                    <h2>@day</h2>
+                    <p>@date.ToString("dd-MM")</p>
+                </div>
+            }
+        </div>
+
+        <div class="shifts-row">
+            @foreach (var day in daysOfTheWeek)
+            {
+                var shiftsForDay = shifts.Where(s => s.Weekday == Array.IndexOf(daysOfTheWeek, day) && s.EmployeeId == Model.EmployeeId).OrderBy(s => s.StartTime).ToList();
+                <div class="shift-column">
+                    @if (shiftsForDay.Any())
+                    {
+                        <ul class="shift-list">
+                            @foreach (var shift in shiftsForDay)
+                            {
+                                <li class="shift-item">
+                                    <div class="shift-details">
+                                        <span class="shift-time">
+                                            <i class="fa-regular fa-clock"></i> @shift.StartTime.ToString("HH:mm") - @shift.EndTime.ToString("HH:mm")
+                                        </span>
+                                        <span class="shift-department">@shift.Department</span>
+                                        <div class="shift-actions d-flex flex-column align-items-center">
+                                            <a asp-action="SendFillRequest" asp-route-id="@shift.Id" class="btn new-btn w-100 @(shift.FillRequests.Any() ? "disabled" : "")">
+                                                <i class="fa-solid fa-exchange-alt"></i>
+                                            </a>
+                                            <!--<a asp-action="CancelShift" asp-route-id="@shift.Id" class="btn new-btn w-100"> // NONFUNCTIONAL
+                                                 <i class="fa-solid fa-ban"></i>
+                                             </a> -->
+                                        </div>
+                                    </div>
+                                </li>
+                            }
+                        </ul>
+                    }
+                    else
+                    {
+                        <p class="no-shifts">Geen shifts voor deze dag.</p>
+                    }
+                </div>
+            }
+        </div>
+    </div>
+</body>

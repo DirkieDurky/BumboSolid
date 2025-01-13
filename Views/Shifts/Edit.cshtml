@@ -1,40 +1,31 @@
 ﻿@model BumboSolid.Models.ShiftCreateViewModel
 
 @{
-    ViewData["Title"] = "Edit";
+    string[] daysOfTheWeek = { "Maandag", "Dinsdag", "Woensdag", "Donderdag", "Vrijdag", "Zaterdag", "Zondag" };
 
-    Int16 year = Model.Week.Year;
-    Int16 week = Model.Week.WeekNumber;
-    DateTime startDate = FirstDateOfWeekISO8601(year, week);
+    var schedule = Model.Week;
+    if (schedule == null) return;
+
+    var shifts = schedule.Shifts;
+    DateTime startDate = GetFirstDateOfWeek(schedule.Year, schedule.WeekNumber);
     DateTime endDate = startDate.AddDays(6);
-
-    String[] daysOfTheWeek = { "Maandag", "Dinsdag", "Woensdag", "Donderdag", "Vrijdag", "Zaterdag", "Zondag" };
 }
 
 @functions {
-    public static DateTime FirstDateOfWeekISO8601(int year, int weekOfYear)
+    public static DateTime GetFirstDateOfWeek(int year, int weekOfYear)
     {
-        DateTime jan1 = new DateTime(year, 1, 1);
-        int daysOffset = DayOfWeek.Thursday - jan1.DayOfWeek;
-
-        DateTime firstThursday = jan1.AddDays(daysOffset);
-        var cal = System.Globalization.CultureInfo.CurrentCulture.Calendar;
-        int firstWeek = cal.GetWeekOfYear(firstThursday, System.Globalization.CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Monday);
-
-        var weekNum = weekOfYear;
-        if (firstWeek == 1)
-        {
-            weekNum -= 1;
-        }
-
-        var result = firstThursday.AddDays(weekNum * 7);
-        return result.AddDays(-3);
+        var jan1 = new DateTime(year, 1, 1);
+        var daysOffset = (int)DayOfWeek.Monday - (int)jan1.DayOfWeek;
+        var firstMonday = jan1.AddDays(daysOffset > 0 ? daysOffset - 7 : daysOffset);
+        return firstMonday.AddDays((weekOfYear - 1) * 7);
     }
 }
 
 <header class="d-flex align-items-center gap-3 justify-content-center gap-3">
     <div class="w-100 text-align text-end">
-        <a class="new-btn" asp-controller="Schedules" asp-action="Index" asp-route-id="@Model.Week.Id">Terug</a>
+        <a class="new-btn" asp-controller="ScheduleManager" asp-action="ManagerSchedule" asp-route-id="@Model.Week.Id">
+            Terug
+        </a>
     </div>
     <div class="mx-3 text-center text-nowrap">
         <h1>Shift bewerken</h1>
@@ -48,15 +39,17 @@
     <div class="col-md-8">
         <form asp-action="Edit">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input asp-for="Shift.Id" type="hidden" value="@Model.Shift.Id" />
-            <input asp-for="Shift.WeekId" type="hidden" value="@Model.Week.Id" />
+            <input asp-for="Shift.Id" type="hidden" />
+
             <div class="row pb-2">
                 <div class="form-group col-md-6">
                     <label class="control-label fw-bold">Medewerker</label>
+
                     <select asp-for="Shift.EmployeeId" class="form-control p-1 border-solid-black" onchange="updateEmployeeName(this)">
-                        @foreach (KeyValuePair<Int32, String> employee in Model.Employees)
+                        <option value="-1">Extern filiaal</option>
+                        @foreach (var employee in Model.Employees)
                         {
-                            <option value="@employee.Key">@employee.Value</option>
+                            <option value="@employee.Id">@employee.Name</option>
                         }
                     </select>
                 </div>
@@ -72,13 +65,18 @@
             <div class="row">
                 <div class="form-group col-md-6 pb-2">
                     <label class="control-label fw-bold">Externe medewerker naam</label>
-                    <input asp-for="Shift.ExternalEmployeeName" class="form-control p-1 border-solid-black" />
+                    <input asp-for="Shift.ExternalEmployeeName" class="form-control p-1 border-solid-black" id="externalEmployeeName" disabled />
                     <span asp-validation-for="Shift.ExternalEmployeeName" class="text-danger"></span>
                 </div>
                 <div class="col-md-6"></div>
                 <div class="form-group col-md-6 pb-2">
                     <label class="control-label fw-bold">Afdeling</label>
-                    <select asp-for="Shift.Department" class="form-control p-1 border-solid-black" asp-items="ViewBag.Departments"></select>
+                    <select asp-for="Shift.Department" class="form-control p-1 border-solid-black">
+                        @foreach (var department in Model.Departments)
+                        {
+                            <option value="@department.Name">@department.Name</option>
+                        }
+                    </select>
                 </div>
                 <div class="col-md-6"></div>
                 <div class="form-group col-md-6 pb-2">
@@ -104,11 +102,15 @@
                 </div>
             </div>
             <div class="form-group">
-                <input type="submit" value="Opslaan" class="new-btn w-100" />
+                <input type="submit" value="Opslaan" class="new-btn w-100 mb-3" />
             </div>
         </form>
+        <a class="new-btn w-100" asp-action="Delete" asp-route-id="@Model.Shift.Id">
+            Verwijderen
+        </a>
     </div>
 </div>
+
 
 <!--TODO FIX WHEN WE GOT TIME-->
 @section Scripts {
@@ -130,5 +132,19 @@
                 document.getElementById('canWorkFor').innerText = "-:--";
             }
         }
+    </script>
+
+    <script>
+        function updateEmployeeName(selectElement) {
+            var selectedEmployeeName = selectElement.options[selectElement.selectedIndex].text;
+
+            if (selectedEmployeeName === "Extern filiaal") {
+                document.getElementById('externalEmployeeName').disabled = false;
+            } else {
+                document.getElementById('externalEmployeeName').disabled = true;
+                document.getElementById('externalEmployeeName').value = "";
+            }
+        }
+        updateEmployeeName(document.querySelector('select[name="Shift.EmployeeId"]'));
     </script>
 }

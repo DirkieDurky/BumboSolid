@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace BumboSolid.Data.Models;
+﻿namespace BumboSolid.Data.Models;
 
 public class Shift
 {
@@ -30,4 +27,6 @@ public class Shift
     public virtual List<FillRequest> FillRequests { get; set; } = new List<FillRequest>();
 
     public virtual Week? Week { get; set; } = null!;
+
+    public string? EmployeeName => Employee?.Name ?? ExternalEmployeeName;
 }
