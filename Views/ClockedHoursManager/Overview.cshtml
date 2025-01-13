@@ -26,7 +26,10 @@
     @if (Model.EmployeeName != null)
     {
         <div class="w-100">
-            <a class="new-btn" asp-controller="ClockedHoursManager" asp-action="Overview" asp-route-employeeId="@Model.EmployeeId" asp-route-year="@previousWeekYear" asp-route-weekNumber="@previousWeekNumber">Vorige Week</a>
+            <a class="new-btn" asp-controller="ClockedHoursManager" asp-action="Overview"
+               asp-route-employeeId="@Model.EmployeeId" asp-route-year="@previousWeekYear" asp-route-weekNumber="@previousWeekNumber">
+                Vorige Week
+            </a>
         </div>
         <div class="mx-3 text-center text-nowrap">
             <h1>Uren Overzicht</h1>
@@ -34,7 +37,10 @@
             <p>@Model.EmployeeName</p>
         </div>
         <div class="w-100 text-align text-end">
-            <a class="new-btn" asp-controller="ClockedHoursManager" asp-action="Overview" asp-route-employeeId="@Model.EmployeeId" asp-route-year="@nextWeekYear" asp-route-weekNumber="@nextWeekNumber">Volgende Week</a>
+            <a class="new-btn" asp-controller="ClockedHoursManager" asp-action="Overview"
+               asp-route-employeeId="@Model.EmployeeId" asp-route-year="@nextWeekYear" asp-route-weekNumber="@nextWeekNumber">
+                Volgende Week
+            </a>
         </div>
     }
 </header>
