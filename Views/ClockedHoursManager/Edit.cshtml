@@ -1,0 +1,67 @@
+﻿@using BumboSolid.Data.Models
+@model BumboSolid.Data.Models.ClockedHours
+
+@{
+    ViewData["Title"] = "Edit";
+}
+
+<header class="d-flex align-items-center gap-3 justify-content-center gap-3">
+    <div class="w-100 text-align text-end">
+        <a class="new-btn" asp-action="Overview" asp-route-employeeId="@Model.EmployeeId">Terug</a>
+    </div>
+    <div class="mx-3 text-center text-nowrap">
+        <h1>Geklokte uren bewerken</h1>
+    </div>
+    <div class="w-100">
+    </div>
+</header>
+
+@if (ViewBag.Error != null)
+{
+    <div class="d-flex justify-content-center align-items-center alert alert-danger">
+        <span>@ViewBag.Error</span>
+    </div>
+}
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Edit">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="Id" />
+            <input type="hidden" asp-for="WeekId" />
+            <input type="hidden" asp-for="Weekday" />
+            <input type="hidden" asp-for="ExternalEmployeeName" />
+            <input type="hidden" asp-for="IsBreak" />
+            <div class="form-group col-md-6 pb-2">
+                <label class="control-label fw-bold">Afdeling</label>
+                <select asp-for="Department" class="form-control p-1 border-solid-black" asp-items="ViewBag.Departments"></select>
+            </div>
+            <div class="form-group">
+                <label asp-for="StartTime" class="control-label">Starttijd</label>
+                <input asp-for="StartTime" type="time" class="form-control" />
+                <span asp-validation-for="StartTime" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="EndTime" class="control-label">Eindtijd</label>
+                <input asp-for="EndTime" type="time" class="form-control" />
+                <span asp-validation-for="EndTime" class="text-danger"></span>
+            </div>
+            <div class="form-group col-md-6 pb-2">
+                <label class="control-label fw-bold">Medewerker</label>
+                <select asp-for="EmployeeId" class="form-control p-1 border-solid-black">
+                    @foreach (User employee in ViewBag.Employees)
+                    {
+                        <option value="@employee.Id" selected="@(Model.EmployeeId == employee.Id)">@employee.Name</option>
+                    }
+                </select>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Opslaan" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
