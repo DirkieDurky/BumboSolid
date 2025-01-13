@@ -14,7 +14,7 @@ namespace BumboSolid.Controllers
             }
             if (User.IsInRole("Employee"))
             {
-                return RedirectToAction("Schedule", "ScheduleEmployee");
+                return RedirectToAction("EmployeeSchedule", "ScheduleEmployee");
             }
             return RedirectToAction("Login", "Account");
         }
