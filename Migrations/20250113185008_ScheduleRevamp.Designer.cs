@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BumboSolid.Migrations
 {
     [DbContext(typeof(BumboDbContext))]
-    [Migration("20250111170521_extra-employee")]
-    partial class extraemployee
+    [Migration("20250113185008_ScheduleRevamp")]
+    partial class ScheduleRevamp
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -272,9 +272,6 @@ namespace BumboSolid.Migrations
                         .IsUnicode(false)
                         .HasColumnType("varchar(255)")
                         .HasColumnName("Absent_Description");
-
-                    b.Property<byte>("Accepted")
-                        .HasColumnType("tinyint");
 
                     b.Property<int>("ShiftId")
                         .HasColumnType("int")

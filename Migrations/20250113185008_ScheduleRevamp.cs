@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace BumboSolid.Migrations
 {
     /// <inheritdoc />
-    public partial class extraemployee : Migration
+    public partial class ScheduleRevamp : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -506,8 +506,7 @@ namespace BumboSolid.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     ShiftID = table.Column<int>(type: "int", nullable: false),
                     SubstituteEmployeeID = table.Column<int>(type: "int", nullable: true),
-                    Absent_Description = table.Column<string>(type: "varchar(255)", unicode: false, maxLength: 255, nullable: true),
-                    Accepted = table.Column<byte>(type: "tinyint", nullable: false)
+                    Absent_Description = table.Column<string>(type: "varchar(255)", unicode: false, maxLength: 255, nullable: true)
                 },
                 constraints: table =>
                 {
