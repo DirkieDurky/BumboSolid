@@ -5,7 +5,8 @@
 
     int previousWeekYear = Model.Year;
     int previousWeekNumber = Model.WeekNumber - 1;
-    if (previousWeekNumber < 1) {
+    if (previousWeekNumber < 1)
+    {
         previousWeekYear -= 1;
         previousWeekNumber = 52;
     }

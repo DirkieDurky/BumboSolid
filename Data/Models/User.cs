@@ -2,7 +2,7 @@
 
 namespace BumboSolid.Data.Models;
 
-public partial class User:IdentityUser<int>
+public partial class User : IdentityUser<int>
 {
     public string FirstName { get; set; } = null!;
 
@@ -29,5 +29,5 @@ public partial class User:IdentityUser<int>
     public virtual List<ClockedHours> ClockedHours { get; set; } = new List<ClockedHours>();
 
     // Added for custom display in dropdown
-	public string Name => $"{FirstName} {LastName}";
+    public string Name => $"{FirstName} {LastName}";
 }

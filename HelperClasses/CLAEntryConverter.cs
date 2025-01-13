@@ -30,7 +30,7 @@ namespace BumboSolid.HelperClasses
             int maxWorkDayMulti = model.MaxDayDurationHours ? 60 : 1;
             int maxHolidayMulti = model.MaxHolidayDurationHours ? 60 : 1;
             int maxWeekMulti = model.MaxWeekDurationHours ? 60 : 1;
-            
+
             entry.AgeStart = model.AgeStart.HasValue ? model.AgeStart.Value : entry.AgeStart;
             entry.AgeEnd = model.AgeEnd.HasValue ? model.AgeEnd.Value : entry.AgeEnd;
             entry.MaxAvgWeeklyWorkDurationOverFourWeeks = (int?)(model.MaxAvgWeeklyWorkDurationOverFourWeeks.HasValue ?
@@ -46,7 +46,7 @@ namespace BumboSolid.HelperClasses
                 (int)(model.MaxWorkDurationPerWeek.Value * maxWeekMulti) : entry.MaxWorkDurationPerWeek;
             entry.LatestWorkTime = model.LatestWorkTime.HasValue ? model.LatestWorkTime.Value : entry.LatestWorkTime;
             entry.EarliestWorkTime = model.EarliestWorkTime.HasValue ? model.EarliestWorkTime.Value : entry.EarliestWorkTime;
-            
+
             return entry;
         }
 

@@ -1,7 +1,6 @@
-﻿namespace BumboSolid.Models
+﻿namespace BumboSolid.Models;
+
+public class WeatherManageViewModel
 {
-    public class WeatherManageViewModel
-    {
-        public short[] Impacts = new short[7];
-    }
+    public short[] Impacts = new short[7];
 }

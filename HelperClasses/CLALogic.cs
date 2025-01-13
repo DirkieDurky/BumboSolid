@@ -1,13 +1,12 @@
 ﻿using BumboSolid.Models;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 
-namespace BumboSolid.HelperClasses
+namespace BumboSolid.HelperClasses;
+
+public class CLALogic : ICLALogic
 {
-    public class CLALogic : ICLALogic
+    public bool ValidateModel(CLAManageViewModel model, ModelStateDictionary modelState)
     {
-        public bool ValidateModel(CLAManageViewModel model, ModelStateDictionary modelState)
-        {
-            return true;
-        }
+        return true;
     }
 }

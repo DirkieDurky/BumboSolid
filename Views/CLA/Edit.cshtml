@@ -48,8 +48,8 @@
                 <div class="row align-items-end">
                     <div class="form-group col-11">
                         <label asp-for="MaxWorkDurationPerDay" class="control-label">Maximale werkduur per dag</label>
-                        <input asp-for="MaxWorkDurationPerDay" class="form-control" 
-                               value="@Model.MaxWorkDurationPerDay?.ToString("G10")"/>
+                        <input asp-for="MaxWorkDurationPerDay" class="form-control"
+                               value="@Model.MaxWorkDurationPerDay?.ToString("G10")" />
                         <span asp-validation-for="MaxWorkDurationPerDay" class="text-danger"></span>
                     </div>
                     <div class="form-group col-1 p-2">
@@ -62,8 +62,8 @@
                 <div class="row align-items-end">
                     <div class="form-group col-11">
                         <label asp-for="MaxShiftDuration" class="control-label">Maximale shiftduur</label>
-                        <input asp-for="MaxShiftDuration" class="form-control" 
-                               value="@Model.MaxShiftDuration?.ToString("G10")"/>
+                        <input asp-for="MaxShiftDuration" class="form-control"
+                               value="@Model.MaxShiftDuration?.ToString("G10")" />
                         <span asp-validation-for="MaxShiftDuration" class="text-danger"></span>
                     </div>
                     <div class="form-group col-1 p-2">

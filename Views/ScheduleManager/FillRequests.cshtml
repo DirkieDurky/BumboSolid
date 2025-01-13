@@ -1,41 +1,41 @@
 ﻿@model IEnumerable<BumboSolid.Models.FillRequestViewModel>
 @{
-	ViewData["Title"] = "Invalsverzoeken";
+    ViewData["Title"] = "Invalsverzoeken";
 }
 
 <header class="d-flex align-items-center gap-3 justify-content-center gap-3">
-	<div class="mx-3 text-center text-nowrap">
-		<h1>Invalsverzoeken</h1>
-	</div>
+    <div class="mx-3 text-center text-nowrap">
+        <h1>Invalsverzoeken</h1>
+    </div>
 </header>
 
 <table class="table">
-	<thead>
-		<tr>
-			<th>Datum</th>
-			<th>Afdeling</th>
-			<th>Starttijd</th>
-			<th>Eindtijd</th>
-			<th>Aanvrager</th>
-			<th>Invaller</th>
-			<th></th>
-		</tr>
-	</thead>
-	<tbody>
-		@foreach (var fillRequest in Model)
-		{
-			<tr>
-				<td>@fillRequest.Date</td>
-				<td>@fillRequest.Shift.Department</td>
-				<td>@fillRequest.Shift.StartTime</td>
-				<td>@fillRequest.Shift.EndTime</td>
-				<td>@fillRequest.Shift.Employee.FirstName @fillRequest.Shift.Employee.LastName</td>
-				<td>@fillRequest.SubstituteEmployee.FirstName @fillRequest.SubstituteEmployee.LastName</td>
-				<td>
-					<a class="navbar-brand new-btn" asp-action="AnswerFillRequest" asp-route-id="@fillRequest.Id" asp-route-status="accepteren">Accepteren</a>
-					<a class="navbar-brand new-btn" asp-action="AnswerFillRequest" asp-route-id="@fillRequest.Id" asp-route-status="weigeren">Weigeren</a>
-				</td>
-			</tr>
-		}
-	</tbody>
+    <thead>
+        <tr>
+            <th>Datum</th>
+            <th>Afdeling</th>
+            <th>Starttijd</th>
+            <th>Eindtijd</th>
+            <th>Aanvrager</th>
+            <th>Invaller</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var fillRequest in Model)
+        {
+            <tr>
+                <td>@fillRequest.Date</td>
+                <td>@fillRequest.Shift.Department</td>
+                <td>@fillRequest.Shift.StartTime</td>
+                <td>@fillRequest.Shift.EndTime</td>
+                <td>@fillRequest.Shift.Employee.FirstName @fillRequest.Shift.Employee.LastName</td>
+                <td>@fillRequest.SubstituteEmployee.FirstName @fillRequest.SubstituteEmployee.LastName</td>
+                <td>
+                    <a class="navbar-brand new-btn" asp-action="AnswerFillRequest" asp-route-id="@fillRequest.Id" asp-route-status="accepteren">Accepteren</a>
+                    <a class="navbar-brand new-btn" asp-action="AnswerFillRequest" asp-route-id="@fillRequest.Id" asp-route-status="weigeren">Weigeren</a>
+                </td>
+            </tr>
+        }
+    </tbody>
 </table>
