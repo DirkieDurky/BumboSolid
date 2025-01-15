@@ -2,10 +2,9 @@
 using BumboSolid.Models;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 
-namespace BumboSolid.HelperClasses
+namespace BumboSolid.HelperClasses;
+
+public interface ICLANoConflictFields
 {
-    public interface ICLANoConflictFields
-    {
-        bool NoConflicts(CLAEntry existingEntry, CLAManageViewModel model, ModelStateDictionary modelState, CLABreakEntry? breakEntry);
-    }
+    bool NoConflicts(CLAEntry existingEntry, CLAManageViewModel model, ModelStateDictionary modelState, CLABreakEntry? breakEntry);
 }

@@ -1,30 +1,30 @@
 ﻿@model BumboSolid.Data.Models.FillRequest
 
 @{
-	ViewData["Title"] = "Accepteer invalsverzoek";
+    ViewData["Title"] = "Accepteer invalsverzoek";
 }
 
 <header class="d-flex align-items-center gap-3 justify-content-center">
-	<div class="w-100 text-align text-end">
-	</div>
-	<div class="mx-3 text-center text-nowrap">
-		<h1>Invalsverzoek Accepteren</h1>
-		<p>@(Model.Shift.Weekday switch { 0 => "Maandag", 1 => "Dinsdag", 2 => "Woensdag", 3 => "Donderdag", 4 => "Vrijdag", 5 => "Zaterdag", 6 => "Zondag", _ => "Dag bestaat niet report dit bij IT", }) @Model.Shift.Department @Model.Shift.StartTime - @Model.Shift.EndTime</p>
-	</div>
-	<div class="w-100">
-	</div>
+    <div class="w-100 text-align text-end">
+    </div>
+    <div class="mx-3 text-center text-nowrap">
+        <h1>Invalsverzoek Accepteren</h1>
+        <p>@(Model.Shift.Weekday switch { 0 => "Maandag", 1 => "Dinsdag", 2 => "Woensdag", 3 => "Donderdag", 4 => "Vrijdag", 5 => "Zaterdag", 6 => "Zondag", _ => "Dag bestaat niet report dit bij IT", }) @Model.Shift.Department @Model.Shift.StartTime - @Model.Shift.EndTime</p>
+    </div>
+    <div class="w-100">
+    </div>
 </header>
 
 <div class="d-flex justify-content-center">
-	<div class="row justify-content-center col-md-10">
-		<h4 class="col-md-12 text-center">Weet je zeker dat je dit invalsverzoek wilt accepteren?</h4>
-		<a class="new-btn col-md-5 me-2" asp-action="Schedule">Annuleren</a>
-		<div class="col-md-5 p-0 ms-2">
-			<form asp-action="AcceptFillRequestConfirmed">
-				<input type="hidden" asp-for="Id" />
-				<button type="submit" class="new-btn w-100">Accepteren</button>
-			</form>
-		</div>
-	</div>
+    <div class="row justify-content-center col-md-10">
+        <h4 class="col-md-12 text-center">Weet je zeker dat je dit invalsverzoek wilt accepteren?</h4>
+        <a class="new-btn col-md-5 me-2" asp-action="Schedule">Annuleren</a>
+        <div class="col-md-5 p-0 ms-2">
+            <form asp-action="AcceptFillRequestConfirmed">
+                <input type="hidden" asp-for="Id" />
+                <button type="submit" class="new-btn w-100">Accepteren</button>
+            </form>
+        </div>
+    </div>
 </div>
 

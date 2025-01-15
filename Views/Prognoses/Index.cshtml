@@ -54,7 +54,7 @@
 
         <a class="btn early-btn btn-primary" asp-controller="Normeringen" asp-action="">Normeringen Beheren</a>
         <a class="btn early-btn btn-primary" asp-controller="Feestdagen" asp-action="">Feestdagen Beheren</a>
-        <a class="btn early-btn btn-primary" asp-controller="Weer" asp-action="Bewerken">Weer-waarden bewerken</a>
+        <a class="btn early-btn btn-primary" asp-controller="Weer" asp-action="Bewerken">Weer-waarden Bewerken</a>
     </div>
 
     <div class="prognosis-right">
@@ -94,7 +94,7 @@
                 }
                 else
                 {
-                    <a class="btn early-btn btn-primary prognosis-top-item" disabled>Volgende week →</a>
+                    <a class="btn early-btn btn-primary prognosis-top-item" disabled>Volgende Week →</a>
                 }
             }
         </div>
@@ -248,12 +248,12 @@
                     <div class="prognosis-index">
                         <div class="legend-item">
                             <div class="color-block workHours"></div>
-                            Workhours
+                            FTE
                             <div class="color-block staff"></div>
-                            Staff
+                            Medewerkers
                         </div>
                     </div>
-                    <a class="btn early-btn btn-primary" asp-controller="Factoren" asp-action="Bewerken" asp-route-id="@Model.Id">Factoren Beheren</a>
+                    <a class="btn early-btn btn-primary" asp-controller="Factors" asp-action="Edit" asp-route-id="@Model.Id">Factoren Beheren</a>
                 </div>
             }
             else

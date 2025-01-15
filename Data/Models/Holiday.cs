@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace BumboSolid.Data.Models;
+﻿namespace BumboSolid.Data.Models;
 
 public partial class Holiday
 {

@@ -42,7 +42,7 @@
                     <select id="employee-select" asp-for="Shift.EmployeeId" class="form-control p-1 border-solid-black" onchange="updateEmployeeName()">
                         @foreach (User employee in Model.Employees)
                         {
-                            <option value="@employee.Id">@(Model.Employees.Count(e=>e.Name == employee.Name) > 1 ? employee.Id : "") @employee.Name</option>
+                            <option value="@employee.Id">@(Model.Employees.Count(e => e.Name == employee.Name) > 1 ? employee.Id : "") @employee.Name</option>
                         }
                         <option value="-1">Extern filiaal</option>
                     </select>
@@ -59,7 +59,7 @@
             <div class="row">
                 <div id="external-employee-container" class="form-group col-md-6 pb-2">
                     <label class="control-label fw-bold">Externe medewerker naam</label>
-                    <input id="external-employee-name" asp-for="Shift.ExternalEmployeeName" class="form-control p-1 border-solid-black" type="hidden"/>
+                    <input id="external-employee-name" asp-for="Shift.ExternalEmployeeName" class="form-control p-1 border-solid-black" type="hidden" />
                     <span asp-validation-for="Shift.ExternalEmployeeName" class="text-danger"></span>
                 </div>
             </div>

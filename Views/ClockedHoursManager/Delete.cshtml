@@ -1,29 +1,29 @@
 ﻿@model BumboSolid.Data.Models.ClockedHours
 
 @{
-	ViewData["Title"] = "Delete";
+    ViewData["Title"] = "Delete";
 }
 
 
 <header class="d-flex align-items-center gap-3 justify-content-center">
-	<div class="w-100 text-align text-end">
-	</div>
-	<div class="mx-3 text-center text-nowrap">
-		<h1>Verwijderen</h1>
-	</div>
-	<div class="w-100">
-	</div>
+    <div class="w-100 text-align text-end">
+    </div>
+    <div class="mx-3 text-center text-nowrap">
+        <h1>Verwijderen</h1>
+    </div>
+    <div class="w-100">
+    </div>
 </header>
 
 <div class="d-flex justify-content-center">
-	<div class="row justify-content-center col-md-10">
-		<h4 class="col-md-12 text-center">Weet je zeker dat je deze geklokte uren wil verwijderen?</h4>
-		<a class="new-btn col-md-5 me-2" asp-action="Overview" asp-route-employeeId="@Model.EmployeeId">Annuleren</a>
-		<div class="col-md-5 p-0 ms-2">
-			<form asp-action="Delete">
-				<input type="hidden" asp-for="Id" />
-				<input type="submit" value="Verwijderen" class="new-btn w-100" />
-			</form>
-		</div>
-	</div>
+    <div class="row justify-content-center col-md-10">
+        <h4 class="col-md-12 text-center">Weet je zeker dat je deze geklokte uren wil verwijderen?</h4>
+        <a class="new-btn col-md-5 me-2" asp-action="Overview" asp-route-employeeId="@Model.EmployeeId">Annuleren</a>
+        <div class="col-md-5 p-0 ms-2">
+            <form asp-action="Delete">
+                <input type="hidden" asp-for="Id" />
+                <input type="submit" value="Verwijderen" class="new-btn w-100" />
+            </form>
+        </div>
+    </div>
 </div>

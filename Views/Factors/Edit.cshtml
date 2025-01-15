@@ -5,7 +5,7 @@
     int value;
 }
 
-<form method="post" asp-controller="Factoren" asp-action="Bewerken" asp-route-id="@Model.Prognosis.Id">
+<form method="post" asp-controller="Factors" asp-action="Edit" asp-route-id="@Model.Prognosis.Id">
     <table class="table" cellspacing="0">
         <tr>
             <th></th>
@@ -13,7 +13,7 @@
             <th scope="col" class="rounded-top table-secondary">Feestdagen</th>
             <th scope="col" class="rounded-top table-gray">
                 Weer
-                <a asp-controller="Weer" asp-action="Bewerken" class="remove-text-decoration p-2 bg-warning ms-2 rounded">
+                <a asp-controller="Weather" asp-action="Edit" class="remove-text-decoration p-2 bg-warning ms-2 rounded">
                     <img src="/images/pencil-square.svg" alt="Edit Icon" width="16" height="16" />
                 </a>
             </th>

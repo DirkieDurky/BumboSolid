@@ -1,11 +1,10 @@
 ﻿using BumboSolid.Data.Models;
 
-namespace BumboSolid.Models
+namespace BumboSolid.Models;
+
+public class CreatePrognosisViewModel
 {
-	public class CreatePrognosisViewModel
-	{
-		public required Week Prognosis;
-		public List<Weather> WeatherValues = new List<Weather>();
-		public List<Norm> Norms = new List<Norm>();
-	}
+    public required Week Prognosis;
+    public List<Weather> WeatherValues = new List<Weather>();
+    public List<Norm> Norms = new List<Norm>();
 }

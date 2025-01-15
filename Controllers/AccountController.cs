@@ -1,75 +1,72 @@
 ﻿using BumboSolid.Data.Models;
 using BumboSolid.Models;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
-namespace BumboSolid.Controllers
+namespace BumboSolid.Controllers;
+
+public class AccountController : Controller
 {
-    public class AccountController : Controller
+    private readonly SignInManager<User> _signInManager;
+    private readonly UserManager<User> _userManager;
+
+    public AccountController(
+        UserManager<User> userManager,
+        SignInManager<User> signInManager)
     {
-        private readonly SignInManager<User> _signInManager;
-        private readonly UserManager<User> _userManager;
+        _userManager = userManager;
+        _signInManager = signInManager;
+    }
 
-        public AccountController(
-            UserManager<User> userManager,
-            SignInManager<User> signInManager)
+    // GET: /Account/Login
+    [HttpGet]
+    public IActionResult Login()
+    {
+        return View();
+    }
+
+    // POST: /Account/Login
+    [HttpPost]
+    public async Task<IActionResult> Login(LoginViewModel Input)
+    {
+        if (!ModelState.IsValid)
         {
-            _userManager = userManager;
-            _signInManager = signInManager;
+            return View(Input);
         }
 
-        // GET: /Account/Login
-        [HttpGet]
-        public IActionResult Login()
-        {
-            return View();
-        }
+        var result = await _signInManager.PasswordSignInAsync(Input.Email, Input.Password, true, false);
 
-        // POST: /Account/Login
-        [HttpPost]
-        public async Task<IActionResult> Login(LoginViewModel Input)
+        if (result.Succeeded)
         {
-            if (!ModelState.IsValid)
+            if (User.IsInRole("Manager"))
             {
-                return View(Input);
+                return Redirect("/Prognoses");
             }
-
-            var result = await _signInManager.PasswordSignInAsync(Input.Email, Input.Password, true, false);
-
-            if (result.Succeeded)
+            if (User.IsInRole("Employee"))
             {
-                if (User.IsInRole("Manager"))
-                {
-                    return Redirect("/Prognoses");
-                }
-                if (User.IsInRole("Employee"))
-                {
-                    return Redirect("/RoosterMedewerker");
-                }
-                ViewBag.Error = "Geen rol";
-                return View(Input);
+                return Redirect("/RoosterMedewerker");
             }
-            else
-            {
-                ViewBag.Error = "Het ingevoerde wachtwoord of e-mailadres is onjuist.";
-                return View(Input);
-            }
+            ViewBag.Error = "Geen rol";
+            return View(Input);
         }
-
-        // GET: /Account/Logout
-        [HttpGet]
-        public async Task<IActionResult> Logout()
+        else
         {
-            await _signInManager.SignOutAsync();
-            return Redirect("/");
+            ViewBag.Error = "Het ingevoerde wachtwoord of e-mailadres is onjuist.";
+            return View(Input);
         }
+    }
 
-        [HttpGet]
-        public IActionResult AccessDenied()
-        {
-            return View();
-        }
+    // GET: /Account/Logout
+    [HttpGet]
+    public async Task<IActionResult> Logout()
+    {
+        await _signInManager.SignOutAsync();
+        return Redirect("/");
+    }
+
+    [HttpGet]
+    public IActionResult AccessDenied()
+    {
+        return View();
     }
 }

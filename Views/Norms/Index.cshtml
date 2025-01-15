@@ -3,74 +3,74 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 
 <div class="modal-body">
-	<div class="d-flex flex-row">
-		<div class="col-sm-2">
-			<h6>Activiteit</h6>
-		</div>
-		<div class="col-sm-2">
-			<h6>Functie</h6>
-		</div>
-		<div class="col-sm-3">
-			<h6>Duur</h6>
-		</div>
-		<div class="col-sm-4">
-			<h6>Gemiddelde Uitvoeringen Per Dag</h6>
-		</div>
-	</div>
+    <div class="d-flex flex-row">
+        <div class="col-sm-2">
+            <h6>Activiteit</h6>
+        </div>
+        <div class="col-sm-2">
+            <h6>Functie</h6>
+        </div>
+        <div class="col-sm-3">
+            <h6>Duur</h6>
+        </div>
+        <div class="col-sm-4">
+            <h6>Gemiddelde Uitvoeringen Per Dag</h6>
+        </div>
+    </div>
 
-	<div id="norms-scrollbar">
-		<form>
-			@foreach (var norm in Model)
-			{
-				<div class="form-group row align-items-center norm-row">
-					<div class="col-sm-2">
-						<input type="text" class="form-control" value="@norm.Activity" readonly />
-					</div>
+    <div id="norms-scrollbar">
+        <form>
+            @foreach (var norm in Model)
+            {
+                <div class="form-group row align-items-center norm-row">
+                    <div class="col-sm-2">
+                        <input type="text" class="form-control" value="@norm.Activity" readonly />
+                    </div>
 
-					<div class="col-sm-2">
-						<input type="text" class="form-control" value="@norm.Department" readonly />
-					</div>
+                    <div class="col-sm-2">
+                        <input type="text" class="form-control" value="@norm.Department" readonly />
+                    </div>
 
-					<div class="col-sm-1">
-						@* Calculating the readable duration based on the selected unit *@
-						@{
-							string readableDuration = norm.Duration.ToString();
-							if (norm.Duration % 3600 == 0)
-							{
-								readableDuration = (norm.Duration / 3600).ToString();
-							}
-							else if (norm.Duration % 60 == 0)
-							{
-								readableDuration = (norm.Duration / 60).ToString();
-							}
-						}
-						<input type="number" class="form-control" value="@readableDuration" readonly />
-					</div>
+                    <div class="col-sm-1">
+                        @* Calculating the readable duration based on the selected unit *@
+                        @{
+                            string readableDuration = norm.Duration.ToString();
+                            if (norm.Duration % 3600 == 0)
+                            {
+                                readableDuration = (norm.Duration / 3600).ToString();
+                            }
+                            else if (norm.Duration % 60 == 0)
+                            {
+                                readableDuration = (norm.Duration / 60).ToString();
+                            }
+                        }
+                        <input type="number" class="form-control" value="@readableDuration" readonly />
+                    </div>
 
-					<div class="col-sm-2">
-						<input type="text" class="form-control"
-							   value="@(norm.Duration % 3600 == 0 ? "Uren" : (norm.Duration % 60 == 0 ? "Minuten" : "Seconden"))" readonly />
-					</div>
+                    <div class="col-sm-2">
+                        <input type="text" class="form-control"
+                               value="@(norm.Duration % 3600 == 0 ? "Uren" : (norm.Duration % 60 == 0 ? "Minuten" : "Seconden"))" readonly />
+                    </div>
 
-					<div class="col-sm-2 d-flex align-items-center gap-2">
-						<input type="number" class="form-control" value="@norm.AvgDailyPerformances" readonly />
-						<label for="per-bezoeker" class="col-form-label mx-2">per bezoeker</label>
-						<input type="checkbox" id="per-bezoeker" name="per-bezoeker" @(norm.PerVisitor ? "checked" : "") disabled />
-					</div>
+                    <div class="col-sm-2 d-flex align-items-center gap-2">
+                        <input type="number" class="form-control" value="@norm.AvgDailyPerformances" readonly />
+                        <label for="per-bezoeker" class="col-form-label mx-2">per bezoeker</label>
+                        <input type="checkbox" id="per-bezoeker" name="per-bezoeker" @(norm.PerVisitor ? "checked" : "") disabled />
+                    </div>
 
-					<div class="col-sm-1 d-flex gap-2">
-						<a asp-controller="Normeringen" asp-action="Bewerken" asp-route-id="@norm.Id" class="btn early-btn btn-primary">Bewerken</a>
-						<a asp-controller="Normeringen" asp-action="Verwijderen" asp-route-id="@norm.Id" class="btn early-btn btn-danger">Verwijderen</a>
-					</div>
-				</div>
-			}
-		</form>
-	</div>
+                    <div class="col-sm-1 d-flex gap-2">
+                        <a asp-controller="Norms" asp-action="Edit" asp-route-id="@norm.Id" class="btn early-btn btn-primary">Bewerken</a>
+                        <a asp-controller="Norms" asp-action="Delete" asp-route-id="@norm.Id" class="btn early-btn btn-danger">Verwijderen</a>
+                    </div>
+                </div>
+            }
+        </form>
+    </div>
 </div>
 
 <div class="d-flex flex-row">
-	<a asp-controller="Normeringen" asp-action="Aanmaken" class="btn early-btn btn-primary me-3">
-		<i class="fas fa-plus fa-2x"></i>
-	</a>
-	<a asp-controller="Prognoses" asp-action="" class="btn early-btn btn-secondary">Terug</a>
+    <a asp-controller="Norms" asp-action="Create" class="btn early-btn btn-primary me-3">
+        <i class="fas fa-plus fa-2x"></i>
+    </a>
+    <a asp-controller="Prognoses" asp-action="" class="btn early-btn btn-secondary">Terug</a>
 </div>

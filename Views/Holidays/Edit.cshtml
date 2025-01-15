@@ -3,108 +3,108 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
 <script src="https://kit.fontawesome.com/981e782106.js" crossorigin="anonymous"></script>
 
-<form asp-controller="Feestdagen" asp-action="Bewerken" asp-route-id="@Model.Holiday.Name" method="post">
-	<div class="modal-body auto-margin">
-		<h6>@Model.Holiday.Name</h6>
-		<input type="hidden" asp-for="Holiday.Name" />
-	</div>
+<form asp-controller="Holidays" asp-action="Edit" asp-route-id="@Model.Holiday.Name" method="post">
+    <div class="modal-body auto-margin">
+        <h6>@Model.Holiday.Name</h6>
+        <input type="hidden" asp-for="Holiday.Name" />
+    </div>
 
-	<div class="d-flex flex-row">
-		<div>
-			<div class="d-flex flex-row">
-				<h6 id="graph-impact-title">Invloed</h6>
+    <div class="d-flex flex-row">
+        <div>
+            <div class="d-flex flex-row">
+                <h6 id="graph-impact-title">Invloed</h6>
 
-				<canvas id="holiday-chart"></canvas>
+                <canvas id="holiday-chart"></canvas>
 
-				<script>
-					const xValues = @Html.Raw(Json.Serialize(Model.xValues))
-					const yValues = @Html.Raw(Json.Serialize(Model.yValues))
+                <script>
+                    const xValues = @Html.Raw(Json.Serialize(Model.xValues))
+                    const yValues = @Html.Raw(Json.Serialize(Model.yValues))
 
-						new Chart("holiday-chart", {
-							type: "line",
-							data: {
-								labels: xValues,
-								datasets: [{
-									fill: false,
-									lineTension: 0,
-									backgroundColor: "rgba(0,0,255,1.1)",
-									borderColor: "rgba(0,0,0,1.1)",
-									data: yValues
-								}]
-							},
-							options: {
-								legend: { display: false },
-								scales: {
-									yAxes: [{ ticks: { min: @Model.LowestImpact, max: @Model.HighestImpact } }],
-								}
-							}
-						});
-				</script>
-			</div>
+                        new Chart("holiday-chart", {
+                            type: "line",
+                            data: {
+                                labels: xValues,
+                                datasets: [{
+                                    fill: false,
+                                    lineTension: 0,
+                                    backgroundColor: "rgba(0,0,255,1.1)",
+                                    borderColor: "rgba(0,0,0,1.1)",
+                                    data: yValues
+                                }]
+                            },
+                            options: {
+                                legend: { display: false },
+                                scales: {
+                                    yAxes: [{ ticks: { min: @Model.LowestImpact, max: @Model.HighestImpact } }],
+                                }
+                            }
+                        });
+                </script>
+            </div>
 
-			<h6 id="graph-days-title">Dagen</h6>
+            <h6 id="graph-days-title">Dagen</h6>
 
-			<div class="d-flex flex-row">
-				<div>
-					<div>
-						<label asp-for="FirstDay" class="control-label">Eerste Dag</label>
-						<input asp-for="FirstDay" id="firstday" class="form-control" value=null />
-						<span asp-validation-for="FirstDay" class="text-danger"></span>
-					</div>
-					<div>
-						<label asp-for="LastDay" class="control-label">Laatste Dag</label>
-						<input asp-for="LastDay" id="lastday" class="form-control" value=null />
-						<span asp-validation-for="LastDay" class="text-danger"></span>
-					</div>
+            <div class="d-flex flex-row">
+                <div>
+                    <div>
+                        <label asp-for="FirstDay" class="control-label">Eerste Dag</label>
+                        <input asp-for="FirstDay" id="firstday" class="form-control" value=null />
+                        <span asp-validation-for="FirstDay" class="text-danger"></span>
+                    </div>
+                    <div>
+                        <label asp-for="LastDay" class="control-label">Laatste Dag</label>
+                        <input asp-for="LastDay" id="lastday" class="form-control" value=null />
+                        <span asp-validation-for="LastDay" class="text-danger"></span>
+                    </div>
 
-					@{
-						String year = Model.FirstDay.Year.ToString("0000");
-						String month = Model.FirstDay.Month.ToString("00");
-						String day = Model.FirstDay.Day.ToString("00");
-						String firstDay = year + "-" + month + "-" + day;
+                    @{
+                        String year = Model.FirstDay.Year.ToString("0000");
+                        String month = Model.FirstDay.Month.ToString("00");
+                        String day = Model.FirstDay.Day.ToString("00");
+                        String firstDay = year + "-" + month + "-" + day;
 
-						year = Model.LastDay.Year.ToString("0000");
-						month = Model.LastDay.Month.ToString("00");
-						day = Model.LastDay.Day.ToString("00");
-						String lastDay = year + "-" + month + "-" + day;
-					}
-					<script>
-						var year = new Date().getFullYear();
-						document.getElementById('firstday').setAttribute("min", year + "-01-01");
-						document.getElementById('firstday').setAttribute("max", year + "-12-31");
-						document.getElementById('firstday').value = "@firstDay";
-						document.getElementById('lastday').setAttribute("min", year + "-01-01");
-						document.getElementById('lastday').setAttribute("max", year + "-12-31");
-						document.getElementById('lastday').value = "@lastDay";
-					</script>
-				</div>
+                        year = Model.LastDay.Year.ToString("0000");
+                        month = Model.LastDay.Month.ToString("00");
+                        day = Model.LastDay.Day.ToString("00");
+                        String lastDay = year + "-" + month + "-" + day;
+                    }
+                    <script>
+                        var year = new Date().getFullYear();
+                        document.getElementById('firstday').setAttribute("min", year + "-01-01");
+                        document.getElementById('firstday').setAttribute("max", year + "-12-31");
+                        document.getElementById('firstday').value = "@firstDay";
+                        document.getElementById('lastday').setAttribute("min", year + "-01-01");
+                        document.getElementById('lastday').setAttribute("max", year + "-12-31");
+                        document.getElementById('lastday').value = "@lastDay";
+                    </script>
+                </div>
 
-				<a href="@Url.Action("Verwijderen", new { Name = Model.Holiday.Name })" class="btn early-btn btn-danger mt-2 auto-margin">
-					<span class="fa-solid fa-trash-can"></span>&nbsp;Verwijderen
-				</a>
-			</div>
-		</div>
+                <a href="@Url.Action("Verwijderen", new { Name = Model.Holiday.Name })" class="btn early-btn btn-danger mt-2 auto-margin">
+                    <span class="fa-solid fa-trash-can"></span>&nbsp;Verwijderen
+                </a>
+            </div>
+        </div>
 
-		<div>
-			<h6>Invloed Aanpassen</h6>
+        <div>
+            <h6>Invloed Aanpassen</h6>
 
-			<div id="holidays-scrollbar">
-				@for (int i = 0; i < Model.Holiday.HolidayDays.Count; i++)
-				{
-					<div class="d-flex flex-row">
-						<input type="hidden" asp-for="Holiday.HolidayDays[i].Date" />
-						<input type="hidden" asp-for="Holiday.HolidayDays[i].HolidayName" />
-						<input class="p-2 form-control holiday-date" value="@Model.Holiday.HolidayDays[i].Date.Day-@Model.Holiday.HolidayDays[i].Date.Month" readonly>
-						<input type="text" class="p-2 form-control holiday-date" asp-for="Holiday.HolidayDays[i].Impact" />
-						<span asp-validation-for="Holiday.HolidayDays[i].Impact" class="text-danger"></span>
-					</div>
-				}
-			</div>
-		</div>
+            <div id="holidays-scrollbar">
+                @for (int i = 0; i < Model.Holiday.HolidayDays.Count; i++)
+                {
+                    <div class="d-flex flex-row">
+                        <input type="hidden" asp-for="Holiday.HolidayDays[i].Date" />
+                        <input type="hidden" asp-for="Holiday.HolidayDays[i].HolidayName" />
+                        <input class="p-2 form-control holiday-date" value="@Model.Holiday.HolidayDays[i].Date.Day-@Model.Holiday.HolidayDays[i].Date.Month" readonly>
+                        <input type="text" class="p-2 form-control holiday-date" asp-for="Holiday.HolidayDays[i].Impact" />
+                        <span asp-validation-for="Holiday.HolidayDays[i].Impact" class="text-danger"></span>
+                    </div>
+                }
+            </div>
+        </div>
 
-	</div>
-	<div class="d-flex flex-row">
-		<button type="submit" class="btn early-btn btn-primary me-3">Opslaan & Bijwerken</button>
-		<a type="button" class="btn early-btn btn-secondary" asp-controller="Feestdagen" asp-action="">Terug</a>
-	</div>
+    </div>
+    <div class="d-flex flex-row">
+        <button type="submit" class="btn early-btn btn-primary me-3">Opslaan & Bijwerken</button>
+        <a type="button" class="btn early-btn btn-secondary" asp-controller="Holidays" asp-action="Index">Terug</a>
+    </div>
 </form>
