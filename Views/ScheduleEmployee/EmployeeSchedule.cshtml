@@ -23,7 +23,12 @@
 
 <header class="d-flex flex-column align-items-center">
     <div class="d-flex justify-content-between w-100 header-items">
-        <div></div>
+        <div>
+            <a class="btn new-btn"
+               asp-controller="Availability" asp-action="Index">
+                Beschikbaarheid
+            </a>
+        </div>
         <div>
             <a class="btn new-btn @(Model.PreviousWeekId == null ? "disabled" : "")"
                asp-action="EmployeeSchedule" asp-route-id="@Model.PreviousWeekId">
