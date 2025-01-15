@@ -473,6 +473,14 @@ th, td {
         color: white;
     }
 
+.new-btn-danger {
+    color: var(--bs-danger);
+    border: 1px solid var(--bs-danger);
+}
+    .new-btn-danger:hover, .new-btn-danger:focus {
+        background-color: var(--bs-danger);
+    }
+
 .selected-btn {
 	border: 2px solid black;
 	font-weight: bold;
