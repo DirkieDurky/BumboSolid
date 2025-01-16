@@ -8,8 +8,6 @@ public partial class FillRequest
 
     public int? SubstituteEmployeeId { get; set; }
 
-    public string? AbsentDescription { get; set; }
-
     public virtual Shift Shift { get; set; } = null!;
 
     public virtual User? SubstituteEmployee { get; set; }
