@@ -288,7 +288,7 @@ namespace BumboSolid.Controllers
             var shift = _context.Shifts.FirstOrDefault(s => s.Id == absentViewModel.ShiftId);
             if (shift == null) return NotFound();
 
-            // TODO: move these checks to custom validation
+            // TODO: move these checks to custom validation!
             // Check if the endtime is not earlier than the starttime
             if (absentViewModel.EndTime < absentViewModel.StartTime) return RedirectToAction(nameof(Schedule));
             // Check if the start or endtime is within the allowed range
