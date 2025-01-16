@@ -4,9 +4,9 @@
     {
         public int Id { get; set; }
 
-        public int ShiftId { get; set; }
+        public int WeekId { get; set; }
 
-        public int UserId { get; set; }
+        public int Weekday { get; set; }
 
         public TimeOnly StartTime { get; set; }
 
@@ -14,8 +14,10 @@
 
         public string? AbsentDescription { get; set; }
 
-        public virtual Shift Shift { get; set; } = null!;
+        public int? EmployeeId { get; set; }
 
-        public virtual User Employee { get; set; }
+        public virtual Week? Week { get; set; } = null!;
+
+        public virtual User? Employee { get; set; }
     }
 }
