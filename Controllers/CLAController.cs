@@ -1,24 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using BumboSolid.Data;
 using BumboSolid.Data.Models;
 using BumboSolid.Models;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.EntityFrameworkCore.Diagnostics;
-using System.Net.Cache;
-using System.Security.Claims;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
-using NuGet.Configuration;
-using Microsoft.EntityFrameworkCore.Query.Internal;
-using Humanizer;
 using System.Text.RegularExpressions;
-using Microsoft.AspNetCore.Authentication;
 
 namespace BumboSolid.Controllers
 {

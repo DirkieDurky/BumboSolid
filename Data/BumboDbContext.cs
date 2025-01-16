@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using BumboSolid.Data.Models;
+﻿using BumboSolid.Data.Models;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;

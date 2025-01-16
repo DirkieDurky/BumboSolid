@@ -1,6 +1,4 @@
-﻿using BumboSolid.Data.Models;
-
-namespace BumboSolid.Models
+﻿namespace BumboSolid.Models
 {
     public class EmployeeScheduleViewModel
     {

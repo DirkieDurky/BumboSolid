@@ -1,9 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using BumboSolid.Data.Models;
 
 namespace BumboSolid.Models
 {
-	public class HolidayViewModel
+    public class HolidayViewModel
 	{
     
         [StringLength(25)]

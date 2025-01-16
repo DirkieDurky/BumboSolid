@@ -1,12 +1,9 @@
 ﻿using BumboSolid.Data.Models;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.DotNet.Scaffolding.Shared;
-using Microsoft.EntityFrameworkCore;
-using System.Reflection.Emit;
 
 namespace Authorisation.Helpers
 {
-	public static class UserAndRoleSeeder
+    public static class UserAndRoleSeeder
 	{
 		public static void SeedData(UserManager<User> userManager, RoleManager<IdentityRole<int>> roleManager)
 		{

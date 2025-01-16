@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BumboSolid.Migrations
 {
     [DbContext(typeof(BumboDbContext))]
-    [Migration("20250107152133_AddHasScheduleColumn")]
-    partial class AddHasScheduleColumn
+    [Migration("20250116141019_absence-migration")]
+    partial class absencemigration
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
