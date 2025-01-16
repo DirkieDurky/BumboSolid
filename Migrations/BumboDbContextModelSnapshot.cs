@@ -22,6 +22,43 @@ namespace BumboSolid.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("BumboSolid.Data.Models.Absence", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("AbsentDescription")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("EmployeeId")
+                        .HasColumnType("int")
+                        .HasColumnName("EmployeeID");
+
+                    b.Property<TimeOnly>("EndTime")
+                        .HasColumnType("time");
+
+                    b.Property<TimeOnly>("StartTime")
+                        .HasColumnType("time");
+
+                    b.Property<int>("WeekId")
+                        .HasColumnType("int")
+                        .HasColumnName("WeekId");
+
+                    b.Property<int>("Weekday")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex(new[] { "EmployeeId" }, "IX_Absence_EmployeeID");
+
+                    b.HasIndex(new[] { "WeekId" }, "IX_Absence_WeekID");
+
+                    b.ToTable("Absence", (string)null);
+                });
+
             modelBuilder.Entity("BumboSolid.Data.Models.AvailabilityRule", b =>
                 {
                     b.Property<int>("Id")
@@ -263,12 +300,6 @@ namespace BumboSolid.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("AbsentDescription")
-                        .HasMaxLength(255)
-                        .IsUnicode(false)
-                        .HasColumnType("varchar(255)")
-                        .HasColumnName("Absent_Description");
 
                     b.Property<int>("ShiftId")
                         .HasColumnType("int")
@@ -1036,6 +1067,24 @@ namespace BumboSolid.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("BumboSolid.Data.Models.Absence", b =>
+                {
+                    b.HasOne("BumboSolid.Data.Models.User", "Employee")
+                        .WithMany("Absences")
+                        .HasForeignKey("EmployeeId")
+                        .HasConstraintName("FK_Absence_Employee");
+
+                    b.HasOne("BumboSolid.Data.Models.Week", "Week")
+                        .WithMany("Absences")
+                        .HasForeignKey("WeekId")
+                        .IsRequired()
+                        .HasConstraintName("FK_Absence_Week");
+
+                    b.Navigation("Employee");
+
+                    b.Navigation("Week");
+                });
+
             modelBuilder.Entity("BumboSolid.Data.Models.AvailabilityRule", b =>
                 {
                     b.HasOne("BumboSolid.Data.Models.User", "EmployeeNavigation")
@@ -1316,6 +1365,8 @@ namespace BumboSolid.Migrations
 
             modelBuilder.Entity("BumboSolid.Data.Models.User", b =>
                 {
+                    b.Navigation("Absences");
+
                     b.Navigation("AvailabilityRules");
 
                     b.Navigation("ClockedHours");
@@ -1332,6 +1383,8 @@ namespace BumboSolid.Migrations
 
             modelBuilder.Entity("BumboSolid.Data.Models.Week", b =>
                 {
+                    b.Navigation("Absences");
+
                     b.Navigation("ClockedHours");
 
                     b.Navigation("PrognosisDays");

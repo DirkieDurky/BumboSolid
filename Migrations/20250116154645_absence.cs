@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace BumboSolid.Migrations
 {
     /// <inheritdoc />
-    public partial class bestmigration : Migration
+    public partial class absence : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -354,6 +354,34 @@ namespace BumboSolid.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Absence",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    WeekId = table.Column<int>(type: "int", nullable: false),
+                    Weekday = table.Column<int>(type: "int", nullable: false),
+                    StartTime = table.Column<TimeOnly>(type: "time", nullable: false),
+                    EndTime = table.Column<TimeOnly>(type: "time", nullable: false),
+                    AbsentDescription = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    EmployeeID = table.Column<int>(type: "int", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Absence", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Absence_Employee",
+                        column: x => x.EmployeeID,
+                        principalTable: "User",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_Absence_Week",
+                        column: x => x.WeekId,
+                        principalTable: "Week",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
                 name: "ClockedHours",
                 columns: table => new
                 {
@@ -505,8 +533,7 @@ namespace BumboSolid.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     ShiftID = table.Column<int>(type: "int", nullable: false),
-                    SubstituteEmployeeID = table.Column<int>(type: "int", nullable: true),
-                    Absent_Description = table.Column<string>(type: "varchar(255)", unicode: false, maxLength: 255, nullable: true)
+                    SubstituteEmployeeID = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -621,6 +648,16 @@ namespace BumboSolid.Migrations
                     { "Vers", 1, (byte)5, (short)4000 },
                     { "Vers", 1, (byte)6, (short)4000 }
                 });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Absence_EmployeeID",
+                table: "Absence",
+                column: "EmployeeID");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Absence_WeekID",
+                table: "Absence",
+                column: "WeekId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
@@ -745,6 +782,9 @@ namespace BumboSolid.Migrations
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropTable(
+                name: "Absence");
+
             migrationBuilder.DropTable(
                 name: "AspNetRoleClaims");
 
