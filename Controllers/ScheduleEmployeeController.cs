@@ -314,7 +314,7 @@ public class ScheduleEmployeeController : Controller
         if (shift == null) return NotFound();
         shift.Week = _context.Weeks.FirstOrDefault(i => i.Id == shift.WeekId);
 
-        AbsentViewModel absentViewModel = new AbsentViewModel()
+        AbsenceViewModel absenceViewModel = new AbsenceViewModel()
         {
             ShiftId = id,
 
@@ -325,31 +325,31 @@ public class ScheduleEmployeeController : Controller
             Department = shift.Department
         };
 
-        return View(absentViewModel);
+        return View(absenceViewModel);
     }
 
     // Post: ScheduleEmployeeController/Absent/5
     [ValidateAntiForgeryToken]
     [HttpPost("Afmelden")]
-    public async Task<IActionResult> AbsentConfirmed(AbsentViewModel absentViewModel)
+    public async Task<IActionResult> AbsentConfirmed(AbsenceViewModel absenceViewModel)
     {
-        var shift = _context.Shifts.FirstOrDefault(s => s.Id == absentViewModel.ShiftId);
+        var shift = _context.Shifts.FirstOrDefault(s => s.Id == absenceViewModel.ShiftId);
         if (shift == null) return NotFound();
 
         // TODO: move these checks to custom validation!
         // Check if the endtime is not earlier than the starttime
-        if (absentViewModel.EndTime < absentViewModel.StartTime) return RedirectToAction(nameof(Schedule));
+        if (absenceViewModel.EndTime < absenceViewModel.StartTime) return RedirectToAction(nameof(Schedule));
         // Check if the start or endtime is within the allowed range
-        if (absentViewModel.StartTime < shift.StartTime || absentViewModel.EndTime > shift.EndTime) return RedirectToAction(nameof(Schedule));
+        if (absenceViewModel.StartTime < shift.StartTime || absenceViewModel.EndTime > shift.EndTime) return RedirectToAction(nameof(Schedule));
 
         // Check if the whole shift has to go or just a bit
-        if (absentViewModel.StartTime <= shift.StartTime && absentViewModel.EndTime >= shift.EndTime) _context.Shifts.Remove(shift);
+        if (absenceViewModel.StartTime <= shift.StartTime && absenceViewModel.EndTime >= shift.EndTime) _context.Shifts.Remove(shift);
         // Check if the shift has to be split
-        else if (absentViewModel.StartTime > shift.StartTime && absentViewModel.EndTime < shift.EndTime)
+        else if (absenceViewModel.StartTime > shift.StartTime && absenceViewModel.EndTime < shift.EndTime)
         {
             Shift newShift = new Shift()
             {
-                StartTime = absentViewModel.EndTime,
+                StartTime = absenceViewModel.EndTime,
                 EndTime = shift.EndTime,
                 WeekId = shift.WeekId,
                 Week = shift.Week,
@@ -360,24 +360,24 @@ public class ScheduleEmployeeController : Controller
                 DepartmentNavigation = shift.DepartmentNavigation
             };
 
-            shift.EndTime = absentViewModel.StartTime;
+            shift.EndTime = absenceViewModel.StartTime;
 
             _context.Shifts.Add(newShift);
             _context.Shifts.Update(shift);
         }
         else
         {
-            if (shift.StartTime < absentViewModel.StartTime) shift.EndTime = absentViewModel.StartTime;
-            else shift.StartTime = absentViewModel.EndTime;
+            if (shift.StartTime < absenceViewModel.StartTime) shift.EndTime = absenceViewModel.StartTime;
+            else shift.StartTime = absenceViewModel.EndTime;
             _context.Shifts.Update(shift);
         }
 
         // Creating absent
         Absence absent = new Absence()
         {
-            StartTime = absentViewModel.StartTime,
-            EndTime = absentViewModel.EndTime,
-            AbsentDescription = absentViewModel.Description,
+            StartTime = absenceViewModel.StartTime,
+            EndTime = absenceViewModel.EndTime,
+            AbsentDescription = absenceViewModel.Description,
             Employee = await _userManager.GetUserAsync(User),
             WeekId = shift.WeekId,
             Week = shift.Week,
