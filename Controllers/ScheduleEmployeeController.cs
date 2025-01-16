@@ -338,12 +338,18 @@ public class ScheduleEmployeeController : Controller
 
         // TODO: move these checks to custom validation!
         // Check if the endtime is not earlier than the starttime
-        if (absenceViewModel.EndTime < absenceViewModel.StartTime) return RedirectToAction(nameof(Schedule));
+        if (absenceViewModel.EndTime < absenceViewModel.StartTime) return RedirectToAction(nameof(EmployeeSchedule));
         // Check if the start or endtime is within the allowed range
-        if (absenceViewModel.StartTime < shift.StartTime || absenceViewModel.EndTime > shift.EndTime) return RedirectToAction(nameof(Schedule));
+        if (absenceViewModel.StartTime < shift.StartTime || absenceViewModel.EndTime > shift.EndTime) return RedirectToAction(nameof(EmployeeSchedule));
 
         // Check if the whole shift has to go or just a bit
-        if (absenceViewModel.StartTime <= shift.StartTime && absenceViewModel.EndTime >= shift.EndTime) _context.Shifts.Remove(shift);
+        if (absenceViewModel.StartTime <= shift.StartTime && absenceViewModel.EndTime >= shift.EndTime)
+        {
+            var fillrequest = await _context.FillRequests.FirstOrDefaultAsync(f => f.ShiftId == shift.Id);
+            if (fillrequest != null)
+                _context.FillRequests.Remove(fillrequest);
+            _context.Shifts.Remove(shift);
+        }
         // Check if the shift has to be split
         else if (absenceViewModel.StartTime > shift.StartTime && absenceViewModel.EndTime < shift.EndTime)
         {
@@ -390,7 +396,7 @@ public class ScheduleEmployeeController : Controller
             _context.SaveChanges();
         }
 
-        return RedirectToAction(nameof(Schedule));
+        return RedirectToAction(nameof(EmployeeSchedule));
     }
 
     // Get the date of the first day of the week
