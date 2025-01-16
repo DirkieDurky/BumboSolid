@@ -42,6 +42,9 @@
         <p>@startDate.ToString("dd/MM/yyyy") - @endDate.ToString("dd/MM/yyyy")</p>
     </div>
     <div class="w-100">
+        <a class="new-btn new-btn-danger" asp-controller="Shifts" asp-action="Delete" asp-route-id="@Model.Shift.Id">
+            Verwijderen
+        </a>
     </div>
 </header>
 
