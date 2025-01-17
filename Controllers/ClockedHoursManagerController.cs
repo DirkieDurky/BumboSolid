@@ -108,7 +108,6 @@ public class ClockedHoursManagerController : Controller
 
         ViewBag.Departments = new SelectList(_context.Departments, "Name", "Name");
         ViewBag.WeekDays = new SelectList(new List<string> { "Maandag", "Dinsdag", "Woensdag", "Donderdag", "Vrijdag", "Zaterdag", "Zondag" });
-        ViewBag.Employees = _context.Employees;
         return View(clockedHours);
     }
 
@@ -126,7 +125,6 @@ public class ClockedHoursManagerController : Controller
 
         ViewBag.Departments = new SelectList(_context.Departments, "Name", "Name");
         ViewBag.WeekDays = new SelectList(new List<string> { "Maandag", "Dinsdag", "Woensdag", "Donderdag", "Vrijdag", "Zaterdag", "Zondag" });
-        ViewBag.Employees = _context.Employees;
 
         if (ModelState.IsValid)
         {
