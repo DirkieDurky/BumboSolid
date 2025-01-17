@@ -93,7 +93,7 @@ public class ClockedHoursManagerController : Controller
     }
 
     [HttpGet("Bewerken/{id:int?}")]
-    public async Task<IActionResult> Edit(int? id)
+    public async Task<IActionResult> Edit(int? id, int employeeId)
     {
         if (id == null)
         {
@@ -108,7 +108,7 @@ public class ClockedHoursManagerController : Controller
 
         ViewBag.Departments = new SelectList(_context.Departments, "Name", "Name");
         ViewBag.WeekDays = new SelectList(new List<string> { "Maandag", "Dinsdag", "Woensdag", "Donderdag", "Vrijdag", "Zaterdag", "Zondag" });
-        ViewBag.Employees = _context.Employees;
+        ViewBag.EmployeeId = employeeId;
         return View(clockedHours);
     }
 
@@ -117,7 +117,7 @@ public class ClockedHoursManagerController : Controller
     // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
     [HttpPost("Bewerken/{id:int}")]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Edit(int id, ClockedHours clockedHours)
+    public async Task<IActionResult> Edit(int id, int employeeId, ClockedHours clockedHours)
     {
         if (id != clockedHours.Id)
         {
@@ -126,7 +126,6 @@ public class ClockedHoursManagerController : Controller
 
         ViewBag.Departments = new SelectList(_context.Departments, "Name", "Name");
         ViewBag.WeekDays = new SelectList(new List<string> { "Maandag", "Dinsdag", "Woensdag", "Donderdag", "Vrijdag", "Zaterdag", "Zondag" });
-        ViewBag.Employees = _context.Employees;
 
         if (ModelState.IsValid)
         {

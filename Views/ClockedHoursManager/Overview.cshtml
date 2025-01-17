@@ -91,7 +91,7 @@ else
                         }
                     </td>
                     <td>
-                        <a class="no-a" asp-controller="ClockedHoursManager" asp-action="Edit" asp-route-id="@clockedHour.Id">
+                        <a class="no-a" asp-controller="ClockedHoursManager" asp-action="Edit" asp-route-id="@clockedHour.Id" asp-route-employeeId="@Model.EmployeeId">
                             <i class="fa-solid fa-pencil fa-xl px-2"></i>
                         </a>
                         <a class="no-a" asp-controller="ClockedHoursManager" asp-action="Delete" asp-route-id="@clockedHour.Id">
