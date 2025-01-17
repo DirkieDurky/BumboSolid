@@ -34,7 +34,7 @@ public class ScheduleEmployeeController : Controller
             .ThenInclude(s => s.Employee)
             .FirstOrDefaultAsync(w => w.Id == id);
 
-        var culture = new CultureInfo("nl-NL");
+        var culture = CultureInfo.CurrentCulture;
         var today = DateTime.Now;
         var currentYear = (short)today.Year;
         var currentWeekNumber = (byte)culture.Calendar.GetWeekOfYear(today, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Monday);

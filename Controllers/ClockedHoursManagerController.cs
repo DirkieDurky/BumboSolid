@@ -28,7 +28,7 @@ public class ClockedHoursManagerController : Controller
     {
         if (year == null || weekNumber == null)
         {
-            CultureInfo ci = new CultureInfo("nl-NL");
+            CultureInfo ci = CultureInfo.CurrentCulture;
             Calendar calendar = ci.Calendar;
 
             year = (short)DateTime.Now.Year;

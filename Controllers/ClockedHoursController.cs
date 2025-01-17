@@ -30,7 +30,7 @@ public class ClockedHoursController : Controller
         int userId = user!.Id;
 
         int year = DateTime.Now.Year;
-        int weekNr = new CultureInfo("en-US").Calendar.GetWeekOfYear(DateTime.Now, CalendarWeekRule.FirstDay, DayOfWeek.Monday);
+        int weekNr = CultureInfo.CurrentCulture.Calendar.GetWeekOfYear(DateTime.Now, CalendarWeekRule.FirstDay, DayOfWeek.Monday);
 
         var currentWeek = await _context.Weeks
             .Where(w => w.Year == year && w.WeekNumber == weekNr)
@@ -114,7 +114,7 @@ public class ClockedHoursController : Controller
         }
 
         int year = DateTime.Now.Year;
-        int weekNr = new CultureInfo("en-US").Calendar.GetWeekOfYear(DateTime.Now, CalendarWeekRule.FirstDay, DayOfWeek.Monday);
+        int weekNr = CultureInfo.CurrentCulture.Calendar.GetWeekOfYear(DateTime.Now, CalendarWeekRule.FirstDay, DayOfWeek.Monday);
         DateOnly startDate = FirstDateOfWeek(year, weekNr);
 
         if (selectedDepartments == null || !selectedDepartments.Any())
@@ -196,7 +196,7 @@ public class ClockedHoursController : Controller
 
         if (year == null || weekNumber == null)
         {
-            CultureInfo ci = new CultureInfo("nl-NL");
+            CultureInfo ci = CultureInfo.CurrentCulture;
             Calendar calendar = ci.Calendar;
 
             year = (short)DateTime.Now.Year;

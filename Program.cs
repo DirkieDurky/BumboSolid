@@ -3,6 +3,8 @@ using BumboSolid.Data;
 using Microsoft.AspNetCore.Identity;
 using BumboSolid.Data.Models;
 using BumboSolid.HelperClasses;
+using System.Globalization;
+using Microsoft.AspNetCore.Localization;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -34,6 +36,7 @@ builder.Services.AddIdentity<User, IdentityRole<int>>(options =>
     options.Lockout.MaxFailedAccessAttempts = 5;
 }).AddEntityFrameworkStores<BumboDbContext>()
   .AddDefaultTokenProviders();
+
 // Configure authentication cookie settings
 builder.Services.ConfigureApplicationCookie(options =>
 {
@@ -56,6 +59,12 @@ using (var scope = app.Services.CreateScope())
 
     UserAndRoleSeeder.SeedData(userManager, roleManager);
 }
+
+// Set application to dd/mm/yy
+app.UseRequestLocalization(new RequestLocalizationOptions
+{
+    DefaultRequestCulture = new RequestCulture("nl-NL"),
+});
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
