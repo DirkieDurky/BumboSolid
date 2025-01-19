@@ -15,7 +15,6 @@
             <span class="text-danger">@ViewBag.Error</span>
             <form action="Login" method="post">
                 <hr />
-                <div asp-validation-summary="All" class="text-danger"></div>
                 <div class="form-group mb-3">
                     <label asp-for="Email" class="form-label">Email</label>
                     <input asp-for="Email" class="form-control" />
