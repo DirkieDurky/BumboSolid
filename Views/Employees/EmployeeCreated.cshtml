@@ -1,0 +1,29 @@
+﻿@{
+    ViewData["Title"] = "Medewerker Aangemaakt";
+}
+
+<div class="container mt-5">
+    <div class="alert alert-success" role="alert">
+        <p>U heeft succesvol een nieuwe medewerker aangemaakt.</p>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <h5 class="card-title">Wachtwoord</h5>
+        </div>
+        <div class="card-body">
+            <p class="card-text">
+                Het automatisch gegenereerde wachtwoord voor de nieuwe werknemer is:
+            </p>
+            <p class="display-4 text-center">
+                <strong>@ViewBag.GeneratedPassword</strong>
+            </p>
+        </div>
+    </div>
+
+    <div class="mt-4 text-center">
+        <a class="btn btn-primary" href="@Url.Action("Index", "Employees")">
+            Terug naar de lijst van medewerkers
+        </a>
+    </div>
+</div>
