@@ -63,17 +63,84 @@
         <form asp-controller="Account" asp-action="ChangePassword" method="post" class="mt-4">
             <div class="mb-3">
                 <label for="CurrentPassword" class="form-label">Huidig wachtwoord</label>
-                <input type="password" name="CurrentPassword" class="form-control" id="CurrentPassword" required />
+                <div class="input-group">
+                    <input type="password" name="CurrentPassword" class="form-control" id="CurrentPassword" required />
+                    <button type="button" id="toggleCurrentPassword" class="btn btn-outline-secondary">
+                        <i class="fa fa-eye"></i>
+                    </button>
+                </div>
             </div>
+
             <div class="mb-3">
                 <label for="NewPassword" class="form-label">Nieuw wachtwoord</label>
-                <input type="password" name="NewPassword" class="form-control" id="NewPassword" required />
+                <div class="input-group">
+                    <input type="password" name="NewPassword" class="form-control" id="NewPassword" required />
+                    <button type="button" id="toggleNewPassword" class="btn btn-outline-secondary">
+                        <i class="fa fa-eye"></i>
+                    </button>
+                </div>
             </div>
+
             <div class="mb-3">
                 <label for="ConfirmPassword" class="form-label">Bevestig nieuw wachtwoord</label>
-                <input type="password" name="ConfirmPassword" class="form-control" id="ConfirmPassword" required />
+                <div class="input-group">
+                    <input type="password" name="ConfirmPassword" class="form-control" id="ConfirmPassword" required />
+                    <button type="button" id="toggleConfirmPassword" class="btn btn-outline-secondary">
+                        <i class="fa fa-eye"></i>
+                    </button>
+                </div>
             </div>
+
             <button type="submit" class="btn btn-primary">Wachtwoord wijzigen</button>
         </form>
     }
+}
+
+@section Scripts {
+    <script>
+        // Toggle visibility for Current Password
+        document.getElementById("toggleCurrentPassword").addEventListener("click", function() {
+            var passwordField = document.getElementById("CurrentPassword");
+            var icon = this.querySelector("i");
+            if (passwordField.type === "password") {
+                passwordField.type = "text";
+                icon.classList.remove("fa-eye");
+                icon.classList.add("fa-eye-slash");
+            } else {
+                passwordField.type = "password";
+                icon.classList.remove("fa-eye-slash");
+                icon.classList.add("fa-eye");
+            }
+        });
+
+        // Toggle visibility for New Password
+        document.getElementById("toggleNewPassword").addEventListener("click", function() {
+            var passwordField = document.getElementById("NewPassword");
+            var icon = this.querySelector("i");
+            if (passwordField.type === "password") {
+                passwordField.type = "text";
+                icon.classList.remove("fa-eye");
+                icon.classList.add("fa-eye-slash");
+            } else {
+                passwordField.type = "password";
+                icon.classList.remove("fa-eye-slash");
+                icon.classList.add("fa-eye");
+            }
+        });
+
+        // Toggle visibility for Confirm Password
+        document.getElementById("toggleConfirmPassword").addEventListener("click", function() {
+            var confirmPasswordField = document.getElementById("ConfirmPassword");
+            var icon = this.querySelector("i");
+            if (confirmPasswordField.type === "password") {
+                confirmPasswordField.type = "text";
+                icon.classList.remove("fa-eye");
+                icon.classList.add("fa-eye-slash");
+            } else {
+                confirmPasswordField.type = "password";
+                icon.classList.remove("fa-eye-slash");
+                icon.classList.add("fa-eye");
+            }
+        });
+    </script>
 }
