@@ -50,7 +50,7 @@ public class ScheduleManagerController(BumboDbContext context) : Controller
             .Include(s => s.Employee)
             .ToListAsync();
 
-        var culture = new CultureInfo("nl-NL");
+        var culture = CultureInfo.CurrentCulture;
         var today = DateTime.Now;
         var currentYear = (short)today.Year;
         var currentWeekNumber = (byte)culture.Calendar.GetWeekOfYear(today, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Monday);
@@ -111,7 +111,7 @@ public class ScheduleManagerController(BumboDbContext context) : Controller
         short year = currentWeek.Year;
         byte week = currentWeek.WeekNumber;
 
-        CultureInfo ci = new("nl-NL");
+        CultureInfo ci = CultureInfo.CurrentCulture;
         Calendar calendar = ci.Calendar;
 
         if (currentWeek.PrognosisDays.Count == 7)
@@ -162,7 +162,7 @@ public class ScheduleManagerController(BumboDbContext context) : Controller
 
     private async Task<Week> GetCurrentWeek(int? id)
     {
-        var culture = new CultureInfo("nl-NL");
+        var culture = CultureInfo.CurrentCulture;
         var today = DateTime.Now;
         var currentYear = (short)today.Year;
         var currentWeekNumber = (byte)culture.Calendar.GetWeekOfYear(today, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Monday);
@@ -187,7 +187,7 @@ public class ScheduleManagerController(BumboDbContext context) : Controller
 
     private async Task<SchedulesViewModel> GetSchedulesViewModel(Week currentWeek)
     {
-        var culture = new CultureInfo("nl-NL");
+        var culture = CultureInfo.CurrentCulture;
         var today = DateTime.Now;
         var currentYear = (short)today.Year;
         var currentWeekNumber = (byte)culture.Calendar.GetWeekOfYear(today, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Monday);

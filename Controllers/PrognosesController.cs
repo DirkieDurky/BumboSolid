@@ -52,7 +52,7 @@ public class PrognosesController : Controller
     [HttpGet("Aanmaken")]
     public IActionResult Create()
     {
-        CultureInfo ci = new CultureInfo("nl-NL");
+        CultureInfo ci = CultureInfo.CurrentCulture;
         Calendar calendar = ci.Calendar;
 
         //Create prognosis for next week

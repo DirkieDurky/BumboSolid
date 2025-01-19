@@ -11,8 +11,8 @@
     // Function to calculate the first date of the week (Monday)
     DateTime GetStartDate(int year, int week)
     {
-        var cultureInfo = new System.Globalization.CultureInfo("en-US");
-        var calendar = cultureInfo.Calendar;
+        var ci = System.Globalization.CultureInfo.CurrentCulture;
+        var calendar = ci.Calendar;
 
         var jan1 = new DateTime(year, 1, 1);
         var firstDayOfWeek = jan1.AddDays((week - 1) * 7 - (int)jan1.DayOfWeek + (int)DayOfWeek.Monday);
