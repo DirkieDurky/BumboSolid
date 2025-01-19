@@ -2,37 +2,44 @@
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
 
-<h2>Login</h2>
+<div class="container mt-5">
+    <div class="row justify-content-center align-items-center">
+        <!-- Image Section -->
+        <div class="col-md-5 text-center d-none d-md-block">
+            <img src="~/images/bumbologo.png" alt="Login Illustration" class="login-image" />
+        </div>
 
-<div class="row">
-    <div class="col-md-4">
-        <span class="text-danger">@ViewBag.Error</span>
-        <form action"="Login" method="post">
-            <hr />
-            <div asp-validation-summary="All" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="Email"></label>
-                <input asp-for="Email" class="form-control" />
-                <span asp-validation-for="Email" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Password"></label>
-                <div class="password-input-container">
-                    <input asp-for="Password" class="form-control" />
-                    <button type="button" id="togglePassword" class="eye-btn">
-                        <i class="fas fa-eye"></i>
-                    </button>
+        <!-- Login Form Section -->
+        <div class="col-md-4">
+            <h2 class="text-center">Log in met je Bumbo account!</h2>
+            <span class="text-danger">@ViewBag.Error</span>
+            <form action="Login" method="post">
+                <hr />
+                <div asp-validation-summary="All" class="text-danger"></div>
+                <div class="form-group mb-3">
+                    <label asp-for="Email" class="form-label">Email</label>
+                    <input asp-for="Email" class="form-control" />
+                    <span asp-validation-for="Email" class="text-danger"></span>
                 </div>
-                <span asp-validation-for="Password" class="text-danger"></span>
-            </div>
-            <button type="submit" class="btn early-btn btn-primary">Login</button>
-        </form>
+                <div class="form-group mb-3">
+                    <label asp-for="Password" class="form-label">Password</label>
+                    <div class="input-group">
+                        <input asp-for="Password" class="form-control" id="Password" />
+                        <button type="button" id="togglePassword" class="btn btn-outline-secondary">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                    <span asp-validation-for="Password" class="text-danger"></span>
+                </div>
+                <button type="submit" class="btn early-btn new-btn w-100 mt-3 bumbo-yellow">Login</button>
+            </form>
+        </div>
     </div>
 </div>
 
 @section Scripts {
     <script>
-        document.getElementById("togglePassword").addEventListener("click", function() {
+        document.getElementById("togglePassword").addEventListener("click", function () {
             var passwordField = document.getElementById("Password");
             var icon = this.querySelector("i");
             if (passwordField.type === "password") {
@@ -41,20 +48,6 @@
                 icon.classList.add("fa-eye-slash");
             } else {
                 passwordField.type = "password";
-                icon.classList.remove("fa-eye-slash");
-                icon.classList.add("fa-eye");
-            }
-        });
-
-        document.getElementById("toggleConfirmPassword").addEventListener("click", function() {
-            var confirmPasswordField = document.getElementById("ConfirmPassword");
-            var icon = this.querySelector("i");
-            if (confirmPasswordField.type === "password") {
-                confirmPasswordField.type = "text";
-                icon.classList.remove("fa-eye");
-                icon.classList.add("fa-eye-slash");
-            } else {
-                confirmPasswordField.type = "password";
                 icon.classList.remove("fa-eye-slash");
                 icon.classList.add("fa-eye");
             }
