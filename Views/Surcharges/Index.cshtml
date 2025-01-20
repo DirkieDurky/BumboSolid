@@ -1,0 +1,25 @@
+﻿
+@{
+    ViewData["Title"] = "Index";
+}
+
+<header class="d-flex align-items-center gap-3 justify-content-center gap-3">
+    <div class="w-100 d-flex justify-content-end">
+        @* <a class="btn new-btn @(Model.PreviousWeekId == null ? "disabled" : "")" *@
+        @*    asp-action="EmployeeSchedule" asp-route-id="@Model.PreviousWeekId"> *@
+        @*     Vorige Week *@
+        @* </a> *@
+        <a class="btn new-btn">INSERT VORIGE WEEK</a>
+    </div>
+    <div class="mx-3 text-center text-nowrap">
+        <h1>Toeslagen</h1>
+        <p>INSERT WEEK DATA</p>
+    </div>
+    <div class="w-100">
+        @* <a class="btn new-btn @(Model.NextWeekId == null ? "disabled" : "")" *@
+        @*    asp-action="EmployeeSchedule" asp-route-id="@Model.NextWeekId"> *@
+        @*     Volgende Week *@
+        @* </a> *@
+        <a class="btn new-btn">INSERT VOLGENDE WEEK</a>
+    </div>
+</header>
