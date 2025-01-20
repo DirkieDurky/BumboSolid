@@ -44,7 +44,7 @@ namespace UnitTests
 
         // If both breakminduration and breakworkduration are filled in return true
         [Fact]
-        public void Compare_BothMindAndMaxBreakDuration_True()
+        public void Compare_BothMinAndMaxBreakDuration_True()
         {
             CLAManageViewModel model = new()
             {
@@ -61,7 +61,7 @@ namespace UnitTests
 
         // If breakminduration is filled and breakworkduration is not return false
         [Fact]
-        public void Compare_OnlyMindBreakDuration_False()
+        public void Compare_OnlyMinBreakDuration_False()
         {
             CLAManageViewModel model = new()
             {
