@@ -18,6 +18,8 @@ public partial class BumboDbContext : IdentityDbContext<User, IdentityRole<int>,
 
     public virtual DbSet<AvailabilityRule> AvailabilityRules { get; set; }
 
+    public virtual DbSet<Absence> Absences { get; set; }
+
     public virtual DbSet<CLABreakEntry> CLABreakEntries { get; set; }
 
     public virtual DbSet<CLAEntry> CLAEntries { get; set; }
@@ -72,6 +74,29 @@ public partial class BumboDbContext : IdentityDbContext<User, IdentityRole<int>,
                 .HasForeignKey(d => d.Employee)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_AvailabilityRule_Employee");
+        });
+
+        modelBuilder.Entity<Absence>(entity =>
+        {
+            entity.HasKey("Id");
+
+            entity.ToTable("Absence");
+
+            entity.HasIndex(e => e.WeekId, "IX_Absence_WeekID");
+
+            entity.HasIndex(e => e.EmployeeId, "IX_Absence_EmployeeID");
+
+            entity.Property(e => e.WeekId).HasColumnName("WeekId");
+            entity.Property(e => e.EmployeeId).HasColumnName("EmployeeID");
+
+            entity.HasOne(d => d.Week).WithMany(p => p.Absences)
+                .HasForeignKey(d => d.WeekId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_Absence_Week");
+
+            entity.HasOne(d => d.Employee).WithMany(p => p.Absences)
+                .HasForeignKey(d => d.EmployeeId)
+                .HasConstraintName("FK_Absence_Employee");
         });
 
         modelBuilder.Entity<CLABreakEntry>(entity =>
@@ -205,10 +230,6 @@ public partial class BumboDbContext : IdentityDbContext<User, IdentityRole<int>,
 
             entity.HasIndex(e => e.SubstituteEmployeeId, "IX_FillRequest_SubstituteEmployeeID");
 
-            entity.Property(e => e.AbsentDescription)
-                .HasMaxLength(255)
-                .IsUnicode(false)
-                .HasColumnName("Absent_Description");
             entity.Property(e => e.ShiftId).HasColumnName("ShiftID");
             entity.Property(e => e.SubstituteEmployeeId).HasColumnName("SubstituteEmployeeID");
 
