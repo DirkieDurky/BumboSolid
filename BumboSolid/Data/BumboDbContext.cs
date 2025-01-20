@@ -22,6 +22,8 @@ public partial class BumboDbContext : IdentityDbContext<User, IdentityRole<int>,
 
     public virtual DbSet<CLABreakEntry> CLABreakEntries { get; set; }
 
+    public virtual DbSet<CLASurchargeEntry> CLASurchargeEntries { get; set; }
+
     public virtual DbSet<CLAEntry> CLAEntries { get; set; }
 
     public virtual DbSet<Department> Departments { get; set; }
@@ -51,6 +53,7 @@ public partial class BumboDbContext : IdentityDbContext<User, IdentityRole<int>,
     public virtual DbSet<Weather> Weathers { get; set; }
 
     public virtual DbSet<Week> Weeks { get; set; }
+
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
@@ -113,7 +116,21 @@ public partial class BumboDbContext : IdentityDbContext<User, IdentityRole<int>,
                 .HasConstraintName("FK_CLABreakEntry_CLAEntry");
         });
 
-        modelBuilder.Entity<CLAEntry>(entity =>
+		modelBuilder.Entity<CLASurchargeEntry>(entity =>
+		{
+			entity.HasKey(e => e.Id);
+
+			entity.ToTable("CLASurchargeEntry");
+
+			entity.Property(e => e.CLAEntryId).HasColumnName("CLAEntryId");
+
+			entity.HasOne(d => d.CLAEntry).WithMany(p => p.CLASurchargeEntries)
+				.HasForeignKey(d => d.CLAEntryId)
+				.OnDelete(DeleteBehavior.ClientSetNull)
+				.HasConstraintName("FK_CLASurchargeEntry_CLAEntry");
+		});
+
+		modelBuilder.Entity<CLAEntry>(entity =>
         {
             entity.ToTable("CLAEntry");
 

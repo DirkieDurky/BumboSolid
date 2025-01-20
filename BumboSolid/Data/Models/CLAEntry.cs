@@ -24,5 +24,9 @@ public partial class CLAEntry
 
     public int? MaxShiftDuration { get; set; }
 
+	public int? HolidaySurcharge { get; set; }
+
     public virtual List<CLABreakEntry> CLABreakEntries { get; set; } = new List<CLABreakEntry>();
+
+    public virtual List<CLASurchargeEntry> CLASurchargeEntries { get; set; } = [];
 }
