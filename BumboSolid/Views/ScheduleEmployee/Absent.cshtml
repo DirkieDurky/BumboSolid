@@ -1,0 +1,38 @@
+﻿@model BumboSolid.Models.AbsenceViewModel
+
+@{
+    ViewData["Title"] = "Afmelden";
+}
+
+<header class="d-flex align-items-center gap-3 justify-content-center gap-3">
+    <div class="w-100 text-align text-end">
+        <a class="new-btn" asp-controller="ScheduleEmployee" asp-action="EmployeeSchedule">Annuleren</a>
+    </div>
+    <div class="mx-3 text-center text-nowrap">
+        <h1>Afmelden</h1>
+        <p>@Model.Weekday - @Model.Department</p>
+    </div>
+    <div class="w-100"></div>
+</header>
+
+<form asp-action="AbsentConfirmed">
+    <input type="hidden" asp-for="ShiftId" />
+    <div class="row pb-3">
+        <div class="form-group col-5">
+            <label class="control-label fw-bold">Starttijd</label>
+            <input asp-for="StartTime" class="form-control" value="@Model.StartTime" />
+            <span asp-validation-for="StartTime" class="text-danger"></span>
+        </div>
+        <div class="form-group col-5">
+            <label class="control-label fw-bold">Eindtijd</label>
+            <input asp-for="EndTime" class="form-control" value="@Model.EndTime" />
+            <span asp-validation-for="EndTime" class="text-danger"></span>
+        </div>
+    </div>
+    <div class="form-group col-5 pb-3">
+        <label class="control-label fw-bold">Reden</label>
+        <input asp-for="Description" class="form-control" />
+        <span asp-validation-for="Description" class="text-danger"></span>
+    </div>
+    <button type="submit" class="btn btn-danger">Afmelden</button>
+</form>

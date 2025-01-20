@@ -87,9 +87,9 @@
                                             <a asp-action="SendFillRequest" asp-route-id="@shift.Id" class="btn new-btn w-100 @(shift.FillRequests.Any() ? "disabled" : "")">
                                                 <i class="fa-solid fa-exchange-alt"></i>
                                             </a>
-                                            <!--<a asp-action="CancelShift" asp-route-id="@shift.Id" class="btn new-btn w-100"> // NONFUNCTIONAL
+                                            <a asp-action="Absent" asp-route-id="@shift.Id" class="btn new-btn w-100">
                                                  <i class="fa-solid fa-ban"></i>
-                                             </a> -->
+                                             </a> 
                                         </div>
                                     </div>
                                 </li>
