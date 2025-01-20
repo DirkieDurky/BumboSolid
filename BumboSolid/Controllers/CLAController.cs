@@ -33,11 +33,12 @@ public class CLAController : Controller
     {
         List<ICLALogic> validateRules =
         [
-            new CLAAgeWithinRangeLogic(),
             new CLAgeEndAfterAgeStartLogic(),
             new CLASevenWeekDaysLogic(),
             new CLATimeInDayLogic(),
-            new CLATimeInWeekLogic(),
+            new CLAValidTimePerWeekLogic(),
+            new CLAValidTimePerFourWeekAverageLogic(),
+            new CLAValidTimePerHolidayWeekLogic(),
             new CLAViewModelNotEmptyLogic(),
             new CLANoBreakWithoutWorkLimitLogic(),
             new CLANoMinuteDecimalsLogic(),
