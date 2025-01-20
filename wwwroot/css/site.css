@@ -718,3 +718,15 @@ th, td {
 
 
 /* Schedule View Details Manager END */
+
+.login-image {
+    max-width: 100%;
+    height: auto;
+    max-height: 300px;
+    object-fit: contain;
+    margin-bottom: 20px; 
+}
+
+.bumbo-yellow {
+    background-color: #fbc500;
+}
