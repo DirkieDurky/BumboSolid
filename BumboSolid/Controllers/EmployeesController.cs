@@ -90,6 +90,16 @@ public class EmployeesController : Controller
             ModelState.AddModelError(nameof(input.EmployedSince), employmentErrorMessage);
         }
 
+        if (!PasswordIsStrongEnough(input.Password))
+        {
+            ModelState.AddModelError(nameof(input.Password), "Wachtwoord is niet sterk genoeg. Zorg dat uw wachtwoord voldoet aan de aangegeven regels. Het speciale karakter moet één van de volgende karakters zijn (!@#$%^&*()_+-=[]{}|`~)");
+        }
+
+        if (input.Password != input.ConfirmPassword)
+        {
+            ModelState.AddModelError(nameof(input.Password), "De wachtwoorden komen niet overeen.");
+        }
+
         if (!input.SelectedDepartments.Any())
         {
             ModelState.AddModelError("SelectedDepartments", "Kies minstens één afdeling.");
@@ -97,8 +107,6 @@ public class EmployeesController : Controller
 
         if (ModelState.IsValid)
         {
-            string generatedPassword = GeneratePassword();
-
             var user = new User
             {
                 UserName = input.Email,
@@ -111,19 +119,16 @@ public class EmployeesController : Controller
                 BirthDate = input.BirthDate,
                 EmployedSince = input.EmployedSince,
                 Departments = await _context.Departments
-                    .Where(d => input.SelectedDepartments.Contains(d.Name))
-                    .ToListAsync(),
+                .Where(d => input.SelectedDepartments.Contains(d.Name))
+                .ToListAsync(),
             };
 
-            var result = await _userManager.CreateAsync(user, generatedPassword);
+            var result = await _userManager.CreateAsync(user, input.Password);
 
             if (result.Succeeded)
             {
                 await _userManager.AddToRoleAsync(user, "Employee");
-
-                TempData["GeneratedPassword"] = generatedPassword;
-
-                return RedirectToAction("EmployeeCreated");
+                return RedirectToAction("Index");
             }
             else
             {
@@ -137,6 +142,7 @@ public class EmployeesController : Controller
         input.Departments = await _context.Departments.ToListAsync();
         return View(input);
     }
+
 
     [HttpGet("Bewerken/{id:int}")]
     public async Task<IActionResult> Edit(int id)
@@ -314,21 +320,6 @@ public class EmployeesController : Controller
         return RedirectToAction(nameof(Index));
     }
 
-    [HttpGet("MedewerkerAangemaakt")]
-    public IActionResult EmployeeCreated()
-    {
-        var generatedPassword = TempData["GeneratedPassword"]?.ToString();
-
-        if (string.IsNullOrEmpty(generatedPassword))
-        {
-            TempData["ErrorMessage"] = "Er is een fout opgetreden bij het genereren van het wachtwoord.";
-            return RedirectToAction("Index");
-        }
-
-        ViewBag.GeneratedPassword = generatedPassword;
-        return View();
-    }
-
     private bool IsValidAge(DateOnly birthDate, out string errorMessage)
     {
         errorMessage = null;
@@ -375,33 +366,4 @@ public class EmployeesController : Controller
         return Regex.IsMatch(password, passwordRegex);
     }
 
-    private string GeneratePassword()
-    {
-        const int length = 12;
-        const string upperCase = "ABCDEFGHJKLMNOPQRSTUVWXYZ";
-        const string lowerCase = "abcdefghijklmnopqrstuvwxyz";
-        const string digits = "0123456789";
-        const string specialChars = "!@#$%^&*?_-=+";
-
-        var random = new Random();
-
-        // Ensure the password contains at least one character from each required set
-        var password = new List<char>
-    {
-        upperCase[random.Next(upperCase.Length)],
-        lowerCase[random.Next(lowerCase.Length)],
-        digits[random.Next(digits.Length)],
-        specialChars[random.Next(specialChars.Length)]
-    };
-
-        // Fill the rest of the password with a mix of all valid characters
-        var allChars = upperCase + lowerCase + digits + specialChars;
-        for (int i = password.Count; i < length; i++)
-        {
-            password.Add(allChars[random.Next(allChars.Length)]);
-        }
-
-        // Shuffle the password to ensure randomness
-        return new string(password.OrderBy(_ => random.Next()).ToArray());
-    }
 }

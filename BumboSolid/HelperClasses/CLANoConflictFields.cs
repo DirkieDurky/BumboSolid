@@ -11,7 +11,7 @@ public class CLANoConflictFields : ICLANoConflictFields
         if (existingEntry == null) return true;
         var conflictFields = new List<string>();
 
-        //Checks individual fields for having entries in filled in agerange
+        // Checks individual fields for having entries in filled in agerange
         if (existingEntry.MaxWorkDurationPerDay.HasValue && model.MaxWorkDurationPerDay.HasValue)
             conflictFields.Add(nameof(model.MaxWorkDurationPerDay));
         if (existingEntry.MaxWorkDaysPerWeek.HasValue && model.MaxWorkDaysPerWeek.HasValue)
