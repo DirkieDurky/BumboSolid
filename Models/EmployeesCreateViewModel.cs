@@ -11,17 +11,6 @@ public class EmployeesCreateViewModel
     public string Email { get; set; }
 
     [Required]
-    [DataType(DataType.Password)]
-    [StringLength(256)]
-    public string Password { get; set; }
-
-    [Required]
-    [Compare("Password", ErrorMessage = "Komt niet overeen met het wachtwoord.")]
-    [DataType(DataType.Password)]
-    [StringLength(256)]
-    public string ConfirmPassword { get; set; }
-
-    [Required]
     [StringLength(45)]
     public string FirstName { get; set; }
 
