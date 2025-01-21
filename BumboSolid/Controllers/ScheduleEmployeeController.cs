@@ -175,7 +175,7 @@ public class ScheduleEmployeeController : Controller
 			// Checking if this shift does not break any CAO rules
 			var userAge = (DateTime.Today - user.BirthDate.ToDateTime(new TimeOnly())).Days/365;
 			var CLAs = _context.CLAEntries.Where(a => (a.AgeStart <= userAge && a.AgeEnd >= userAge) || (a.AgeStart <= userAge && a.AgeEnd == null) || (a.AgeStart == null && a.AgeEnd >= userAge) || (a.AgeStart == null && a.AgeEnd == null)).ToList();
-            var allShifts = _context.Shifts.ToList();
+            var allShifts = _context.Shifts.Include(w => w.Week).ToList();
 			validShift = new CLAApplyRules().ApplyCLARules(shift, CLAs, allShifts);
 
 			// Getting shift user (TODO external employee makes fill request might crash)
@@ -264,7 +264,7 @@ public class ScheduleEmployeeController : Controller
 		var user = await _userManager.GetUserAsync(User);
 		var userAge = (DateTime.Today - user.BirthDate.ToDateTime(new TimeOnly())).Days / 365;
 		var CLAs = _context.CLAEntries.Where(a => (a.AgeStart <= userAge && a.AgeEnd >= userAge) || (a.AgeStart <= userAge && a.AgeEnd == null) || (a.AgeStart == null && a.AgeEnd >= userAge) || (a.AgeStart == null && a.AgeEnd == null)).ToList();
-		var allShifts = _context.Shifts.ToList();
+		var allShifts = _context.Shifts.Include(w => w.Week).ToList();
 		validShift = new CLAApplyRules().ApplyCLARules(fillRequest.Shift, CLAs, allShifts);
 
 		fillRequest.SubstituteEmployee = await _userManager.GetUserAsync(User);

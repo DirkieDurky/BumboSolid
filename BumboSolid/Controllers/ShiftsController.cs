@@ -52,6 +52,7 @@ public class ShiftsController : Controller
 
         shiftCreateViewModel.Week = week;
         shiftCreateViewModel.Shift.Week = week;
+        shiftCreateViewModel.Shift.WeekId = weekId;
 		shiftCreateViewModel.Employees = await _context.Employees.ToListAsync();
 
         ViewBag.Departments = new SelectList(_context.Departments, "Name", "Name", shiftCreateViewModel.Shift.Department);
@@ -62,7 +63,7 @@ public class ShiftsController : Controller
 		var user = await _userManager.GetUserAsync(User);
 		var userAge = (DateTime.Today - user.BirthDate.ToDateTime(new TimeOnly())).Days / 365;
 		var CLAs = _context.CLAEntries.Where(a => (a.AgeStart <= userAge && a.AgeEnd >= userAge) || (a.AgeStart <= userAge && a.AgeEnd == null) || (a.AgeStart == null && a.AgeEnd >= userAge) || (a.AgeStart == null && a.AgeEnd == null)).ToList();
-		var allShifts = _context.Shifts.ToList();
+		var allShifts = _context.Shifts.Include(w => w.Week).ToList();
 		validShift = new CLAApplyRules().ApplyCLARules(shiftCreateViewModel.Shift, CLAs, allShifts);
 
         if (!validShift)
@@ -125,6 +126,7 @@ public class ShiftsController : Controller
 
         shiftCreateViewModel.Week = week;
 		shiftCreateViewModel.Shift.Week = week;
+		shiftCreateViewModel.Shift.WeekId = week.Id;
 		shiftCreateViewModel.Employees = await _context.Employees.ToListAsync();
 
         ViewBag.Departments = new SelectList(_context.Departments, "Name", "Name", shiftCreateViewModel.Shift.Department);
@@ -135,7 +137,7 @@ public class ShiftsController : Controller
 		var user = await _userManager.GetUserAsync(User);
 		var userAge = (DateTime.Today - user.BirthDate.ToDateTime(new TimeOnly())).Days / 365;
 		var CLAs = _context.CLAEntries.Where(a => (a.AgeStart <= userAge && a.AgeEnd >= userAge) || (a.AgeStart <= userAge && a.AgeEnd == null) || (a.AgeStart == null && a.AgeEnd >= userAge) || (a.AgeStart == null && a.AgeEnd == null)).ToList();
-		var allShifts = _context.Shifts.ToList();
+		var allShifts = _context.Shifts.Include(w => w.Week).ToList();
 		validShift = new CLAApplyRules().ApplyCLARules(shiftCreateViewModel.Shift, CLAs, allShifts);
 
 		if (!validShift)
