@@ -11,13 +11,10 @@ namespace BumboSolid.HelperClasses.CLARules
 			foreach (CLAEntry CLA in CLAs)
 			{
 				// Shift duration
-				if ((shift.EndTime - shift.StartTime).TotalMinutes > CLA.MaxShiftDuration) validShift = false;
+				if (ShiftDuration(shift, CLA) == false) validShift = false;
 
 				// Average works hours over a span of 4 weeks
-				var lastFourWeeksShifts = shifts.Where(s => s.EmployeeId == userId && shift.Week.WeekNumber - s.Week.WeekNumber < 3 && s.Week.Year == shift.Week.Year).ToList();
-				var lastFourWeeksTotalMinutes = (shift.EndTime - shift.StartTime).Minutes;
-				foreach (Shift pastShift in lastFourWeeksShifts) lastFourWeeksTotalMinutes = lastFourWeeksTotalMinutes + (pastShift.EndTime - pastShift.StartTime).Minutes;
-				if (lastFourWeeksTotalMinutes > CLA.MaxAvgWeeklyWorkDurationOverFourWeeks) validShift = false;
+				if (AvgWorkHoursOverFourWeeks(shift, CLA, shifts, userId) == false) validShift = false;
 
 				// Latest work time
 				if (shift.EndTime > CLA.LatestWorkTime) validShift = false;
@@ -45,6 +42,21 @@ namespace BumboSolid.HelperClasses.CLARules
 			}
 
 			return validShift;
+		}
+
+		public bool ShiftDuration(Shift shift, CLAEntry CLA)
+		{
+			if ((shift.EndTime - shift.StartTime).TotalMinutes > CLA.MaxShiftDuration) return false;
+			return true;
+		}
+
+		public bool AvgWorkHoursOverFourWeeks(Shift shift, CLAEntry CLA, List<Shift> shifts, int userId)
+		{
+			var lastFourWeeksShifts = shifts.Where(s => s.EmployeeId == userId && shift.Week.WeekNumber - s.Week.WeekNumber < 4 && s.Week.Year == shift.Week.Year).ToList();
+			var lastFourWeeksTotalMinutes = (shift.EndTime - shift.StartTime).TotalMinutes;
+			foreach (Shift pastShift in lastFourWeeksShifts) lastFourWeeksTotalMinutes = lastFourWeeksTotalMinutes + (pastShift.EndTime - pastShift.StartTime).TotalMinutes;
+			if (lastFourWeeksTotalMinutes > (CLA.MaxAvgWeeklyWorkDurationOverFourWeeks*4)) return false;
+			return true;
 		}
 	}
 }
