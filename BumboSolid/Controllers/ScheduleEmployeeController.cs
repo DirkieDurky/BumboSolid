@@ -259,11 +259,16 @@ public class ScheduleEmployeeController : Controller
         // Check if this FillRequest has not already been accepted
         if (fillRequest.SubstituteEmployee != null) return RedirectToAction(nameof(EmployeeSchedule));
 
-        // Check if the fillrequest does not break any CLA rules has to be implemented later when the heplerclasses have been implemented
+        // Checking if this shift does not break any CAO rules
+        bool validShift = true;
+		var user = await _userManager.GetUserAsync(User);
+		var userAge = (DateTime.Today - user.BirthDate.ToDateTime(new TimeOnly())).Days / 365;
+		var CLAs = _context.CLAEntries.Where(a => (a.AgeStart <= userAge && a.AgeEnd >= userAge) || (a.AgeStart <= userAge && a.AgeEnd == null) || (a.AgeStart == null && a.AgeEnd >= userAge) || (a.AgeStart == null && a.AgeEnd == null)).ToList();
+		var allShifts = _context.Shifts.ToList();
+		validShift = new CLAApplyRules().ApplyCLARules(fillRequest.Shift, CLAs, allShifts, user.Id);
 
-        fillRequest.SubstituteEmployee = await _userManager.GetUserAsync(User);
-        Console.WriteLine(ModelState.IsValid);
-        if (ModelState.IsValid)
+		fillRequest.SubstituteEmployee = await _userManager.GetUserAsync(User);
+        if (ModelState.IsValid && validShift)
         {
             _context.FillRequests.Update(fillRequest);
             _context.SaveChanges();
