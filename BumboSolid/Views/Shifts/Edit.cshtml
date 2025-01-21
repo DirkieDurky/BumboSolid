@@ -53,7 +53,9 @@
         <form asp-action="Edit">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input asp-for="Shift.Id" type="hidden" value="@Model.Shift.Id" />
-            <input asp-for="Shift.WeekId" type="hidden" value="@Model.Week.Id" />
+            <input asp-for="Week.Id" type="hidden" value="@Model.Week.Id" />
+            <input asp-for="Week.Year" type="hidden" value="@Model.Week.Year" />
+            <input asp-for="Week.WeekNumber" type="hidden" value="@Model.Week.WeekNumber" />
             <div class="row pb-2">
                 <div class="form-group col-md-6">
                     <label class="control-label fw-bold">Medewerker</label>
@@ -113,6 +115,12 @@
             <div class="form-group">
                 <input type="submit" value="Opslaan" class="new-btn w-100" />
             </div>
+            @if (!string.IsNullOrEmpty(ViewBag.Error))
+            {
+                <div class="alert alert-danger mt-3">
+                    @ViewBag.Error
+                </div>
+            }
         </form>
     </div>
 </div>

@@ -51,7 +51,7 @@ public class ShiftsController : Controller
         if (week == null) return NotFound();
 
         shiftCreateViewModel.Week = week;
-        shiftCreateViewModel.Employees = await _context.Employees.ToListAsync();
+		shiftCreateViewModel.Employees = await _context.Employees.ToListAsync();
 
         ViewBag.Departments = new SelectList(_context.Departments, "Name", "Name", shiftCreateViewModel.Shift.Department);
         ViewBag.WeekDays = new SelectList(new List<string> { "Maandag", "Dinsdag", "Woensdag", "Donderdag", "Vrijdag", "Zaterdag", "Zondag" });
@@ -64,7 +64,13 @@ public class ShiftsController : Controller
 		var allShifts = _context.Shifts.ToList();
 		validShift = new CLAApplyRules().ApplyCLARules(shiftCreateViewModel.Shift, CLAs, allShifts, user.Id);
 
-		if (!ModelState.IsValid && validShift)
+        if (!validShift)
+        {
+			ViewBag.Error = "Er worden CAO regels overtreden";
+
+			return View(shiftCreateViewModel);
+		}
+		if (!ModelState.IsValid)
         {
             return View(shiftCreateViewModel);
         }
@@ -113,10 +119,14 @@ public class ShiftsController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Edit(int id, ShiftCreateViewModel shiftCreateViewModel)
     {
-        if (id != shiftCreateViewModel.Shift.Id)
-        {
-            return NotFound();
-        }
+        var week = await _context.Weeks.FirstOrDefaultAsync(w => w.Id == shiftCreateViewModel.Week.Id);
+        if (week == null) return NotFound();
+
+        shiftCreateViewModel.Week = week;
+		shiftCreateViewModel.Employees = await _context.Employees.ToListAsync();
+
+        ViewBag.Departments = new SelectList(_context.Departments, "Name", "Name", shiftCreateViewModel.Shift.Department);
+        ViewBag.WeekDays = new SelectList(new List<string> { "Maandag", "Dinsdag", "Woensdag", "Donderdag", "Vrijdag", "Zaterdag", "Zondag" });
 
 		// Checking if this shift does not break any CAO rules
 		bool validShift = true;
@@ -126,7 +136,13 @@ public class ShiftsController : Controller
 		var allShifts = _context.Shifts.ToList();
 		validShift = new CLAApplyRules().ApplyCLARules(shiftCreateViewModel.Shift, CLAs, allShifts, user.Id);
 
-		if (!ModelState.IsValid || !validShift) return RedirectToAction(nameof(Edit), new { id });
+		if (!validShift)
+		{
+			ViewBag.Error = "Er worden CAO regels overtreden";
+
+			return View(shiftCreateViewModel);
+		}
+		if (!ModelState.IsValid) return RedirectToAction(nameof(Edit), new { id });
         try
         {
             if (shiftCreateViewModel.Shift.EmployeeId == -1)
