@@ -4,7 +4,7 @@ namespace BumboSolid.HelperClasses.CLARules
 {
 	public class CLAApplyRules
 	{
-		public bool ApplyCLARules(Shift shift, List<CLAEntry> CLAs, List<Shift> shifts, List<Holiday> holidays, int userId)
+		public bool ApplyCLARules(Shift shift, List<CLAEntry> CLAs, List<Shift> shifts, int userId)
 		{
 			bool validShift = true;
 

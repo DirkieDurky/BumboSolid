@@ -173,7 +173,7 @@ public class ScheduleEmployeeController : Controller
             if (fillRequest.SubstituteEmployee != null) validShift = false;
 
 			// Checking if this shift does not break any CAO rules
-			var userAge = DateTime.Today.Year - user.BirthDate.Year;
+			var userAge = (DateTime.Today - user.BirthDate.ToDateTime(new TimeOnly())).Days/365;
 			var CLAs = _context.CLAEntries.Where(a => (a.AgeStart <= userAge && a.AgeEnd >= userAge) || (a.AgeStart <= userAge && a.AgeEnd == null) || (a.AgeStart == null && a.AgeEnd >= userAge) || (a.AgeStart == null && a.AgeEnd == null)).ToList();
             var allShifts = _context.Shifts.ToList();
 			validShift = new CLAApplyRules().ApplyCLARules(shift, CLAs, allShifts, userId);
