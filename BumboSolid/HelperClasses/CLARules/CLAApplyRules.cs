@@ -4,9 +4,10 @@ namespace BumboSolid.HelperClasses.CLARules
 {
 	public class CLAApplyRules
 	{
-		public bool ApplyCLARules(Shift shift, List<CLAEntry> CLAs, List<Shift> shifts, int userId)
+		public bool ApplyCLARules(Shift shift, List<CLAEntry> CLAs, List<Shift> shifts)
 		{
 			bool validShift = true;
+			int userId = (int)shift.EmployeeId;
 
 			foreach (CLAEntry CLA in CLAs)
 			{
