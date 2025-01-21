@@ -4,7 +4,7 @@ namespace BumboSolid.HelperClasses.CLARules
 {
 	public class CLAApplyRules
 	{
-		public bool ApplyCLARules(Shift shift, List<CLAEntry> CLAs, List<Shift> shifts, int userId)
+		public bool ApplyCLARules(Shift shift, List<CLAEntry> CLAs, List<Shift> shifts, List<Holiday> holidays, int userId)
 		{
 			bool validShift = true;
 
@@ -38,12 +38,6 @@ namespace BumboSolid.HelperClasses.CLARules
 				if (workDays.Count > CLA.MaxWorkDaysPerWeek) validShift = false;
 
 				// Max work duration per day
-				var todayShifts = shifts.Where(s => s.EmployeeId == userId && shift.Weekday == s.Weekday && shift.Week.WeekNumber == s.Week.WeekNumber && s.Week.Year == shift.Week.Year).ToList();
-				var todayTotalMinutes = (shift.EndTime - shift.StartTime).Minutes;
-				foreach (Shift pastShift in todayShifts) todayTotalMinutes = todayTotalMinutes + (pastShift.EndTime - pastShift.StartTime).Minutes;
-				if (todayTotalMinutes > CLA.MaxWorkDurationPerDay) validShift = false;
-
-				// Max work duration per holiday week
 				var todayShifts = shifts.Where(s => s.EmployeeId == userId && shift.Weekday == s.Weekday && shift.Week.WeekNumber == s.Week.WeekNumber && s.Week.Year == shift.Week.Year).ToList();
 				var todayTotalMinutes = (shift.EndTime - shift.StartTime).Minutes;
 				foreach (Shift pastShift in todayShifts) todayTotalMinutes = todayTotalMinutes + (pastShift.EndTime - pastShift.StartTime).Minutes;
