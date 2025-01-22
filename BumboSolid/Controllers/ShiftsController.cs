@@ -5,6 +5,8 @@ using BumboSolid.Data.Models;
 using BumboSolid.Data;
 using Microsoft.AspNetCore.Authorization;
 using BumboSolid.Models;
+using BumboSolid.HelperClasses.CLARules;
+using Microsoft.AspNetCore.Identity;
 
 namespace BumboSolid.Controllers;
 
@@ -13,11 +15,13 @@ namespace BumboSolid.Controllers;
 public class ShiftsController : Controller
 {
     private readonly BumboDbContext _context;
+	private readonly UserManager<User> _userManager;
 
-    public ShiftsController(BumboDbContext context)
+	public ShiftsController(BumboDbContext context, UserManager<User> userManager)
     {
         _context = context;
-    }
+		_userManager = userManager;
+	}
 
     // GET: Shifts/Create
     [HttpGet("MedewerkerInplannen/{weekId:int}")]
@@ -47,12 +51,28 @@ public class ShiftsController : Controller
         if (week == null) return NotFound();
 
         shiftCreateViewModel.Week = week;
-        shiftCreateViewModel.Employees = await _context.Employees.ToListAsync();
+        shiftCreateViewModel.Shift.Week = week;
+        shiftCreateViewModel.Shift.WeekId = weekId;
+		shiftCreateViewModel.Employees = await _context.Employees.ToListAsync();
 
         ViewBag.Departments = new SelectList(_context.Departments, "Name", "Name", shiftCreateViewModel.Shift.Department);
         ViewBag.WeekDays = new SelectList(new List<string> { "Maandag", "Dinsdag", "Woensdag", "Donderdag", "Vrijdag", "Zaterdag", "Zondag" });
 
-        if (!ModelState.IsValid)
+		// Checking if this shift does not break any CAO rules
+		bool validShift = true;
+		var user = await _userManager.GetUserAsync(User);
+		var userAge = (DateTime.Today - user.BirthDate.ToDateTime(new TimeOnly())).Days / 365;
+		var CLAs = _context.CLAEntries.Where(a => (a.AgeStart <= userAge && a.AgeEnd >= userAge) || (a.AgeStart <= userAge && a.AgeEnd == null) || (a.AgeStart == null && a.AgeEnd >= userAge) || (a.AgeStart == null && a.AgeEnd == null)).ToList();
+		var allShifts = _context.Shifts.Include(w => w.Week).ToList();
+		validShift = new CLAApplyRules().ApplyCLARules(shiftCreateViewModel.Shift, CLAs, allShifts);
+
+        if (!validShift)
+        {
+			ViewBag.Error = "Er worden CAO regels overtreden";
+
+			return View(shiftCreateViewModel);
+		}
+		if (!ModelState.IsValid)
         {
             return View(shiftCreateViewModel);
         }
@@ -101,12 +121,32 @@ public class ShiftsController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Edit(int id, ShiftCreateViewModel shiftCreateViewModel)
     {
-        if (id != shiftCreateViewModel.Shift.Id)
-        {
-            return NotFound();
-        }
+        var week = await _context.Weeks.FirstOrDefaultAsync(w => w.Id == shiftCreateViewModel.Week.Id);
+        if (week == null) return NotFound();
 
-        if (!ModelState.IsValid) return RedirectToAction(nameof(Edit), new { id });
+        shiftCreateViewModel.Week = week;
+		shiftCreateViewModel.Shift.Week = week;
+		shiftCreateViewModel.Shift.WeekId = week.Id;
+		shiftCreateViewModel.Employees = await _context.Employees.ToListAsync();
+
+        ViewBag.Departments = new SelectList(_context.Departments, "Name", "Name", shiftCreateViewModel.Shift.Department);
+        ViewBag.WeekDays = new SelectList(new List<string> { "Maandag", "Dinsdag", "Woensdag", "Donderdag", "Vrijdag", "Zaterdag", "Zondag" });
+
+		// Checking if this shift does not break any CAO rules
+		bool validShift = true;
+		var user = await _userManager.GetUserAsync(User);
+		var userAge = (DateTime.Today - user.BirthDate.ToDateTime(new TimeOnly())).Days / 365;
+		var CLAs = _context.CLAEntries.Where(a => (a.AgeStart <= userAge && a.AgeEnd >= userAge) || (a.AgeStart <= userAge && a.AgeEnd == null) || (a.AgeStart == null && a.AgeEnd >= userAge) || (a.AgeStart == null && a.AgeEnd == null)).ToList();
+		var allShifts = _context.Shifts.Include(w => w.Week).ToList();
+		validShift = new CLAApplyRules().ApplyCLARules(shiftCreateViewModel.Shift, CLAs, allShifts);
+
+		if (!validShift)
+		{
+			ViewBag.Error = "Er worden CAO regels overtreden";
+
+			return View(shiftCreateViewModel);
+		}
+		if (!ModelState.IsValid) return RedirectToAction(nameof(Edit), new { id });
         try
         {
             if (shiftCreateViewModel.Shift.EmployeeId == -1)

@@ -6,6 +6,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
+using BumboSolid.HelperClasses.CLARules;
+using NuGet.Protocol.Core.Types;
 
 namespace BumboSolid.Controllers;
 
@@ -170,47 +172,13 @@ public class ScheduleEmployeeController : Controller
             // Checking if this FillRequest has not already been taken
             if (fillRequest.SubstituteEmployee != null) validShift = false;
 
-            // Checking if this shift does not break any CAO rules
-            var userAge = DateTime.Today.Year - user.BirthDate.Year;
-            var CLAs = _context.CLAEntries.Where(a => a.AgeStart <= userAge && a.AgeEnd >= userAge).ToList();
+			// Checking if this shift does not break any CAO rules
+			var userAge = (DateTime.Today - user.BirthDate.ToDateTime(new TimeOnly())).Days/365;
+			var CLAs = _context.CLAEntries.Where(a => (a.AgeStart <= userAge && a.AgeEnd >= userAge) || (a.AgeStart <= userAge && a.AgeEnd == null) || (a.AgeStart == null && a.AgeEnd >= userAge) || (a.AgeStart == null && a.AgeEnd == null)).ToList();
+            var allShifts = _context.Shifts.Include(w => w.Week).ToList();
+			validShift = new CLAApplyRules().ApplyCLARules(shift, CLAs, allShifts);
 
-            foreach (CLAEntry CLA in CLAs)
-            {
-                // Shift duration
-                if ((shift.EndTime - shift.StartTime).TotalMinutes > CLA.MaxShiftDuration) validShift = false;
-
-                // Average works hours over a span of 4 weeks
-                var lastFourWeeksShifts = _context.Shifts.Where(s => s.EmployeeId == userId && shift.Week.WeekNumber - s.Week.WeekNumber < 3 && s.Week.Year == shift.Week.Year).ToList();
-                var lastFourWeeksTotalMinutes = (shift.EndTime - shift.StartTime).Minutes;
-                foreach (Shift pastShift in lastFourWeeksShifts) lastFourWeeksTotalMinutes = lastFourWeeksTotalMinutes + (pastShift.EndTime - pastShift.StartTime).Minutes;
-                if (lastFourWeeksTotalMinutes > CLA.MaxAvgWeeklyWorkDurationOverFourWeeks) validShift = false;
-
-                // Latest work time
-                if (shift.EndTime > CLA.LatestWorkTime) validShift = false;
-
-                // Earliest work time
-                if (shift.StartTime < CLA.EarliestWorkTime) validShift = false;
-
-                // Max work duration per week
-                var thisWeekShifts = _context.Shifts.Where(s => s.EmployeeId == userId && shift.Week.WeekNumber == s.Week.WeekNumber && s.Week.Year == shift.Week.Year).ToList();
-                var thisWeekTotalMinutes = (shift.EndTime - shift.StartTime).Minutes;
-                foreach (Shift pastShift in thisWeekShifts) thisWeekTotalMinutes = thisWeekTotalMinutes + (pastShift.EndTime - pastShift.StartTime).Minutes;
-                if (thisWeekTotalMinutes > CLA.MaxWorkDurationPerWeek) validShift = false;
-
-                // Max work days per week
-                List<int> workDays = new List<int>();
-                workDays.Add(shift.Weekday);
-                foreach (Shift pastShift in thisWeekShifts) if (workDays.Contains(pastShift.Weekday) == false) workDays.Add(pastShift.Weekday);
-                if (workDays.Count >= CLA.MaxWorkDaysPerWeek) validShift = false;
-
-                // Max work duration per day
-                var todayShifts = _context.Shifts.Where(s => s.EmployeeId == userId && shift.Weekday == s.Weekday && shift.Week.WeekNumber == s.Week.WeekNumber && s.Week.Year == shift.Week.Year).ToList();
-                var todayTotalMinutes = (shift.EndTime - shift.StartTime).Minutes;
-                foreach (Shift pastShift in todayShifts) todayTotalMinutes = todayTotalMinutes + (pastShift.EndTime - pastShift.StartTime).Minutes;
-                if (todayTotalMinutes > CLA.MaxWorkDurationPerDay) validShift = false;
-            }
-
-            // Getting shift user (TODO external employee makes fill request might crash)
+			// Getting shift user (TODO external employee makes fill request might crash)
             var shiftUser = _context.Users.Where(i => i.Id == shift.EmployeeId).FirstOrDefault();
 
             if (validShift == true)
@@ -291,11 +259,16 @@ public class ScheduleEmployeeController : Controller
         // Check if this FillRequest has not already been accepted
         if (fillRequest.SubstituteEmployee != null) return RedirectToAction(nameof(EmployeeSchedule));
 
-        // Check if the fillrequest does not break any CLA rules has to be implemented later when the heplerclasses have been implemented
+        // Checking if this shift does not break any CAO rules
+        bool validShift = true;
+		var user = await _userManager.GetUserAsync(User);
+		var userAge = (DateTime.Today - user.BirthDate.ToDateTime(new TimeOnly())).Days / 365;
+		var CLAs = _context.CLAEntries.Where(a => (a.AgeStart <= userAge && a.AgeEnd >= userAge) || (a.AgeStart <= userAge && a.AgeEnd == null) || (a.AgeStart == null && a.AgeEnd >= userAge) || (a.AgeStart == null && a.AgeEnd == null)).ToList();
+		var allShifts = _context.Shifts.Include(w => w.Week).ToList();
+		validShift = new CLAApplyRules().ApplyCLARules(fillRequest.Shift, CLAs, allShifts);
 
-        fillRequest.SubstituteEmployee = await _userManager.GetUserAsync(User);
-        Console.WriteLine(ModelState.IsValid);
-        if (ModelState.IsValid)
+		fillRequest.SubstituteEmployee = await _userManager.GetUserAsync(User);
+        if (ModelState.IsValid && validShift)
         {
             _context.FillRequests.Update(fillRequest);
             _context.SaveChanges();
