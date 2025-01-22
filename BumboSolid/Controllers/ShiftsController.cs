@@ -32,9 +32,31 @@ public class ShiftsController : Controller
 
         ViewBag.Departments = new SelectList(_context.Departments, "Name", "Name");
 
-        var viewModel = new ShiftCreateViewModel
+		// Only show the users with the employee role, because the manager may not work a shift.
+		var employeeRole = await _context.Roles
+			.Where(r => r.Name == "Employee")
+			.Select(r => r.Id)
+			.FirstOrDefaultAsync();
+
+		if (employeeRole == null)
+		{
+			ViewBag.NoEmployees = "No employees found.";
+			return View(new List<User>());
+		}
+
+		var employees = await _context.UserRoles
+			.Where(ur => ur.RoleId == employeeRole)
+			.Select(ur => ur.UserId)
+			.ToListAsync();
+
+		var employeeUsers = await _context.Users
+			.Where(u => employees.Contains(u.Id))
+			.Include(u => u.Departments)
+			.ToListAsync();
+
+		var viewModel = new ShiftCreateViewModel
         {
-            Employees = _context.Employees.ToList(),
+            Employees = employeeUsers,
             Shift = new Shift(),
             Week = week,
         };
