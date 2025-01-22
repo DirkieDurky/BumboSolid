@@ -215,6 +215,8 @@ public class ScheduleManagerController(BumboDbContext context) : Controller
             Weeks = await _context.Weeks
                 .Include(w => w.Shifts)
                 .ThenInclude(s => s.Employee)
+                .Include(p => p.PrognosisDays)
+                .ThenInclude(pd => pd.PrognosisDepartments)
                 .OrderByDescending(w => w.Year)
                 .ThenByDescending(w => w.WeekNumber)
                 .ToListAsync(),
