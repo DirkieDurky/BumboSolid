@@ -229,12 +229,12 @@
 
                                     @* VisitorEsitmate *@
                                     @{
-                                        workHours = Model.Prognoses.FirstOrDefault(x => x.Id == Model.Id)?.PrognosisDays.FirstOrDefault(x => x.Weekday == i)?.VisitorEstimate ?? 0;
-                                        workHours = (int)(workHours * totalImpact);
+                                        var visitorEstimate = Model.Prognoses.FirstOrDefault(x => x.Id == Model.Id)?.PrognosisDays.FirstOrDefault(x => x.Weekday == i)?.VisitorEstimate ?? 0;
+                                        visitorEstimate = (int)(visitorEstimate * totalImpact);
                                     }
                                     <td>
                                         <div class="box highlight">
-                                            @workHours
+                                            @visitorEstimate
                                         </div>
                                     </td>
                                 </tr>

@@ -64,9 +64,15 @@
             @for (int i = 0; i < daysOfTheWeek.Length; i++)
             {
                 String day = daysOfTheWeek[i];
+
+                var visitorEstimate = Model.Prognosis.PrognosisDays[i].VisitorEstimate;
+
                 <tr>
                     <th scope="row">@day</th>
-                    <td class="table-gray"><input id="visitor-estimate-@i" name="visitorEstimates" type="number" class="form-control" value="0" onchange="updateVisitorEstimate()"></td>
+                    <td class="table-gray">
+                        <input id="visitor-estimate-@i" name="visitorEstimates" type="number" class="form-control"
+                               value="@visitorEstimate" onchange="updateVisitorEstimate()">
+                    </td>
 
                     @{
                         value = Model.Prognosis.PrognosisDays.First(x => x.Weekday == i).Factors.First(x => x.Type == "Feestdagen").Impact;
