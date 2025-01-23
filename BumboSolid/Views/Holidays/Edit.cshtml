@@ -104,7 +104,141 @@
 
     </div>
     <div class="d-flex flex-row">
-        <button type="submit" class="btn early-btn btn-primary me-3">Opslaan & Bijwerken</button>
+        <button type="submit" class="btn bumbo-btn me-3">Opslaan & Bijwerken</button>
         <a type="button" class="btn early-btn btn-secondary" asp-controller="Holidays" asp-action="Index">Terug</a>
     </div>
 </form>
+
+
+
+
+@* @model BumboSolid.Models.HolidayManageViewModel *@
+
+@* <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script> *@
+@* <script src="https://kit.fontawesome.com/981e782106.js" crossorigin="anonymous"></script> *@
+
+@* <div class="container"> *@
+@*     <form asp-controller="Holidays" asp-action="Edit" asp-route-id="@Model.Holiday.Name" method="post"> *@
+@*         <div class="d-flex"> *@
+@*             <!-- Left Section (Graph, Date Limits, Buttons) --> *@
+@*             <div style="width: 60%; padding-right: 20px;"> *@
+@*                 <h6 class="text-center">Invloed</h6> *@
+@*                 <canvas id="holiday-chart" width="400" height="200"></canvas> *@
+
+@*                 <!-- Date Limits & Buttons --> *@
+@*                 <div class="mt-4"> *@
+@*                     <div class="form-group"> *@
+@*                         <label for="firstday">Eerste Dag</label> *@
+@*                         <input asp-for="FirstDay" id="firstday" class="form-control" /> *@
+@*                         <span asp-validation-for="FirstDay" class="text-danger"></span> *@
+@*                     </div> *@
+@*                     <div class="form-group"> *@
+@*                         <label for="lastday">Laatste Dag</label> *@
+@*                         <input asp-for="LastDay" id="lastday" class="form-control" /> *@
+@*                         <span asp-validation-for="LastDay" class="text-danger"></span> *@
+@*                     </div> *@
+
+@*                     <div class="d-flex justify-content-between"> *@
+@*                         <button type="submit" class="btn btn-primary">Opslaan & Bijwerken</button> *@
+@*                         <a type="button" class="btn btn-secondary" asp-controller="Holidays" asp-action="Index">Terug</a> *@
+@*                     </div> *@
+@*                 </div> *@
+@*             </div> *@
+
+@*             <!-- Right Section (Days List) --> *@
+@*             <div style="width: 35%; padding-left: 20px;"> *@
+@*                 <h6>Invloed Aanpassen</h6> *@
+@*                 <div id="holidays-scrollbar" style="max-height: 500px; overflow-y: auto;"> *@
+@*                     @for (int i = 0; i < Model.Holiday.HolidayDays.Count; i++) *@
+@*                     { *@
+@*                         <div class="form-group"> *@
+@*                             <input type="hidden" asp-for="Holiday.HolidayDays[i].Date" /> *@
+@*                             <input type="hidden" asp-for="Holiday.HolidayDays[i].HolidayName" /> *@
+@*                             <label>Dag @Model.Holiday.HolidayDays[i].Date.ToString("dd-MM-yyyy")</label> *@
+@*                             <input type="text" class="form-control impact-input" data-index="@i" asp-for="Holiday.HolidayDays[i].Impact" /> *@
+@*                             <span asp-validation-for="Holiday.HolidayDays[i].Impact" class="text-danger"></span> *@
+@*                         </div> *@
+@*                     } *@
+@*                 </div> *@
+@*             </div> *@
+@*         </div> *@
+@*     </form> *@
+@* </div> *@
+
+@* <script> *@
+@*     // Prepare data for the chart *@
+@*     const xValues = @Html.Raw(Json.Serialize(Model.xValues)); *@
+@*     const yValues = @Html.Raw(Json.Serialize(Model.yValues)); *@
+
+@*     // Calculate the max and min values dynamically *@
+@*     const maxValue = Math.max(...yValues); *@
+@*     const minValue = Math.min(...yValues); *@
+
+@*     // Determine Y-axis limits *@
+@*     const buffer = 10; // Buffer space for the axis *@
+@*     const yMax = maxValue > 0 ? Math.max(maxValue + buffer, 100) : 100; *@
+@*     const yMin = minValue < 0 ? Math.min(minValue - buffer, -100) : -100; *@
+
+@*     // Create the chart with updated axis limits *@
+@*     var holidayChart = new Chart("holiday-chart", { *@
+@*         type: "line", *@
+@*         data: { *@
+@*             labels: xValues, *@
+@*             datasets: [{ *@
+@*                 fill: false, *@
+@*                 lineTension: 0, *@
+@*                 backgroundColor: "rgba(0,0,255,1.1)", *@
+@*                 borderColor: "rgba(0,0,0,1.1)", *@
+@*                 data: yValues, *@
+@*                 pointRadius: 5, *@
+@*                 pointHoverRadius: 8, *@
+@*                 pointBackgroundColor: "rgba(0,0,255,1.1)", *@
+@*                 pointBorderColor: "rgba(0,0,0,1.1)" *@
+@*             }] *@
+@*         }, *@
+@*         options: { *@
+@*             legend: { display: false }, *@
+@*             scales: { *@
+@*                 yAxes: [{ *@
+@*                     ticks: { *@
+@*                         min: yMin, *@
+@*                         max: yMax, *@
+@*                         stepSize: 10, // Step size for nice rounded ticks *@
+@*                         callback: function(value) { return value.toFixed(0); } // Display values without decimals *@
+@*                     }, *@
+@*                     scaleLabel: { *@
+@*                         display: true, *@
+@*                         labelString: 'Impact' *@
+@*                     } *@
+@*                 }], *@
+@*                 xAxes: [{ *@
+@*                     scaleLabel: { *@
+@*                         display: true, *@
+@*                         labelString: 'Date' *@
+@*                     } *@
+@*                 }] *@
+@*             } *@
+@*         } *@
+@*     }); *@
+
+@*     // Listen for changes in impact inputs and update the chart *@
+@*     document.querySelectorAll('.impact-input').forEach(function(input) { *@
+@*         input.addEventListener('input', function() { *@
+@*             const index = this.getAttribute('data-index'); *@
+@*             const newValue = parseFloat(this.value) || 0; // Default to 0 if invalid *@
+@*             yValues[index] = newValue; // Update the Y-value for the graph *@
+@*             holidayChart.update(); // Update the chart with the new data *@
+@*         }); *@
+@*     }); *@
+
+@*     // Set initial values for date inputs with JavaScript *@
+@*     var year = new Date().getFullYear(); *@
+@*     document.getElementById('firstday').setAttribute("min", year + "-01-01"); *@
+@*     document.getElementById('firstday').setAttribute("max", year + "-12-31"); *@
+@*     document.getElementById('firstday').value = "@Model.FirstDay.ToString("yyyy-MM-dd")"; *@
+
+@*     document.getElementById('lastday').setAttribute("min", year + "-01-01"); *@
+@*     document.getElementById('lastday').setAttribute("max", year + "-12-31"); *@
+@*     document.getElementById('lastday').value = "@Model.LastDay.ToString("yyyy-MM-dd")"; *@
+@* </script> *@
+

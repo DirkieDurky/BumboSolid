@@ -27,7 +27,7 @@
             <a class="btn bumbo-btn" asp-action="ManagerSchedule" asp-route-id="@Model.WeekId">Terug</a>
             <a class="btn bumbo-btn @(Model.PreviousWeekId == null ? "disabled" : "")"
                asp-action="ManagerEmployeeSchedule" asp-route-id="@Model.PreviousWeekId" asp-route-employeeId="@Model.EmployeeId">
-                Vorige Week
+                <i class="fa-solid fa-arrow-left"></i> Vorige Week
             </a>
         </div>
         <div class="text-center d-flex flex-column align-items-center justify-content-center w-30">
@@ -37,7 +37,7 @@
         <div class="d-flex justify-content-between align-items-center w-35">
             <a class="btn bumbo-btn @(Model.NextWeekId == null ? "disabled" : "")"
                asp-action="ManagerEmployeeSchedule" asp-route-id="@Model.NextWeekId" asp-route-employeeId="@Model.EmployeeId">
-                Volgende Week
+                Volgende Week <i class="fa-solid fa-arrow-right"></i>
             </a>
             <a class="btn bumbo-btn @(Model.IsCurrentWeek ? "disabled" : "")"
                asp-action="ManagerEmployeeSchedule" asp-route-id="" asp-route-employeeId="@Model.EmployeeId">

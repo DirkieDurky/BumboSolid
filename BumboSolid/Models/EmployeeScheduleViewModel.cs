@@ -4,7 +4,7 @@ namespace BumboSolid.Models;
 
 public class EmployeeScheduleViewModel
 {
-    public List<Week> Weeks = [];
+    
     public required string EmployeeName { get; set; }
     public int EmployeeId { get; set; }
     public int WeekId { get; set; }
@@ -12,4 +12,5 @@ public class EmployeeScheduleViewModel
     public int? NextWeekId { get; set; }
     public int CurrentWeekNumber { get; set; }
     public bool IsCurrentWeek { get; set; }
+    public List<Week> Weeks = [];
 }

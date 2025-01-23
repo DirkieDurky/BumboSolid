@@ -24,28 +24,77 @@ public class PrognosesController : Controller
     [HttpGet("Index/{id:int?}")]
     public async Task<IActionResult> Index(int? id)
     {
-        List<Week> prognoses = await _context.Weeks
-            .Include(p => p.PrognosisDays)
-                .ThenInclude(p => p.PrognosisDepartments)
-            .Include(p => p.PrognosisDays)
-                .ThenInclude(pd => pd.Factors)
-                .OrderByDescending(p => p.Year)
-                   .ThenByDescending(p => p.WeekNumber)
-            .ToListAsync();
+        var prognoses = await _context.Weeks
+        .Include(p => p.PrognosisDays)
+            .ThenInclude(p => p.PrognosisDepartments)
+        .Include(p => p.PrognosisDays)
+            .ThenInclude(pd => pd.Factors)
+        .OrderByDescending(p => p.Year)
+        .ThenByDescending(p => p.WeekNumber)
+        .ToListAsync();
 
-        int? lastPrognosisId = null;
-        if (id == null && prognoses.Count != 0)
-        {
-            lastPrognosisId = id ?? prognoses.OrderBy(x => x.Year).ThenBy(c => c.WeekNumber).Last().Id;
-        }
+        var currentWeek = await GetCurrentWeek(id);
+
+        ViewBag.Departments = _context.Departments.Select(d => d.Name).ToList();
+
+        var culture = CultureInfo.CurrentCulture;
+        var today = DateTime.Now;
+        var currentYear = (short)today.Year;
+        var currentWeekNumber = (byte)culture.Calendar.GetWeekOfYear(today, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Monday);
+
+        var previousWeek = await _context.Weeks
+            .Where(w =>
+                (w.Year == currentWeek.Year && w.WeekNumber == currentWeek.WeekNumber - 1) ||
+                (w.Year == currentWeek.Year - 1 && currentWeek.WeekNumber == 1 && w.WeekNumber == 52))
+            .OrderByDescending(w => w.Year)
+            .ThenByDescending(w => w.WeekNumber)
+            .FirstOrDefaultAsync();
+
+        var nextWeek = await _context.Weeks
+            .Where(w =>
+                (w.Year == currentWeek.Year && w.WeekNumber == currentWeek.WeekNumber + 1) ||
+                (w.Year == currentWeek.Year + 1 && currentWeek.WeekNumber == 52 && w.WeekNumber == 1))
+            .OrderBy(w => w.Year)
+            .ThenBy(w => w.WeekNumber)
+            .FirstOrDefaultAsync();
 
         var viewModel = new PrognosesViewModel
         {
-            Prognoses = prognoses,
-            Id = id ?? lastPrognosisId
+            Prognose = currentWeek,
+            Weeks = prognoses,
+            WeekId = currentWeek.Id,
+            PreviousWeekId = previousWeek?.Id,
+            NextWeekId = nextWeek?.Id,
+            CurrentWeekNumber = currentWeekNumber,
+            IsCurrentWeek = (currentWeek.Year == currentYear && currentWeek.WeekNumber == currentWeekNumber)
         };
 
         return View(viewModel);
+    }
+
+    private async Task<Week> GetCurrentWeek(int? id)
+    {
+        var culture = CultureInfo.CurrentCulture;
+        var today = DateTime.Now;
+        var currentYear = (short)today.Year;
+        var currentWeekNumber = (byte)culture.Calendar.GetWeekOfYear(today, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Monday);
+
+        var currentWeek = await _context.Weeks
+            .Include(w => w.Shifts)
+            .ThenInclude(s => s.Employee)
+            .FirstOrDefaultAsync(w => w.Id == id);
+
+        if (currentWeek == null)
+        {
+            currentWeek = await _context.Weeks
+                .Include(w => w.Shifts)
+                .ThenInclude(s => s.Employee)
+                .FirstOrDefaultAsync(w => w.Year == currentYear && w.WeekNumber == currentWeekNumber);
+
+            if (currentWeek == null) return null;
+        }
+
+        return currentWeek;
     }
 
     // GET: Prognoses/Aanmaken

@@ -29,7 +29,7 @@
             </a>
             <a class="btn bumbo-btn @(!Model.PreviousWeekId.HasValue ? "disabled" : "")"
                asp-action="OverviewSchedule" asp-route-id="@Model.PreviousWeekId">
-                Vorige Week
+                <i class="fa-solid fa-arrow-left"></i> Vorige Week
             </a>
         </div>
         <div class="text-center d-flex flex-column align-items-center justify-content-center w-30">
@@ -39,7 +39,7 @@
         <div class="d-flex justify-content-between align-items-center w-35">
             <a class="btn bumbo-btn @(!Model.NextWeekId.HasValue ? "disabled" : "")"
                asp-action="OverviewSchedule" asp-route-id="@Model.NextWeekId">
-                Volgende Week
+                Volgende Week <i class="fa-solid fa-arrow-right"></i>
             </a>
             <a class="btn bumbo-btn @(Model.IsCurrentWeek ? "disabled" : "")"
                asp-action="OverviewSchedule" asp-route-id="">

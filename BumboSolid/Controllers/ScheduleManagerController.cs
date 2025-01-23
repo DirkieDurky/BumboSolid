@@ -73,12 +73,6 @@ public class ScheduleManagerController(BumboDbContext context) : Controller
 
         var viewModel = new EmployeeScheduleViewModel
         {
-            Weeks = await _context.Weeks
-                .Include(w => w.Shifts)
-                .ThenInclude(s => s.Employee)
-                .OrderByDescending(w => w.Year)
-                .ThenByDescending(w => w.WeekNumber)
-                .ToListAsync(),
             EmployeeId = employeeId,
             EmployeeName = await _context.Employees
                 .Where(e => e.Id == employeeId)

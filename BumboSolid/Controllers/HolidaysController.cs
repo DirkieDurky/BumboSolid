@@ -242,7 +242,7 @@ public class HolidaysController : Controller
 
     // GET: FeestdagenController/Verwijderen/5
     [HttpGet("Verwijderen/{name}")]
-    public async Task<IActionResult> Delete(String name)
+    public async Task<IActionResult> Delete(string name)
     {
         if (name == null)
         {
