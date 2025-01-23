@@ -2,157 +2,96 @@
 @model BumboSolid.Models.CreatePrognosisViewModel
 
 @{
-    String[] daysOfTheWeek = { "Maandag", "Dinsdag", "Woensdag", "Donderdag", "Vrijdag", "Zaterdag", "Zondag" };
-
-    String[] factorTypes = { "Feestdagen", "Weer", "Overig" };
-
-    int value;
-
-    // Function to calculate the first date of the week (Monday)
-    DateTime GetStartDate(int year, int week)
-    {
+    string[] daysOfTheWeek = { "Maandag", "Dinsdag", "Woensdag", "Donderdag", "Vrijdag", "Zaterdag", "Zondag" };
+    string[] factorTypes = { "Feestdagen", "Weer", "Overig" };
+    DateTime GetStartDate(int year, int week) {
         var ci = System.Globalization.CultureInfo.CurrentCulture;
         var calendar = ci.Calendar;
-
         var jan1 = new DateTime(year, 1, 1);
         var firstDayOfWeek = jan1.AddDays((week - 1) * 7 - (int)jan1.DayOfWeek + (int)DayOfWeek.Monday);
-
-        if (firstDayOfWeek.Year < year)
-        {
-            firstDayOfWeek = firstDayOfWeek.AddDays(7);
-        }
-
-        return firstDayOfWeek;
+        return firstDayOfWeek.Year < year ? firstDayOfWeek.AddDays(7) : firstDayOfWeek;
     }
-
-    DateTime GetEndDate(int year, int week)
-    {
-        return GetStartDate(year, week).AddDays(6);
-    }
-
-    // Get the selected prognosis details
+    DateTime GetEndDate(int year, int week) => GetStartDate(year, week).AddDays(6);
     var firstDate = GetStartDate(Model.Prognosis!.Year, Model.Prognosis.WeekNumber);
     var lastDate = GetEndDate(Model.Prognosis.Year, Model.Prognosis.WeekNumber);
-
-    // Format the dates to dd/MM/yyyy
     var formattedFirstDate = firstDate.ToString("dd/MM/yyyy");
     var formattedLastDate = lastDate.ToString("dd/MM/yyyy");
-
-    <div class="background-dark prognosis-create-top-item">
-        <span>Week @Model.Prognosis.WeekNumber (@formattedFirstDate - @formattedLastDate)</span>
-    </div>
 }
+
+<div class="background-dark prognosis-create-top-item">
+    <span>Week @Model.Prognosis.WeekNumber (@formattedFirstDate - @formattedLastDate)</span>
+</div>
 <form asp-action="Aanmaken">
     <input type="hidden" asp-for="Prognosis.Id" />
     <input type="hidden" asp-for="Prognosis.Year" />
     <input type="hidden" asp-for="Prognosis.WeekNumber" />
     <div class="d-flex flex-row gap-3 flex-grow-0">
         <table class="table" cellspacing="0">
-            <tr>
-                <th></th>
-                <th scope="col" class="rounded-top table-gray">Schatting Bezoekersdrukte</th>
-                <th scope="col" class="rounded-top table-secondary">Feestdagen</th>
-                <th scope="col" class="rounded-top table-gray">
-                    Weer
-                    <a asp-controller="Weer" asp-action="Bewerken" class="remove-text-decoration p-2 bg-warning ms-2 rounded">
-                        <img src="/images/pencil-square.svg" alt="Edit Icon" width="16" height="16" />
-                    </a>
-                </th>
-                <th scope="col" class="rounded-top table-secondary">Overig</th>
-                <th scope="col" class="rounded-top table-gray">Totale Schatting Bezoekersdrukte</th>
-            </tr>
-            @for (int i = 0; i < daysOfTheWeek.Length; i++)
-            {
-                String day = daysOfTheWeek[i];
+            <thead>
                 <tr>
-                    <th scope="row">@day</th>
-                    <td class="table-gray"><input id="visitor-estimate-@i" name="visitorEstimates" type="number" class="form-control" value="0" onchange="updateVisitorEstimate()"></td>
-
-                    @{
-                        value = Model.Prognosis.PrognosisDays.First(x => x.Weekday == i).Factors.First(x => x.Type == "Feestdagen").Impact;
-                    }
-                    <td class="table-secondary"><input id="holiday-@i" name="holidays" type="number" class="form-control small-input" value="@value" onchange="updateVisitorEstimate()"></td>
-
-                    <td class="table-gray gap-2">
-                        <div class="d-flex flex-row">
-                            @{
-                                String imageSrc = "/images/weather/3.svg";
-                            }
-                            <img id="@("weather-icon-" + i)" src=@imageSrc class="background-white" />
-
-                            <select id="@("weather-select-" + i)" name="weather" type="number" class="form-control small-input form-select" onchange="@("updateIcon("+i+"); updateVisitorEstimate();")">
-                                @{
-                                    for (int j = 0; j < 7; j++)
-                                    {
-                                        <option selected=@(j == 3) value=@j class=@Model.WeatherValues[j].Impact>@Model.WeatherValues[j].Impact</option>
-                                    }
-                                }
-                            </select>
-                        </div>
-                    </td>
-
-                    @{
-                        value = Model.Prognosis.PrognosisDays.First(x => x.Weekday == i).Factors.First(x => x.Type == "Overig").Impact;
-                    }
-                    <td class="table-secondary gap-2">
-                        <div class="d-flex flex-row">
-                            <input id="other-@i" name="other" type="number" class="form-control small-input" value="@value" onchange="updateVisitorEstimate()">
-                            <textarea name="description" class="factor-description" placeholder="Beschrijving" rows="2" cols="25"></textarea>
-                        </div>
-                    </td>
-
-                    <td class="table-gray">
-                        <p id="total-estimated-visitor-count-@i" class="background-light impact-unchangeable-dark">0</p>
-                    </td>
+                    <th>Dag</th>
+                    <th>Schatting Bezoekersdrukte</th>
+                    <th>Feestdagen</th>
+                    <th>Weer <a asp-controller="Weer" asp-action="Bewerken" class="remove-text-decoration p-2 bg-warning ms-2 rounded"><img src="/images/pencil-square.svg" alt="Edit Icon" width="16" height="16" /></a></th>
+                    <th>Overig</th>
+                    <th>Totale Schatting Bezoekersdrukte</th>
                 </tr>
-            }
-        </table>
-
-        <div class="prognosis-norm-table-container">
-            <table class="table prognosis-norm-table" cellspacing="0">
-                <thead>
+            </thead>
+            <tbody>
+                @foreach (var day in daysOfTheWeek)
+                {
+                    var i = Array.IndexOf(daysOfTheWeek, day); // Get the index of the day
+                    var holidayValue = Model.Prognosis.PrognosisDays.First(x => x.Weekday == i).Factors.First(x => x.Type == "Feestdagen").Impact;
+                    var otherValue = Model.Prognosis.PrognosisDays.First(x => x.Weekday == i).Factors.First(x => x.Type == "Overig").Impact;
                     <tr>
-                        <th scope="col" class="rounded-top table-secondary">Activiteit</th>
-                        <th scope="col" class="rounded-top table-gray">Functie</th>
-                        <th scope="col" class="rounded-top table-secondary">Duur en hoeveelheid</th>
+                        <td>@day</td>
+                        <td><input id="visitor-estimate-@i" name="visitorEstimates" type="number" class="form-control" value="0" onchange="updateVisitorEstimate()"></td>
+                        <td><input id="holiday-@i" name="holidays" type="number" class="form-control small-input" value="@holidayValue" onchange="updateVisitorEstimate()"></td>
+                        <td class="table-gray gap-2">
+                            <div class="d-flex flex-row">
+                                <img id="weather-icon-@i" src="/images/weather/3.svg" class="background-white" />
+                                <select id="weather-select-@i" name="weather" class="form-control small-input form-select" onchange="updateIcon(@i); updateVisitorEstimate();">
+                                    @foreach (var weather in Model.WeatherValues)
+                                    {
+                                        <option value="@weather.Impact">@weather.Impact</option>
+                                    }
+                                </select>
+                            </div>
+                        </td>
+                        <td class="table-secondary">
+                            <input id="other-@i" name="other" type="number" class="form-control small-input" value="@otherValue" onchange="updateVisitorEstimate()">
+                            <textarea name="description" class="factor-description" placeholder="Beschrijving" rows="2" cols="25"></textarea>
+                        </td>
+                        <td><p id="total-estimated-visitor-count-@i" class="background-light impact-unchangeable-dark">0</p></td>
                     </tr>
-                </thead>
-                <tbody>
-                    @foreach (Norm norm in Model.Norms)
-                    {
-                        string readableDuration = norm.Duration.ToString();
-                        string readableDurationUnit = "seconden";
-                        if (norm.Duration % 3600 == 0)
-                        {
-                            readableDuration = (norm.Duration / 3600).ToString();
-                            readableDurationUnit = "uren";
-                        }
-                        else if (norm.Duration % 60 == 0)
-                        {
-                            readableDuration = (norm.Duration / 60).ToString();
-                            readableDurationUnit = "minuten";
-                        }
+                }
+            </tbody>
+        </table>
+    </div>
 
-                        String descriptionString = norm.AvgDailyPerformances + " x " + readableDuration + " " + readableDurationUnit + " per dag";
-                        if (norm.PerVisitor) descriptionString += " per bezoeker";
 
-                        <tr>
-                            <td class="table-secondary">
-                                <p class="background-light impact-unchangeable-dark">@norm.Activity</p>
-                            </td>
-
-                            <td class="table-gray">
-                                <p class="background-light impact-unchangeable-dark">@norm.Department</p>
-                            </td>
-
-                            <td class="table-secondary">
-                                <p class="background-light impact-unchangeable-dark">@descriptionString</p>
-                            </td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
-        </div>
+    <div class="prognosis-norm-table-container">
+        <table class="table prognosis-norm-table" cellspacing="0">
+            <thead>
+                <tr>
+                    <th>Activiteit</th>
+                    <th>Functie</th>
+                    <th>Duur en hoeveelheid</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var norm in Model.Norms) {
+                    var readableDuration = norm.Duration % 3600 == 0 ? norm.Duration / 3600 + " uren" : (norm.Duration % 60 == 0 ? norm.Duration / 60 + " minuten" : norm.Duration + " seconden");
+                    var descriptionString = $"{norm.AvgDailyPerformances} x {readableDuration} per dag";
+                    descriptionString += norm.PerVisitor ? " per bezoeker" : "";
+                <tr>
+                    <td class="table-secondary"><p class="background-light impact-unchangeable-dark">@norm.Activity</p></td>
+                    <td class="table-gray"><p class="background-light impact-unchangeable-dark">@norm.Department</p></td>
+                    <td class="table-secondary"><p class="background-light impact-unchangeable-dark">@descriptionString</p></td>
+                </tr>
+                }
+            </tbody>
+        </table>
     </div>
 
     <div class="d-flex flex-row gap-3">
@@ -160,20 +99,23 @@
         <input type="submit" class="btn bumbo-btn" value="Prognose Berekenen">
     </div>
 </form>
+
 <script>
     function updateIcon(selectId) {
-        document.getElementById("weather-icon-" + selectId).src = "/images/weather/" + document.getElementById("weather-select-" + selectId).value + ".svg";
+        const weatherSelect = document.getElementById("weather-select-" + selectId);
+        const weatherIcon = document.getElementById("weather-icon-" + selectId);
+        weatherIcon.src = "/images/weather/" + weatherSelect.value + ".svg";
     }
 
     function updateVisitorEstimate() {
-        for (i = 0; i < 7; i++) {
-            document.getElementById("total-estimated-visitor-count-" + i).innerText =
-                Math.round(
-                    document.getElementById("visitor-estimate-" + i).value *
-                    (document.getElementById("holiday-" + i).value / 100 + 1) *
-                    (document.getElementById("weather-select-" + i).options[document.getElementById("weather-select-" + i).value].className / 100 + 1) *
-                    (document.getElementById("other-" + i).value / 100 + 1)
-                );
+        for (let i = 0; i < 7; i++) {
+            const visitorEstimate = parseFloat(document.getElementById("visitor-estimate-" + i).value) || 0;
+            const holidayImpact = parseFloat(document.getElementById("holiday-" + i).value) || 0;
+            const weatherImpact = parseFloat(document.getElementById("weather-select-" + i).options[document.getElementById("weather-select-" + i).selectedIndex].className) || 0;
+            const otherImpact = parseFloat(document.getElementById("other-" + i).value) || 0;
+            
+            const totalEstimate = Math.round(visitorEstimate * (1 + holidayImpact / 100) * (1 + weatherImpact / 100) * (1 + otherImpact / 100));
+            document.getElementById("total-estimated-visitor-count-" + i).innerText = totalEstimate;
         }
     }
     updateVisitorEstimate();
