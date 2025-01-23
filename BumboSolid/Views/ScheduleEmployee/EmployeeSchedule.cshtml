@@ -24,13 +24,13 @@
 <header class="d-flex flex-column align-items-center">
     <div class="d-flex justify-content-between w-100 header-items">
         <div>
-            <a class="btn new-btn"
+            <a class="btn bumbo-btn"
                asp-controller="Availability" asp-action="Index">
                 Beschikbaarheid
             </a>
         </div>
         <div>
-            <a class="btn new-btn @(Model.PreviousWeekId == null ? "disabled" : "")"
+            <a class="btn bumbo-btn @(Model.PreviousWeekId == null ? "disabled" : "")"
                asp-action="EmployeeSchedule" asp-route-id="@Model.PreviousWeekId">
                 Vorige Week
             </a>
@@ -39,13 +39,13 @@
             <h1>Rooster</h1>
         </div>
         <div>
-            <a class="btn new-btn @(Model.NextWeekId == null ? "disabled" : "")"
+            <a class="btn bumbo-btn @(Model.NextWeekId == null ? "disabled" : "")"
                asp-action="EmployeeSchedule" asp-route-id="@Model.NextWeekId">
                 Volgende Week
             </a>
         </div>
         <div>
-            <a class="btn new-btn @(Model.IsCurrentWeek ? "disabled" : "")"
+            <a class="btn bumbo-btn @(Model.IsCurrentWeek ? "disabled" : "")"
                asp-action="EmployeeSchedule">
                 Huidige Week
             </a>
@@ -84,10 +84,10 @@
                                         </span>
                                         <span class="shift-department">@shift.Department</span>
                                         <div class="shift-actions d-flex flex-column align-items-center">
-                                            <a asp-action="SendFillRequest" asp-route-id="@shift.Id" class="btn new-btn w-100 @(shift.FillRequests.Any() ? "disabled" : "")">
+                                            <a asp-action="SendFillRequest" asp-route-id="@shift.Id" class="btn bumbo-btn w-100 @(shift.FillRequests.Any() ? "disabled" : "")">
                                                 <i class="fa-solid fa-exchange-alt"></i>
                                             </a>
-                                            <a asp-action="Absent" asp-route-id="@shift.Id" class="btn new-btn w-100">
+                                            <a asp-action="Absent" asp-route-id="@shift.Id" class="btn bumbo-btn w-100">
                                                  <i class="fa-solid fa-ban"></i>
                                              </a> 
                                         </div>

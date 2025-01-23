@@ -22,30 +22,26 @@
 }
 
 <header class="d-flex flex-column align-items-center">
-    <div class="d-flex justify-content-between w-100 header-items">
-        <div>
-            <a class="btn new-btn" asp-action="ManagerSchedule" asp-route-id="@Model.WeekId">
+    <div class="d-flex w-100 header-items">
+        <div class="d-flex justify-content-between align-items-center w-35">
+            <a class="btn bumbo-btn" asp-action="ManagerSchedule" asp-route-id="@Model.WeekId">
                 Rooster
             </a>
-        </div>
-        <div>
-            <a class="btn new-btn @(Model.PreviousWeekId == null ? "disabled" : "")"
+            <a class="btn bumbo-btn @(!Model.PreviousWeekId.HasValue ? "disabled" : "")"
                asp-action="OverviewSchedule" asp-route-id="@Model.PreviousWeekId">
                 Vorige Week
             </a>
         </div>
-        <div class="text-center d-flex flex-column align-items-center">
-            <h1 class="text-nowrap">Rooster Overzicht</h1>
+        <div class="text-center d-flex flex-column align-items-center justify-content-center w-30">
+            <h1>Rooster Overzicht</h1>
             <p>@startDate.ToString("dd/MM/yyyy") - @endDate.ToString("dd/MM/yyyy")</p>
         </div>
-        <div>
-            <a class="btn new-btn @(Model.NextWeekId == null ? "disabled" : "")"
+        <div class="d-flex justify-content-between align-items-center w-35">
+            <a class="btn bumbo-btn @(!Model.NextWeekId.HasValue ? "disabled" : "")"
                asp-action="OverviewSchedule" asp-route-id="@Model.NextWeekId">
                 Volgende Week
             </a>
-        </div>
-        <div>
-            <a class="btn new-btn @(Model.IsCurrentWeek ? "disabled" : "")"
+            <a class="btn bumbo-btn @(Model.IsCurrentWeek ? "disabled" : "")"
                asp-action="OverviewSchedule" asp-route-id="">
                 Huidige Week
             </a>
@@ -63,7 +59,7 @@
                 <div class="form-group">
                     <input type="hidden" name="id" value="@Model.WeekId" />
                     <input type="hidden" name="returnUrl" value="@Context.Request.Path" />
-                    <input type="submit" value="Nieuw Rooster Aanmaken" class="btn new-btn" />
+                    <input type="submit" value="Nieuw Rooster Aanmaken" class="btn bumbo-btn" />
                 </div>
             </form>
         </div>
@@ -73,8 +69,8 @@ else
 {
     <body class="schedule">
         <div class="container mt-4">
-            <table class="table table-striped table-bordered table-hover">
-                <thead class="thead-dark">
+            <table class="table">
+                <thead>
                     <tr>
                         <th rowspan="2">Dag</th>
                         @foreach (var department in Model.Departments.Select(d => d.Name))

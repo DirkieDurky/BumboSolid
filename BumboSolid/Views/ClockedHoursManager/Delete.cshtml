@@ -18,11 +18,11 @@
 <div class="d-flex justify-content-center">
     <div class="row justify-content-center col-md-10">
         <h4 class="col-md-12 text-center">Weet je zeker dat je deze geklokte uren wil verwijderen?</h4>
-        <a class="new-btn col-md-5 me-2" asp-action="Overview" asp-route-employeeId="@Model.EmployeeId">Annuleren</a>
+        <a class="bumbo-btn col-md-5 me-2" asp-action="Overview" asp-route-employeeId="@Model.EmployeeId">Annuleren</a>
         <div class="col-md-5 p-0 ms-2">
             <form asp-action="Delete">
                 <input type="hidden" asp-for="Id" />
-                <input type="submit" value="Verwijderen" class="new-btn w-100" />
+                <input type="submit" value="Verwijderen" class="bumbo-btn w-100" />
             </form>
         </div>
     </div>

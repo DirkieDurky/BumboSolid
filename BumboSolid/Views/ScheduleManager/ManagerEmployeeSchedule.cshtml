@@ -21,30 +21,29 @@
     }
 }
 
-<header class="d-flex align-items-center justify-content-between header-items mb-2">
-    <div>
-        <a class="btn new-btn" asp-action="ManagerSchedule" asp-route-id="@Model.WeekId">Terug</a>
-    </div>
-    <div>
-        <a class="btn new-btn @(Model.PreviousWeekId == null ? "disabled" : "")"
-           asp-action="ManagerEmployeeSchedule" asp-route-id="@Model.PreviousWeekId" asp-route-employeeId="@Model.EmployeeId">
-            Vorige Week
-        </a>
-    </div>
-    <div class="text-nowrap">
-        <h1>Rooster voor @Model.EmployeeName</h1>
-    </div>
-    <div>
-        <a class="btn new-btn @(Model.NextWeekId == null ? "disabled" : "")"
-           asp-action="ManagerEmployeeSchedule" asp-route-id="@Model.NextWeekId" asp-route-employeeId="@Model.EmployeeId">
-            Volgende Week
-        </a>
-    </div>
-    <div>
-        <a class="btn new-btn @(Model.IsCurrentWeek ? "disabled" : "")"
-           asp-action="ManagerEmployeeSchedule" asp-route-id="" asp-route-employeeId="@Model.EmployeeId">
-            Huidige Week
-        </a>
+<header class="d-flex flex-column align-items-center">
+    <div class="d-flex w-100 header-items">
+        <div class="d-flex justify-content-between align-items-center w-35">
+            <a class="btn bumbo-btn" asp-action="ManagerSchedule" asp-route-id="@Model.WeekId">Terug</a>
+            <a class="btn bumbo-btn @(Model.PreviousWeekId == null ? "disabled" : "")"
+               asp-action="ManagerEmployeeSchedule" asp-route-id="@Model.PreviousWeekId" asp-route-employeeId="@Model.EmployeeId">
+                Vorige Week
+            </a>
+        </div>
+        <div class="text-center d-flex flex-column align-items-center justify-content-center w-30">
+            <h1>Rooster Voor</h1>
+            <h3>@Model.EmployeeName</h3>
+        </div>
+        <div class="d-flex justify-content-between align-items-center w-35">
+            <a class="btn bumbo-btn @(Model.NextWeekId == null ? "disabled" : "")"
+               asp-action="ManagerEmployeeSchedule" asp-route-id="@Model.NextWeekId" asp-route-employeeId="@Model.EmployeeId">
+                Volgende Week
+            </a>
+            <a class="btn bumbo-btn @(Model.IsCurrentWeek ? "disabled" : "")"
+               asp-action="ManagerEmployeeSchedule" asp-route-id="" asp-route-employeeId="@Model.EmployeeId">
+                Huidige Week
+            </a>
+        </div>
     </div>
 </header>
 
@@ -72,16 +71,21 @@
                         <ul class="shift-list">
                             @foreach (var shift in shiftsForDay)
                             {
-                                <a asp-controller="Shifts" asp-action="Edit" asp-route-returnUrl="@Context.Request.Path" asp-route-id="@shift.Id" class="w-100 shift-link text-decoration-none">
-                                <li class="shift-item">
-                                    <div class="shift-details">
-                                        <span class="shift-time">
-                                            <i class="fa-regular fa-clock"></i> @shift.StartTime.ToString("HH:mm") - @shift.EndTime.ToString("HH:mm")
-                                        </span>
-                                        <span class="shift-department">@shift.Department</span>
-                                    </div>
-                                </li>
+                                <a asp-controller="Shifts" asp-action="Edit" asp-route-id="@shift.Id" asp-route-returnUrl="@Context.Request.Path" class="btn table-btn">
+                                    <i class="fa-regular fa-clock"></i> @shift.StartTime.ToString("HH:mm")
+                                    <hr />
+                                    <i class="fa-regular fa-clock"></i> @shift.EndTime.ToString("HH:mm")
                                 </a>
+                                // <a asp-controller="Shifts" asp-action="Edit" asp-route-returnUrl="@Context.Request.Path" asp-route-id="@shift.Id" class=" btn table-btn w-100">
+                                // <li class="shift-item">
+                                //     <div class="shift-details">
+                                //         <span class="shift-time">
+                                //             <i class="fa-regular fa-clock"></i> @shift.StartTime.ToString("HH:mm") - @shift.EndTime.ToString("HH:mm")
+                                //         </span>
+                                //         <span class="shift-department">@shift.Department</span>
+                                //     </div>
+                                // </li>
+                                // </a>
                             }
                         </ul>
                     }

@@ -22,30 +22,26 @@
 }
 
 <header class="d-flex flex-column align-items-center">
-    <div class="d-flex justify-content-between w-100 header-items">
-        <div>
-            <a class="btn new-btn" asp-action="OverviewSchedule" asp-route-id="@Model.WeekId">
+    <div class="d-flex w-100 header-items">
+        <div class="d-flex justify-content-between align-items-center w-35">
+            <a class="btn bumbo-btn" asp-action="OverviewSchedule" asp-route-id="@Model.WeekId">
                 Terug
             </a>
-        </div>
-        <div>
-            <a class="btn new-btn @(!Model.PreviousWeekId.HasValue ? "disabled" : "")"
+            <a class="btn bumbo-btn @(!Model.PreviousWeekId.HasValue ? "disabled" : "")"
                asp-action="ManagerSchedule" asp-route-id="@Model.PreviousWeekId">
                 Vorige Week
             </a>
         </div>
-        <div class="text-center d-flex flex-column align-items-center">
+        <div class="text-center d-flex flex-column align-items-center justify-content-center w-30">
             <h1>Rooster</h1>
             <p>@startDate.ToString("dd/MM/yyyy") - @endDate.ToString("dd/MM/yyyy")</p>
         </div>
-        <div>
-            <a class="btn new-btn @(!Model.NextWeekId.HasValue ? "disabled" : "")"
+        <div class="d-flex justify-content-between align-items-center w-35">
+            <a class="btn bumbo-btn @(!Model.NextWeekId.HasValue ? "disabled" : "")"
                asp-action="ManagerSchedule" asp-route-id="@Model.NextWeekId">
                 Volgende Week
             </a>
-        </div>
-        <div>
-            <a class="btn new-btn @(Model.IsCurrentWeek ? "disabled" : "")"
+            <a class="btn bumbo-btn @(Model.IsCurrentWeek ? "disabled" : "")"
                asp-action="ManagerSchedule" asp-route-id="">
                 Huidige Week
             </a>
@@ -53,17 +49,18 @@
     </div>
 </header>
 
+
 @if (!Model.HasSchedule)
 {
     <body>
-        <div class="d-flex flex-column align-items-center gap-5 m-5">
+        <div class="d-flex flex-column align-items-center gap-4 m-4">
             <h3>Er is nog geen rooster aangemaakt.</h3>
             <h4>Maak er een aan!</h4>
             <form asp-action="Create">
                 <div class="form-group">
                     <input type="hidden" name="id" value="@Model.WeekId" />
                     <input type="hidden" name="returnUrl" value="@Context.Request.Path" />
-                    <input type="submit" value="Nieuw Rooster Aanmaken" class="btn new-btn" />
+                    <input type="submit" value="Nieuw Rooster Aanmaken" class="btn bumbo-btn" />
                 </div>
             </form>
         </div>
@@ -73,7 +70,7 @@ else
 {
     <body class="schedule">
         <div class="d-flex justify-content-center">
-            <a class="btn new-btn" asp-controller="Shifts" asp-action="Create" asp-route-weekid="@schedule.Id" asp-route-returnUrl="@Context.Request.Path">
+            <a class="btn bumbo-btn" asp-controller="Shifts" asp-action="Create" asp-route-weekid="@schedule.Id" asp-route-returnUrl="@Context.Request.Path">
                 Shift Toevoegen
             </a>
         </div>
@@ -89,7 +86,7 @@ else
                 }
                 @if (afdelingShifts.Any())
                 {
-                    <table class="schedule-table">
+                    <table class="table schedule-table">
                         <thead>
                             <tr>
                                 <th>Werknemer</th>
@@ -107,7 +104,7 @@ else
                                     <td>
                                         @if (shiftGroup.First().EmployeeId.HasValue)
                                         {
-                                            <a asp-action="ManagerEmployeeSchedule" asp-route-id="@schedule.Id" asp-route-employeeId="@shiftGroup.First().EmployeeId" class="shift-link">
+                                            <a asp-action="ManagerEmployeeSchedule" asp-route-id="@schedule.Id" asp-route-employeeId="@shiftGroup.First().EmployeeId" class="btn table-btn">
                                                 @shiftGroup.Key
                                             </a>
                                         }
@@ -123,8 +120,10 @@ else
                                             @foreach (var shift in shiftGroup.Where(s => s.Weekday == Array.IndexOf(daysOfTheWeek, day)).OrderBy(s => s.StartTime))
                                             {
                                                 <div>
-                                                    <a asp-controller="Shifts" asp-action="Edit" asp-route-id="@shift.Id" asp-route-returnUrl="@Context.Request.Path" class="shift-link">
-                                                        <i class="fa-regular fa-clock"></i> @shift.StartTime.ToString("HH:mm") - @shift.EndTime.ToString("HH:mm")
+                                                    <a asp-controller="Shifts" asp-action="Edit" asp-route-id="@shift.Id" asp-route-returnUrl="@Context.Request.Path" class="btn table-btn">
+                                                        <i class="fa-regular fa-clock"></i> @shift.StartTime.ToString("HH:mm")
+                                                        <hr />
+                                                        <i class="fa-regular fa-clock"></i> @shift.EndTime.ToString("HH:mm")
                                                     </a>
                                                 </div>
                                             }
@@ -145,7 +144,7 @@ else
                 }
                 else
                 {
-                    <p>Geen shifts gevonden voor deze afdeling.</p>
+                    <p class="text-center">Geen shifts gevonden voor deze afdeling.</p>
                 }
             </div>
         }

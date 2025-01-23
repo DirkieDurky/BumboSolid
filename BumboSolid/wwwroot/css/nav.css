@@ -1,0 +1,21 @@
+﻿.bumbo-navbar {
+    background-color: #fbc500;
+    margin-bottom: 2rem;
+    position: fixed;
+    top: 0;
+    width: 100%;
+    z-index: 1000;
+    box-shadow: 0 .4rem .4rem rgba(0, 0, 0, 0.2);
+}
+
+.table {
+/*    border: none;*/
+    /*background-color: #1f2b3f;*/
+/*    background-color: tra*/
+}
+
+/*color: #1f2b3f
+color: #546174*/
+
+
+

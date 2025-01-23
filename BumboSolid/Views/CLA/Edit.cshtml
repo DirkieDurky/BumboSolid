@@ -1,17 +1,26 @@
 ﻿@model BumboSolid.Models.CLAManageViewModel
 
-@{
-    ViewData["Title"] = "Bewerken";
-}
+<header class="d-flex flex-column align-items-center">
+    <div class="d-flex w-100 header-items">
+        <div class="d-flex justify-content-center align-items-center w-25">
+            <a class="btn bumbo-btn" asp-action="Index">Terug</a>
+        </div>
+        <div class="text-center d-flex flex-column align-items-center justify-content-center w-50">
+            <h1>CAO Regel aanpassen voor:</h1>
+        </div>
+        <div class="d-flex justify-content-center align-items-center w-25">
+            <a asp-action="Delete" asp-route-ageStart="@Model.AgeStart" asp-route-ageEnd="@Model.AgeEnd" class="btn bumbo-btn bumbo-btn-danger">Verwijder</a>
+        </div>
+    </div>
+</header>
 
 <div class="row align-items-center">
     <div class="col-auto">
-        <a class="btn" asp-controller="CLA" asp-action="Index">Terug</a>
     </div>
     <div class="text-center">
-        <h1>CAO Regel aanpassen voor:</h1>
     </div>
 </div>
+
 <div class="row">
     <div class="col-md-1"></div>
     <div class="col-md-10">
@@ -160,7 +169,7 @@
                     </div>
                 </div>
                 <div class="form-group pt-2 col-12">
-                    <input type="submit" value="Sla Op" class="btn btn-primary w-100" />
+                    <input type="submit" value="Opslaan" class="btn bumbo-btn w-100" />
                 </div>
             </form>
         </div>

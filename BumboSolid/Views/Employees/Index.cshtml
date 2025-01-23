@@ -1,48 +1,57 @@
 ﻿@model IEnumerable<BumboSolid.Data.Models.User>
 
-<script src="https://kit.fontawesome.com/981e782106.js" crossorigin="anonymous"></script>
+<header class="d-flex flex-column align-items-center text-center w-100">
+    <div>
+        <h1>Medewerkers</h1>
+        <a asp-action="Create" class="btn bumbo-btn">Medewerker toevoegen</a>
+    </div>
+</header>
 
-<h1>Medewerkers</h1>
+<br />
 
-@if (Model.Any())
-{
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Naam</th>
-                <th>Leeftijd</th>
-                <th>Afdelingen</th>
-                <th>In dienst sinds</th>
-                <th></th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var employee in Model)
-            {
-                var birthDateTime = employee.BirthDate.ToDateTime(new TimeOnly(0, 0));
-                var age = DateTime.Today.Year - birthDateTime.Year;
-                if (birthDateTime.Date > DateTime.Today.AddYears(-age)) age--;
+<div class="align-content-center align-items-center flex-column">
+    <div>
+        @if (Model.Any())
+        {
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Naam</th>
+                        <th>Leeftijd</th>
+                        <th>Afdelingen</th>
+                        <th>In dienst sinds</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var employee in Model)
+                    {
+                        var birthDateTime = employee.BirthDate.ToDateTime(new TimeOnly(0, 0));
+                        var age = DateTime.Today.Year - birthDateTime.Year;
+                        if (birthDateTime.Date > DateTime.Today.AddYears(-age)) age--;
 
-                <tr>
-                    <td>@employee.FirstName @employee.LastName</td>
-                    <td>@age</td>
-                    <td>
-                        @string.Join(", ", employee.Departments.Select(d => d.Name))
-                    </td>
-                    <td>@employee.EmployedSince.ToShortDateString()</td>
-                    <td>
-                        <a class="navbar-brand" asp-controller="ClockedHoursManager" asp-action="Overview" asp-route-employeeId="@employee.Id"><i class="fa-solid fa-clock"></i></a>
-                        <a class="navbar-brand" asp-controller="Employees" asp-action="Edit" asp-route-id="@employee.Id"><i class="fa-solid fa-pencil"></i></a>
-                        <a class="navbar-brand" asp-controller="Employees" asp-action="Delete" asp-route-id="@employee.Id"><i class="fa-solid fa-trash"></i></a>
-                    </td>
-                </tr>
-            }
-        </tbody>
-    </table>
-}
-else
-{
-    <p class="text-muted">Er zijn momenteel geen medewerkers.</p>
-}
+                        <tr>
+                            <td>@employee.FirstName @employee.LastName</td>
+                            <td>@age</td>
+                            <td>
+                                @string.Join(", ", employee.Departments.Select(d => d.Name))
+                            </td>
+                            <td>@employee.EmployedSince.ToShortDateString()</td>
+                            <td>
+                                <a class="navbar-brand" asp-controller="ScheduleManager" asp-action="ManagerEmployeeSchedule" asp-route-employeeId="@employee.Id"><i class="fa-solid fa-calendar"></i></a>
+                                <a class="navbar-brand" asp-controller="ClockedHoursManager" asp-action="Overview" asp-route-employeeId="@employee.Id"><i class="fa-solid fa-clock"></i></a>
+                                <a class="navbar-brand" asp-controller="Employees" asp-action="Edit" asp-route-id="@employee.Id"><i class="fa-solid fa-pencil"></i></a>
+                                <a class="navbar-brand" asp-controller="Employees" asp-action="Delete" asp-route-id="@employee.Id"><i class="fa-solid fa-trash"></i></a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+        else
+        {
+            <p class="text-muted">Er zijn momenteel geen medewerkers.</p>
+        }
+    </div>
+</div>
 
-<a asp-action="Create" class="btn early-btn btn-success">Medewerker toevoegen</a>

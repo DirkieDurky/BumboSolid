@@ -22,14 +22,14 @@
 
 <header class="d-flex align-items-center gap-3 justify-content-center gap-3">
     <div class="w-100">
-        <a class="new-btn" asp-controller="ClockedHours" asp-action="Overview" asp-route-year="@previousWeekYear" asp-route-weekNumber="@previousWeekNumber">Vorige Week</a>
+        <a class="bumbo-btn" asp-controller="ClockedHours" asp-action="Overview" asp-route-year="@previousWeekYear" asp-route-weekNumber="@previousWeekNumber">Vorige Week</a>
     </div>
     <div class="mx-3 text-center text-nowrap">
         <h1>Uren Overzicht</h1>
         <p>@Model.StartDate - @Model.EndDate</p>
     </div>
     <div class="w-100 text-align text-end">
-        <a class="new-btn" asp-controller="ClockedHours" asp-action="Overview" asp-route-year="@nextWeekYear" asp-route-weekNumber="@nextWeekNumber">Volgende Week</a>
+        <a class="bumbo-btn" asp-controller="ClockedHours" asp-action="Overview" asp-route-year="@nextWeekYear" asp-route-weekNumber="@nextWeekNumber">Volgende Week</a>
     </div>
 </header>
 

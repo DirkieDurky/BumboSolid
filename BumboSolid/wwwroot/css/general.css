@@ -1,0 +1,110 @@
+﻿::-webkit-scrollbar {
+    display: none;
+}
+
+a {
+    text-decoration: none;
+    color: white;
+}
+
+    a:hover {
+        color: white;
+    }
+
+
+
+i {
+    color: #546174;
+}
+
+
+body {
+    padding-top: 5rem;
+    background-color: #dddddd;
+}
+
+/*color: #1f2b3f
+color: #546174*/
+
+.bumbo-btn-danger {
+    background-color: #e23232 !important;
+}
+
+    .bumbo-btn-danger:hover {
+        background-color: #bd2a2a !important;
+    }
+
+.bumbo-btn {
+    background-color: #405b53;
+    color: white;
+    transition: background-color 0.2s ease-in-out, transform 0.1s ease;
+    margin: .2rem;
+    white-space: nowrap;
+    border-radius: .5rem;
+}
+
+    .bumbo-btn:hover {
+        color: white;
+        background-color: #2f4237;
+        transform: scale(1.05);
+    }
+
+    .bumbo-btn i {
+        color: white;
+    }
+
+.btn-nav:hover {
+    color: white;
+    background-color: #2f4237;
+    transform: scale(1.05);
+}
+
+.btn:focus {
+    box-shadow: none !important;
+}
+
+.w-30 {
+    width: 30%;
+}
+
+.w-35 {
+    width: 35%;
+}
+
+/*.header-items {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: relative;
+}*/
+
+/*.header-title {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    text-align: center;
+}
+*/
+
+/* Focus and hover states for inputs */
+/*input:focus, button:focus {
+    outline: none;
+    box-shadow: 0 0 5px rgba(0, 0, 255, 0.2);
+    background-color: white;  Make background white on focus 
+}*/
+
+/*input:hover, button:hover {
+    background-color: #f0f0f0;
+}*/
+
+/* Validation error messages */
+/*.text-danger {
+    font-size: 12px;
+    color: #ff0000;
+}*/
+
+/* Horizontal line style */
+hr {
+    border-top: 1px solid #ddd;
+    margin-block: .2rem;
+}
