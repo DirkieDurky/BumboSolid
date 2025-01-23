@@ -27,6 +27,4 @@ public partial class CLAEntry
 	public int? HolidaySurcharge { get; set; }
 
     public virtual List<CLABreakEntry> CLABreakEntries { get; set; } = new List<CLABreakEntry>();
-
-    public virtual List<CLASurchargeEntry> CLASurchargeEntries { get; set; } = [];
 }

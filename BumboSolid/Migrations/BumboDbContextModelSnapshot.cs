@@ -164,22 +164,19 @@ namespace BumboSolid.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("CLAEntryId")
-                        .HasColumnType("int")
-                        .HasColumnName("CLAEntryId");
-
-                    b.Property<TimeOnly>("StartTime")
+                    b.Property<TimeOnly?>("EndTime")
                         .HasColumnType("time");
 
-                    b.Property<byte>("Weekday")
+                    b.Property<TimeOnly?>("StartTime")
+                        .HasColumnType("time");
+
+                    b.Property<int>("Surcharge")
+                        .HasColumnType("int");
+
+                    b.Property<byte?>("Weekday")
                         .HasColumnType("tinyint");
 
-                    b.Property<TimeOnly>("endTime")
-                        .HasColumnType("time");
-
                     b.HasKey("Id");
-
-                    b.HasIndex("CLAEntryId");
 
                     b.ToTable("CLASurchargeEntry", (string)null);
                 });
@@ -1138,17 +1135,6 @@ namespace BumboSolid.Migrations
                     b.Navigation("CLAEntry");
                 });
 
-            modelBuilder.Entity("BumboSolid.Data.Models.CLASurchargeEntry", b =>
-                {
-                    b.HasOne("BumboSolid.Data.Models.CLAEntry", "CLAEntry")
-                        .WithMany("CLASurchargeEntries")
-                        .HasForeignKey("CLAEntryId")
-                        .IsRequired()
-                        .HasConstraintName("FK_CLASurchargeEntry_CLAEntry");
-
-                    b.Navigation("CLAEntry");
-                });
-
             modelBuilder.Entity("BumboSolid.Data.Models.ClockedHours", b =>
                 {
                     b.HasOne("BumboSolid.Data.Models.Department", "DepartmentNavigation")
@@ -1370,8 +1356,6 @@ namespace BumboSolid.Migrations
             modelBuilder.Entity("BumboSolid.Data.Models.CLAEntry", b =>
                 {
                     b.Navigation("CLABreakEntries");
-
-                    b.Navigation("CLASurchargeEntries");
                 });
 
             modelBuilder.Entity("BumboSolid.Data.Models.Department", b =>

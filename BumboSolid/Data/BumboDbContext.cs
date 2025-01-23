@@ -121,13 +121,6 @@ public partial class BumboDbContext : IdentityDbContext<User, IdentityRole<int>,
 			entity.HasKey(e => e.Id);
 
 			entity.ToTable("CLASurchargeEntry");
-
-			entity.Property(e => e.CLAEntryId).HasColumnName("CLAEntryId");
-
-			entity.HasOne(d => d.CLAEntry).WithMany(p => p.CLASurchargeEntries)
-				.HasForeignKey(d => d.CLAEntryId)
-				.OnDelete(DeleteBehavior.ClientSetNull)
-				.HasConstraintName("FK_CLASurchargeEntry_CLAEntry");
 		});
 
 		modelBuilder.Entity<CLAEntry>(entity =>
