@@ -165,7 +165,7 @@
             let employeeAgeInYears = employeeAge / (1000 * 60 * 60 * 24 * 365)
             let activeClaEntry = claEntries.filter(c=>(c.AgeStart === null || c.AgeStart <= employeeAgeInYears) && (c.AgeEnd === null || c.AgeEnd >= employeeAgeInYears))[0];
 
-            if (activeClaEntry == undefined) {
+            if (activeClaEntry == undefined || activeClaEntry.MaxWorkDurationPerWeek == null) {
                 document.getElementById('hoursLeftForThisWeek').innerText = "Oneindig";
                 return;
             }
@@ -202,7 +202,7 @@
             let employeeAgeInYears = employeeAge / (1000 * 60 * 60 * 24 * 365)
             let activeClaEntry = claEntries.filter(c=>(c.AgeStart === null || c.AgeStart <= employeeAgeInYears) && (c.AgeEnd === null || c.AgeEnd >= employeeAgeInYears))[0];
 
-            if (activeClaEntry == undefined) {
+            if (activeClaEntry == undefined || activeClaEntry.MaxWorkDurationPerDay == null) {
                 document.getElementById('hoursLeftForThisDay').innerText = "Oneindig";
                 return;
             }
