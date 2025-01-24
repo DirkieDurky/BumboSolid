@@ -1,4 +1,5 @@
 ﻿@using BumboSolid.Data.Models
+@using System.Text.Json
 @model BumboSolid.Models.ShiftCreateViewModel
 
 @{
@@ -59,7 +60,7 @@
             <div class="row pb-2">
                 <div class="form-group col-md-6">
                     <label class="control-label fw-bold">Medewerker</label>
-                    <select id="employee-select" asp-for="Shift.EmployeeId" class="form-control p-1 border-solid-black" onchange="updateEmployeeName()">
+                    <select id="employee-select" asp-for="Shift.EmployeeId" class="form-control p-1 border-solid-black" onchange="onEmployeeNameUpdated()">
                         @foreach (User employee in Model.Employees)
                         {
                             <option value="@employee.Id">@(Model.Employees.Count(e => e.Name == employee.Name) > 1 ? employee.Id : "") @employee.Name</option>
@@ -68,12 +69,12 @@
                     </select>
                 </div>
                 <div class="form-group col-md-3">
-                    <p class="fw-bold m-0">Heeft pauze over</p>
-                    <p id="hasBreakIn">-:--</p>
+                    <p class="fw-bold m-0">Uren over deze week</p>
+                    <p id="hoursLeftForThisWeek">-</p>
                 </div>
                 <div class="form-group col-md-3">
-                    <p class="fw-bold m-0">Mag nog werken</p>
-                    <p id="canWorkFor">-:--</p>
+                    <p class="fw-bold m-0">Uren over deze dag</p>
+                    <p id="hoursLeftForThisDay">-</p>
                 </div>
             </div>
             <div class="row">
@@ -92,7 +93,7 @@
             <div class="row">
                 <div class="form-group col-md-6 pb-2">
                     <label class="control-label fw-bold">Dag</label>
-                    <select asp-for="Shift.Weekday" class="form-control p-1 border-solid-black">
+                    <select id="weekday-select" asp-for="Shift.Weekday" class="form-control p-1 border-solid-black" onchange="updateHoursLeftForThisDay()">
                         @for (int i = 0; i < daysOfTheWeek.Length; i++)
                         {
                             <option value="@i">@daysOfTheWeek[i]</option>
@@ -125,27 +126,103 @@
     </div>
 </div>
 
-<!--TODO FIX WHEN WE GOT TIME-->
 @section Scripts {
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
     <script>
-        updateEmployeeName()
+        let employeeSelect = document.getElementById("employee-select");
+        let weekdaySelect = document.getElementById("weekday-select");
 
-        function updateEmployeeName() {
-            let employeeSelect = document.getElementById("employee-select");
+        let employees = @Html.Raw(JsonSerializer.Serialize(Model.Employees))
+        let claEntries = @Html.Raw(JsonSerializer.Serialize(Model.CLAEntries))
+        let shifts = @Html.Raw(JsonSerializer.Serialize(Model.Shifts))
+
+        onEmployeeNameUpdated();
+
+        function onEmployeeNameUpdated() {
             if (employeeSelect.options[employeeSelect.selectedIndex].text === "Extern filiaal") {
                 document.getElementById("external-employee-name").type = "text"
                 document.getElementById("external-employee-container").style.display = "block";
-                document.getElementById('hasBreakIn').innerText = "-:--";
-                document.getElementById('canWorkFor').innerText = "-:--";
             } else {
                 document.getElementById("external-employee-name").type = "hidden"
                 document.getElementById("external-employee-container").style.display = "none";
-                document.getElementById('hasBreakIn').innerText = "-:--";
-                document.getElementById('canWorkFor').innerText = "-:--";
             }
+            updateHoursLeftForThisWeek();
+            updateHoursLeftForThisDay();
+        }
+
+        function updateHoursLeftForThisWeek() {
+            let selectedEmployee = parseInt(employeeSelect.options[employeeSelect.selectedIndex].value);
+
+            if (selectedEmployee == -1) {
+                document.getElementById('hoursLeftForThisWeek').innerText = "-";
+                return;
+            }
+
+            let employeeBirthDate = employees.filter(e=>e.Id === selectedEmployee)[0].BirthDate;
+            let employeeAge = Date.now() - new Date(employeeBirthDate);
+            let employeeAgeInYears = employeeAge / (1000 * 60 * 60 * 24 * 365)
+            let activeClaEntry = claEntries.filter(c=>(c.AgeStart === null || c.AgeStart <= employeeAgeInYears) && (c.AgeEnd === null || c.AgeEnd >= employeeAgeInYears))[0];
+
+            if (activeClaEntry == undefined) {
+                document.getElementById('hoursLeftForThisWeek').innerText = "Oneindig";
+                return;
+            }
+
+            let maxHoursPerWeek = activeClaEntry.MaxWorkDurationPerWeek / 60;
+
+
+            let currentWeek = @Model.Week.Id
+            let shiftsPlannedThisWeek = shifts.filter(s=>s.WeekId === currentWeek && s.EmployeeId === selectedEmployee)
+            let hoursWorkingThisWeek = 0;
+
+            for (shift of shiftsPlannedThisWeek) {
+                let timeStart = new Date("01/01/2000 " + shift.StartTime).getHours();
+                let timeEnd = new Date("01/01/2000 " + shift.EndTime).getHours();
+
+                let hourDiff = timeEnd - timeStart;
+                hoursWorkingThisWeek += hourDiff;
+            }
+
+            document.getElementById('hoursLeftForThisWeek').innerText = maxHoursPerWeek - hoursWorkingThisWeek
+        }
+
+        function updateHoursLeftForThisDay() {
+            let selectedEmployee = parseInt(employeeSelect.options[employeeSelect.selectedIndex].value);
+            let selectedWeekday = weekdaySelect.selectedIndex;
+
+            if (selectedEmployee == -1) {
+                document.getElementById('hoursLeftForThisDay').innerText = "-";
+                return;
+            }
+
+            let employeeBirthDate = employees.filter(e=>e.Id === selectedEmployee)[0].BirthDate;
+            let employeeAge = Date.now() - new Date(employeeBirthDate);
+            let employeeAgeInYears = employeeAge / (1000 * 60 * 60 * 24 * 365)
+            let activeClaEntry = claEntries.filter(c=>(c.AgeStart === null || c.AgeStart <= employeeAgeInYears) && (c.AgeEnd === null || c.AgeEnd >= employeeAgeInYears))[0];
+
+            if (activeClaEntry == undefined) {
+                document.getElementById('hoursLeftForThisDay').innerText = "Oneindig";
+                return;
+            }
+
+            let maxHoursPerDay = activeClaEntry.MaxWorkDurationPerDay / 60;
+
+
+            let currentWeek = @Model.Week.Id
+            let shiftsPlannedThisDay = shifts.filter(s=>s.WeekId === currentWeek && s.EmployeeId === selectedEmployee && s.Weekday === selectedWeekday)
+            let hoursWorkingThisDay = 0;
+
+            for (shift of shiftsPlannedThisDay) {
+                let timeStart = new Date("01/01/2000 " + shift.StartTime).getHours();
+                let timeEnd = new Date("01/01/2000 " + shift.EndTime).getHours();
+
+                let hourDiff = timeEnd - timeStart;
+                hoursWorkingThisDay += hourDiff;
+            }
+
+            document.getElementById('hoursLeftForThisDay').innerText = maxHoursPerDay - hoursWorkingThisDay
         }
     </script>
 }

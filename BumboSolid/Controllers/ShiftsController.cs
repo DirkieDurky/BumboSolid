@@ -15,13 +15,13 @@ namespace BumboSolid.Controllers;
 public class ShiftsController : Controller
 {
     private readonly BumboDbContext _context;
-	private readonly UserManager<User> _userManager;
+    private readonly UserManager<User> _userManager;
 
-	public ShiftsController(BumboDbContext context, UserManager<User> userManager)
+    public ShiftsController(BumboDbContext context, UserManager<User> userManager)
     {
         _context = context;
-		_userManager = userManager;
-	}
+        _userManager = userManager;
+    }
 
     // GET: Shifts/Create
     [HttpGet("MedewerkerInplannen/{weekId:int}")]
@@ -32,33 +32,43 @@ public class ShiftsController : Controller
 
         ViewBag.Departments = new SelectList(_context.Departments, "Name", "Name");
 
-		// Only show the users with the employee role, because the manager may not work a shift.
-		var employeeRole = await _context.Roles
-			.Where(r => r.Name == "Employee")
-			.Select(r => r.Id)
-			.FirstOrDefaultAsync();
+        // Only show the users with the employee role, because the manager may not work a shift.
+        var employeeRole = await _context.Roles
+            .Where(r => r.Name == "Employee")
+            .Select(r => r.Id)
+            .FirstOrDefaultAsync();
 
-		if (employeeRole == null)
-		{
-			ViewBag.NoEmployees = "No employees found.";
-			return View(new List<User>());
-		}
+        if (employeeRole == 0)
+        {
+            throw new Exception("No employee role found");
+        }
 
-		var employees = await _context.UserRoles
-			.Where(ur => ur.RoleId == employeeRole)
-			.Select(ur => ur.UserId)
-			.ToListAsync();
+        var employeeRoleConnections = await _context.UserRoles
+            .Where(ur => ur.RoleId == employeeRole)
+            .Select(ur => ur.UserId)
+            .ToListAsync();
 
-		var employeeUsers = await _context.Users
-			.Where(u => employees.Contains(u.Id))
-			.Include(u => u.Departments)
-			.ToListAsync();
+        var employeeUsers = await _context.Users
+            .Where(u => employeeRoleConnections.Contains(u.Id))
+            .ToListAsync();
 
-		var viewModel = new ShiftCreateViewModel
+        List<Shift> shifts = _context.Shifts.ToList();
+        //Exclude recursive columns to avoid infinite loop converting to JSON
+        foreach (Shift shift in shifts)
+        {
+            shift.Employee = null;
+            shift.Department = "";
+            shift.DepartmentNavigation = null;
+            shift.Week = null;
+        }
+
+        var viewModel = new ShiftCreateViewModel
         {
             Employees = employeeUsers,
             Shift = new Shift(),
             Week = week,
+            Shifts = shifts,
+            CLAEntries = _context.CLAEntries.ToList(),
         };
 
         return View(viewModel);
@@ -75,26 +85,26 @@ public class ShiftsController : Controller
         shiftCreateViewModel.Week = week;
         shiftCreateViewModel.Shift.Week = week;
         shiftCreateViewModel.Shift.WeekId = weekId;
-		shiftCreateViewModel.Employees = await _context.Employees.ToListAsync();
+        shiftCreateViewModel.Employees = await _context.Employees.ToListAsync();
 
         ViewBag.Departments = new SelectList(_context.Departments, "Name", "Name", shiftCreateViewModel.Shift.Department);
         ViewBag.WeekDays = new SelectList(new List<string> { "Maandag", "Dinsdag", "Woensdag", "Donderdag", "Vrijdag", "Zaterdag", "Zondag" });
 
-		// Checking if this shift does not break any CAO rules
-		bool validShift = true;
-		var user = await _userManager.GetUserAsync(User);
-		var userAge = (DateTime.Today - user.BirthDate.ToDateTime(new TimeOnly())).Days / 365;
-		var CLAs = _context.CLAEntries.Where(a => (a.AgeStart <= userAge && a.AgeEnd >= userAge) || (a.AgeStart <= userAge && a.AgeEnd == null) || (a.AgeStart == null && a.AgeEnd >= userAge) || (a.AgeStart == null && a.AgeEnd == null)).ToList();
-		var allShifts = _context.Shifts.Include(w => w.Week).ToList();
-		validShift = new CLAApplyRules().ApplyCLARules(shiftCreateViewModel.Shift, CLAs, allShifts);
+        // Checking if this shift does not break any CAO rules
+        bool validShift = true;
+        var user = await _userManager.GetUserAsync(User);
+        var userAge = (DateTime.Today - user.BirthDate.ToDateTime(new TimeOnly())).Days / 365;
+        var CLAs = _context.CLAEntries.Where(a => (a.AgeStart <= userAge && a.AgeEnd >= userAge) || (a.AgeStart <= userAge && a.AgeEnd == null) || (a.AgeStart == null && a.AgeEnd >= userAge) || (a.AgeStart == null && a.AgeEnd == null)).ToList();
+        var allShifts = _context.Shifts.Include(w => w.Week).ToList();
+        validShift = new CLAApplyRules().ApplyCLARules(shiftCreateViewModel.Shift, CLAs, allShifts);
 
         if (!validShift)
         {
-			ViewBag.Error = "Er worden CAO regels overtreden";
+            ViewBag.Error = "Er worden CAO regels overtreden";
 
-			return View(shiftCreateViewModel);
-		}
-		if (!ModelState.IsValid)
+            return View(shiftCreateViewModel);
+        }
+        if (!ModelState.IsValid)
         {
             return View(shiftCreateViewModel);
         }
@@ -126,11 +136,62 @@ public class ShiftsController : Controller
             .FirstOrDefaultAsync(s => s.Id == id);
         if (shift == null) return NotFound();
 
+        List<Shift> shifts = new List<Shift>();
+        //Only include columns that I need to avoid infinite loop converting to JSON
+        foreach (Shift s in _context.Shifts.ToList())
+        {
+            Shift newShift = new Shift()
+            {
+                StartTime = s.StartTime,
+                EndTime = s.EndTime,
+                WeekId = s.WeekId,
+                EmployeeId = s.EmployeeId,
+                Weekday = s.Weekday,
+            };
+            shifts.Add(newShift);
+        }
+        
+        // Only show the users with the employee role, because the manager may not work a shift.
+        var employeeRole = await _context.Roles
+            .Where(r => r.Name == "Employee")
+            .Select(r => r.Id)
+            .FirstOrDefaultAsync();
+
+        if (employeeRole == 0)
+        {
+            throw new Exception("No employee role found");
+        }
+
+        var employeeRoleConnections = await _context.UserRoles
+            .Where(ur => ur.RoleId == employeeRole)
+            .Select(ur => ur.UserId)
+            .ToListAsync();
+
+        var employeeUsers = await _context.Users
+            .Where(u => employeeRoleConnections.Contains(u.Id))
+            .ToListAsync();
+
+        List<User> employees = new List<User>();
+        //Only include columns that I need to avoid infinite loop converting to JSON
+        foreach (User user in employeeUsers)
+        {
+            User newUser = new User()
+            {
+                Id = user.Id,
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                BirthDate = user.BirthDate,
+            };
+            employees.Add(newUser);
+        }
+
         var viewModel = new ShiftCreateViewModel
         {
             Shift = shift,
-            Employees = await _context.Employees.ToListAsync(),
-            Week = shift.Week
+            Employees = employees,
+            Week = shift.Week,
+            Shifts = shifts,
+            CLAEntries = _context.CLAEntries.ToList(),
         };
 
         ViewBag.Departments = new SelectList(_context.Departments, "Name", "Name");
@@ -147,28 +208,28 @@ public class ShiftsController : Controller
         if (week == null) return NotFound();
 
         shiftCreateViewModel.Week = week;
-		shiftCreateViewModel.Shift.Week = week;
-		shiftCreateViewModel.Shift.WeekId = week.Id;
-		shiftCreateViewModel.Employees = await _context.Employees.ToListAsync();
+        shiftCreateViewModel.Shift.Week = week;
+        shiftCreateViewModel.Shift.WeekId = week.Id;
+        shiftCreateViewModel.Employees = await _context.Employees.ToListAsync();
 
         ViewBag.Departments = new SelectList(_context.Departments, "Name", "Name", shiftCreateViewModel.Shift.Department);
         ViewBag.WeekDays = new SelectList(new List<string> { "Maandag", "Dinsdag", "Woensdag", "Donderdag", "Vrijdag", "Zaterdag", "Zondag" });
 
-		// Checking if this shift does not break any CAO rules
-		bool validShift = true;
-		var user = await _userManager.GetUserAsync(User);
-		var userAge = (DateTime.Today - user.BirthDate.ToDateTime(new TimeOnly())).Days / 365;
-		var CLAs = _context.CLAEntries.Where(a => (a.AgeStart <= userAge && a.AgeEnd >= userAge) || (a.AgeStart <= userAge && a.AgeEnd == null) || (a.AgeStart == null && a.AgeEnd >= userAge) || (a.AgeStart == null && a.AgeEnd == null)).ToList();
-		var allShifts = _context.Shifts.Include(w => w.Week).ToList();
-		validShift = new CLAApplyRules().ApplyCLARules(shiftCreateViewModel.Shift, CLAs, allShifts);
+        // Checking if this shift does not break any CAO rules
+        bool validShift = true;
+        var user = await _userManager.GetUserAsync(User);
+        var userAge = (DateTime.Today - user.BirthDate.ToDateTime(new TimeOnly())).Days / 365;
+        var CLAs = _context.CLAEntries.Where(a => (a.AgeStart <= userAge && a.AgeEnd >= userAge) || (a.AgeStart <= userAge && a.AgeEnd == null) || (a.AgeStart == null && a.AgeEnd >= userAge) || (a.AgeStart == null && a.AgeEnd == null)).ToList();
+        var allShifts = _context.Shifts.Include(w => w.Week).ToList();
+        validShift = new CLAApplyRules().ApplyCLARules(shiftCreateViewModel.Shift, CLAs, allShifts);
 
-		if (!validShift)
-		{
-			ViewBag.Error = "Er worden CAO regels overtreden";
+        if (!validShift)
+        {
+            ViewBag.Error = "Er worden CAO regels overtreden";
 
-			return View(shiftCreateViewModel);
-		}
-		if (!ModelState.IsValid) return RedirectToAction(nameof(Edit), new { id });
+            return View(shiftCreateViewModel);
+        }
+        if (!ModelState.IsValid) return RedirectToAction(nameof(Edit), new { id });
         try
         {
             if (shiftCreateViewModel.Shift.EmployeeId == -1)
