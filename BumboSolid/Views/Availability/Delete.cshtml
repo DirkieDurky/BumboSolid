@@ -1,8 +1,12 @@
-﻿@model BumboSolid.Data.Models.AvailabilityRule
+﻿@{
+    ViewData["Title"] = "Beschikbaarheid verwijderen";
+}
+
+@model BumboSolid.Data.Models.AvailabilityRule
 
 <div class="card-body">
-    <h1>Werkgelegenheid Verwijderen</h1>
-    <p class="lead">Weet u zeker dat u deze werkgelegenheid wilt verwijderen?</p>
+    <h1>Beschikbaarheid Verwijderen</h1>
+    <p class="lead">Weet u zeker dat u deze beschikbaarheidsinformatie wilt verwijderen?</p>
 
     <form asp-controller="Availability" asp-action="Delete" asp-route-id="@Model.Id" method="post" class="d-inline">
         <input type="hidden" id="year" name="year" value="@ViewBag.Year" />

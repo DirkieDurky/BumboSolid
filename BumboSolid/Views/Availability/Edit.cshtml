@@ -2,7 +2,7 @@
 @model BumboSolid.Data.Models.AvailabilityRule
 
 @{
-    ViewData["Title"] = "Edit";
+    ViewData["Title"] = "Beschikbaarheid bewerken";
 }
 
 <h1>Beschikbaarheid Bewerken</h1>
@@ -19,20 +19,20 @@
 
             <div class="form-group">
                 <label asp-for="Date" class="control-label">Datum</label>
-                <input asp-for="Date" id="date" class="form-control" value=@Model.Date />
+                <input required asp-for="Date" id="date" class="form-control" type="date" value=@Model.Date />
                 <span asp-validation-for="Date" class="text-danger"></span>
             </div>
 
             <div class="d-flex flex-row">
                 <div class="form-group mb-3">
                     <label asp-for="StartTime" class="control-label">Starttijd</label>
-                    <input asp-for="StartTime" class="form-control" type="time" value="@Model.StartTime" />
+                    <input required asp-for="StartTime" class="form-control" type="time" value="@Model.StartTime" />
                     <span asp-validation-for="StartTime" class="text-danger"></span>
                 </div>
 
                 <div class="form-group mb-3">
                     <label asp-for="EndTime" class="control-label">Eindtijd</label>
-                    <input asp-for="EndTime" class="form-control" type="time" value="@Model.EndTime" />
+                    <input required asp-for="EndTime" class="form-control" type="time" value="@Model.EndTime" />
                     <span asp-validation-for="EndTime" class="text-danger"></span>
                 </div>
             </div>
