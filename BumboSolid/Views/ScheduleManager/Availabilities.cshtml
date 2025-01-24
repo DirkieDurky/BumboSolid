@@ -1,0 +1,34 @@
+﻿@model IEnumerable<BumboSolid.Models.AvailabilityRuleViewModel>
+@{
+	ViewData["Title"] = "Beschikbaarheid";
+}
+
+<div class="mx-3 text-center text-nowrap">
+	<h1>Beschikbaarheid</h1>
+</div>
+
+<table class="table">
+	<thead>
+		<tr>
+			<th>Medewerker</th>
+			<th>Dag</th>
+			<th>Starttijd</th>
+			<th>Eindtijd</th>
+            <th>Beschikbaar</th>
+			<th>School</th>
+		</tr>
+	</thead>
+	<tbody>
+        @foreach (var availabilityRule in Model)
+        {
+            <tr>
+				<td>@availabilityRule.Employee</td>
+                <td>@availabilityRule.Weekday</td>
+                <td>@availabilityRule.StartTime</td>
+                <td>@availabilityRule.EndTime</td>
+                <td>@(availabilityRule.Available == 1 ? "Ja" : "Nee")</td>
+                <td>@(availabilityRule.School == 1 ? "Ja" : "Nee")</td>
+            </tr>
+        }
+	</tbody>
+</table>

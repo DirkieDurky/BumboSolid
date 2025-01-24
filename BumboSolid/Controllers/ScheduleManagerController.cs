@@ -5,6 +5,7 @@ using BumboSolid.Data;
 using Microsoft.AspNetCore.Authorization;
 using BumboSolid.Models;
 using System.Globalization;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace BumboSolid.Controllers;
 
@@ -38,7 +39,7 @@ public class ScheduleManagerController(BumboDbContext context) : Controller
         return View(viewModel);
     }
 
-    [HttpGet("WedewerkerSchema/{employeeId:int}/{id:int?}")]
+    [HttpGet("MedewerkerSchema/{employeeId:int}/{id:int?}")]
     public async Task<IActionResult> ManagerEmployeeSchedule(int? id, int employeeId)
     {
         var currentWeek = await GetCurrentWeek(id);
@@ -187,10 +188,9 @@ public class ScheduleManagerController(BumboDbContext context) : Controller
 
     private async Task<SchedulesViewModel> GetSchedulesViewModel(Week currentWeek)
     {
-        var culture = CultureInfo.CurrentCulture;
         var today = DateTime.Now;
         var currentYear = (short)today.Year;
-        var currentWeekNumber = (byte)culture.Calendar.GetWeekOfYear(today, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Monday);
+        var currentWeekNumber = (byte)CultureInfo.CurrentCulture.Calendar.GetWeekOfYear(DateTime.Today, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Monday);
 
         var previousWeek = await _context.Weeks
             .Where(w =>
@@ -229,8 +229,42 @@ public class ScheduleManagerController(BumboDbContext context) : Controller
         };
     }
 
-    // GET: Shifts/FillRequests
-    [HttpGet("Invalsverzoeken")]
+	// GET: Shifts/Availabilities
+	[HttpGet("Beschikbaarheid")]
+	public async Task<IActionResult> Availabilities(int weekId)
+	{
+		List<AvailabilityRuleViewModel> availabilityRuleViewModels = new List<AvailabilityRuleViewModel>();
+		foreach (var availabilityRule in _context.AvailabilityRules.OrderByDescending(a => a.Date).ToList())
+		{
+            // Get correct day and week
+            DateTime dateTime = availabilityRule.Date.ToDateTime(TimeOnly.Parse("00:00:00"));
+            DayOfWeek day = CultureInfo.CurrentCulture.Calendar.GetDayOfWeek(dateTime);
+			int weekNumber = CultureInfo.CurrentCulture.Calendar.GetWeekOfYear(dateTime, CalendarWeekRule.FirstFullWeek, day);
+            Week week = await _context.Weeks.Where(w => w.Id == weekId).FirstOrDefaultAsync();
+
+            if (weekNumber == week.WeekNumber)
+            {
+                // Getting employee
+                User? employee = _context.Employees.Where(e => e.Id == availabilityRule.Employee).FirstOrDefault();
+
+				// Creating AvailabilityRuleViewModel
+				availabilityRuleViewModels.Add(new AvailabilityRuleViewModel()
+				{
+					Employee = employee.FirstName + " " + employee.LastName,
+					Weekday = day.ToString(),
+					StartTime = availabilityRule.StartTime,
+					EndTime = availabilityRule.EndTime,
+					Available = availabilityRule.Available,
+					School = availabilityRule.School,
+				});
+			}
+		}
+
+		return View(availabilityRuleViewModels);
+	}
+
+	// GET: Shifts/FillRequests
+	[HttpGet("Invalsverzoeken")]
     public IActionResult FillRequests()
     {
         List<FillRequestViewModel> fillRequestViewModels = new List<FillRequestViewModel>();
