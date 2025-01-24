@@ -1,4 +1,8 @@
-﻿@model BumboSolid.Models.EditPrognosisFactorsViewModel
+﻿@{
+    ViewData["Title"] = "Factoren bewerken";
+}
+
+@model BumboSolid.Models.EditPrognosisFactorsViewModel
 
 @{
     String[] daysOfTheWeek = { "Maandag", "Dinsdag", "Woensdag", "Donderdag", "Vrijdag", "Zaterdag", "Zondag" };
@@ -42,14 +46,14 @@
                     }
                 }
                 <td class="table-gray">
-                    <input id="visitor-estimate-@i" name="VisitorEstimates[@i]" type="number" class="form-control" value="@value" onchange="updateVisitorEstimate()">
+                    <input required id="visitor-estimate-@i" name="VisitorEstimates[@i]" type="number" class="form-control" value="@value" onchange="updateVisitorEstimate()">
                 </td>
 
                 @{
                     value = Model.Prognosis.PrognosisDays.First(x => x.Weekday == i).Factors.First(x => x.Type == "Feestdagen").Impact;
                 }
                 <td class="table-secondary">
-                    <input id="holiday-@i" name="Holidays[@i]" type="number" class="form-control small-input" value="@value" onchange="updateVisitorEstimate()">
+                    <input required id="holiday-@i" name="Holidays[@i]" type="number" class="form-control small-input" value="@value" onchange="updateVisitorEstimate()">
                 </td>
 
                 <td class="table-gray gap-2">
@@ -57,7 +61,7 @@
                         @{
                             String imageSrc = weatherId != null ? $"/images/weather/{weatherId}.svg" : "/images/weather/3.svg";
                         }
-                        <img id="@("weather-icon-" + i)" src=@imageSrc class="background-white" />
+                        <img id="@("weather-icon-" + i)" src=@imageSrc class="background-white me-1" width="40" height="40"/>
 
                         <select id="@("weather-select-" + i)" name="WeatherIds[@i]" class="form-control small-input form-select" onchange="@("updateIcon("+i+"); updateVisitorEstimate();")">
                             @{
@@ -76,7 +80,7 @@
                 }
                 <td class="table-secondary gap-2">
                     <div class="d-flex flex-row">
-                        <input id="other-@i" name="Others[@i]" type="number" class="form-control small-input" value="@value" onchange="updateVisitorEstimate()">
+                        <input required id="other-@i" name="Others[@i]" type="number" class="form-control small-input" value="@value" onchange="updateVisitorEstimate()">
                         <textarea name="Descriptions[@i]" class="factor-description" placeholder="Beschrijving" rows="2" cols="25">@description</textarea>
                     </div>
                 </td>

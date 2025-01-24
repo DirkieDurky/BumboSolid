@@ -1,7 +1,7 @@
 ﻿@model BumboSolid.Data.Models.AvailabilityRule
 
 @{
-    ViewData["Title"] = "Create";
+    ViewData["Title"] = "Beschikbaarheid toevoegen";
 }
 
 <h1>Beschikbaarheid Toevoegen</h1>
@@ -17,20 +17,20 @@
 
             <div class="form-group">
                 <label asp-for="Date" class="control-label">Datum</label>
-                <input asp-for="Date" id="firstday" class="form-control" value=null />
+                <input required asp-for="Date" id="firstday" class="form-control" type="date" value="null" />
                 <span asp-validation-for="Date" class="text-danger"></span>
             </div>
 
             <div class="d-flex flex-row">
                 <div class="form-group mb-3">
                     <label asp-for="StartTime" class="control-label">Starttijd</label>
-                    <input asp-for="StartTime" class="form-control" type="time" value="null" />
+                    <input required asp-for="StartTime" class="form-control" type="time" value="null" />
                     <span asp-validation-for="StartTime" class="text-danger"></span>
                 </div>
 
                 <div class="form-group mb-3">
                     <label asp-for="EndTime" class="control-label">Eindtijd</label>
-                    <input asp-for="EndTime" class="form-control" type="time" value="null" />
+                    <input required asp-for="EndTime" class="form-control" type="time" value="null" />
                     <span asp-validation-for="EndTime" class="text-danger"></span>
                 </div>
             </div>

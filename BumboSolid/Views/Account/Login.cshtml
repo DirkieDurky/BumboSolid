@@ -1,4 +1,8 @@
-﻿@model BumboSolid.Models.LoginViewModel
+﻿@{
+    ViewData["Title"] = "Login";
+}
+
+@model BumboSolid.Models.LoginViewModel
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
 
@@ -16,12 +20,12 @@
             <form action="Login" method="post">
                 <hr />
                 <div class="form-group mb-3">
-                    <label asp-for="Email" class="form-label">Email</label>
+                    <label asp-for="Email" class="form-label"></label>
                     <input asp-for="Email" class="form-control" />
                     <span asp-validation-for="Email" class="text-danger"></span>
                 </div>
                 <div class="form-group mb-3">
-                    <label asp-for="Password" class="form-label">Password</label>
+                    <label asp-for="Password" class="form-label"></label>
                     <div class="input-group">
                         <input asp-for="Password" class="form-control" id="Password" />
                         <button type="button" id="togglePassword" class="btn btn-outline-secondary">
