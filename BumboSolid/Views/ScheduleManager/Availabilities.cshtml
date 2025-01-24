@@ -4,9 +4,23 @@
 	ViewData["Title"] = "Beschikbaarheid";
 }
 
-<div class="mx-3 text-center text-nowrap">
-	<h1>Beschikbaarheid</h1>
-</div>
+
+<header class="d-flex flex-column align-items-center">
+    <div class="d-flex justify-content-between w-100 header-items">
+        <div></div>
+        <div>
+            <a class="btn new-btn" asp-action="OverviewSchedule" asp-route-id="@ViewBag.WeekId">
+                Rooster
+            </a>
+        </div>
+        <div class="text-center d-flex flex-column align-items-center">
+            <h1 class="text-nowrap">Beschikbaarheid</h1>
+            <p>@ViewBag.StartDate.ToString("dd/MM/yyyy") - @ViewBag.StartDate.AddDays(6).ToString("dd/MM/yyyy")</p>
+        </div>
+        <div></div>
+        <div></div>
+    </div>
+</header>
 
 <table class="table">
 	<thead>

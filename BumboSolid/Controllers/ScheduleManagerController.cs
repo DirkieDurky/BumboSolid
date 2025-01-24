@@ -233,15 +233,16 @@ public class ScheduleManagerController(BumboDbContext context) : Controller
 	[HttpGet("Beschikbaarheid")]
 	public async Task<IActionResult> Availabilities(int weekId)
 	{
+		Week week = await _context.Weeks.Where(w => w.Id == weekId).FirstOrDefaultAsync();
+		string[] daysOfTheWeek = { "Maandag", "Dinsdag", "Woensdag", "Donderdag", "Vrijdag", "Zaterdag", "Zondag" };
+
 		List<AvailabilityRuleViewModel> availabilityRuleViewModels = new List<AvailabilityRuleViewModel>();
 		foreach (var availabilityRule in _context.AvailabilityRules.OrderByDescending(a => a.Date).ToList())
 		{
-            // Get correct day and week
-            DateTime dateTime = availabilityRule.Date.ToDateTime(TimeOnly.Parse("00:00:00"));
-            DayOfWeek day = CultureInfo.CurrentCulture.Calendar.GetDayOfWeek(dateTime);
+			// Get correct day and week
+			DateTime dateTime = availabilityRule.Date.ToDateTime(TimeOnly.Parse("00:00:00"));
+			DayOfWeek day = CultureInfo.CurrentCulture.Calendar.GetDayOfWeek(dateTime);
 			int weekNumber = CultureInfo.CurrentCulture.Calendar.GetWeekOfYear(dateTime, CalendarWeekRule.FirstFullWeek, day);
-            Week week = await _context.Weeks.Where(w => w.Id == weekId).FirstOrDefaultAsync();
-			string[] daysOfTheWeek = { "Maandag", "Dinsdag", "Woensdag", "Donderdag", "Vrijdag", "Zaterdag", "Zondag" };
 
 			if (weekNumber == week.WeekNumber)
             {
@@ -261,7 +262,18 @@ public class ScheduleManagerController(BumboDbContext context) : Controller
 			}
 		}
 
+        ViewBag.StartDate = GetFirstDateOfWeek(week.Year, week.WeekNumber);
+		ViewBag.WeekId = week.Id;
+
 		return View(availabilityRuleViewModels);
+	}
+
+	public static DateTime GetFirstDateOfWeek(int year, int weekOfYear)
+	{
+		var jan1 = new DateTime(year, 1, 1);
+		var daysOffset = (int)DayOfWeek.Monday - (int)jan1.DayOfWeek;
+		var firstMonday = jan1.AddDays(daysOffset > 0 ? daysOffset - 7 : daysOffset);
+		return firstMonday.AddDays((weekOfYear - 1) * 7);
 	}
 
 	// GET: Shifts/FillRequests
