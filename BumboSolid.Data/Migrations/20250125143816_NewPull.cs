@@ -5,10 +5,10 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #pragma warning disable CA1814 // Prefer jagged arrays over multidimensional
 
-namespace BumboSolid.Migrations
+namespace BumboSolid.Data.Migrations
 {
     /// <inheritdoc />
-    public partial class absence : Migration
+    public partial class NewPull : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -43,11 +43,28 @@ namespace BumboSolid.Migrations
                     EarliestWorkTime = table.Column<TimeOnly>(type: "time", nullable: true),
                     LatestWorkTime = table.Column<TimeOnly>(type: "time", nullable: true),
                     MaxAvgWeeklyWorkDurationOverFourWeeks = table.Column<int>(type: "int", nullable: true),
-                    MaxShiftDuration = table.Column<int>(type: "int", nullable: true)
+                    MaxShiftDuration = table.Column<int>(type: "int", nullable: true),
+                    HolidaySurcharge = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_CLAEntry", x => x.ID);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "CLASurchargeEntry",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Surcharge = table.Column<int>(type: "int", nullable: false),
+                    Weekday = table.Column<byte>(type: "tinyint", nullable: true),
+                    StartTime = table.Column<TimeOnly>(type: "time", nullable: true),
+                    EndTime = table.Column<TimeOnly>(type: "time", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_CLASurchargeEntry", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -808,6 +825,9 @@ namespace BumboSolid.Migrations
 
             migrationBuilder.DropTable(
                 name: "CLABreakEntry");
+
+            migrationBuilder.DropTable(
+                name: "CLASurchargeEntry");
 
             migrationBuilder.DropTable(
                 name: "ClockedHours");
