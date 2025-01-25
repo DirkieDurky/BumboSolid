@@ -1,42 +1,54 @@
 ﻿@model BumboSolid.Data.Models.Norm
 
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-
-<div class="modal-body">
-    <form asp-controller="Normeringen" asp-action="Bewerken" asp-route-id="@Model.Id" method="post">
-        <div class="d-flex flex-row">
-            <div class="col-sm-2">
-                <h6>Activiteit</h6>
-            </div>
-            <div class="col-sm-2">
-                <h6>Afdeling</h6>
-            </div>
-            <div class="col-sm-3">
-                <h6>Duur</h6>
-            </div>
-            <div class="col-sm-4">
-                <h6>Gemiddelde Uitvoeringen Per Dag</h6>
-            </div>
+<header class="d-flex flex-column align-items-center">
+    <div class="d-flex w-100 header-items">
+        <div class="d-flex justify-content-center align-items-center w-35">
+            <a asp-action="Index" class="btn bumbo-btn bumbo-btn-back">
+                <i class="fa-solid fa-arrow-left"></i> Terug
+            </a>
         </div>
+        <div class="text-center d-flex flex-column align-items-center justify-content-center w-30 text-nowrap">
+            <h1>Norm Bewerken</h1>
+        </div>
+        <div class="d-flex justify-content-center align-items-center w-35">
+            <a asp-controller="Normeringen" asp-action="Delete" asp-route-id="@Model.Id" class="btn bumbo-btn bumbo-btn-danger">
+                <i class="fa-solid fa-trash-can"></i> Verwijderen
+            </a>
+        </div>
+    </div>
+</header>
 
-        <div id="norm-edit-form">
-            <div class="form-group row align-items-center norm-row">
-                <div class="col-sm-2">
-                    <input type="text" class="form-control" asp-for="Activity" />
+<br />
+
+<div class="d-flex justify-content-center align-items-center">
+    <form asp-controller="Normeringen" asp-action="Bewerken" asp-route-id="@Model.Id" method="post" class="w-75">
+        <input type="hidden" asp-for="Id" />
+
+        <div class="row">
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label asp-for="Activity">Activiteit *</label>
+                    <input asp-for="Activity" class="form-control" />
                     <span asp-validation-for="Activity" class="text-danger"></span>
                 </div>
+            </div>
 
-                <div class="col-sm-2">
-                    <select class="form-control" asp-for="Department">
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label asp-for="Department">Afdeling *</label>
+                    <select asp-for="Department" class="form-control">
                         <option value="Vers" selected="@(Model.Department == "Vers" ? "selected" : null)">Vers</option>
                         <option value="Kassa" selected="@(Model.Department == "Kassa" ? "selected" : null)">Kassa</option>
                         <option value="Vakkenvullen" selected="@(Model.Department == "Vakkenvullen" ? "selected" : null)">Vakkenvullen</option>
                     </select>
                     <span asp-validation-for="Department" class="text-danger"></span>
                 </div>
+            </div>
+        </div>
 
-                <div class="col-sm-1">
-                    @* Calculating the readable duration based on the selected unit *@
+        <div class="row">
+            <div class="col-md-4">
+                <div class="form-group">
                     @{
                         string readableDuration = Model.Duration.ToString();
                         if (Model.Duration % 3600 == 0)
@@ -48,39 +60,44 @@
                             readableDuration = (Model.Duration / 60).ToString();
                         }
                     }
-                    <input type="number" class="form-control" asp-for="Duration" value="@readableDuration" oninput="this.value = this.value.replace(/[^0-9]/g, '');" />
+                    <label asp-for="Duration">Duur *</label>
+                    <input asp-for="Duration" class="form-control" value="@readableDuration" oninput="this.value = this.value.replace(/[^0-9]/g, '');" />
+                    <span asp-validation-for="Duration" class="text-danger"></span>
                 </div>
-
-                <div class="col-sm-2">
-                    <select class="form-control" id="DurationUnit" name="DurationUnit">
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label for="DurationUnit">Tijds Eenheid *</label>
+                   
+                    <select id="DurationUnit" name="DurationUnit" class="form-control">
                         <option value="seconds" selected="@(Model.Duration % 60 != 0 && Model.Duration % 3600 != 0 ? "selected" : null)">Seconden</option>
                         <option value="minutes" selected="@(Model.Duration % 60 == 0 && Model.Duration % 3600 != 0 ? "selected" : null)">Minuten</option>
                         <option value="hours" selected="@(Model.Duration % 3600 == 0 ? "selected" : null)">Uren</option>
                     </select>
                 </div>
-
-                <div class="col-sm-2 d-flex align-items-center gap-2">
-                    <input type="number" class="form-control" asp-for="AvgDailyPerformances" oninput="this.value = this.value.replace(/[^0-9]/g, '');" />
-                    <label for="per-bezoeker" class="col-form-label mx-2">per bezoeker</label>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label asp-for="AvgDailyPerformances">Gemiddelde Uitvoeringen Per Dag *</label>
+                    <input asp-for="AvgDailyPerformances" class="form-control" oninput="this.value = this.value.replace(/[^0-9]/g, '');" />
+                    <span asp-validation-for="AvgDailyPerformances" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label for="per-bezoeker" class="col-form-label">Per bezoeker</label>
                     <div class="form-check">
-                        <input type="checkbox" class="form-check-input" asp-for="PerVisitor" id="per-bezoeker" style="transform: scale(1.5);" />
+                        <input type="checkbox" class="form-check-input" asp-for="PerVisitor" id="per-bezoeker" />
                     </div>
                 </div>
-
-                <span asp-validation-for="Duration" class="text-danger"></span>
-                <span asp-validation-for="AvgDailyPerformances" class="text-danger"></span>
             </div>
         </div>
 
-        <div class="d-flex flex-row mt-3">
-            <button type="submit" class="btn bumbo-btn me-3">Opslaan & Bijwerken</button>
-            <a asp-controller="Normeringen" asp-action="" class="btn early-btn btn-secondary">Terug</a>
+
+        <div class="d-flex justify-content-center align-items-center">
+            <button type="submit" class="btn bumbo-btn w-50"><i class="fas fa-save"></i> Opslaan</button>
         </div>
     </form>
 </div>
-
-@section Scripts {
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
-    }
-}

@@ -1,81 +1,75 @@
 ﻿@model IEnumerable<BumboSolid.Data.Models.Norm>
 
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-
-<!-- Header Section -->
-<div class="d-flex justify-content-between align-items-center mb-4">
-    <a asp-controller="Prognoses" asp-action="" class="btn early-btn btn-secondary">
-        <i class="fas fa-arrow-left"></i> Terug
-    </a>
-    <h3 class="mb-0">Normen Overzicht</h3>
-    <a asp-controller="Norms" asp-action="Create" class="btn bumbo-btn">
-        <i class="fas fa-plus fa-2x"></i> Toevoegen
-    </a>
-</div>
-
-<!-- Table Section -->
-<div class="modal-body">
-    <div class="d-flex flex-row">
-        <div class="col-sm-2">
-            <h6>Activiteit</h6>
+<header class="d-flex flex-column align-items-center">
+    <div class="d-flex w-100 header-items">
+        <div class="d-flex justify-content-center align-items-center w-35">
+            <a asp-controller="Prognoses" asp-action="Index" class="btn bumbo-btn bumbo-btn-back"><i class="fa-solid fa-arrow-left"></i> Terug</a>
         </div>
-        <div class="col-sm-2">
-            <h6>Functie</h6>
+        <div class="text-center d-flex flex-column align-items-center justify-content-center w-30">
+            <h1>Normen</h1>
         </div>
-        <div class="col-sm-3">
-            <h6>Duur</h6>
-        </div>
-        <div class="col-sm-4">
-            <h6>Gemiddelde Uitvoeringen Per Dag</h6>
+        <div class="d-flex justify-content-center align-items-center w-35">
+            <a asp-controller="Norms" asp-action="Create" class="btn bumbo-btn"><i class="fa-solid fa-plus"></i> Norm Toevoegen</a>
         </div>
     </div>
+</header>
 
-    <div id="norms-scrollbar">
-        <form>
+<br />
+
+<div>
+    <table class="table">
+        <thead>
+            <tr>
+                <th class="table-corner-l">Activiteit</th>
+                <th>Afdeling</th>
+                <th>Duur</th>
+                <th>Gemiddelde Uitvoeringen Per Dag</th>
+                <th>Per bezoeker</th>
+                <th class="table-corner-r"></th>
+            </tr>
+        </thead>
+        <tbody>
             @foreach (var norm in Model)
             {
-                <div class="form-group row align-items-center norm-row">
-                    <div class="col-sm-2">
-                        <input type="text" class="form-control" value="@norm.Activity" readonly />
-                    </div>
-
-                    <div class="col-sm-2">
-                        <input type="text" class="form-control" value="@norm.Department" readonly />
-                    </div>
-
-                    <div class="col-sm-1">
-                        @* Calculating the readable duration based on the selected unit *@
+                <tr>
+                    <td>@norm.Activity</td>
+                    <td>@norm.Department</td>
+                    <td>
                         @{
                             string readableDuration = norm.Duration.ToString();
+                            string durationUnit = "Seconden";
+
                             if (norm.Duration % 3600 == 0)
                             {
                                 readableDuration = (norm.Duration / 3600).ToString();
+                                durationUnit = "Uren";
                             }
                             else if (norm.Duration % 60 == 0)
                             {
                                 readableDuration = (norm.Duration / 60).ToString();
+                                durationUnit = "Minuten";
                             }
                         }
-                        <input type="number" class="form-control" value="@readableDuration" readonly />
-                    </div>
-
-                    <div class="col-sm-2">
-                        <input type="text" class="form-control"
-                               value="@(norm.Duration % 3600 == 0 ? "Uren" : (norm.Duration % 60 == 0 ? "Minuten" : "Seconden"))" readonly />
-                    </div>
-
-                    <div class="col-sm-2 d-flex align-items-center gap-2">
-                        <input type="number" class="form-control" value="@norm.AvgDailyPerformances" readonly />
-                        <label for="per-bezoeker" class="col-form-label mx-2">per bezoeker</label>
-                        <input type="checkbox" id="per-bezoeker" name="per-bezoeker" @(norm.PerVisitor ? "checked" : "") disabled />
-                    </div>
-
-                    <div class="col-sm-1 d-flex gap-2">
-                        <a asp-controller="Norms" asp-action="Edit" asp-route-id="@norm.Id" class="btn bumbo-btn">Bewerken</a>
-                        <a asp-controller="Norms" asp-action="Delete" asp-route-id="@norm.Id" class="btn early-btn btn-danger">Verwijderen</a>
-                    </div>
-                </div>
+                        @readableDuration @durationUnit
+                    </td>
+                    <td>@norm.AvgDailyPerformances</td>
+                    <td>
+                        @if (norm.PerVisitor)
+                        {
+                            <p>Ja</p>
+                        }
+                        else
+                        {
+                            <p>Nee</p>
+                        }
+                    </td>
+                    <td>
+                        <a asp-controller="Norms" asp-action="Edit" asp-route-id="@norm.Id">
+                            <i class="fa-solid fa-pen-to-square"></i>
+                        </a>
+                    </td>
+                </tr>
             }
-        </form>
-    </div>
+        </tbody>
+    </table>
 </div>

@@ -52,103 +52,99 @@
 
 @if (!Model.HasSchedule)
 {
-    <body>
-        <div class="d-flex flex-column align-items-center gap-5 m-5">
-            <h3>Er is nog geen rooster aangemaakt.</h3>
-            <h4>Maak er een aan!</h4>
-            <form asp-action="Create">
-                <div class="form-group">
-                    <input type="hidden" name="id" value="@Model.WeekId" />
-                    <input type="hidden" name="returnUrl" value="@Context.Request.Path" />
-                    <button type="submit" class="btn bumbo-btn"><i class="fa-solid fa-plus"></i> Nieuw Rooster Aanmaken</button>
-                </div>
-            </form>
-        </div>
-    </body>
+    <div class="d-flex flex-column align-items-center gap-5 m-5">
+        <h3>Er is nog geen rooster aangemaakt.</h3>
+        <h4>Maak er een aan!</h4>
+        <form asp-action="Create">
+            <div class="form-group">
+                <input type="hidden" name="id" value="@Model.WeekId" />
+                <input type="hidden" name="returnUrl" value="@Context.Request.Path" />
+                <button type="submit" class="btn bumbo-btn"><i class="fa-solid fa-plus"></i> Nieuw Rooster Aanmaken</button>
+            </div>
+        </form>
+    </div>
 }
 else
 {
-    <body class="schedule">
-        <div class="d-flex justify-content-center">
-            <a class="btn bumbo-btn" asp-controller="Shifts" asp-action="Create" asp-route-weekid="@schedule.Id" asp-route-returnUrl="@Context.Request.Path">
-                <i class="fa-solid fa-plus"></i> Shift Toevoegen
-            </a>
+    <div class="d-flex justify-content-center">
+        <a class="btn bumbo-btn" asp-controller="Shifts" asp-action="Create" asp-route-weekid="@schedule.Id" asp-route-returnUrl="@Context.Request.Path">
+            <i class="fa-solid fa-plus"></i> Shift Toevoegen
+        </a>
+    </div>
+    <br />
+    @foreach (var afdeling in Model.Departments.Select(d => d.Name))
+    {
+        <div class="dropdown-bar" onclick="toggleVisibility('@afdeling-content')">
+            <span>@afdeling <i class="fa-solid fa-chevron-down arrow"></i></span>
         </div>
-        <br />
-        @foreach (var afdeling in Model.Departments.Select(d => d.Name))
-        {
-            <div class="dropdown-bar" onclick="toggleVisibility('@afdeling-content')">
-                <span>@afdeling <i class="fa-solid fa-chevron-down arrow"></i></span>
-            </div>
-            <div id="@afdeling-content" class="visible">
-                @{
-                    var afdelingShifts = shifts.Where(s => s.Department == afdeling).ToList();
-                }
-                @if (afdelingShifts.Any())
-                {
-                    <table class="table schedule-table">
-                        <thead>
+        <div id="@afdeling-content" class="visible">
+            @{
+                var afdelingShifts = shifts.Where(s => s.Department == afdeling).ToList();
+            }
+            @if (afdelingShifts.Any())
+            {
+                <table class="table schedule-table">
+                    <thead>
+                        <tr>
+                            <th class="table-corner-l">Werknemer</th>
+                            @foreach (var day in daysOfTheWeek)
+                            {
+                                <th>@day</th>
+                            }
+                            <th class="table-corner-r">Totaal</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var shiftGroup in afdelingShifts.GroupBy(s => s.EmployeeName).OrderBy(s => s.Key))
+                        {
                             <tr>
-                                <th class="table-corner-l">Werknemer</th>
+                                <td>
+                                    @if (shiftGroup.First().EmployeeId.HasValue)
+                                    {
+                                        <a asp-action="ManagerEmployeeSchedule" asp-route-id="@schedule.Id" asp-route-employeeId="@shiftGroup.First().EmployeeId" class="btn table-btn">
+                                            @shiftGroup.Key
+                                        </a>
+                                    }
+                                    else
+                                    {
+                                        @shiftGroup.Key <span> (Extern)</span>
+                                    }
+                                </td>
+
                                 @foreach (var day in daysOfTheWeek)
                                 {
-                                    <th>@day</th>
+                                    <td>
+                                        @foreach (var shift in shiftGroup.Where(s => s.Weekday == Array.IndexOf(daysOfTheWeek, day)).OrderBy(s => s.StartTime))
+                                        {
+                                            <div>
+                                                <a asp-controller="Shifts" asp-action="Edit" asp-route-id="@shift.Id" asp-route-returnUrl="@Context.Request.Path" class="btn table-btn">
+                                                    <i class="fa-regular fa-clock"></i> @shift.StartTime.ToString("HH:mm")
+                                                    <p>t/m</p>
+                                                    <i class="fa-regular fa-clock"></i> @shift.EndTime.ToString("HH:mm")
+                                                </a>
+                                            </div>
+                                        }
+                                    </td>
                                 }
-                                <th class="table-corner-r">Totaal</th>
+
+                                @{
+                                    var totalHoursWorked = shiftGroup.Sum(s => (s.EndTime - s.StartTime).TotalMinutes);
+                                    var totalTimeWorked = TimeSpan.FromMinutes(totalHoursWorked).ToString(@"hh\:mm");
+                                }
+                                <td>
+                                    <div><i class="fa-regular fa-clock"></i> @totalTimeWorked</div>
+                                </td>
                             </tr>
-                        </thead>
-                        <tbody>
-                            @foreach (var shiftGroup in afdelingShifts.GroupBy(s => s.EmployeeName).OrderBy(s => s.Key))
-                            {
-                                <tr>
-                                    <td>
-                                        @if (shiftGroup.First().EmployeeId.HasValue)
-                                        {
-                                            <a asp-action="ManagerEmployeeSchedule" asp-route-id="@schedule.Id" asp-route-employeeId="@shiftGroup.First().EmployeeId" class="btn table-btn">
-                                                @shiftGroup.Key
-                                            </a>
-                                        }
-                                        else
-                                        {
-                                            @shiftGroup.Key <span> (Extern)</span>
-                                        }
-                                    </td>
-
-                                    @foreach (var day in daysOfTheWeek)
-                                    {
-                                        <td>
-                                            @foreach (var shift in shiftGroup.Where(s => s.Weekday == Array.IndexOf(daysOfTheWeek, day)).OrderBy(s => s.StartTime))
-                                            {
-                                                <div>
-                                                    <a asp-controller="Shifts" asp-action="Edit" asp-route-id="@shift.Id" asp-route-returnUrl="@Context.Request.Path" class="btn table-btn">
-                                                        <i class="fa-regular fa-clock"></i> @shift.StartTime.ToString("HH:mm")
-                                                        <p>t/m</p>
-                                                        <i class="fa-regular fa-clock"></i> @shift.EndTime.ToString("HH:mm")
-                                                    </a>
-                                                </div>
-                                            }
-                                        </td>
-                                    }
-
-                                    @{
-                                        var totalHoursWorked = shiftGroup.Sum(s => (s.EndTime - s.StartTime).TotalMinutes);
-                                        var totalTimeWorked = TimeSpan.FromMinutes(totalHoursWorked).ToString(@"hh\:mm");
-                                    }
-                                    <td>
-                                        <div><i class="fa-regular fa-clock"></i> @totalTimeWorked</div>
-                                    </td>
-                                </tr>
-                            }
-                        </tbody>
-                    </table>
-                }
-                else
-                {
-                    <p class="text-center">Geen shifts gevonden voor deze afdeling.</p>
-                }
-            </div>
-        }
-    </body>
+                        }
+                    </tbody>
+                </table>
+            }
+            else
+            {
+                <p class="text-center">Geen shifts gevonden voor deze afdeling.</p>
+            }
+        </div>
+    }
 }
 <script>
     function toggleVisibility(id) {

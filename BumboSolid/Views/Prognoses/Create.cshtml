@@ -18,39 +18,57 @@
     var formattedLastDate = lastDate.ToString("dd/MM/yyyy");
 }
 
-<div class="background-dark prognosis-create-top-item">
-    <span>Week @Model.Prognosis.WeekNumber (@formattedFirstDate - @formattedLastDate)</span>
-</div>
+<header class="d-flex flex-column align-items-center">
+    <div class="d-flex w-100 header-items">
+        <div class="d-flex justify-content-start align-items-center w-35">
+            <a asp-action="Index" class="btn bumbo-btn bumbo-btn-back">
+                <i class="fa-solid fa-arrow-left"></i> Terug
+            </a>
+        </div>
+        <div class="text-center d-flex flex-column align-items-center justify-content-center w-30 text-nowrap">
+            <h1>Week @Model.Prognosis.WeekNumber</h1>
+            <h6>@formattedFirstDate - @formattedLastDate</h6>
+        </div>
+    </div>
+</header>
+
+<br />
+
 <form asp-action="Aanmaken">
     <input type="hidden" asp-for="Prognosis.Id" />
     <input type="hidden" asp-for="Prognosis.Year" />
     <input type="hidden" asp-for="Prognosis.WeekNumber" />
-    <div class="d-flex flex-row gap-3 flex-grow-0">
-        <table class="table" cellspacing="0">
+
+    <div class="d-flex justify-content-center">
+        <table class="table">
             <thead>
                 <tr>
-                    <th>Dag</th>
-                    <th>Schatting Bezoekersdrukte</th>
+                    <th class="table-corner-l">Dag</th>
+                    <th>Schatting<br />Bezoekersdrukte</th>
                     <th>Feestdagen</th>
-                    <th>Weer <a asp-controller="Weer" asp-action="Bewerken" class="remove-text-decoration p-2 bg-warning ms-2 rounded"><img src="/images/pencil-square.svg" alt="Edit Icon" width="16" height="16" /></a></th>
+                    <th>Weer</th>
                     <th>Overig</th>
-                    <th>Totale Schatting Bezoekersdrukte</th>
+                    <th class="table-corner-r">Totale<br />Schatting Bezoekersdrukte</th>
                 </tr>
             </thead>
             <tbody>
                 @foreach (var day in daysOfTheWeek)
                 {
-                    var i = Array.IndexOf(daysOfTheWeek, day); // Get the index of the day
+                    var i = Array.IndexOf(daysOfTheWeek, day);
                     var holidayValue = Model.Prognosis.PrognosisDays.First(x => x.Weekday == i).Factors.First(x => x.Type == "Feestdagen").Impact;
                     var otherValue = Model.Prognosis.PrognosisDays.First(x => x.Weekday == i).Factors.First(x => x.Type == "Overig").Impact;
                     <tr>
-                        <td>@day</td>
-                        <td><input id="visitor-estimate-@i" name="visitorEstimates" type="number" class="form-control" value="0" onchange="updateVisitorEstimate()"></td>
-                        <td><input id="holiday-@i" name="holidays" type="number" class="form-control small-input" value="@holidayValue" onchange="updateVisitorEstimate()"></td>
-                        <td class="table-gray gap-2">
-                            <div class="d-flex flex-row">
-                                <img id="weather-icon-@i" src="/images/weather/3.svg" class="background-white" />
-                                <select id="weather-select-@i" name="weather" class="form-control small-input form-select" onchange="updateIcon(@i); updateVisitorEstimate();">
+                        <td class="text-center">@day</td>
+                        <td class="text-center">
+                            <input id="visitor-estimate-@i" name="visitorEstimates" type="number" class="form-control" value="0" onchange="updateVisitorEstimate()">
+                        </td>
+                        <td class="text-center">
+                            <input id="holiday-@i" name="holidays" type="number" class="form-control" value="@holidayValue" onchange="updateVisitorEstimate()">
+                        </td>
+                        <td class="text-center align-items-center" style="width: 200px;">
+                            <div class="d-flex flex-row gap-4 justify-content-center">
+                                <img id="weather-icon-@i" src="/images/weather/3.svg" class="background-white" style="width: 50px; height: 50px;" />
+                                <select id="weather-select-@i" name="weather" class="form-control form-select" onchange="updateIcon(@i); updateVisitorEstimate();">
                                     @foreach (var weather in Model.WeatherValues)
                                     {
                                         <option value="@weather.Impact">@weather.Impact</option>
@@ -58,45 +76,77 @@
                                 </select>
                             </div>
                         </td>
-                        <td class="table-secondary">
-                            <input id="other-@i" name="other" type="number" class="form-control small-input" value="@otherValue" onchange="updateVisitorEstimate()">
-                            <textarea name="description" class="factor-description" placeholder="Beschrijving" rows="2" cols="25"></textarea>
+                        <td class="table-secondary text-center d-flex flex-row align-items-center gap-4">
+                            <input id="other-@i" name="other" type="number" class="form-control" value="@otherValue" onchange="updateVisitorEstimate()">
+                            <textarea name="description" class="factor-description" placeholder="Beschrijving"></textarea>
                         </td>
-                        <td><p id="total-estimated-visitor-count-@i" class="background-light impact-unchangeable-dark">0</p></td>
+                        <td class="text-center"><p id="total-estimated-visitor-count-@i" class="background-light impact-unchangeable-dark">0</p></td>
+                    </tr>
+
+                }
+            </tbody>
+        </table>
+    </div>
+
+    <br />
+
+    <div>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th class="table-corner-l">Activiteit</th>
+                    <th>Afdeling</th>
+                    <th>Duur</th>
+                    <th>Gemiddelde Uitvoeringen Per Dag</th>
+                    <th class="table-corner-r">Per bezoeker</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var norm in Model.Norms)
+                {
+                    <tr>
+                        <td>@norm.Activity</td>
+                        <td>@norm.Department</td>
+                        <td>
+                            @{
+                                string readableDuration = norm.Duration.ToString();
+                                string durationUnit = "Seconden";
+
+                                if (norm.Duration % 3600 == 0)
+                                {
+                                    readableDuration = (norm.Duration / 3600).ToString();
+                                    durationUnit = "Uren";
+                                }
+                                else if (norm.Duration % 60 == 0)
+                                {
+                                    readableDuration = (norm.Duration / 60).ToString();
+                                    durationUnit = "Minuten";
+                                }
+                            }
+                            @readableDuration @durationUnit
+                        </td>
+                        <td>@norm.AvgDailyPerformances</td>
+                        <td>
+                            @if (norm.PerVisitor)
+                            {
+                                <p>Ja</p>
+                            }
+                            else
+                            {
+                                <p>Nee</p>
+                            }
+                        </td>
                     </tr>
                 }
             </tbody>
         </table>
     </div>
 
+    <br />
 
-    <div class="prognosis-norm-table-container">
-        <table class="table prognosis-norm-table" cellspacing="0">
-            <thead>
-                <tr>
-                    <th>Activiteit</th>
-                    <th>Functie</th>
-                    <th>Duur en hoeveelheid</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var norm in Model.Norms) {
-                    var readableDuration = norm.Duration % 3600 == 0 ? norm.Duration / 3600 + " uren" : (norm.Duration % 60 == 0 ? norm.Duration / 60 + " minuten" : norm.Duration + " seconden");
-                    var descriptionString = $"{norm.AvgDailyPerformances} x {readableDuration} per dag";
-                    descriptionString += norm.PerVisitor ? " per bezoeker" : "";
-                <tr>
-                    <td class="table-secondary"><p class="background-light impact-unchangeable-dark">@norm.Activity</p></td>
-                    <td class="table-gray"><p class="background-light impact-unchangeable-dark">@norm.Department</p></td>
-                    <td class="table-secondary"><p class="background-light impact-unchangeable-dark">@descriptionString</p></td>
-                </tr>
-                }
-            </tbody>
-        </table>
-    </div>
-
-    <div class="d-flex flex-row gap-3">
-        <a class="btn early-btn btn-danger" asp-controller="Prognoses" asp-action="">Prognose Afbreken</a>
-        <input type="submit" class="btn bumbo-btn" value="Prognose Berekenen">
+    <div class="d-flex justify-content-around align-items-center">
+        <button type="submit" class="btn bumbo-btn"><i class="fas fa-save"></i> Prognose Berekenen</button>
+        <a class="btn bumbo-btn bumbo-btn-danger" asp-controller="Prognoses" asp-action="Index"><i class="fa-solid fa-ban"></i> Prognose Afbreken</a>
     </div>
 </form>
 

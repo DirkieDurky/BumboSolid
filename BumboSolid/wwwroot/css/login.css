@@ -30,7 +30,7 @@
         font-size: 14px;
         font-weight: bold;
         color: #333;
-        margin-bottom: 5px;
+        margin-bottom: .4rem;
     }
 
 .form-control {
@@ -63,24 +63,22 @@
     }
 
 .form-control {
-    background-color: #cbcbcb;
-    border: 2px solid #b4b4b4;
+    background-color: #d0d0d0;
+    border: none;
 }
 
+    .form-control:focus {
+        background-color: #e5e5e5 !important;
+        -webkit-text-fill-color: black !important;
+    }
+
     .form-control:-webkit-autofill {
-        background-color: #e2e2e2 !important;
+        background-color: #e5e5e5 !important;
         -webkit-text-fill-color: black !important;
         transition: background-color 50000s;
     }
 
-    .form-control:focus {
-        background-color: #e2e2e2 !important;
-        -webkit-text-fill-color: black !important;
-    }
-
-
-    .form-control:-webkit-autofill:focus {
-        background-color: #e2e2e2 !important;
-        -webkit-text-fill-color: black !important;
-    }
-
+        .form-control:-webkit-autofill:focus {
+            background-color: #e5e5e5 !important;
+            -webkit-text-fill-color: black !important;
+        }

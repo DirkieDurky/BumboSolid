@@ -17,6 +17,12 @@ body {
     background-color: #dddddd;
 }
 
+input[type="checkbox"] {
+    transform: scale(1.5);
+    position: relative;
+    left: .2rem;
+    bottom: .2rem;
+}
 
 
 .w-30 {
@@ -26,6 +32,14 @@ body {
 .w-35 {
     width: 35%;
 }
+
+.factor-description {
+    resize: none;
+    overflow-y: auto;
+    max-height: 5rem;
+    min-width: 10rem;
+}
+
 
 /*.header-items {
     display: flex;

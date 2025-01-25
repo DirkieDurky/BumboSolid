@@ -19,13 +19,13 @@ else
     <table class="table">
         <thead>
             <tr>
-                <th>Datum</th>
+                <th class="table-corner-l">Datum</th>
                 <th>Afdeling</th>
                 <th>Starttijd</th>
                 <th>Eindtijd</th>
                 <th>Aanvrager</th>
                 <th>Invaller</th>
-                <th></th>
+                <th class="table-corner-r"></th>
             </tr>
         </thead>
         <tbody>
@@ -39,8 +39,8 @@ else
                     <td>@fillRequest.Shift.Employee.FirstName @fillRequest.Shift.Employee.LastName</td>
                     <td>@fillRequest.SubstituteEmployee.FirstName @fillRequest.SubstituteEmployee.LastName</td>
                     <td>
-                        <a class="navbar-brand bumbo-btn" asp-action="AnswerFillRequest" asp-route-id="@fillRequest.Id" asp-route-status="accepteren">Accepteren</a>
-                        <a class="navbar-brand bumbo-btn" asp-action="AnswerFillRequest" asp-route-id="@fillRequest.Id" asp-route-status="weigeren">Weigeren</a>
+                        <a class="btn bumbo-btn" asp-action="AnswerFillRequest" asp-route-id="@fillRequest.Id" asp-route-status="Accepteren"><i class="fa-solid fa-check"></i> Accepteren</a>
+                        <a class="btn bumbo-btn bumbo-btn-danger" asp-action="AnswerFillRequest" asp-route-id="@fillRequest.Id" asp-route-status="Weigeren"><i class="fa-solid fa-xmark"></i> Weigeren</a>
                     </td>
                 </tr>
             }

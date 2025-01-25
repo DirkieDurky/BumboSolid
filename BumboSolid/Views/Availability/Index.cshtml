@@ -1,26 +1,29 @@
 ﻿@model IEnumerable<BumboSolid.Data.Models.AvailabilityRule>
 
-<div class="mx-3 text-center text-nowrap">
+<header class="text-center text-nowrap">
     <h1>Beschikbaarheid</h1>
-</div>
-<div class="w-100 mb-3">
+</header>
+
+<div class="d-flex flex-column align-items-center">
     <a class="btn bumbo-btn" asp-controller="Availability" asp-action="Create"
        asp-route-year="@ViewBag.year" asp-route-weekNr="@ViewBag.weekNr" asp-route-employeeId="@ViewBag.employeeId">
-        Beschikbaarheid Opgeven
+        <i class="fa-solid fa-plus"></i> Beschikbaarheid Opgeven
     </a>
 </div>
+
+<br />
 
 @if (Model.Any())
 {
     <table class="table">
         <thead>
             <tr>
-                <th>Dag</th>
+                <th class="table-corner-l">Dag</th>
                 <th>Starttijd</th>
                 <th>Eindtijd</th>
                 <th>Beschikbaar</th>
                 <th>School</th>
-                <th></th>
+                <th class="table-corner-r"></th>
             </tr>
         </thead>
         <tbody>
@@ -32,12 +35,12 @@
                     <td>@availabilityRule.EndTime</td>
                     <td>@(availabilityRule.Available == 1 ? "Ja" : "Nee")</td>
                     <td>@(availabilityRule.School == 1 ? "Ja" : "Nee")</td>
-                    <td>
-                        <a class="btn btn-sm" asp-controller="Availability" asp-action="Edit"
+                    <td class="d-flex gap-3">
+                        <a asp-controller="Availability" asp-action="Edit"
                            asp-route-AvailabilityId="@availabilityRule.Id" asp-route-weekNr="@ViewBag.weekNr" asp-route-year="@ViewBag.year">
                             <i class="fa-solid fa-pencil"></i>
                         </a>
-                        <a class="btn btn-sm" asp-controller="Availability" asp-action="Delete"
+                        <a asp-controller="Availability" asp-action="Delete"
                            asp-route-AvailabilityId="@availabilityRule.Id" asp-route-weekNr="@ViewBag.weekNr" asp-route-year="@ViewBag.year">
                             <i class="fa-solid fa-trash-can"></i>
                         </a>
