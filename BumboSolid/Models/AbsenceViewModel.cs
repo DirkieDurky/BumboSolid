@@ -10,10 +10,12 @@ namespace BumboSolid.Models
 
         public string? Department { get; set; }
 
-        [DataType(DataType.Time)]
+        [Required(ErrorMessage = "Dit veld is vereist")]
+        [DataType(DataType.Time, ErrorMessage = "Dit is geen valide tijd")]
         public TimeOnly StartTime { get; set; }
 
-        [DataType(DataType.Time)]
+        [Required(ErrorMessage = "Dit veld is vereist")]
+        [DataType(DataType.Time, ErrorMessage = "Dit is geen valide tijd")]
         public TimeOnly EndTime { get; set; }
 
         public string? Description { get; set; }

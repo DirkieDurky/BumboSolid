@@ -1,4 +1,8 @@
-﻿@model BumboSolid.Data.Models.Holiday
+﻿@{
+    ViewData["Title"] = "Feestdag verwijderen";
+}
+
+@model BumboSolid.Data.Models.Holiday
 
 <div class="card-body">
     <p class="lead">Weet u zeker dat u dit feest wilt verwijderen?</p>
@@ -7,10 +11,10 @@
         <p><strong>Feest:</strong> @Model.Name</p>
     </div>
 
-    <form asp-controller="Feestdagen" asp-action="Verwijderen" asp-route-id="@Model.Name" method="post" class="d-inline">
+    <form asp-controller="Holidays" asp-action="Delete" asp-route-name="@Model.Name" method="post" class="d-inline">
         <input type="hidden" asp-for="Name" />
         <button type="submit" class="btn early-btn btn-danger w-100">Verwijderen</button>
     </form>
 
-    <a asp-controller="Feestdagen" asp-action="Bewerken" asp-route-id=@Model.Name class="btn early-btn btn-secondary w-100">Annuleren</a>
+    <a asp-controller="Holidays" asp-action="Edit" asp-route-name=@Model.Name class="btn early-btn btn-secondary w-100">Annuleren</a>
 </div>

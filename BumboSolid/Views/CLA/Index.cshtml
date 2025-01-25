@@ -1,7 +1,7 @@
 ﻿@model IEnumerable<BumboSolid.Models.CLACardViewModel>
 
 @{
-	ViewData["Title"] = "CAO regels";
+	ViewData["Title"] = "CAO-regels";
 	int surchargeStartId = Model.LastOrDefault(model => model.Surcharge == null)?.Id ?? 0;
 }
 

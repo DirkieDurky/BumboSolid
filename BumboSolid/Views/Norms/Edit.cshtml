@@ -1,9 +1,13 @@
-﻿@model BumboSolid.Data.Models.Norm
+﻿@{
+    ViewData["Title"] = "Normering bewerken";
+}
+
+@model BumboSolid.Data.Models.Norm
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 
 <div class="modal-body">
-    <form asp-controller="Normeringen" asp-action="Bewerken" asp-route-id="@Model.Id" method="post">
+    <form asp-controller="Norms" asp-action="Edit" asp-route-id="@Model.Id" method="post">
         <div class="d-flex flex-row">
             <div class="col-sm-2">
                 <h6>Activiteit</h6>
@@ -49,6 +53,7 @@
                         }
                     }
                     <input type="number" class="form-control" asp-for="Duration" value="@readableDuration" oninput="this.value = this.value.replace(/[^0-9]/g, '');" />
+                    <span asp-validation-for="Duration" class="text-danger"></span>
                 </div>
 
                 <div class="col-sm-2">
@@ -61,14 +66,13 @@
 
                 <div class="col-sm-2 d-flex align-items-center gap-2">
                     <input type="number" class="form-control" asp-for="AvgDailyPerformances" oninput="this.value = this.value.replace(/[^0-9]/g, '');" />
+                    <span asp-validation-for="AvgDailyPerformances" class="text-danger"></span>
                     <label for="per-bezoeker" class="col-form-label mx-2">per bezoeker</label>
                     <div class="form-check">
                         <input type="checkbox" class="form-check-input" asp-for="PerVisitor" id="per-bezoeker" style="transform: scale(1.5);" />
                     </div>
                 </div>
 
-                <span asp-validation-for="Duration" class="text-danger"></span>
-                <span asp-validation-for="AvgDailyPerformances" class="text-danger"></span>
             </div>
         </div>
 
