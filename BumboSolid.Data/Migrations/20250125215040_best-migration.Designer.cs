@@ -9,18 +9,18 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace BumboSolid.Migrations
+namespace BumboSolid.Data.Migrations
 {
     [DbContext(typeof(BumboDbContext))]
-    [Migration("20250121123542_nonnullable-week")]
-    partial class nonnullableweek
+    [Migration("20250125215040_best-migration")]
+    partial class bestmigration
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.11")
+                .HasAnnotation("ProductVersion", "8.0.12")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);

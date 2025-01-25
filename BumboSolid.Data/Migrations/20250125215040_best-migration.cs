@@ -5,10 +5,10 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #pragma warning disable CA1814 // Prefer jagged arrays over multidimensional
 
-namespace BumboSolid.Migrations
+namespace BumboSolid.Data.Migrations
 {
     /// <inheritdoc />
-    public partial class absence : Migration
+    public partial class bestmigration : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)

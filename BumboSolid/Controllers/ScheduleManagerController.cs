@@ -234,15 +234,15 @@ public class ScheduleManagerController(BumboDbContext context) : Controller
 	public async Task<IActionResult> Availabilities(int weekId)
 	{
 		Week week = await _context.Weeks.Where(w => w.Id == weekId).FirstOrDefaultAsync();
-		string[] daysOfTheWeek = { "Maandag", "Dinsdag", "Woensdag", "Donderdag", "Vrijdag", "Zaterdag", "Zondag" };
+		string[] daysOfTheWeek = { "Zondag", "Maandag", "Dinsdag", "Woensdag", "Donderdag", "Vrijdag", "Zaterdag" };
 
 		List<AvailabilityRuleViewModel> availabilityRuleViewModels = new List<AvailabilityRuleViewModel>();
-		foreach (var availabilityRule in _context.AvailabilityRules.OrderByDescending(a => a.Date).ToList())
+		foreach (var availabilityRule in _context.AvailabilityRules.ToList())
 		{
 			// Get correct day and week
-			DateTime dateTime = availabilityRule.Date.ToDateTime(TimeOnly.Parse("00:00:00"));
+			DateTime dateTime = availabilityRule.Date.ToDateTime(availabilityRule.StartTime);
 			DayOfWeek day = CultureInfo.CurrentCulture.Calendar.GetDayOfWeek(dateTime);
-			int weekNumber = CultureInfo.CurrentCulture.Calendar.GetWeekOfYear(dateTime, CalendarWeekRule.FirstFullWeek, day);
+			int weekNumber = CultureInfo.CurrentCulture.Calendar.GetWeekOfYear(dateTime, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Monday);
 
 			if (weekNumber == week.WeekNumber)
             {
@@ -253,7 +253,7 @@ public class ScheduleManagerController(BumboDbContext context) : Controller
 				availabilityRuleViewModels.Add(new AvailabilityRuleViewModel()
 				{
 					Employee = employee.FirstName + " " + employee.LastName,
-					Weekday = daysOfTheWeek[(int)day-1],
+					Weekday = daysOfTheWeek[(int)day],
 					StartTime = availabilityRule.StartTime,
 					EndTime = availabilityRule.EndTime,
 					Available = availabilityRule.Available,
