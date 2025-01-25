@@ -1,4 +1,5 @@
-﻿@model BumboSolid.Models.SchedulesSurchargesViewModel
+﻿@using BumboSolid.Data.Models
+@model BumboSolid.Models.SchedulesSurchargesViewModel
 
 @{
 	ViewData["Title"] = "Index";
@@ -13,6 +14,7 @@
 	DateTime endDate = startDate.AddDays(6);
 
 	int surcharge = 0;
+	List<CLASurchargeEntry> appliedEntries = [];
 }
 
 @functions {
@@ -53,13 +55,13 @@
 	</div>
 </header>
 
-@if (Model.ClockedHours == null)
+@if (Model.ClockedHours == null || Model.ClockedHours.Count == 0)
 {
-	<h3>Nog niemand heeft gewerkt.</h3>
+	<h3 class="text-center">Nog niemand heeft gewerkt.</h3>
 }
-else if (Model.Surcharges == null)
+else if (Model.Surcharges == null || Model.Surcharges.Count == 0)
 {
-	<h3>Er zijn nog geen CAO Toeslag regels</h3>
+	<h3 class="text-center">Er zijn nog geen CAO Toeslag regels</h3>
 }
 else
 {
@@ -83,13 +85,15 @@ else
 							foreach (var item in Model.Surcharges.Where(surcharge => surcharge.Weekday == clockedHours.Weekday))
 							{
 								surcharge += item.Surcharge;
+								appliedEntries.Add(item);
 							}
 						}
 						@if (Model.Surcharges.FirstOrDefault(surcharge => surcharge.StartTime <= clockedHours.StartTime && surcharge.EndTime >= clockedHours.EndTime) != null)
 						{
 							foreach (var item in Model.Surcharges.Where(surcharge => surcharge.StartTime <= clockedHours.StartTime && surcharge.EndTime >= clockedHours.EndTime))
 							{
-								surcharge += item.Surcharge;
+								if (!appliedEntries.Contains(item))
+									surcharge += item.Surcharge;
 							}
 						}
 
@@ -98,6 +102,11 @@ else
 						<td>@(((int)Math.Round((clockedHours.EndTime - clockedHours.StartTime)!.Value.TotalHours)).ToString("D2")):@(((int)Math.Round((clockedHours.EndTime - clockedHours.StartTime)!.Value.TotalMinutes)).ToString("D2"))</td>
 						<td>@surcharge%</td>
 						<td class="hidden">@(surcharge = 0)</td>
+
+						@if (appliedEntries.Count > 0)
+						{
+							appliedEntries.Clear();
+						}
 					</tr>
 				}
 			}
