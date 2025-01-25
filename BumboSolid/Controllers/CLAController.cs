@@ -6,6 +6,8 @@ using BumboSolid.Models;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.Authorization;
 using BumboSolid.HelperClasses;
+using Microsoft.CodeAnalysis.Options;
+using Newtonsoft.Json.Linq;
 
 namespace BumboSolid.Controllers;
 
@@ -120,8 +122,10 @@ public class CLAController : Controller
 			{
 				List<string> rules = [];
 
+				string[] daysOfTheWeek = { "Maandag", "Dinsdag", "Woensdag", "Donderdag", "Vrijdag", "Zaterdag", "Zondag" };
+
 				if (entry.Weekday != null)
-					rules.Add($"Toeslag geld alleen op {entry.Weekday}");
+					rules.Add($"Toeslag geld alleen op {daysOfTheWeek[(int)entry.Weekday]}");
 				if (entry.StartTime != null)
 					rules.Add($"Toeslag geld vanaf {entry.StartTime}");
 				if (entry.EndTime != null)

@@ -2,6 +2,7 @@
 
 @{
 	ViewData["Title"] = "COA Toeslag Regel Verwijderen";
+	string[] daysOfTheWeek = { "Maandag", "Dinsdag", "Woensdag", "Donderdag", "Vrijdag", "Zaterdag", "Zondag" };
 }
 
 <h1 class="text-center">Verwijderen</h1>
@@ -11,7 +12,7 @@
 	<h2 class="col-10">Toeslag @Model.Surcharge%</h2>
 	@if (Model.Weekday != null)
 	{
-		<p>@Model.Weekday</p>
+		<p>@daysOfTheWeek[(int)Model.Weekday]</p>
 	}
 	@if (Model.StartTime != null)
 	{
