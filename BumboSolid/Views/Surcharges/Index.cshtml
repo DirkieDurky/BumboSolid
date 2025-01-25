@@ -1,0 +1,115 @@
+﻿@using BumboSolid.Data.Models
+@model BumboSolid.Models.SchedulesSurchargesViewModel
+
+@{
+	ViewData["Title"] = "Index";
+
+	string[] daysOfTheWeek = { "Maandag", "Dinsdag", "Woensdag", "Donderdag", "Vrijdag", "Zaterdag", "Zondag" };
+
+	var schedule = Model.Weeks.First(w => w.Id == Model.WeekId);
+	var shifts = schedule.Shifts;
+	var departments = shifts.Select(s => s.Department).Distinct();
+
+	DateTime startDate = GetFirstDateOfWeek(schedule.Year, schedule.WeekNumber);
+	DateTime endDate = startDate.AddDays(6);
+
+	int surcharge = 0;
+	List<CLASurchargeEntry> appliedEntries = [];
+}
+
+@functions {
+	public static DateTime GetFirstDateOfWeek(int year, int weekOfYear)
+	{
+		var jan1 = new DateTime(year, 1, 1);
+		var daysOffset = (int)DayOfWeek.Monday - (int)jan1.DayOfWeek;
+		var firstMonday = jan1.AddDays(daysOffset > 0 ? daysOffset - 7 : daysOffset);
+		return firstMonday.AddDays((weekOfYear - 1) * 7);
+	}
+}
+
+<header class="d-flex align-items-center gap-3 justify-content-center gap-3">
+	<div class="d-flex justify-content-between w-100 header-items">
+		<div></div>
+		<div>
+			<a class="btn new-btn @(!Model.PreviousWeekId.HasValue ? "disabled" : "")"
+			   asp-action="Index" asp-route-id="@Model.PreviousWeekId">
+				Vorige Week
+			</a>
+		</div>
+		<div class="text-center d-flex flex-column align-items-center text-nowrap">
+			<h1>Toeslagen</h1>
+			<p>@startDate.ToString("dd/MM/yyyy") - @endDate.ToString("dd/MM/yyyy")</p>
+		</div>
+		<div>
+			<a class="btn new-btn @(!Model.NextWeekId.HasValue ? "disabled" : "")"
+			   asp-action="Index" asp-route-id="@Model.NextWeekId">
+				Vorige Week
+			</a>
+		</div>
+		<div>
+			<a class="btn new-btn @(Model.IsCurrentWeek ? "disabled" : "")"
+			   asp-action="Index" asp-route-id="">
+				Huidige Week
+			</a>
+		</div>
+	</div>
+</header>
+
+@if (Model.ClockedHours == null || Model.ClockedHours.Count == 0)
+{
+	<h3 class="text-center">Nog niemand heeft gewerkt.</h3>
+}
+else if (Model.Surcharges == null || Model.Surcharges.Count == 0)
+{
+	<h3 class="text-center">Er zijn nog geen CAO Toeslag regels</h3>
+}
+else
+{
+	<table class="table">
+		<thead>
+			<tr>
+				<th>Naam</th>
+				<th>Dag</th>
+				<th>Tijd</th>
+				<th>Toeslag</th>
+			</tr>
+		</thead>
+		<tbody>
+			@foreach (var clockedHours in Model.ClockedHours)
+			{
+				@if (Math.Round((clockedHours.EndTime - clockedHours.StartTime)!.Value.TotalHours) > 0 || Math.Round((clockedHours.EndTime - clockedHours.StartTime)!.Value.TotalMinutes) > 0)
+				{
+					<tr>
+						@if (Model.Surcharges.FirstOrDefault(surcharge => surcharge.Weekday == clockedHours.Weekday) != null)
+						{
+							foreach (var item in Model.Surcharges.Where(surcharge => surcharge.Weekday == clockedHours.Weekday))
+							{
+								surcharge += item.Surcharge;
+								appliedEntries.Add(item);
+							}
+						}
+						@if (Model.Surcharges.FirstOrDefault(surcharge => surcharge.StartTime <= clockedHours.StartTime && surcharge.EndTime >= clockedHours.EndTime) != null)
+						{
+							foreach (var item in Model.Surcharges.Where(surcharge => surcharge.StartTime <= clockedHours.StartTime && surcharge.EndTime >= clockedHours.EndTime))
+							{
+								if (!appliedEntries.Contains(item))
+									surcharge += item.Surcharge;
+							}
+						}
+
+						<td>@clockedHours.Employee!.FirstName @clockedHours.Employee.LastName</td>
+						<td>@daysOfTheWeek[clockedHours.Weekday]</td>
+						<td>@(((int)Math.Round((clockedHours.EndTime - clockedHours.StartTime)!.Value.TotalHours)).ToString("D2")):@(((int)Math.Round((clockedHours.EndTime - clockedHours.StartTime)!.Value.TotalMinutes)).ToString("D2"))</td>
+						<td>@surcharge%</td>
+						<td class="hidden">@(surcharge = 0)</td>
+
+						@if (appliedEntries.Count > 0)
+						{
+							appliedEntries.Clear();
+						}
+					</tr>
+				}
+			}
+		</tbody>
+	</table>
+}
