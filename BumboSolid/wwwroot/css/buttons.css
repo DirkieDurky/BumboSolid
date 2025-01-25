@@ -68,3 +68,20 @@
     .bumbo-btn-danger:hover {
         background-color: #bd2a2a !important;
     }
+
+.table-btn {
+    text-decoration: none;
+    color: white;
+    background-color: #546174;
+    margin-block: .2rem;
+}
+
+    .table-btn i {
+        color: white;
+    }
+
+
+    .table-btn:hover {
+        background-color: #434d5c;
+        color: white;
+    }

@@ -63,7 +63,8 @@
     }
 
 .form-control {
-    background-color: #e2e2e2;
+    background-color: #cbcbcb;
+    border: 2px solid #b4b4b4;
 }
 
     .form-control:-webkit-autofill {
@@ -82,55 +83,4 @@
         background-color: #e2e2e2 !important;
         -webkit-text-fill-color: black !important;
     }
-
-/*    .form-control:valid {
-        background-color: green;
-    }
-    .form-control:invalid {
-        background-color: red;
-    }
-    .form-control:focus {
-        background-color: blue;
-    }
-    .form-control:placeholder-shown {
-        background-color: lightgrey;
-    }
-    .form-control:checked {
-        background-color: yellow;
-    }
-    .form-control:disabled {
-        background-color: grey;
-    }
-    .form-control:enabled {
-        background-color: white;
-    }
-    .form-control:empty {
-        background-color: pink;
-    }
-    .form-control:required {
-        background-color: lightblue;
-    }
-    .form-control:optional {
-        background-color: lightgreen;
-    }
-    .form-control:first-child {
-        background-color: lightcoral;
-    }
-    .form-control:last-child {
-        background-color: lavender;
-    }
-    .form-control:nth-child(2) {
-        background-color: lightyellow;
-    }
-    .form-control:nth-of-type(2) {
-        background-color: lightpink;
-    }
-    .form-control:not(:disabled) {
-        background-color: white;
-    }
-    .form-control:valid:focus {
-        background-color: green;
-    }*/
-
-
 

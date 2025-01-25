@@ -55,7 +55,7 @@
             var dayIndex = Array.IndexOf(daysOfTheWeek, day);
             var date = startDate.AddDays(dayIndex);
             <div class="day-header">
-                <h2>@day</h2>
+                <h5>@day</h5>
                 <p>@date.ToString("dd-MM")</p>
             </div>
         }
@@ -72,16 +72,16 @@
                         @foreach (var shift in shiftsForDay)
                         {
                             <li class="shift-item">
-                                <div class="shift-details">
-                                    <span class="shift-time">
+                                <div class="d-flex flex-column align-items-center">
+                                    <span>
                                         <i class="fa-regular fa-clock"></i> @shift.StartTime.ToString("HH:mm") - @shift.EndTime.ToString("HH:mm")
                                     </span>
-                                    <span class="shift-department">@shift.Department</span>
-                                    <div class="shift-actions d-flex flex-column align-items-center">
-                                        <a asp-action="SendFillRequest" asp-route-id="@shift.Id" class="btn bumbo-btn w-100 @(shift.FillRequests.Any() ? "disabled" : "")">
+                                    <span>@shift.Department</span>
+                                    <div class="d-flex justify-content-between align-items-center mt-2 w-100">
+                                        <a asp-action="SendFillRequest" asp-route-id="@shift.Id" class="btn bumbo-btn m-0 @(shift.FillRequests.Any() ? "disabled" : "")">
                                             <i class="fa-solid fa-exchange-alt"></i>
                                         </a>
-                                        <a asp-action="Absent" asp-route-id="@shift.Id" class="btn bumbo-btn bumbo-btn-danger w-100">
+                                        <a asp-action="Absent" asp-route-id="@shift.Id" class="btn bumbo-btn bumbo-btn-danger m-0">
                                             <i class="fa-solid fa-ban"></i>
                                         </a>
                                     </div>
