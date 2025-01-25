@@ -31,6 +31,14 @@
     box-shadow: none !important;
 }
 
+.bumbo-btn-login {
+
+}
+
+.bumbo-btn-login:hover {
+
+}
+
 .bumbo-btn-nav {
     background-color: #fbc500 !important;
     margin: .4rem .3rem;

@@ -14,6 +14,8 @@
     <link rel="stylesheet" href="~/css/buttons.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/BumboSolid.styles.css" asp-append-version="true" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.1/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
+    <script src="https://kit.fontawesome.com/981e782106.js" crossorigin="anonymous"></script>
 </head>
 <body>
     <header>
@@ -44,7 +46,8 @@
                         else if (User.IsInRole("Employee"))
                         {
                             <a class="btn bumbo-btn bumbo-btn-nav" asp-controller="ScheduleEmployee" asp-action="EmployeeSchedule"><i class="fa-regular fa-calendar"></i> Rooster</a>
-                            <a class="btn bumbo-btn bumbo-btn-nav" asp-controller="ClockedHours" asp-action="Index"><i class="fa-solid fa-clock"></i> Klokken</a>
+                            <a class="btn bumbo-btn bumbo-btn-nav" asp-controller="Availability" asp-action="Index"><i class="fa-solid fa-calendar-xmark"></i> Beschikbaarheid</a>
+                            <a class="btn bumbo-btn bumbo-btn-nav" asp-controller="ClockedHours" asp-action="Index"><i class="fa-regular fa-clock"></i> Klokken</a>
                             <a class="btn bumbo-btn bumbo-btn-nav" asp-controller="ScheduleEmployee" asp-action="IncomingFillRequests"><i class="fa-regular fa-bell"></i> Invalsverzoeken</a>
                         }
                     </ul>
