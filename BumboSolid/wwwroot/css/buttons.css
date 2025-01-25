@@ -1,0 +1,62 @@
+﻿a {
+    text-decoration: none;
+    color: white;
+}
+
+    a:hover {
+        color: white;
+    }
+
+.bumbo-btn {
+    background-color: #405b53;
+    color: white;
+    transition: background-color 0.2s, transform 0.1s;
+    white-space: nowrap;
+    border-radius: .5rem;
+    font-weight: 500;
+    margin-inline: .8rem;
+}
+
+    .bumbo-btn:hover {
+        color: white;
+        background-color: #334842;
+        transform: scale(1.05);
+    }
+
+    .bumbo-btn i {
+        color: white;
+    }
+
+.btn:focus {
+    box-shadow: none !important;
+}
+
+.bumbo-btn-nav {
+    background-color: #fbc500 !important;
+    margin: .4rem .3rem;
+    color: black !important;
+}
+
+    .bumbo-btn-nav:hover {
+        background-color: #e1b100 !important;
+    }
+
+    .bumbo-btn-nav i {
+        color: black !important;
+    }
+
+.bumbo-btn-back {
+    background-color: #6c757d !important;
+}
+
+    .bumbo-btn-back:hover {
+        background-color: #5c636a !important;
+    }
+
+.bumbo-btn-danger {
+    background-color: #6c757d !important;
+}
+
+    .bumbo-btn-danger:hover {
+        background-color: #bd2a2a !important;
+    }

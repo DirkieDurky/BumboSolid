@@ -34,17 +34,17 @@
 <header class="d-flex flex-column align-items-center">
     <div class="d-flex w-100 header-items">
         <div class="d-flex justify-content-center align-items-center w-35">
-            <a class="btn bumbo-btn" asp-controller="ScheduleManager" asp-action="ManagerSchedule" asp-route-id="@Model.Week.Id">
-                Terug
+            <a class="btn bumbo-btn bumbo-btn-back" asp-controller="ScheduleManager" asp-action="ManagerSchedule" asp-route-id="@Model.Week.Id">
+                <i class="fa-solid fa-arrow-left"></i> Terug
             </a>
         </div>
         <div class="text-center d-flex flex-column align-items-center justify-content-center w-30">
             <h1>Shift bewerken</h1>
-            <p>@startDate.ToString("dd/MM/yyyy") - @endDate.ToString("dd/MM/yyyy")</p>
+            <h6>@startDate.ToString("dd/MM/yyyy") - @endDate.ToString("dd/MM/yyyy")</h6>
         </div>
         <div class="d-flex justify-content-center align-items-center w-35">
             <a class="btn bumbo-btn bumbo-btn-danger" asp-controller="Shifts" asp-action="Delete" asp-route-id="@Model.Shift.Id">
-                Verwijderen
+                <i class="fa-solid fa-trash-can"></i> Verwijderen
             </a>
         </div>
     </div>
@@ -68,14 +68,6 @@
                         }
                         <option value="-1" selected="@(Model.Shift.EmployeeId == null)">Extern filiaal</option>
                     </select>
-                </div>
-                <div class="form-group col-md-3">
-                    <p class="fw-bold m-0">Heeft pauze over</p>
-                    <p id="hasBreakIn">-:--</p>
-                </div>
-                <div class="form-group col-md-3">
-                    <p class="fw-bold m-0">Mag nog werken</p>
-                    <p id="canWorkFor">-:--</p>
                 </div>
             </div>
             <div class="row">
@@ -114,8 +106,8 @@
                     <span asp-validation-for="Shift.EndTime" class="text-danger"></span>
                 </div>
             </div>
-            <div class="form-group">
-                <input type="submit" value="Opslaan" class="btn bumbo-btn w-100" />
+            <div class="d-flex justify-content-center align-items-center">
+                <button type="submit" class="btn bumbo-btn w-50"><i class="fas fa-save"></i> Opslaan</button>
             </div>
             @if (!string.IsNullOrEmpty(ViewBag.Error))
             {

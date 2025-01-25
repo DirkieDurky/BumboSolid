@@ -1,5 +1,5 @@
 ﻿.bumbo-navbar {
-    background-color: #fbc500;
+    background-color: #405b53;
     margin-bottom: 2rem;
     position: fixed;
     top: 0;
@@ -8,11 +8,25 @@
     box-shadow: 0 .4rem .4rem rgba(0, 0, 0, 0.2);
 }
 
-.table {
-/*    border: none;*/
-    /*background-color: #1f2b3f;*/
-/*    background-color: tra*/
+/*.nav-btn {
+    background-color: #fbc500;
+    color: black;
+    font-weight: 500;
+    transition: background-color 0.2s ease-in-out, transform 0.1s ease;
+    margin: .2rem;
+    white-space: nowrap;
+    border-radius: .5rem;
 }
+
+    .nav-btn:hover {
+        color: black;
+        background-color: #e1b100;
+        transform: scale(1.05);
+    }
+
+    .nav-btn i {
+        color: black;
+    }*/
 
 /*color: #1f2b3f
 color: #546174*/

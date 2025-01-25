@@ -39,6 +39,7 @@ public class ClockedHoursManagerController : Controller
         string? employeeName = employee == null ? null : employee.Name;
 
         var week = _context.Weeks.FirstOrDefault(w => w.Year == year && w.WeekNumber == weekNumber);
+
         DateOnly startDate;
         if (week == null)
         {
@@ -49,8 +50,6 @@ public class ClockedHoursManagerController : Controller
                 EndDate = startDate.AddDays(6),
                 ClockedHours = new(),
                 WeekdayDictionary = new(),
-                Year = (int)year,
-                WeekNumber = (int)weekNumber,
                 EmployeeId = employeeId,
                 EmployeeName = employeeName,
             };
@@ -83,8 +82,6 @@ public class ClockedHoursManagerController : Controller
             EndDate = startDate.AddDays(6),
             ClockedHours = allClockedHours,
             WeekdayDictionary = weekdayDictionary,
-            Year = (int)year,
-            WeekNumber = (int)weekNumber,
             EmployeeId = employeeId,
             EmployeeName = employeeName,
         };

@@ -24,7 +24,9 @@
 <header class="d-flex flex-column align-items-center">
     <div class="d-flex w-100 header-items">
         <div class="d-flex justify-content-between align-items-center w-35">
-            <a class="btn bumbo-btn" asp-action="ManagerSchedule" asp-route-id="@Model.WeekId">Terug</a>
+            <a class="btn bumbo-btn bumbo-btn-back" asp-action="ManagerSchedule" asp-route-id="@Model.WeekId">
+                <i class="fa-solid fa-arrow-left"></i> Terug
+            </a>
             <a class="btn bumbo-btn @(Model.PreviousWeekId == null ? "disabled" : "")"
                asp-action="ManagerEmployeeSchedule" asp-route-id="@Model.PreviousWeekId" asp-route-employeeId="@Model.EmployeeId">
                 <i class="fa-solid fa-arrow-left"></i> Vorige Week
@@ -41,60 +43,60 @@
             </a>
             <a class="btn bumbo-btn @(Model.IsCurrentWeek ? "disabled" : "")"
                asp-action="ManagerEmployeeSchedule" asp-route-id="" asp-route-employeeId="@Model.EmployeeId">
-                Huidige Week
+                <i class="fa-regular fa-circle-dot"></i> Huidige Week
             </a>
         </div>
     </div>
 </header>
 
-<body>
-    <div class="schedule-agenda">
-        <div class="days-header">
-            @foreach (var day in daysOfTheWeek)
-            {
-                var dayIndex = Array.IndexOf(daysOfTheWeek, day);
-                var date = startDate.AddDays(dayIndex);
-                <div class="day-header">
-                    <h2>@day</h2>
-                    <p>@date.ToString("dd-MM")</p>
-                </div>
-            }
-        </div>
+<br />
 
-        <div class="shifts-row">
-            @foreach (var day in daysOfTheWeek)
-            {
-                var shiftsForDay = shifts.Where(s => s.Weekday == Array.IndexOf(daysOfTheWeek, day) && s.EmployeeId == Model.EmployeeId).OrderBy(s => s.StartTime).ToList();
-                <div class="shift-column">
-                    @if (shiftsForDay.Any())
-                    {
-                        <ul class="shift-list">
-                            @foreach (var shift in shiftsForDay)
-                            {
-                                <a asp-controller="Shifts" asp-action="Edit" asp-route-id="@shift.Id" asp-route-returnUrl="@Context.Request.Path" class="btn table-btn">
-                                    <i class="fa-regular fa-clock"></i> @shift.StartTime.ToString("HH:mm")
-                                    <hr />
-                                    <i class="fa-regular fa-clock"></i> @shift.EndTime.ToString("HH:mm")
-                                </a>
-                                // <a asp-controller="Shifts" asp-action="Edit" asp-route-returnUrl="@Context.Request.Path" asp-route-id="@shift.Id" class=" btn table-btn w-100">
-                                // <li class="shift-item">
-                                //     <div class="shift-details">
-                                //         <span class="shift-time">
-                                //             <i class="fa-regular fa-clock"></i> @shift.StartTime.ToString("HH:mm") - @shift.EndTime.ToString("HH:mm")
-                                //         </span>
-                                //         <span class="shift-department">@shift.Department</span>
-                                //     </div>
-                                // </li>
-                                // </a>
-                            }
-                        </ul>
-                    }
-                    else
-                    {
-                        <p class="no-shifts">Geen shifts voor deze dag.</p>
-                    }
-                </div>
-            }
-        </div>
+<div class="schedule-agenda">
+    <div class="days-header">
+        @foreach (var day in daysOfTheWeek)
+        {
+            var dayIndex = Array.IndexOf(daysOfTheWeek, day);
+            var date = startDate.AddDays(dayIndex);
+            <div class="day-header">
+                <h2>@day</h2>
+                <p>@date.ToString("dd-MM")</p>
+            </div>
+        }
     </div>
-</body>
+
+    <div class="shifts-row">
+        @foreach (var day in daysOfTheWeek)
+        {
+            var shiftsForDay = shifts.Where(s => s.Weekday == Array.IndexOf(daysOfTheWeek, day) && s.EmployeeId == Model.EmployeeId).OrderBy(s => s.StartTime).ToList();
+            <div class="shift-column">
+                @if (shiftsForDay.Any())
+                {
+                    <ul class="shift-list">
+                        @foreach (var shift in shiftsForDay)
+                        {
+                            <a asp-controller="Shifts" asp-action="Edit" asp-route-id="@shift.Id" asp-route-returnUrl="@Context.Request.Path" class="btn table-btn">
+                                <i class="fa-regular fa-clock"></i> @shift.StartTime.ToString("HH:mm")
+                                <hr />
+                                <i class="fa-regular fa-clock"></i> @shift.EndTime.ToString("HH:mm")
+                            </a>
+                            // <a asp-controller="Shifts" asp-action="Edit" asp-route-returnUrl="@Context.Request.Path" asp-route-id="@shift.Id" class=" btn table-btn w-100">
+                            // <li class="shift-item">
+                            //     <div class="shift-details">
+                            //         <span class="shift-time">
+                            //             <i class="fa-regular fa-clock"></i> @shift.StartTime.ToString("HH:mm") - @shift.EndTime.ToString("HH:mm")
+                            //         </span>
+                            //         <span class="shift-department">@shift.Department</span>
+                            //     </div>
+                            // </li>
+                            // </a>
+                        }
+                    </ul>
+                }
+                else
+                {
+                    <p class="no-shifts">Geen shifts voor deze dag.</p>
+                }
+            </div>
+        }
+    </div>
+</div>

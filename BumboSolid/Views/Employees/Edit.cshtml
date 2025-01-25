@@ -1,115 +1,126 @@
 ﻿@model BumboSolid.Models.EmployeesEditViewModel
 
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
-
-<h1>Medewerker bewerken</h1>
-
-<form asp-action="Edit" method="post">
-    <input type="hidden" asp-for="Id" />
-
-    <div class="row">
-        <div class="col-md-6">
-            <div class="form-group">
-                <label asp-for="FirstName">Voornaam *</label>
-                <input asp-for="FirstName" class="form-control" />
-                <span asp-validation-for="FirstName" class="text-danger"></span>
-            </div>
+<header class="d-flex flex-column align-items-center">
+    <div class="d-flex w-100 header-items">
+        <div class="d-flex justify-content-center align-items-center w-35">
+            <a asp-action="Index" class="btn bumbo-btn bumbo-btn-back">
+                <i class="fa-solid fa-arrow-left"></i> Terug
+            </a>
         </div>
-        <div class="col-md-6">
-            <div class="form-group">
-                <label asp-for="LastName">Achternaam *</label>
-                <input asp-for="LastName" class="form-control" />
-                <span asp-validation-for="LastName" class="text-danger"></span>
-            </div>
+        <div class="text-center d-flex flex-column align-items-center justify-content-center w-30 text-nowrap">
+            <h1>Medewerker Bewerken</h1>
+        </div>
+        <div class="d-flex justify-content-center align-items-center w-35">
+            <a class="btn bumbo-btn bumbo-btn-danger" asp-controller="Employees" asp-action="Delete" asp-route-id="@Model.Id"><i class="fa-solid fa-trash-can"></i> Verwijderen</a>
         </div>
     </div>
+</header>
 
-    <div class="row">
-        <div class="col-md-4">
-            <div class="form-group">
-                <label asp-for="PlaceOfResidence">Woonplaats</label>
-                <input asp-for="PlaceOfResidence" class="form-control" />
-                <span asp-validation-for="PlaceOfResidence" class="text-danger"></span>
+<br />
+
+<div class="d-flex justify-content-center align-items-center">
+    <form asp-action="Edit" method="post" class="w-75">
+        <input type="hidden" asp-for="Id" />
+
+        <div class="row">
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label asp-for="FirstName">Voornaam *</label>
+                    <input asp-for="FirstName" class="form-control" />
+                    <span asp-validation-for="FirstName" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label asp-for="LastName">Achternaam *</label>
+                    <input asp-for="LastName" class="form-control" />
+                    <span asp-validation-for="LastName" class="text-danger"></span>
+                </div>
             </div>
         </div>
-        <div class="col-md-4">
-            <div class="form-group">
-                <label asp-for="StreetName">Straatnaam</label>
-                <input asp-for="StreetName" class="form-control" />
-                <span asp-validation-for="StreetName" class="text-danger"></span>
+
+        <div class="row">
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label asp-for="PlaceOfResidence">Woonplaats</label>
+                    <input asp-for="PlaceOfResidence" class="form-control" />
+                    <span asp-validation-for="PlaceOfResidence" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label asp-for="StreetName">Straatnaam</label>
+                    <input asp-for="StreetName" class="form-control" />
+                    <span asp-validation-for="StreetName" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label asp-for="StreetNumber">Huisnummer</label>
+                    <input asp-for="StreetNumber" class="form-control" />
+                    <span asp-validation-for="StreetNumber" class="text-danger"></span>
+                </div>
             </div>
         </div>
-        <div class="col-md-4">
-            <div class="form-group">
-                <label asp-for="StreetNumber">Huisnummer</label>
-                <input asp-for="StreetNumber" class="form-control" />
-                <span asp-validation-for="StreetNumber" class="text-danger"></span>
-            </div>
+
+        <div class="form-group">
+            <label asp-for="BirthDate">Geboortedatum *</label>
+            <input asp-for="BirthDate" type="date" class="form-control" />
+            <span asp-validation-for="BirthDate" class="text-danger"></span>
         </div>
-    </div>
 
-    <div class="form-group">
-        <label asp-for="BirthDate">Geboortedatum *</label>
-        <input asp-for="BirthDate" type="date" class="form-control" />
-        <span asp-validation-for="BirthDate" class="text-danger"></span>
-    </div>
+        <div class="form-group">
+            <label asp-for="EmployedSince">In dienst sinds *</label>
+            <input asp-for="EmployedSince" type="date" class="form-control" />
+            <span asp-validation-for="EmployedSince" class="text-danger"></span>
+        </div>
 
-    <div class="form-group">
-        <label asp-for="EmployedSince">In dienst sinds *</label>
-        <input asp-for="EmployedSince" type="date" class="form-control" />
-        <span asp-validation-for="EmployedSince" class="text-danger"></span>
-    </div>
+        <div class="form-group">
+            <label asp-for="Email">Email *</label>
+            <input asp-for="Email" class="form-control" />
+            <span asp-validation-for="Email" class="text-danger"></span>
+        </div>
 
-    <div class="form-group">
-        <label asp-for="Email">Email *</label>
-        <input asp-for="Email" class="form-control" />
-        <span asp-validation-for="Email" class="text-danger"></span>
-    </div>
-
-    <div class="form-group position-relative">
-        <label asp-for="Password">Wachtwoord</label>
-        <div class="password-input-container">
+        <div class="form-group password-input-container">
+            <label asp-for="Password">Wachtwoord (Minimaal 8 karakters waaronder 1 kleine letter, 1 hoofdletter, 1 cijfer en 1 speciaal karakter)</label>
             <input asp-for="Password" type="password" class="form-control" id="Password" />
             <button type="button" id="togglePassword" class="eye-btn">
                 <i class="fas fa-eye"></i>
             </button>
+            <span asp-validation-for="Password" class="text-danger"></span>
         </div>
-        <span asp-validation-for="Password" class="text-danger"></span>
-    </div>
 
-    <div class="form-group position-relative">
-        <label asp-for="ConfirmPassword">Bevestig wachtwoord</label>
-        <div class="password-input-container">
+        <div class="form-group password-input-container">
+            <label asp-for="ConfirmPassword">Bevestig wachtwoord</label>
             <input asp-for="ConfirmPassword" type="password" class="form-control" id="ConfirmPassword" />
             <button type="button" id="toggleConfirmPassword" class="eye-btn">
                 <i class="fas fa-eye"></i>
             </button>
+            <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
         </div>
-        <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
-    </div>
-
-    <div>
-        <label>Afdelingen:</label>
         <div>
-            @foreach (var department in Model.Departments)
-            {
-                <div class="form-check">
-                    <input type="checkbox"
-                           id="department_@department.Name"
-                           name="SelectedDepartments"
-                           value="@department.Name"
-                           class="form-check-input"
-                    @(Model.SelectedDepartments.Contains(department.Name) ? "checked" : "") />
-                    <label for="department_@department.Name" class="form-check-label">@department.Name</label>
-                </div>
-            }
+            <label>Afdelingen:</label>
+            <div>
+                @foreach (var department in Model.Departments)
+                {
+                    <div class="form-check">
+                        <input type="checkbox"
+                               id="department_@department.Name"
+                               name="SelectedDepartments"
+                               value="@department.Name"
+                               class="form-check-input"
+                        @(Model.SelectedDepartments.Contains(department.Name) ? "checked" : "") />
+                        <label for="department_@department.Name" class="form-check-label">@department.Name</label>
+                    </div>
+                }
+            </div>
+            <span asp-validation-for="SelectedDepartments" class="text-danger"></span>
         </div>
-        <span asp-validation-for="SelectedDepartments" class="text-danger"></span>
-    </div>
-
-    <button type="submit" class="btn bumbo-btn">Opslaan</button>
-    <a asp-action="Index" class="btn early-btn btn-secondary">Annuleren</a>
-</form>
+        <div class="d-flex justify-content-center align-items-center">
+            <button type="submit" class="btn bumbo-btn w-50"><i class="fas fa-save"></i> Opslaan</button>
+        </div>
+    </form>
+</div>
 
 @section Scripts {
     @{

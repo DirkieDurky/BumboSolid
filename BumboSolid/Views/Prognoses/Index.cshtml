@@ -24,7 +24,7 @@
     <div class="d-flex w-100 header-items">
         <div class="d-flex justify-content-between align-items-center w-35">
             <a class="btn bumbo-btn" asp-controller="Prognoses" asp-action="Aanmaken">
-                Prognose Aanmaken
+                <i class="fa-solid fa-plus"></i> Prognose Aanmaken
             </a>
             <a class="btn bumbo-btn @(!Model.PreviousWeekId.HasValue ? "disabled" : "")"
                asp-action="Index" asp-route-id="@Model.PreviousWeekId">
@@ -33,7 +33,7 @@
         </div>
         <div class="text-center d-flex flex-column align-items-center justify-content-center w-30">
             <h1>Prognose</h1>
-            <p>@startDate.ToString("dd/MM/yyyy") - @endDate.ToString("dd/MM/yyyy")</p>
+            <h6>@startDate.ToString("dd/MM/yyyy") - @endDate.ToString("dd/MM/yyyy")</h6>
         </div>
         <div class="d-flex justify-content-between align-items-center w-35">
             <a class="btn bumbo-btn @(!Model.NextWeekId.HasValue ? "disabled" : "")"
@@ -42,7 +42,7 @@
             </a>
             <a class="btn bumbo-btn @(Model.IsCurrentWeek ? "disabled" : "")"
                asp-action="Index" asp-route-id="">
-                Huidige Week
+                <i class="fa-regular fa-circle-dot"></i> Huidige Week
             </a>
         </div>
     </div>
@@ -52,12 +52,12 @@
     <table class="table">
         <thead>
             <tr>
-                <th rowspan="2">Dag</th>
+                <th rowspan="2" class="table-corner-l">Dag</th>
                 @foreach (var department in ViewBag.Departments)
                 {
                     <th colspan="2" class="text-center">@department</th>
                 }
-                <th colspan="2" class="text-center">Totaal</th>
+                <th colspan="2" class="text-center table-corner-r">Totaal</th>
             </tr>
             <tr>
                 @foreach (var department in ViewBag.Departments)
@@ -73,7 +73,7 @@
             @foreach (var day in daysOfTheWeek)
             {
                 <tr>
-                    <td class="font-weight-bold">@day</td>
+                    <td>@day</td>
                     @* Initialize totals for the day *@
                     @{
                         double totalPersonnelForDay = 0;
@@ -82,13 +82,13 @@
 
                     @foreach (var department in ViewBag.Departments)
                     {
-                        <td class="text-center font-weight-bold">@totalPersonnelForDay</td>
-                        <td class="text-center font-weight-bold">@totalHoursForDay.ToString("F2")</td>
+                        <td class="text-center">@totalPersonnelForDay</td>
+                        <td class="text-center">@totalHoursForDay.ToString("F2")</td>
                     }
 
                     @* Add totals for the entire row (day) *@
-                    <td class="text-center font-weight-bold">@totalPersonnelForDay</td>
-                    <td class="text-center font-weight-bold">@totalHoursForDay.ToString("F2")</td>
+                    <td class="text-center">@totalPersonnelForDay</td>
+                    <td class="text-center">@totalHoursForDay.ToString("F2")</td>
                 </tr>
             }
         </tbody>
@@ -105,14 +105,6 @@
 
 
 
-
-@* <div class="d-flex flex-row justify-content-center gap-5">
-@*     <div class="prognosis-left"> *@
-@*         <a class="btn early-btn btn-primary" asp-controller="Prognoses" asp-action="Aanmaken">Prognose Aanmaken</a> *@
-@*         <a class="btn early-btn btn-primary" asp-controller="Normeringen" asp-action="">Normeringen Beheren</a> *@
-@*         <a class="btn early-btn btn-primary" asp-controller="Feestdagen" asp-action="">Feestdagen Beheren</a> *@
-@*         <a class="btn early-btn btn-primary" asp-controller="Weer" asp-action="Bewerken">Weer-waarden Bewerken</a> *@
-@*     </div> *@
 
 @*     <div class="prognosis-right"> *@
 @*         <div class="d-flex flex-row gap-3 justify-content-between"> *@

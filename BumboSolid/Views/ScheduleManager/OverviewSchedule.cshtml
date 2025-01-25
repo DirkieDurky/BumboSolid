@@ -25,7 +25,7 @@
     <div class="d-flex w-100 header-items">
         <div class="d-flex justify-content-between align-items-center w-35">
             <a class="btn bumbo-btn" asp-action="ManagerSchedule" asp-route-id="@Model.WeekId">
-                Rooster
+                <i class="fa-regular fa-calendar"></i> Rooster
             </a>
             <a class="btn bumbo-btn @(!Model.PreviousWeekId.HasValue ? "disabled" : "")"
                asp-action="OverviewSchedule" asp-route-id="@Model.PreviousWeekId">
@@ -34,7 +34,7 @@
         </div>
         <div class="text-center d-flex flex-column align-items-center justify-content-center w-30">
             <h1>Rooster Overzicht</h1>
-            <p>@startDate.ToString("dd/MM/yyyy") - @endDate.ToString("dd/MM/yyyy")</p>
+            <h6>@startDate.ToString("dd/MM/yyyy") - @endDate.ToString("dd/MM/yyyy")</h6>
         </div>
         <div class="d-flex justify-content-between align-items-center w-35">
             <a class="btn bumbo-btn @(!Model.NextWeekId.HasValue ? "disabled" : "")"
@@ -43,7 +43,7 @@
             </a>
             <a class="btn bumbo-btn @(Model.IsCurrentWeek ? "disabled" : "")"
                asp-action="OverviewSchedule" asp-route-id="">
-                Huidige Week
+                <i class="fa-regular fa-circle-dot"></i> Huidige Week
             </a>
         </div>
     </div>
@@ -51,73 +51,69 @@
 
 @if (!Model.HasSchedule)
 {
-    <body>
-        <div class="d-flex flex-column align-items-center gap-5 m-5">
-            <h3>Er is nog geen rooster aangemaakt.</h3>
-            <h4>Maak er een aan!</h4>
-            <form asp-action="Create">
-                <div class="form-group">
-                    <input type="hidden" name="id" value="@Model.WeekId" />
-                    <input type="hidden" name="returnUrl" value="@Context.Request.Path" />
-                    <input type="submit" value="Nieuw Rooster Aanmaken" class="btn bumbo-btn" />
-                </div>
-            </form>
-        </div>
-    </body>
+    <div class="d-flex flex-column align-items-center gap-5 m-5">
+        <h3>Er is nog geen rooster aangemaakt.</h3>
+        <h4>Maak er een aan!</h4>
+        <form asp-action="Create">
+            <div class="form-group">
+                <input type="hidden" name="id" value="@Model.WeekId" />
+                <input type="hidden" name="returnUrl" value="@Context.Request.Path" />
+                <button type="submit" class="btn bumbo-btn"><i class="fa-solid fa-plus"></i> Nieuw Rooster Aanmaken</button>
+            </div>
+        </form>
+    </div>
 }
 else
 {
-    <body class="schedule">
-        <div class="container mt-4">
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th rowspan="2">Dag</th>
-                        @foreach (var department in Model.Departments.Select(d => d.Name))
-                        {
-                            <th colspan="2" class="text-center">@department</th>
-                        }
-                        <th colspan="2" class="text-center">Totaal</th>
-                    </tr>
-                    <tr>
-                        @foreach (var department in Model.Departments.Select(d => d.Name))
-                        {
-                            <th class="text-center">Personeel</th>
-                            <th class="text-center">Uren</th>
-                        }
-                        <th class="text-center">Personeel</th>
-                        <th class="text-center">Uren</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var day in daysOfTheWeek)
+    <div class="container mt-4">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th rowspan="2" class="table-corner-l">Dag</th>
+                    @foreach (var department in Model.Departments.Select(d => d.Name))
                     {
-                        <tr>
-                            <td class="font-weight-bold">@day</td>
-                            @{
-                                double totalPersonnelForDay = 0;
-                                double totalHoursForDay = 0;
-                            }
-
-                            @foreach (var department in Model.Departments)
-                            {
-                                var departmentShifts = shifts.Where(s => s.Department == department.Name && s.Weekday == Array.IndexOf(daysOfTheWeek, day)).ToList();
-                                var personnelForDay = departmentShifts.Select(s => s.Employee).Distinct().Count();
-                                var hoursForDay = departmentShifts.Sum(s => (s.EndTime - s.StartTime).TotalHours);
-
-                                totalPersonnelForDay += personnelForDay;
-                                totalHoursForDay += hoursForDay;
-
-                                <td class="text-center">@personnelForDay</td>
-                                <td class="text-center">@hoursForDay.ToString("F2")</td>
-                            }
-
-                            <td class="text-center font-weight-bold">@totalPersonnelForDay</td>
-                            <td class="text-center font-weight-bold">@totalHoursForDay.ToString("F2")</td>
-                        </tr>
+                        <th colspan="2">@department</th>
                     }
-                </tbody>
-            </table>
-        </div>
-    </body>
+                    <th colspan="2" class="table-corner-r">Totaal</th>
+                </tr>
+                <tr>
+                    @foreach (var department in Model.Departments.Select(d => d.Name))
+                    {
+                        <th>Personeel</th>
+                        <th>Uren</th>
+                    }
+                    <th>Personeel</th>
+                    <th>Uren</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var day in daysOfTheWeek)
+                {
+                    <tr>
+                        <td>@day</td>
+                        @{
+                            double totalPersonnelForDay = 0;
+                            double totalHoursForDay = 0;
+                        }
+
+                        @foreach (var department in Model.Departments)
+                        {
+                            var departmentShifts = shifts.Where(s => s.Department == department.Name && s.Weekday == Array.IndexOf(daysOfTheWeek, day)).ToList();
+                            var personnelForDay = departmentShifts.Select(s => s.Employee).Distinct().Count();
+                            var hoursForDay = departmentShifts.Sum(s => (s.EndTime - s.StartTime).TotalHours);
+
+                            totalPersonnelForDay += personnelForDay;
+                            totalHoursForDay += hoursForDay;
+
+                            <td class="text-center">@personnelForDay</td>
+                            <td class="text-center">@hoursForDay.ToString("F2")</td>
+                        }
+
+                        <td class="text-center">@totalPersonnelForDay</td>
+                        <td class="text-center">@totalHoursForDay.ToString("F2")</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
 }

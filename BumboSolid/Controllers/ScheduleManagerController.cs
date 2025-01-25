@@ -82,7 +82,14 @@ public class ScheduleManagerController(BumboDbContext context) : Controller
             PreviousWeekId = previousWeek?.Id,
             NextWeekId = nextWeek?.Id,
             CurrentWeekNumber = currentWeekNumber,
-            IsCurrentWeek = (currentWeek.Year == currentYear && currentWeek.WeekNumber == currentWeekNumber)
+            IsCurrentWeek = (currentWeek.Year == currentYear && currentWeek.WeekNumber == currentWeekNumber),
+            Weeks = await _context.Weeks
+                .Include(w => w.Shifts)
+                .ThenInclude(s => s.Employee)
+                .ThenInclude(f => f.FillRequests)
+                .OrderByDescending(w => w.Year)
+                .ThenByDescending(w => w.WeekNumber)
+                .ToListAsync(),
         };
         return View(viewModel);
     }

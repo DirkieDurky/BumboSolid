@@ -24,8 +24,8 @@
 <header class="d-flex flex-column align-items-center">
     <div class="d-flex w-100 header-items">
         <div class="d-flex justify-content-between align-items-center w-35">
-            <a class="btn bumbo-btn" asp-action="OverviewSchedule" asp-route-id="@Model.WeekId">
-                Terug
+            <a class="btn bumbo-btn bumbo-btn-back" asp-action="OverviewSchedule" asp-route-id="@Model.WeekId">
+                <i class="fa-solid fa-arrow-left"></i> Terug
             </a>
             <a class="btn bumbo-btn @(!Model.PreviousWeekId.HasValue ? "disabled" : "")"
                asp-action="ManagerSchedule" asp-route-id="@Model.PreviousWeekId">
@@ -34,7 +34,7 @@
         </div>
         <div class="text-center d-flex flex-column align-items-center justify-content-center w-30">
             <h1>Rooster</h1>
-            <p>@startDate.ToString("dd/MM/yyyy") - @endDate.ToString("dd/MM/yyyy")</p>
+            <h6>@startDate.ToString("dd/MM/yyyy") - @endDate.ToString("dd/MM/yyyy")</h6>
         </div>
         <div class="d-flex justify-content-between align-items-center w-35">
             <a class="btn bumbo-btn @(!Model.NextWeekId.HasValue ? "disabled" : "")"
@@ -43,7 +43,7 @@
             </a>
             <a class="btn bumbo-btn @(Model.IsCurrentWeek ? "disabled" : "")"
                asp-action="ManagerSchedule" asp-route-id="">
-                Huidige Week
+                <i class="fa-regular fa-circle-dot"></i> Huidige Week
             </a>
         </div>
     </div>
@@ -53,14 +53,14 @@
 @if (!Model.HasSchedule)
 {
     <body>
-        <div class="d-flex flex-column align-items-center gap-4 m-4">
+        <div class="d-flex flex-column align-items-center gap-5 m-5">
             <h3>Er is nog geen rooster aangemaakt.</h3>
             <h4>Maak er een aan!</h4>
             <form asp-action="Create">
                 <div class="form-group">
                     <input type="hidden" name="id" value="@Model.WeekId" />
                     <input type="hidden" name="returnUrl" value="@Context.Request.Path" />
-                    <input type="submit" value="Nieuw Rooster Aanmaken" class="btn bumbo-btn" />
+                    <button type="submit" class="btn bumbo-btn"><i class="fa-solid fa-plus"></i> Nieuw Rooster Aanmaken</button>
                 </div>
             </form>
         </div>
@@ -71,7 +71,7 @@ else
     <body class="schedule">
         <div class="d-flex justify-content-center">
             <a class="btn bumbo-btn" asp-controller="Shifts" asp-action="Create" asp-route-weekid="@schedule.Id" asp-route-returnUrl="@Context.Request.Path">
-                Shift Toevoegen
+                <i class="fa-solid fa-plus"></i> Shift Toevoegen
             </a>
         </div>
         <br />
@@ -89,12 +89,12 @@ else
                     <table class="table schedule-table">
                         <thead>
                             <tr>
-                                <th>Werknemer</th>
+                                <th class="table-corner-l">Werknemer</th>
                                 @foreach (var day in daysOfTheWeek)
                                 {
                                     <th>@day</th>
                                 }
-                                <th>Totaal</th>
+                                <th class="table-corner-r">Totaal</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -122,7 +122,7 @@ else
                                                 <div>
                                                     <a asp-controller="Shifts" asp-action="Edit" asp-route-id="@shift.Id" asp-route-returnUrl="@Context.Request.Path" class="btn table-btn">
                                                         <i class="fa-regular fa-clock"></i> @shift.StartTime.ToString("HH:mm")
-                                                        <hr />
+                                                        <p>t/m</p>
                                                         <i class="fa-regular fa-clock"></i> @shift.EndTime.ToString("HH:mm")
                                                     </a>
                                                 </div>
