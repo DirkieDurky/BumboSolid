@@ -11,6 +11,8 @@ public partial class CLASurchargeEntry
 	public TimeOnly? StartTime { get; set; }
 	public TimeOnly? EndTime { get; set; }
 
+	// JANO SURCHARGE ENTRY MOET MINIMAAL 1 VAN VOLGENDE HEBBEN WEEK OF (STARTTIME EN ENDTIME)
+
 	public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
 	{
 		if (StartTime.HasValue && EndTime.HasValue && StartTime > EndTime)
