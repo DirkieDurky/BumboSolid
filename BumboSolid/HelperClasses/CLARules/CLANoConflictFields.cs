@@ -6,7 +6,7 @@ namespace BumboSolid.HelperClasses;
 
 public class CLANoConflictFields : ICLANoConflictFields
 {
-    public bool NoConflicts(CLAEntry existingEntry, CLAManageViewModel model, ModelStateDictionary modelState, CLABreakEntry? breakEntry)
+    public bool NoConflicts(CLAEntry existingEntry, CLAManageViewModel model, ModelStateDictionary modelState)
     {
         if (existingEntry == null) return true;
         var conflictFields = new List<string>();
@@ -18,8 +18,6 @@ public class CLANoConflictFields : ICLANoConflictFields
             conflictFields.Add(nameof(model.MaxWorkDaysPerWeek));
         if (existingEntry.MaxWorkDurationPerWeek.HasValue && model.MaxWorkDurationPerWeek.HasValue)
             conflictFields.Add(nameof(model.MaxWorkDurationPerWeek));
-        if (existingEntry.MaxWorkDurationPerHolidayWeek.HasValue && model.MaxWorkDurationPerHolidayWeek.HasValue)
-            conflictFields.Add(nameof(model.MaxWorkDurationPerHolidayWeek));
         if (existingEntry.EarliestWorkTime.HasValue && model.EarliestWorkTime.HasValue)
             conflictFields.Add(nameof(model.EarliestWorkTime));
         if (existingEntry.LatestWorkTime.HasValue && model.LatestWorkTime.HasValue)
@@ -28,14 +26,6 @@ public class CLANoConflictFields : ICLANoConflictFields
             conflictFields.Add(nameof(model.MaxShiftDuration));
         if (existingEntry.MaxAvgWeeklyWorkDurationOverFourWeeks.HasValue && model.MaxAvgWeeklyWorkDurationOverFourWeeks.HasValue)
             conflictFields.Add(nameof(model.MaxAvgWeeklyWorkDurationOverFourWeeks));
-
-        if (breakEntry != null)
-        {
-            if (model.BreakWorkDuration.HasValue) // breakEntry.WorkDuration having a value is implied.
-                conflictFields.Add(nameof(model.BreakWorkDuration));
-            if (breakEntry.MinBreakDuration.HasValue && model.BreakMinBreakDuration.HasValue)
-                conflictFields.Add(nameof(breakEntry.MinBreakDuration));
-        }
 
         if (conflictFields.Count > 0)
         {
@@ -62,9 +52,6 @@ public class CLANoConflictFields : ICLANoConflictFields
                 case nameof(model.MaxWorkDaysPerWeek):
                     modelState.AddModelError(field, errorMessage);
                     break;
-                case nameof(model.MaxWorkDurationPerHolidayWeek):
-                    modelState.AddModelError(field, errorMessage);
-                    break;
                 case nameof(model.EarliestWorkTime):
                     modelState.AddModelError(field, errorMessage);
                     break;
@@ -75,12 +62,6 @@ public class CLANoConflictFields : ICLANoConflictFields
                     modelState.AddModelError(field, errorMessage);
                     break;
                 case nameof(model.MaxAvgWeeklyWorkDurationOverFourWeeks):
-                    modelState.AddModelError(field, errorMessage);
-                    break;
-                case nameof(model.BreakWorkDuration):
-                    modelState.AddModelError(field, errorMessage);
-                    break;
-                case nameof(model.BreakMinBreakDuration):
                     modelState.AddModelError(field, errorMessage);
                     break;
             }
