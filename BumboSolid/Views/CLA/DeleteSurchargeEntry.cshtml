@@ -1,0 +1,32 @@
+﻿@model BumboSolid.Data.Models.CLASurchargeEntry
+
+@{
+	ViewData["Title"] = "COA Toeslag Regel Verwijderen";
+	string[] daysOfTheWeek = { "Maandag", "Dinsdag", "Woensdag", "Donderdag", "Vrijdag", "Zaterdag", "Zondag" };
+}
+
+<h1 class="text-center">Verwijderen</h1>
+
+<h3 class="text-center">Weet je zeker dat je de volgende regel wilt verwijderen?</h3>
+<div class="text-center">
+	<h2 class="col-10">Toeslag @Model.Surcharge%</h2>
+	@if (Model.Weekday != null)
+	{
+		<p>@daysOfTheWeek[(int)Model.Weekday]</p>
+	}
+	@if (Model.StartTime != null)
+	{
+		<p>@Model.StartTime</p>
+	}
+	@if (Model.EndTime != null)
+	{
+		<p>@Model.EndTime</p>
+	}
+	<hr />
+
+	<form asp-action="ToeslagVerwijderdSucces">
+		<input type="hidden" asp-for="Id" />
+		<a asp-action="Index" class="btn btn-secondary">Annuleren</a>
+		<input type="submit" value="Verwijderen" class="btn btn-danger" />
+	</form>
+</div>

@@ -1,6 +1,8 @@
 ﻿@model BumboSolid.Models.EmployeeScheduleViewModel
 
 @{
+    ViewData["Title"] = "Rooster";
+
     string[] daysOfTheWeek = { "Maandag", "Dinsdag", "Woensdag", "Donderdag", "Vrijdag", "Zaterdag", "Zondag" };
 
     var schedule = Model.Weeks.FirstOrDefault(w => w.Id == Model.WeekId);

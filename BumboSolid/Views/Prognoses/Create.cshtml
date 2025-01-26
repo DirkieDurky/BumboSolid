@@ -55,15 +55,17 @@
                 @foreach (var day in daysOfTheWeek)
                 {
                     var i = Array.IndexOf(daysOfTheWeek, day);
+                    var visitorEstimate = Model.Prognosis.PrognosisDays[i].VisitorEstimate;
                     var holidayValue = Model.Prognosis.PrognosisDays.First(x => x.Weekday == i).Factors.First(x => x.Type == "Feestdagen").Impact;
                     var otherValue = Model.Prognosis.PrognosisDays.First(x => x.Weekday == i).Factors.First(x => x.Type == "Overig").Impact;
                     <tr>
                         <td class="text-center">@day</td>
                         <td class="text-center">
-                            <input id="visitor-estimate-@i" name="visitorEstimates" type="number" class="form-control" value="0" onchange="updateVisitorEstimate()">
+                            <input id="visitor-estimate-@i" name="visitorEstimates" type="number" class="form-control" value="@visitorEstimate" onchange="updateVisitorEstimate()">
                         </td>
                         <td class="text-center">
                             <input id="holiday-@i" name="holidays" type="number" class="form-control" value="@holidayValue" onchange="updateVisitorEstimate()">
+
                         </td>
                         <td class="text-center align-items-center" style="width: 200px;">
                             <div class="d-flex flex-row gap-4 justify-content-center">

@@ -104,17 +104,17 @@ public class PrognosesController : Controller
         CultureInfo ci = CultureInfo.CurrentCulture;
         Calendar calendar = ci.Calendar;
 
-        //Create prognosis for next week
+        // Create prognosis for the next week
         DateTime nextWeek = DateTime.Now.AddDays(7);
         short year = (short)nextWeek.Year;
         byte week = (byte)calendar.GetWeekOfYear(nextWeek, ci.DateTimeFormat.CalendarWeekRule, ci.DateTimeFormat.FirstDayOfWeek);
 
-        //If a prognosis already exists for this week, add another week (and keep doing that until we find one that isn't used yet)
+        // If a prognosis already exists for this week, add another week
         while (_context.Weeks.Any(p => p.Year == year && p.WeekNumber == week))
         {
+            nextWeek = nextWeek.AddDays(7);
             year = (short)nextWeek.Year;
             week = (byte)calendar.GetWeekOfYear(nextWeek, ci.DateTimeFormat.CalendarWeekRule, ci.DateTimeFormat.FirstDayOfWeek);
-            nextWeek = nextWeek.AddDays(7);
         }
 
         Week newWeek = new Week()
@@ -123,47 +123,60 @@ public class PrognosesController : Controller
             WeekNumber = week,
         };
 
-        //Fill holidays in accordingly, and make the rest zeroes
+        // Fetch the latest completed week's visitor estimates
+        Week? previousWeek = _context.Weeks
+            .Include(w => w.PrognosisDays)
+            .OrderByDescending(w => w.Year)
+            .ThenByDescending(w => w.WeekNumber)
+            .FirstOrDefault(w => w.Year < year || (w.Year == year && w.WeekNumber < week));
+
+        // Fill holidays, weather, and other factors, and set visitor estimates based on the previous week
         for (byte i = 0; i < 7; i++)
         {
             PrognosisDay prognosisDay = new PrognosisDay()
             {
                 Weekday = i,
-                VisitorEstimate = 0,
+                VisitorEstimate = previousWeek?.PrognosisDays.FirstOrDefault(d => d.Weekday == i)?.VisitorEstimate ?? 0, // Use the previous week's value or default to 0
             };
 
-            //Get current day from year, week and weekday
+            // Get the current day for the new week
             DateTime startOfYear = new DateTime(newWeek.Year, 1, 1);
-            DateTime currentDay = calendar.AddWeeks(startOfYear, newWeek.WeekNumber - 1).AddDays(i - (int)startOfYear.DayOfWeek + 1);
+            DateTime currentDay = calendar.AddWeeks(startOfYear, newWeek.WeekNumber - 1)
+                .AddDays(i - (int)startOfYear.DayOfWeek + 1);
 
-            var temp = _context.HolidayDays.ToList();
-            List<HolidayDay> holidayInfo = temp.Where(d => d.Date == DateOnly.FromDateTime(currentDay)).ToList();
+            var holidays = _context.HolidayDays
+                .Where(d => d.Date == DateOnly.FromDateTime(currentDay))
+                .ToList();
 
             prognosisDay.Factors.Add(new Factor()
             {
                 Type = "Feestdagen",
                 Weekday = prognosisDay.Weekday,
-                Impact = (short)(holidayInfo.Count() == 0 ? 0 : holidayInfo.First().Impact),
+                Impact = (short)(holidays.Count == 0 ? 0 : holidays.First().Impact),
             });
 
             prognosisDay.Factors.Add(new Factor()
             {
                 Type = "Weer",
                 Weekday = prognosisDay.Weekday,
-                Impact = 3,
+                Impact = 3, // Default weather impact
             });
 
             prognosisDay.Factors.Add(new Factor()
             {
                 Type = "Overig",
                 Weekday = prognosisDay.Weekday,
-                Impact = 0,
+                Impact = 0, // Default other impact
             });
 
             newWeek.PrognosisDays.Add(prognosisDay);
         }
 
-        IEnumerable<Week> prognoses = _context.Weeks.Include(p => p.PrognosisDays).OrderBy(x => x.Year).ThenBy(x => x.WeekNumber).ToList();
+        IEnumerable<Week> prognoses = _context.Weeks
+            .Include(p => p.PrognosisDays)
+            .OrderBy(x => x.Year)
+            .ThenBy(x => x.WeekNumber)
+            .ToList();
 
         CreatePrognosisViewModel CreatePrognosisViewModel = new CreatePrognosisViewModel()
         {
@@ -207,7 +220,6 @@ public class PrognosesController : Controller
         double normFreshDay = norms.Where(norm => !norm.PerVisitor && norm.Department.Equals(fresh))
             .Select(norm => norm.Duration * norm.AvgDailyPerformances)
             .Sum();
-
 
         if (!ModelState.IsValid) return View(prognosis);
 
@@ -271,7 +283,6 @@ public class PrognosesController : Controller
                 WorkHours = (short)((normShelvesDay + (normShelvesVisitor * visitorEstimates[i])) * (holidayd * weatherd * otherd) / 3600)
             });
 
-
             _context.Add(new PrognosisDepartment()
             {
                 PrognosisId = prognosis.Id,
@@ -282,10 +293,5 @@ public class PrognosesController : Controller
         }
         await _context.SaveChangesAsync();
         return RedirectToAction("Index", "Prognoses");
-    }
-
-    private bool PrognosisExists(int id)
-    {
-        return _context.Weeks.Any(e => e.Id == id);
     }
 }

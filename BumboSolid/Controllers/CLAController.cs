@@ -6,6 +6,8 @@ using BumboSolid.Models;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.Authorization;
 using BumboSolid.HelperClasses;
+using Microsoft.CodeAnalysis.Options;
+using Newtonsoft.Json.Linq;
 
 namespace BumboSolid.Controllers;
 
@@ -13,337 +15,384 @@ namespace BumboSolid.Controllers;
 [Route("CAO")]
 public class CLAController : Controller
 {
-    private readonly BumboDbContext _context;
-    private List<ICLALogic> _logicRules;
-    private ICLANoConflictFields _noOverwriteLogic;
-    private ICLAEntryConverter _claEntryConverter;
+	private readonly BumboDbContext _context;
+	private List<ICLALogic> _logicRules;
+	private ICLANoConflictFields _noOverwriteLogic;
+	private ICLAEntryConverter _claEntryConverter;
 
-    public CLAController(BumboDbContext context)
-    {
-        _context = context;
-        _logicRules = MakeLogic();
-        _noOverwriteLogic = new CLANoConflictFields();
+	public CLAController(BumboDbContext context)
+	{
+		_context = context;
+		_logicRules = MakeLogic();
+		_noOverwriteLogic = new CLANoConflictFields();
 
-        // Converters
-        _claEntryConverter = new CLAEntryConverter();
-    }
+		// Converters
+		_claEntryConverter = new CLAEntryConverter();
+	}
 
-    // Put in the different validation rules to be active.
-    private List<ICLALogic> MakeLogic()
-    {
-        List<ICLALogic> validateRules =
-        [
-            new CLAgeEndAfterAgeStartLogic(),
-            new CLASevenWeekDaysLogic(),
-            new CLATimeInDayLogic(),
-            new CLAValidTimePerWeekLogic(),
-            new CLAValidTimePerFourWeekAverageLogic(),
-            new CLAValidTimePerHolidayWeekLogic(),
-            new CLAViewModelNotEmptyLogic(),
-            new CLANoBreakWithoutWorkLimitLogic(),
-            new CLANoMinuteDecimalsLogic(),
-        ];
-        return validateRules;
-    }
+	// Put in the different validation rules to be active.
+	private List<ICLALogic> MakeLogic()
+	{
+		List<ICLALogic> validateRules =
+		[
+			new CLAgeEndAfterAgeStartLogic(),
+			new CLASevenWeekDaysLogic(),
+			new CLATimeInDayLogic(),
+			new CLAValidTimePerWeekLogic(),
+			new CLAValidTimePerFourWeekAverageLogic(),
+			new CLAViewModelNotEmptyLogic(),
+			new CLANoMinuteDecimalsLogic(),
+		];
+		return validateRules;
+	}
 
-    public IActionResult EditDone()
-    {
-        return RedirectToAction(nameof(Index));
-    }
+	public IActionResult EditDone()
+	{
+		return RedirectToAction(nameof(Index));
+	}
 
-    // GET: CLA
-    [HttpGet("")]
-    public async Task<IActionResult> Index()
-    {
-        var entries = await _context.CLAEntries
-            .Include(e => e.CLABreakEntries)
-            .OrderBy(e => e.AgeStart)
-            .ToListAsync();
+	// GET: CLA
+	[HttpGet("")]
+	public async Task<IActionResult> Index()
+	{
+		var entries = await _context.CLAEntries
+			.OrderBy(e => e.AgeStart)
+			.ToListAsync();
 
-        var groupedCLACards = entries
-            .GroupBy(e => new { e.AgeStart, e.AgeEnd })
-            .Select(group => new CLACardViewModel
-            {
-                Id = group.First().Id,
-                AgeStart = group.Key.AgeStart.HasValue ? group.Key.AgeStart.Value : null,
-                AgeEnd = group.Key.AgeEnd.HasValue ? group.Key.AgeEnd.Value : null,
-                Rules = group.SelectMany(e =>
-                {
-                    var rules = new List<string>();
+		List<CLASurchargeEntry> surchargeEntries = await _context.CLASurchargeEntries
+			.ToListAsync();
 
-                    if (e.MaxWorkDurationPerDay.HasValue)
-                        rules.Add($"Mag maximaal {e.MaxWorkDurationPerDay / 60.0} uur werken op een dag.");
-                    if (e.MaxShiftDuration.HasValue)
-                        rules.Add($"Eén shift mag maximaal {e.MaxShiftDuration / 60.0} uur duren.");
-                    if (e.MaxWorkDaysPerWeek.HasValue)
-                        rules.Add($"Mag maximaal {e.MaxWorkDaysPerWeek} dagen in een week werken.");
-                    if (e.MaxWorkDurationPerWeek.HasValue)
-                        rules.Add($"Mag maximaal {e.MaxWorkDurationPerWeek / 60.0} uur in een week werken.");
-                    if (e.MaxWorkDurationPerHolidayWeek.HasValue)
-                        rules.Add($"Mag maximaal {e.MaxWorkDurationPerHolidayWeek / 60.0} uur werken als het een vakantieweek is.");
-                    if (e.MaxAvgWeeklyWorkDurationOverFourWeeks.HasValue)
-                        rules.Add($"Gemiddelde uren per week verspreid over vier weken mag maximaal " +
-                            $"{e.MaxAvgWeeklyWorkDurationOverFourWeeks / 60} uur zijn.");
-                    if (e.EarliestWorkTime.HasValue)
-                        rules.Add($"Mag op z'n vroegst om {e.EarliestWorkTime} beginnen met werken.");
-                    if (e.LatestWorkTime.HasValue)
-                        rules.Add($"Mag maximaal tot {e.LatestWorkTime} werken.");
+		int lastId = 0;
 
-                    if (e.CLABreakEntries.IsNullOrEmpty())
-                    {
-                        return rules;
-                    }
-                    if (e.CLABreakEntries[0].MinBreakDuration.HasValue)
-                    {
-                        rules.Add($"Wanneer iemand langer dan {e.CLABreakEntries[0].WorkDuration / 60.0} uur werkt, " +
-                            $"is er recht op een pauze van {e.CLABreakEntries[0].MinBreakDuration} minuten.");
-                    }
-                    else
-                    {
-                        rules.Add($"Moet pauze krijgen na {e.CLABreakEntries[0].WorkDuration / 60.0} uur werken.");
-                    }
-                    return rules;
-                }).ToList()
-            }).ToList();
+		List<CLACardViewModel> groupedCLACards = entries
+			.GroupBy(e => new { e.AgeStart, e.AgeEnd })
+			.Select(group =>
+			{
+				lastId = group.First().Id;
+				return new CLACardViewModel
+				{
+					Id = group.First().Id,
+					AgeStart = group.Key.AgeStart.HasValue ? group.Key.AgeStart.Value : null,
+					AgeEnd = group.Key.AgeEnd.HasValue ? group.Key.AgeEnd.Value : null,
+					Rules = group.SelectMany(e =>
+					{
+						var rules = new List<string>();
 
-        return View(groupedCLACards);
-    }
+						if (e.MaxWorkDurationPerDay.HasValue)
+							rules.Add($"Mag maximaal {e.MaxWorkDurationPerDay / 60.0} uur werken op een dag.");
+						if (e.MaxShiftDuration.HasValue)
+							rules.Add($"Eén shift mag maximaal {e.MaxShiftDuration / 60.0} uur duren.");
+						if (e.MaxWorkDaysPerWeek.HasValue)
+							rules.Add($"Mag maximaal {e.MaxWorkDaysPerWeek} dagen in een week werken.");
+						if (e.MaxWorkDurationPerWeek.HasValue)
+							rules.Add($"Mag maximaal {e.MaxWorkDurationPerWeek / 60.0} uur in een week werken.");
+						if (e.MaxAvgWeeklyWorkDurationOverFourWeeks.HasValue)
+							rules.Add($"Gemiddelde uren per week verspreid over vier weken mag maximaal " +
+								$"{e.MaxAvgWeeklyWorkDurationOverFourWeeks / 60} uur zijn.");
+						if (e.EarliestWorkTime.HasValue)
+							rules.Add($"Mag op z'n vroegst om {e.EarliestWorkTime} beginnen met werken.");
+						if (e.LatestWorkTime.HasValue)
+							rules.Add($"Mag maximaal tot {e.LatestWorkTime} werken.");
 
-    // GET: CLA/Create
-    [Route("Toevoegen")]
-    public IActionResult Create()
-    {
-        return View(new CLAManageViewModel());
-    }
+						return rules;
+					}).ToList()
+				};
+			}).ToList();
 
-    // POST: CLA/Create
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    [Route("Toevoegen")]
-    public async Task<IActionResult> Create(CLAManageViewModel claViewModel)
-    {
-        foreach (ICLALogic rule in _logicRules)
-        {
-            rule.ValidateModel(claViewModel, ModelState);
-        }
-        if (!ModelState.IsValid) return View(claViewModel);
+		groupedCLACards.AddRange(surchargeEntries
+			.Select(entry =>
+			{
+				List<string> rules = [];
 
-        var existingEntry = await _context.CLAEntries
-            .FirstOrDefaultAsync(e =>
-                (e.AgeStart == claViewModel.AgeStart && e.AgeEnd == claViewModel.AgeEnd) ||
-                (e.AgeStart == null && claViewModel.AgeStart == null && e.AgeEnd == claViewModel.AgeEnd) ||
-                (e.AgeStart == claViewModel.AgeStart && e.AgeEnd == null && claViewModel.AgeEnd == null) ||
-                (e.AgeStart == null && e.AgeEnd == null && claViewModel.AgeStart == null && claViewModel.AgeEnd == null));
+				string[] daysOfTheWeek = { "Maandag", "Dinsdag", "Woensdag", "Donderdag", "Vrijdag", "Zaterdag", "Zondag" };
 
-        if (existingEntry != null)
-        {
-            var breakEntry = await _context.CLABreakEntries
-                .FirstOrDefaultAsync(e => e.CLAEntryId == existingEntry.Id);
+				if (entry.Weekday != null)
+					rules.Add($"Toeslag geld alleen op {daysOfTheWeek[(int)entry.Weekday]}");
+				if (entry.StartTime != null)
+					rules.Add($"Toeslag geld vanaf {entry.StartTime}");
+				if (entry.EndTime != null)
+					rules.Add($"Toeslag geld tot {entry.EndTime}");
 
-            if (!_noOverwriteLogic.NoConflicts(existingEntry, claViewModel, ModelState, breakEntry)) return View(claViewModel);
+				return new CLACardViewModel
+				{
+					Id = entry.Id + lastId,
+					Surcharge = entry.Surcharge,
+					Rules = rules
+				};
+			}).ToList());
 
-            existingEntry = _claEntryConverter.ModelToEntry(claViewModel, existingEntry); // Can overwrite because there are no conflicts.
+		return View(groupedCLACards);
+	}
 
-            if (breakEntry == null && claViewModel.BreakWorkDuration.HasValue)
-            {
-                breakEntry = new CLABreakEntry();
-                breakEntry = _claEntryConverter.ModelToBreakEntry(claViewModel, existingEntry.Id, breakEntry);
-                _context.CLAEntries.Update(existingEntry);
-                _context.CLABreakEntries.Add(breakEntry);
-                _context.SaveChanges();
+	// GET: CLA/Create
+	[Route("Toevoegen")]
+	public IActionResult Create()
+	{
+		return View(new CLAManageViewModel());
+	}
 
-                TempData["Message"] = "CAO regels zijn geupdated!";
-                return RedirectToAction(nameof(Index));
-            }
+	// POST: CLA/Create
+	[HttpPost]
+	[ValidateAntiForgeryToken]
+	[Route("Toevoegen")]
+	public async Task<IActionResult> Create(CLAManageViewModel claViewModel)
+	{
+		foreach (ICLALogic rule in _logicRules)
+		{
+			rule.ValidateModel(claViewModel, ModelState);
+		}
+		if (!ModelState.IsValid) return View(claViewModel);
 
-            if (breakEntry != null && !breakEntry.MinBreakDuration.HasValue && claViewModel.BreakMinBreakDuration.HasValue)
-            {
-                int minBreakTimeMulti = claViewModel.MaxUninterruptedShiftDurationHours ? 60 : 1;
-                breakEntry.MinBreakDuration = (int?)(claViewModel.BreakMinBreakDuration * minBreakTimeMulti);
+		var existingEntry = await _context.CLAEntries
+			.FirstOrDefaultAsync(e =>
+				(e.AgeStart == claViewModel.AgeStart && e.AgeEnd == claViewModel.AgeEnd) ||
+				(e.AgeStart == null && claViewModel.AgeStart == null && e.AgeEnd == claViewModel.AgeEnd) ||
+				(e.AgeStart == claViewModel.AgeStart && e.AgeEnd == null && claViewModel.AgeEnd == null) ||
+				(e.AgeStart == null && e.AgeEnd == null && claViewModel.AgeStart == null && claViewModel.AgeEnd == null));
 
-                _context.CLABreakEntries.Update(breakEntry);
-                _context.SaveChanges();
-            }
+		if (existingEntry != null)
+		{
+			if (!_noOverwriteLogic.NoConflicts(existingEntry, claViewModel, ModelState)) return View(claViewModel);
 
-            _context.CLAEntries.Update(existingEntry);
-            _context.SaveChanges();
+			existingEntry = _claEntryConverter.ModelToEntry(claViewModel, existingEntry); // Can overwrite because there are no conflicts.
 
-            TempData["Message"] = "CAO regels zijn geupdated!";
-            return RedirectToAction(nameof(Index));
-        }
+			_context.CLAEntries.Update(existingEntry);
+			_context.SaveChanges();
 
-        CLAEntry claEntry = new CLAEntry();
-        claEntry = _claEntryConverter.ModelToEntry(claViewModel, claEntry);
-        _context.Add(claEntry);
-        await _context.SaveChangesAsync();
+			TempData["Message"] = "CAO regels zijn geupdated!";
+			return RedirectToAction(nameof(Index));
+		}
 
-        if (claViewModel.BreakWorkDuration.HasValue)
-        {
-            CLABreakEntry breakEntry = new CLABreakEntry();
-            _claEntryConverter.ModelToBreakEntry(claViewModel, claEntry.Id, breakEntry);
-            _context.Add(breakEntry);
-            await _context.SaveChangesAsync();
-        }
+		CLAEntry claEntry = new CLAEntry();
+		claEntry = _claEntryConverter.ModelToEntry(claViewModel, claEntry);
+		_context.Add(claEntry);
+		await _context.SaveChangesAsync();
 
-        TempData["Message"] = "Nieuwe CAO regels succesvol toegevoegd!";
+		TempData["Message"] = "Nieuwe CAO regels succesvol toegevoegd!";
 
-        return RedirectToAction(nameof(Index));
-    }
+		return RedirectToAction(nameof(Index));
+	}
 
-    // GET: CLA/Edit/5
-    [HttpGet(template: "Bewerken")]
-    public async Task<IActionResult> Edit(int? ageStart, int? ageEnd)
-    {
-        var claEntry = await _context.CLAEntries
-            .FirstOrDefaultAsync(e =>
-                (e.AgeStart == ageStart && e.AgeEnd == ageEnd) ||
-                (e.AgeStart == null && ageStart == null && e.AgeEnd == ageEnd) ||
-                (e.AgeStart == ageStart && e.AgeEnd == null && ageEnd == null) ||
-                (e.AgeStart == null && e.AgeEnd == null && ageStart == null && ageEnd == null));
-        if (claEntry == null)
-        {
-            TempData["Message"] = "CAO regel niet gevonden";
-            return RedirectToAction(nameof(Index));
-        }
+	// GET: CLA/Edit/5
+	[HttpGet(template: "Bewerken")]
+	public async Task<IActionResult> Edit(int? ageStart, int? ageEnd)
+	{
+		var claEntry = await _context.CLAEntries
+			.FirstOrDefaultAsync(e =>
+				(e.AgeStart == ageStart && e.AgeEnd == ageEnd) ||
+				(e.AgeStart == null && ageStart == null && e.AgeEnd == ageEnd) ||
+				(e.AgeStart == ageStart && e.AgeEnd == null && ageEnd == null) ||
+				(e.AgeStart == null && e.AgeEnd == null && ageStart == null && ageEnd == null));
+		if (claEntry == null)
+		{
+			TempData["Message"] = "CAO regel niet gevonden";
+			return RedirectToAction(nameof(Index));
+		}
 
-        var breakEntry = await _context.CLABreakEntries
-            .FirstOrDefaultAsync(e => e.CLAEntryId == claEntry.Id);
+		CLAManageViewModel claViewModel = _claEntryConverter.EntryToModel(claEntry);
 
-        CLAManageViewModel claViewModel = _claEntryConverter.EntryToModel(claEntry, breakEntry);
+		return View(claViewModel);
+	}
 
-        return View(claViewModel);
-    }
+	// POST: CLA/Edit/5
+	[HttpPost]
+	[ValidateAntiForgeryToken]
+	[Route("Bewerken")]
+	public async Task<IActionResult> Edit(CLAManageViewModel claViewModel)
+	{
+		if (!claViewModel.Id.HasValue)
+		{
+			TempData["Message"] = "Id niet gevonden, aanpassen geannuleerd.";
+			return RedirectToAction(nameof(Index));
+		}
 
-    // POST: CLA/Edit/5
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    [Route("Bewerken")]
-    public async Task<IActionResult> Edit(CLAManageViewModel claViewModel)
-    {
-        if (!claViewModel.Id.HasValue)
-        {
-            TempData["Message"] = "Id niet gevonden, aanpassen geannuleerd.";
-            return RedirectToAction(nameof(Index));
-        }
+		var claEntry = await _context.CLAEntries.
+			FirstOrDefaultAsync(e => e.Id == claViewModel.Id);
 
-        var claEntry = await _context.CLAEntries.
-            FirstOrDefaultAsync(e => e.Id == claViewModel.Id);
-        var breakEntry = await _context.CLABreakEntries.
-            FirstOrDefaultAsync(e => e.CLAEntryId == claViewModel.Id);
+		if (claEntry == null)
+		{
+			TempData["Message"] = "CAO regel niet gevonden, aanpassen geannuleerd.";
+			return RedirectToAction(nameof(Index));
+		}
+		_claEntryConverter.EnsureAgeRange(claEntry, claViewModel);
 
-        if (claEntry == null)
-        {
-            TempData["Message"] = "CAO regel niet gevonden, aanpassen geannuleerd.";
-            return RedirectToAction(nameof(Index));
-        }
-        _claEntryConverter.EnsureAgeRange(claEntry, claViewModel);
+		foreach (ICLALogic rule in _logicRules)
+		{
+			rule.ValidateModel(claViewModel, ModelState);
+		}
 
-        foreach (ICLALogic rule in _logicRules)
-        {
-            rule.ValidateModel(claViewModel, ModelState);
-        }
+		if (!ModelState.IsValid) return View(claViewModel);
 
-        if (!ModelState.IsValid) return View(claViewModel);
+		_claEntryConverter.ModelToEntry(claViewModel, claEntry);
 
-        int maxUninterruptedShiftMulti = claViewModel.MaxUninterruptedShiftDurationHours ? 60 : 1;
-        int minBreakTimeMulti = claViewModel.MinBreakTimeHours ? 60 : 1;
+		_context.CLAEntries.Update(claEntry);
+		_context.SaveChanges();
 
-        _claEntryConverter.ModelToEntry(claViewModel, claEntry);
+		TempData["Message"] = "Succesvol deze regel geupdated";
+		return RedirectToAction(nameof(Index));
+	}
 
-        if (breakEntry != null && claViewModel.BreakWorkDuration.HasValue)
-        {
-            _context.CLABreakEntries.Remove(breakEntry); //apparently needed
-            var updatedBreakEntry = new CLABreakEntry
-            {
-                CLAEntryId = breakEntry.CLAEntryId,
-                WorkDuration = (int)(claViewModel.BreakWorkDuration.Value * maxUninterruptedShiftMulti),
-                MinBreakDuration = claViewModel.BreakMinBreakDuration.HasValue ?
-                (int)claViewModel.BreakMinBreakDuration * minBreakTimeMulti : null
-            };
+	// GET: CLA/Delete/5
+	[HttpGet("Verwijderen")]
+	public async Task<IActionResult> Delete(int? ageStart, int? ageEnd)
+	{
+		var claEntry = await _context.CLAEntries
+			.FirstOrDefaultAsync(e =>
+				(e.AgeStart == ageStart && e.AgeEnd == ageEnd) ||
+				(e.AgeStart == null && ageStart == null && e.AgeEnd == ageEnd) ||
+				(e.AgeStart == ageStart && e.AgeEnd == null && ageEnd == null) ||
+				(e.AgeStart == null && e.AgeEnd == null && ageStart == null && ageEnd == null));
+		if (claEntry == null)
+		{
+			TempData["Message"] = "CAO regel niet gevonden";
+			return RedirectToAction(nameof(Index));
+		}
 
-            _context.CLABreakEntries.Add(updatedBreakEntry);
-        }
+		return View(claEntry);
+	}
 
-        if (breakEntry != null && !claViewModel.BreakWorkDuration.HasValue)
-            _context.CLABreakEntries.Remove(breakEntry);
+	// POST: CLA/Delete/5
+	[HttpPost, ActionName("VerwijderdSucces")]
+	[Route("Verwijderen")]
+	[ValidateAntiForgeryToken]
+	public async Task<IActionResult> DeleteConfirmed(int id)
+	{
+		var cLAEntry = await _context.CLAEntries.FindAsync(id);
+		if (cLAEntry == null)
+		{
+			TempData["Message"] = "CAO regel niet gevonden. Niks verwijderd.";
+			return RedirectToAction(nameof(Index));
+		}
 
-        if (breakEntry == null && claViewModel.BreakWorkDuration.HasValue)
-        {
-            breakEntry = new CLABreakEntry
-            {
-                CLAEntryId = claEntry.Id,
-                WorkDuration = (int)(claViewModel.BreakWorkDuration.Value * maxUninterruptedShiftMulti),
-                MinBreakDuration = claViewModel.BreakMinBreakDuration.HasValue ?
-                    (int)(claViewModel.BreakMinBreakDuration * minBreakTimeMulti) : null
-            };
-            _context.CLABreakEntries.Add(breakEntry);
-        }
+		_context.CLAEntries.Remove(cLAEntry);
 
-        _context.CLAEntries.Update(claEntry);
-        _context.SaveChanges();
+		await _context.SaveChangesAsync();
 
-        TempData["Message"] = "Succesvol deze regel geupdated";
-        return RedirectToAction(nameof(Index));
-    }
+		string message = "";
 
-    // GET: CLA/Delete/5
-    [HttpGet("Verwijderen")]
-    public async Task<IActionResult> Delete(int? ageStart, int? ageEnd)
-    {
-        var claEntry = await _context.CLAEntries
-            .FirstOrDefaultAsync(e =>
-                (e.AgeStart == ageStart && e.AgeEnd == ageEnd) ||
-                (e.AgeStart == null && ageStart == null && e.AgeEnd == ageEnd) ||
-                (e.AgeStart == ageStart && e.AgeEnd == null && ageEnd == null) ||
-                (e.AgeStart == null && e.AgeEnd == null && ageStart == null && ageEnd == null));
-        if (claEntry == null)
-        {
-            TempData["Message"] = "CAO regel niet gevonden";
-            return RedirectToAction(nameof(Index));
-        }
+		if (cLAEntry.AgeStart.HasValue && cLAEntry.AgeEnd.HasValue)
+		{
+			message = $"Regels voor {cLAEntry.AgeStart} tot {cLAEntry.AgeEnd} verwijderd";
+		}
+		else if (!cLAEntry.AgeStart.HasValue && !cLAEntry.AgeEnd.HasValue)
+		{
+			message = $"Algemene regels verwijderd";
+		}
+		else if (!cLAEntry.AgeStart.HasValue && cLAEntry.AgeEnd.HasValue)
+		{
+			message = $"Regels tot {cLAEntry.AgeEnd} verwijderd";
+		}
+		else if (cLAEntry.AgeStart.HasValue && !cLAEntry.AgeEnd.HasValue)
+		{
+			message = $"Regels vanaf {cLAEntry.AgeStart} jaar verwijderd";
+		}
 
-        return View(claEntry);
-    }
+		TempData["Message"] = message;
+		return RedirectToAction(nameof(Index));
+	}
 
-    // POST: CLA/Delete/5
-    [HttpPost, ActionName("VerwijderdSucces")]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> DeleteConfirmed(int id)
-    {
-        var cLAEntry = await _context.CLAEntries.FindAsync(id);
-        if (cLAEntry == null)
-        {
-            TempData["Message"] = "CAO regel niet gevonden. Niks verwijderd.";
-            return RedirectToAction(nameof(Index));
-        }
+	[Route("ToeslagToevoegen")]
+	public IActionResult CreateSurchargeEntry()
+	{
+		return View(new CLASurchargeEntry());
+	}
 
-        var breakEntry = await _context.CLABreakEntries.
-            FirstOrDefaultAsync(e => e.CLAEntryId == id);
-        if (breakEntry != null) _context.CLABreakEntries.Remove(breakEntry);
-        _context.CLAEntries.Remove(cLAEntry);
+	[HttpPost]
+	[ValidateAntiForgeryToken]
+	[Route("ToeslagToevoegen")]
+	public async Task<IActionResult> CreateSurchargeEntry([Bind("Id,Surcharge,Weekday,StartTime,EndTime")] CLASurchargeEntry claSurchargeEntry)
+	{
+		if (ModelState.IsValid)
+		{
+			_context.Add(claSurchargeEntry);
+			await _context.SaveChangesAsync();
+			return RedirectToAction(nameof(Index));
+		}
+		return View(claSurchargeEntry);
+	}
 
-        await _context.SaveChangesAsync();
+	[HttpGet("ToeslagVerwijderen")]
+	public async Task<IActionResult> DeleteSurchargeEntry(int? id)
+	{
+		CLASurchargeEntry? claSurchargeEntry = await _context.CLASurchargeEntries
+			.FirstOrDefaultAsync(e => e.Id == id);
 
-        string message = "";
+		if (claSurchargeEntry == null)
+		{
+			TempData["Message"] = "CAO Toeslag Regel niet gevonden";
+			return RedirectToAction(nameof(Index));
+		}
 
-        if (cLAEntry.AgeStart.HasValue && cLAEntry.AgeEnd.HasValue)
-        {
-            message = $"Regels voor {cLAEntry.AgeStart} tot {cLAEntry.AgeEnd} verwijderd";
-        }
-        else if (!cLAEntry.AgeStart.HasValue && !cLAEntry.AgeEnd.HasValue)
-        {
-            message = $"Algemene regels verwijderd";
-        }
-        else if (!cLAEntry.AgeStart.HasValue && cLAEntry.AgeEnd.HasValue)
-        {
-            message = $"Regels tot {cLAEntry.AgeEnd} verwijderd";
-        }
-        else if (cLAEntry.AgeStart.HasValue && !cLAEntry.AgeEnd.HasValue)
-        {
-            message = $"Regels vanaf {cLAEntry.AgeStart} jaar verwijderd";
-        }
+		return View(claSurchargeEntry);
+	}
 
-        TempData["Message"] = message;
-        return RedirectToAction(nameof(Index));
-    }
+	[HttpPost, ActionName("ToeslagVerwijderdSucces")]
+	[Route("ToeslagVerwijderen")]
+	[ValidateAntiForgeryToken]
+	public async Task<IActionResult> DeleteSurchargeEntryConfirmed(int id)
+	{
+		var claSurchargeEntry = await _context.CLASurchargeEntries.FindAsync(id);
+		if (claSurchargeEntry == null)
+		{
+			TempData["Message"] = "CAO Toeslag Regel niet gevonden. Niks verwijderd.";
+			return RedirectToAction(nameof(Index));
+		}
+
+		_context.CLASurchargeEntries.Remove(claSurchargeEntry);
+
+		await _context.SaveChangesAsync();
+
+		string message = "Successvol verwijderd";
+
+		TempData["Message"] = message;
+		return RedirectToAction(nameof(Index));
+	}
+
+	[HttpGet(template: "ToeslagBewerken")]
+	public async Task<IActionResult> EditSurchargeEntry(int? id)
+	{
+		CLASurchargeEntry? claSurchargeEntry = await _context.CLASurchargeEntries
+			.FirstOrDefaultAsync(entry => entry.Id == id);
+		if (claSurchargeEntry == null)
+		{
+			TempData["Message"] = "CAO regel niet gevonden";
+			return RedirectToAction(nameof(Index));
+		}
+
+		return View(claSurchargeEntry);
+	}
+
+	[HttpPost]
+	[ValidateAntiForgeryToken]
+	[Route("ToeslagBewerken")]
+	public async Task<IActionResult> EditSurchargeEntry(CLASurchargeEntry claSurchargeEntry)
+	{
+		if (claSurchargeEntry.Id == 0)
+		{
+			TempData["Message"] = "Id niet gevonden, aanpassen geannuleerd.";
+			return RedirectToAction(nameof(Index));
+		}
+
+		CLASurchargeEntry? claSurchargeEntryDB = await _context.CLASurchargeEntries.
+			FirstOrDefaultAsync(e => e.Id == claSurchargeEntry.Id);
+
+		if (claSurchargeEntryDB == null)
+		{
+			TempData["Message"] = "CAO regel niet gevonden, aanpassen geannuleerd.";
+			return RedirectToAction(nameof(Index));
+		}
+
+		if (!ModelState.IsValid) return View(claSurchargeEntry);
+
+		claSurchargeEntryDB.Surcharge = claSurchargeEntry.Surcharge;
+		claSurchargeEntryDB.Weekday = claSurchargeEntry.Weekday;
+		claSurchargeEntryDB.StartTime = claSurchargeEntry.StartTime;
+		claSurchargeEntryDB.EndTime = claSurchargeEntry.EndTime;
+
+		_context.CLASurchargeEntries.Update(claSurchargeEntryDB);
+		_context.SaveChanges();
+
+		TempData["Message"] = "Succesvol deze toeslag regel geupdated";
+		return RedirectToAction(nameof(Index));
+	}
 }

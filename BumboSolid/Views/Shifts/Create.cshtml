@@ -2,6 +2,8 @@
 @model BumboSolid.Models.ShiftCreateViewModel
 
 @{
+    ViewData["Title"] = "Shift toevoegen";
+
     string[] daysOfTheWeek = { "Maandag", "Dinsdag", "Woensdag", "Donderdag", "Vrijdag", "Zaterdag", "Zondag" };
 
     DateTime startDate = GetFirstDateOfWeek(Model.Week.Year, Model.Week.WeekNumber);
@@ -80,12 +82,12 @@
             <div class="row pb-3">
                 <div class="form-group col-md-6">
                     <label class="control-label fw-bold">Starttijd</label>
-                    <input asp-for="Shift.StartTime" class="form-control  p-1 border-solid-black" type="time" value="null" />
+                    <input asp-for="Shift.StartTime" class="form-control p-1 border-solid-black" type="time" value="null" />
                     <span asp-validation-for="Shift.StartTime" class="text-danger"></span>
                 </div>
                 <div class="form-group col-md-6">
                     <label class="control-label fw-bold">Eindtijd</label>
-                    <input asp-for="Shift.EndTime" class="form-control  p-1 border-solid-black" type="time" value="null" />
+                    <input asp-for="Shift.EndTime" class="form-control p-1 border-solid-black" type="time" value="null" />
                     <span asp-validation-for="Shift.EndTime" class="text-danger"></span>
                 </div>
             </div>

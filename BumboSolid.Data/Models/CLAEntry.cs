@@ -14,8 +14,6 @@ public partial class CLAEntry
 
     public int? MaxWorkDurationPerWeek { get; set; }
 
-    public int? MaxWorkDurationPerHolidayWeek { get; set; }
-
     public TimeOnly? EarliestWorkTime { get; set; }
 
     public TimeOnly? LatestWorkTime { get; set; }
@@ -24,5 +22,5 @@ public partial class CLAEntry
 
     public int? MaxShiftDuration { get; set; }
 
-    public virtual List<CLABreakEntry> CLABreakEntries { get; set; } = new List<CLABreakEntry>();
+	public int? HolidaySurcharge { get; set; }
 }

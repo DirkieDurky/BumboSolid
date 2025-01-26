@@ -22,7 +22,7 @@ namespace UnitTests
             ModelStateDictionary modelState = new();
             CLANoConflictFields validator = new();
 
-            bool result = validator.NoConflicts(model, viewModel, modelState, null);
+            bool result = validator.NoConflicts(model, viewModel, modelState);
 
             Assert.False(result);
         }
@@ -39,7 +39,7 @@ namespace UnitTests
             ModelStateDictionary modelState = new();
             CLANoConflictFields validator = new();
 
-            bool result = validator.NoConflicts(model, viewModel, modelState, null);
+            bool result = validator.NoConflicts(model, viewModel, modelState);
 
             Assert.True(result);
         }
@@ -59,7 +59,7 @@ namespace UnitTests
             ModelStateDictionary modelState = new();
             CLANoConflictFields validator = new();
 
-            bool result = validator.NoConflicts(model, viewModel, modelState, null);
+            bool result = validator.NoConflicts(model, viewModel, modelState);
 
             Assert.False(result);
         }
@@ -76,7 +76,7 @@ namespace UnitTests
             ModelStateDictionary modelState = new();
             CLANoConflictFields validator = new();
 
-            bool result = validator.NoConflicts(model, viewModel, modelState, null);
+            bool result = validator.NoConflicts(model, viewModel, modelState);
 
             Assert.True(result);
         }
@@ -96,7 +96,7 @@ namespace UnitTests
             ModelStateDictionary modelState = new();
             CLANoConflictFields validator = new();
 
-            bool result = validator.NoConflicts(model, viewModel, modelState, null);
+            bool result = validator.NoConflicts(model, viewModel, modelState);
 
             Assert.False(result);
         }
@@ -113,44 +113,7 @@ namespace UnitTests
             ModelStateDictionary modelState = new();
             CLANoConflictFields validator = new();
 
-            bool result = validator.NoConflicts(model, viewModel, modelState, null);
-
-            Assert.True(result);
-        }
-
-        // Filling maxworkdurationperholidayweek for a new entry with an age range that already exists in the db should return false
-        [Fact]
-        public void Set_MaxWorkDurationPerHolidayWeekWithExistingEntry_False()
-        {
-            CLAEntry model = new()
-            {
-                MaxWorkDurationPerHolidayWeek = 20
-            };
-            CLAManageViewModel viewModel = new()
-            {
-                MaxWorkDurationPerHolidayWeek = 8
-            };
-            ModelStateDictionary modelState = new();
-            CLANoConflictFields validator = new();
-
-            bool result = validator.NoConflicts(model, viewModel, modelState, null);
-
-            Assert.False(result);
-        }
-
-        // Filling maxworkdurationperholidayweek for a new entry with an age range that does not already exists in the db should return true
-        [Fact]
-        public void Set_MaxWorkDurationPerHolidayWeekWithNoExistingEntry_True()
-        {
-            CLAEntry model = new();
-            CLAManageViewModel viewModel = new()
-            {
-                MaxWorkDurationPerHolidayWeek = 6
-            };
-            ModelStateDictionary modelState = new();
-            CLANoConflictFields validator = new();
-
-            bool result = validator.NoConflicts(model, viewModel, modelState, null);
+            bool result = validator.NoConflicts(model, viewModel, modelState);
 
             Assert.True(result);
         }
@@ -172,7 +135,7 @@ namespace UnitTests
             ModelStateDictionary modelState = new();
             CLANoConflictFields validator = new();
 
-            bool result = validator.NoConflicts(model, viewModel, modelState, null);
+            bool result = validator.NoConflicts(model, viewModel, modelState);
 
             Assert.False(result);
         }
@@ -190,7 +153,7 @@ namespace UnitTests
             ModelStateDictionary modelState = new();
             CLANoConflictFields validator = new();
 
-            bool result = validator.NoConflicts(model, viewModel, modelState, null);
+            bool result = validator.NoConflicts(model, viewModel, modelState);
 
             Assert.True(result);
         }
@@ -212,7 +175,7 @@ namespace UnitTests
             ModelStateDictionary modelState = new();
             CLANoConflictFields validator = new();
 
-            bool result = validator.NoConflicts(model, viewModel, modelState, null);
+            bool result = validator.NoConflicts(model, viewModel, modelState);
 
             Assert.False(result);
         }
@@ -230,7 +193,7 @@ namespace UnitTests
             ModelStateDictionary modelState = new();
             CLANoConflictFields validator = new();
 
-            bool result = validator.NoConflicts(model, viewModel, modelState, null);
+            bool result = validator.NoConflicts(model, viewModel, modelState);
 
             Assert.True(result);
         }
@@ -250,7 +213,7 @@ namespace UnitTests
             ModelStateDictionary modelState = new();
             CLANoConflictFields validator = new();
 
-            bool result = validator.NoConflicts(model, viewModel, modelState, null);
+            bool result = validator.NoConflicts(model, viewModel, modelState);
 
             Assert.False(result);
         }
@@ -267,7 +230,7 @@ namespace UnitTests
             ModelStateDictionary modelState = new();
             CLANoConflictFields validator = new();
 
-            bool result = validator.NoConflicts(model, viewModel, modelState, null);
+            bool result = validator.NoConflicts(model, viewModel, modelState);
 
             Assert.True(result);
         }
@@ -287,7 +250,7 @@ namespace UnitTests
             ModelStateDictionary modelState = new();
             CLANoConflictFields validator = new();
 
-            bool result = validator.NoConflicts(model, viewModel, modelState, null);
+            bool result = validator.NoConflicts(model, viewModel, modelState);
 
             Assert.False(result);
         }
@@ -304,7 +267,7 @@ namespace UnitTests
             ModelStateDictionary modelState = new();
             CLANoConflictFields validator = new();
 
-            bool result = validator.NoConflicts(model, viewModel, modelState, null);
+            bool result = validator.NoConflicts(model, viewModel, modelState);
 
             Assert.True(result);
         }

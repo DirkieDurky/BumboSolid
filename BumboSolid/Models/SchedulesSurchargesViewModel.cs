@@ -2,21 +2,15 @@
 
 namespace BumboSolid.Models;
 
-public class EmployeeScheduleViewModel
+public class SchedulesSurchargesViewModel
 {
     public List<Week> Weeks = [];
-
-    public required string EmployeeName { get; set; }
-
-    public int EmployeeId { get; set; }
-
     public int WeekId { get; set; }
-
     public int? PreviousWeekId { get; set; }
-
     public int? NextWeekId { get; set; }
-
-    public int CurrentWeekNumber { get; set; }
-
     public bool IsCurrentWeek { get; set; }
+    public bool HasSchedule { get; set; }
+    public List<Department>? Departments { get; set; }
+    public List<CLASurchargeEntry>? Surcharges { get; set; }
+    public List<ClockedHours>? ClockedHours { get; set; }
 }

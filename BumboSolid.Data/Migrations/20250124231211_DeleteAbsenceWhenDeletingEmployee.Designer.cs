@@ -9,18 +9,18 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace BumboSolid.Migrations
+namespace BumboSolid.Data.Migrations
 {
     [DbContext(typeof(BumboDbContext))]
-    [Migration("20250121123542_nonnullable-week")]
-    partial class nonnullableweek
+    [Migration("20250124231211_DeleteAbsenceWhenDeletingEmployee")]
+    partial class DeleteAbsenceWhenDeletingEmployee
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.11")
+                .HasAnnotation("ProductVersion", "8.0.12")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -1075,6 +1075,7 @@ namespace BumboSolid.Migrations
                     b.HasOne("BumboSolid.Data.Models.User", "Employee")
                         .WithMany("Absences")
                         .HasForeignKey("EmployeeId")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .HasConstraintName("FK_Absence_Employee");
 
                     b.HasOne("BumboSolid.Data.Models.Week", "Week")
