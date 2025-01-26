@@ -19,11 +19,12 @@ namespace BumboSolid.Models
         [DataType(DataType.Time, ErrorMessage = "Dit is geen valide tijd")]
         public TimeOnly EndTime { get; set; }
 
-        public string? Description { get; set; }
+		[MaxLength(255)]
+		public string? Description { get; set; }
 
 		public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
 		{
-            if (new OneBeforeOtherValidation().Validate(StartTime, EndTime) == true) yield return new ValidationResult("Begintijd moet hetzelfde of later zijn dan eindtijd.");
+            if (new OneBeforeOtherValidation().Validate(StartTime, EndTime) == true) yield return new ValidationResult("Begintijd moet hetzelfde of later zijn dan eindtijd");
 
             yield return ValidationResult.Success;
 		}

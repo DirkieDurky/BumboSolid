@@ -309,7 +309,7 @@ public class ScheduleEmployeeController : Controller
         if (shift == null) return NotFound();
 
 		// Check if the start or endtime is within the allowed range
-		if (absenceViewModel.StartTime < shift.StartTime || absenceViewModel.EndTime > shift.EndTime) ModelState.AddModelError("", "De starttijd of eindtijd is buiten de shiftduur.");
+		if (absenceViewModel.StartTime < shift.StartTime || absenceViewModel.EndTime > shift.EndTime) ModelState.AddModelError("", "De starttijd of eindtijd is buiten de shiftduur");
 		if (!ModelState.IsValid) return View(absenceViewModel);
 
         // Check if the whole shift has to go or just a bit
