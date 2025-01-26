@@ -1,4 +1,6 @@
-﻿namespace BumboSolid.Data.Models;
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace BumboSolid.Data.Models;
 
 public class Shift
 {
@@ -10,8 +12,10 @@ public class Shift
 
     public string Department { get; set; } = null!;
 
+    [Required(ErrorMessage = "Dit veld is vereist")]
     public TimeOnly StartTime { get; set; }
 
+    [Required(ErrorMessage = "Dit veld is vereist")]
     public TimeOnly EndTime { get; set; }
 
     public int? EmployeeId { get; set; }
@@ -26,7 +30,7 @@ public class Shift
 
     public virtual List<FillRequest> FillRequests { get; set; } = new List<FillRequest>();
 
-    public virtual Week? Week { get; set; }
+    public virtual Week? Week { get; set; } = null!;
 
     public string? EmployeeName => Employee?.Name ?? ExternalEmployeeName;
 }

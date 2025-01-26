@@ -6,5 +6,5 @@ namespace BumboSolid.HelperClasses;
 
 public interface ICLANoConflictFields
 {
-    bool NoConflicts(CLAEntry existingEntry, CLAManageViewModel model, ModelStateDictionary modelState, CLABreakEntry? breakEntry);
+    bool NoConflicts(CLAEntry existingEntry, CLAManageViewModel model, ModelStateDictionary modelState);
 }

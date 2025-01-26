@@ -5,11 +5,10 @@ public class LoginViewModel
 {
     [Required(ErrorMessage = "Vul een Email in.")]
     [Display(Name = "Email")]
-    [EmailAddress]
     public string Email { get; set; }
 
     [Required(ErrorMessage = "Vul een wachtwoord in.")]
-    [DataType(DataType.Password)]
-    [Display(Name = "Password")]
+    [DataType(DataType.Password, ErrorMessage = "Invalide waarde voor een wachtwoord")]
+    [Display(Name = "Wachtwoord")]
     public string Password { get; set; }
 }

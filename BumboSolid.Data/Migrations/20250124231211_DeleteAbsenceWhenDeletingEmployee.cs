@@ -5,10 +5,10 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #pragma warning disable CA1814 // Prefer jagged arrays over multidimensional
 
-namespace BumboSolid.Migrations
+namespace BumboSolid.Data.Migrations
 {
     /// <inheritdoc />
-    public partial class absence : Migration
+    public partial class DeleteAbsenceWhenDeletingEmployee : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -373,7 +373,8 @@ namespace BumboSolid.Migrations
                         name: "FK_Absence_Employee",
                         column: x => x.EmployeeID,
                         principalTable: "User",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_Absence_Week",
                         column: x => x.WeekId,

@@ -1,4 +1,8 @@
-﻿@model BumboSolid.Models.HolidayManageViewModel
+﻿@{
+    ViewData["Title"] = "Feestdag bewerken";
+}
+
+@model BumboSolid.Models.HolidayManageViewModel
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
 <script src="https://kit.fontawesome.com/981e782106.js" crossorigin="anonymous"></script>
@@ -95,7 +99,7 @@
                         <input type="hidden" asp-for="Holiday.HolidayDays[i].Date" />
                         <input type="hidden" asp-for="Holiday.HolidayDays[i].HolidayName" />
                         <input class="p-2 form-control holiday-date" value="@Model.Holiday.HolidayDays[i].Date.Day-@Model.Holiday.HolidayDays[i].Date.Month" readonly>
-                        <input type="text" class="p-2 form-control holiday-date" asp-for="Holiday.HolidayDays[i].Impact" />
+                        <input required type="text" class="p-2 form-control holiday-date" asp-for="Holiday.HolidayDays[i].Impact" />
                         <span asp-validation-for="Holiday.HolidayDays[i].Impact" class="text-danger"></span>
                     </div>
                 }

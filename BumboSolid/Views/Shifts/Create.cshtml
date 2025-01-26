@@ -3,6 +3,8 @@
 @model BumboSolid.Models.ShiftCreateViewModel
 
 @{
+    ViewData["Title"] = "Shift toevoegen";
+
     string[] daysOfTheWeek = { "Maandag", "Dinsdag", "Woensdag", "Donderdag", "Vrijdag", "Zaterdag", "Zondag" };
 
     DateTime startDate = GetFirstDateOfWeek(Model.Week.Year, Model.Week.WeekNumber);

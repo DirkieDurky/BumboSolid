@@ -730,3 +730,7 @@ th, td {
 .bumbo-yellow {
     background-color: #fbc500;
 }
+
+.border-solid-black {
+    border: 1px solid black;
+}

@@ -5,6 +5,7 @@ using BumboSolid.Data.Models;
 using BumboSolid.HelperClasses;
 using System.Globalization;
 using Microsoft.AspNetCore.Localization;
+using BumboSolid.Translations;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -35,7 +36,13 @@ builder.Services.AddIdentity<User, IdentityRole<int>>(options =>
     options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
     options.Lockout.MaxFailedAccessAttempts = 5;
 }).AddEntityFrameworkStores<BumboDbContext>()
-  .AddDefaultTokenProviders();
+  .AddDefaultTokenProviders()
+  .AddErrorDescriber<DutchIdentityErrorDescriber>();
+
+var cultureInfo = new CultureInfo("nl-NL");
+
+CultureInfo.DefaultThreadCurrentCulture = cultureInfo;
+CultureInfo.DefaultThreadCurrentUICulture = cultureInfo;
 
 // Configure authentication cookie settings
 builder.Services.ConfigureApplicationCookie(options =>

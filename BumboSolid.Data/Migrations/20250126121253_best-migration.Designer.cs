@@ -9,18 +9,18 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace BumboSolid.Migrations
+namespace BumboSolid.Data.Migrations
 {
     [DbContext(typeof(BumboDbContext))]
-    [Migration("20250116154645_absence")]
-    partial class absence
+    [Migration("20250126121253_best-migration")]
+    partial class bestmigration
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.11")
+                .HasAnnotation("ProductVersion", "8.0.12")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -130,6 +130,9 @@ namespace BumboSolid.Migrations
                     b.Property<TimeOnly?>("EarliestWorkTime")
                         .HasColumnType("time");
 
+                    b.Property<int?>("HolidaySurcharge")
+                        .HasColumnType("int");
+
                     b.Property<TimeOnly?>("LatestWorkTime")
                         .HasColumnType("time");
 
@@ -154,6 +157,31 @@ namespace BumboSolid.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("CLAEntry", (string)null);
+                });
+
+            modelBuilder.Entity("BumboSolid.Data.Models.CLASurchargeEntry", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<TimeOnly?>("EndTime")
+                        .HasColumnType("time");
+
+                    b.Property<TimeOnly?>("StartTime")
+                        .HasColumnType("time");
+
+                    b.Property<int>("Surcharge")
+                        .HasColumnType("int");
+
+                    b.Property<byte?>("Weekday")
+                        .HasColumnType("tinyint");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("CLASurchargeEntry", (string)null);
                 });
 
             modelBuilder.Entity("BumboSolid.Data.Models.ClockedHours", b =>
