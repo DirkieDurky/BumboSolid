@@ -1,8 +1,6 @@
 ﻿@model BumboSolid.Models.SchedulesViewModel
 
 @{
-    ViewData["Title"] = "Roosters inzien";
-
     string[] daysOfTheWeek = { "Maandag", "Dinsdag", "Woensdag", "Donderdag", "Vrijdag", "Zaterdag", "Zondag" };
 
     var schedule = Model.Weeks.First(w => w.Id == Model.WeekId);
@@ -51,13 +49,13 @@
     </div>
 </header>
 
-<div class="d-flex justify-content-center w-100">
-    <button id="togglePrognosisButton" class="btn new-btn" type="button">
-        Vergelijk Prognose
-    </button>
-    <a class="btn new-btn" asp-action="Availabilities" asp-route-weekId="@Model.WeekId">
-        Beschikbaarheid
+<div class="d-flex justify-content-around w-100">
+    <a class="btn bumbo-btn" asp-action="Availabilities" asp-route-weekId="@Model.WeekId">
+        <i class="fa-solid fa-user-clock"></i> Beschikbaarheid
     </a>
+    <button id="togglePrognosisButton" class="btn bumbo-btn" type="button">
+        <i class="fa-solid fa-code-compare"></i> Vergelijk Met Prognose
+    </button>
 </div>
 
 @if (!Model.HasSchedule)
@@ -90,10 +88,10 @@ else
                 <tr>
                     @foreach (var department in Model.Departments.Select(d => d.Name))
                     {
-                        <th>Personeel</th>
+                        <th>FTE</th>
                         <th>Uren</th>
                     }
-                    <th>Personeel</th>
+                    <th>FTE</th>
                     <th>Uren</th>
                 </tr>
             </thead>
@@ -105,134 +103,75 @@ else
                         @{
                             double totalPersonnelForDay = 0;
                             double totalHoursForDay = 0;
+                            double prognosisTotalHours = 0;
                         }
 
                         @foreach (var department in Model.Departments)
                         {
-                            var departmentShifts = shifts.Where(s => s.Department == department.Name && s.Weekday == Array.IndexOf(daysOfTheWeek, day)).ToList();
-                            var personnelForDay = departmentShifts.Select(s => s.Employee).Distinct().Count();
+                            var departmentShifts = shifts
+                            .Where(s => s.Department == department.Name && s.Weekday == Array.IndexOf(daysOfTheWeek, day))
+                            .ToList();
+
                             var hoursForDay = departmentShifts.Sum(s => (s.EndTime - s.StartTime).TotalHours);
+                            var personnelForDay = hoursForDay / 8;
 
                             totalPersonnelForDay += personnelForDay;
                             totalHoursForDay += hoursForDay;
 
-                            <td class="text-center">@personnelForDay</td>
-                            <td class="text-center">@hoursForDay.ToString("F2")</td>
+                            var prognosisDay = Model.Weeks
+                            .First(w => w.Id == Model.WeekId)
+                            .PrognosisDays
+                            .FirstOrDefault(pd => pd.Weekday == Array.IndexOf(daysOfTheWeek, day));
+
+                            var prognosisWorkHours = prognosisDay?.PrognosisDepartments
+                            .FirstOrDefault(pd => pd.Department == department.Name)?.WorkHours ?? 0;
+
+                            var prognosisPersonnelHours = prognosisWorkHours / 8.0;
+                            prognosisTotalHours += prognosisWorkHours;
+
+                            var workHoursClass = hoursForDay >= prognosisWorkHours ? "text-success" : "text-danger";
+                            var personnelHoursClass = personnelForDay >= prognosisPersonnelHours ? "text-success" : "text-danger";
+
+                            <td class="text-center">
+                                <div>@personnelForDay.ToString("F2")</div>
+                                <div class="prognosis-value @personnelHoursClass" style="display: none;">
+                                    @prognosisPersonnelHours.ToString("F2")
+                                </div>
+                            </td>
+                            <td class="text-center">
+                                <div>@hoursForDay.ToString("F2")</div>
+                                <div class="prognosis-value @workHoursClass" style="display: none;">
+                                    @prognosisWorkHours.ToString("F2")
+                                </div>
+                            </td>
                         }
 
-                        <td class="text-center">@totalPersonnelForDay</td>
-                        <td class="text-center">@totalHoursForDay.ToString("F2")</td>
+                        <td class="text-center font-weight-bold">
+                            <div>@totalPersonnelForDay.ToString("F2")</div>
+                            <div class="prognosis-value" style="display: none;">
+                                @Math.Round(prognosisTotalHours / 8, 2).ToString("F2")
+                            </div>
+                        </td>
+                        <td class="text-center font-weight-bold">
+                            <div>@totalHoursForDay.ToString("F2")</div>
+                            <div class="prognosis-value" style="display: none;">
+                                @prognosisTotalHours.ToString("F2")
+                            </div>
+                        </td>
                     </tr>
+
                 }
             </tbody>
         </table>
     </div>
 }
-    <body class="schedule">
-        <div class="container mt-4">
-            <table class="table table-striped table-bordered table-hover">
-                <thead class="thead-dark">
-                    <tr>
-                        <th rowspan="2">Dag</th>
-                        @foreach (var department in Model.Departments.Select(d => d.Name))
-                        {
-                            <th colspan="2" class="text-center">@department</th>
-                        }
-                        <th colspan="2" class="text-center">Totaal</th>
-                    </tr>
-                    <tr>
-                        @foreach (var department in Model.Departments.Select(d => d.Name))
-                        {
-                            <th class="text-center">FTE</th>
-                            <th class="text-center">Uren</th>
-                        }
-                        <th class="text-center">FTE</th>
-                        <th class="text-center">Uren</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var day in daysOfTheWeek)
-                    {
-                        <tr>
-                            <td class="font-weight-bold">@day</td>
-                            @{
-                                double totalPersonnelForDay = 0;
-                                double totalHoursForDay = 0;
-                                double prognosisTotalHours = 0;
-                            }
-
-                            @foreach (var department in Model.Departments)
-                            {
-                                var departmentShifts = shifts
-                                .Where(s => s.Department == department.Name && s.Weekday == Array.IndexOf(daysOfTheWeek, day))
-                                .ToList();
-                                var hoursForDay = departmentShifts
-                                .Sum(s => (s.EndTime - s.StartTime).TotalHours);
-								var personnelForDay = hoursForDay / 8;
-
-                                totalPersonnelForDay += personnelForDay;
-                                totalHoursForDay += hoursForDay;
-
-                                var prognosisDay = Model.Weeks
-                                .First(w => w.Id == Model.WeekId)
-                                .PrognosisDays
-                                .FirstOrDefault(pd => pd.Weekday == Array.IndexOf(daysOfTheWeek, day));
-
-                                var prognosisWorkHours = prognosisDay?.PrognosisDepartments
-                                .FirstOrDefault(pd => pd.Department == department.Name)?.WorkHours ?? 0;
-
-                                prognosisTotalHours += prognosisWorkHours;
-
-                                <td class="text-center">@personnelForDay.ToString("F2")</td>
-                                <td class="text-center">@hoursForDay.ToString("F2")</td>
-                            }
-
-                            <td class="text-center font-weight-bold">@totalPersonnelForDay.ToString("F2")</td>
-                            <td class="text-center font-weight-bold">@totalHoursForDay.ToString("F2")</td>
-                        </tr>
-                        <tr class="prognosis-row" style="display: none;">
-                            <td class="font-weight-bold">Prognose</td>
-                            @foreach (var department in Model.Departments)
-                            {
-                                var prognosisDay = Model.Weeks
-                                .First(w => w.Id == Model.WeekId)
-                                .PrognosisDays
-                                .FirstOrDefault(pd => pd.Weekday == Array.IndexOf(daysOfTheWeek, day));
-
-                                var prognosisWorkHours = prognosisDay?.PrognosisDepartments
-                                .FirstOrDefault(pd => pd.Department == department.Name)?.WorkHours ?? 0;
-
-                                var prognosisPersonalHours = prognosisWorkHours / 8.0;
-
-                                var departmentShiftsForDay = shifts
-                                .Where(s => s.Department == department.Name && s.Weekday == Array.IndexOf(daysOfTheWeek, day))
-                                .ToList();
-
-                                var actualHours = departmentShiftsForDay
-                                .Sum(s => (s.EndTime - s.StartTime).TotalHours);
-
-                                var workHoursClass = actualHours >= prognosisWorkHours ? "text-success" : "text-danger";
-                                var personalHoursClass = (actualHours / 8) >= prognosisPersonalHours ? "text-success" : "text-danger";
-
-                                <td class="text-center @personalHoursClass">@prognosisPersonalHours.ToString("F2")</td>
-                                <td class="text-center @workHoursClass">@prognosisWorkHours</td>
-                            }
-                            <td class="text-center font-weight-bold">@Math.Round(prognosisTotalHours / 8, 2).ToString("F2")</td>
-                            <td class="text-center font-weight-bold">@prognosisTotalHours.ToString("F2")</td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
-        </div>
-    </body>
-}
 
 @section Scripts {
     <script>
-        document.getElementById("togglePrognosisButton").addEventListener("click", function() {
-            var prognosisRows = document.querySelectorAll(".prognosis-row");
-            prognosisRows.forEach(function(row) {
-                row.style.display = (row.style.display === "none" || row.style.display === "") ? "table-row" : "none";
+        document.getElementById('togglePrognosisButton').addEventListener('click', function () {
+            const prognosisValues = document.querySelectorAll('.prognosis-value');
+            prognosisValues.forEach(value => {
+                value.style.display = value.style.display === 'none' ? 'block' : 'none';
             });
         });
     </script>
