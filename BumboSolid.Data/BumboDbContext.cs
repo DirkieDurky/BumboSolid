@@ -20,8 +20,6 @@ public partial class BumboDbContext : IdentityDbContext<User, IdentityRole<int>,
 
     public virtual DbSet<Absence> Absences { get; set; }
 
-    public virtual DbSet<CLABreakEntry> CLABreakEntries { get; set; }
-
     public virtual DbSet<CLASurchargeEntry> CLASurchargeEntries { get; set; }
 
     public virtual DbSet<CLAEntry> CLAEntries { get; set; }
@@ -99,21 +97,8 @@ public partial class BumboDbContext : IdentityDbContext<User, IdentityRole<int>,
 
             entity.HasOne(d => d.Employee).WithMany(p => p.Absences)
                 .HasForeignKey(d => d.EmployeeId)
-                .HasConstraintName("FK_Absence_Employee");
-        });
-
-        modelBuilder.Entity<CLABreakEntry>(entity =>
-        {
-            entity.HasKey(e => new { e.CLAEntryId, e.WorkDuration });
-
-            entity.ToTable("CLABreakEntry");
-
-            entity.Property(e => e.CLAEntryId).HasColumnName("CLAEntryId");
-
-            entity.HasOne(d => d.CLAEntry).WithMany(p => p.CLABreakEntries)
-                .HasForeignKey(d => d.CLAEntryId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_CLABreakEntry_CLAEntry");
+                .HasConstraintName("FK_Absence_Employee")
+                .OnDelete(DeleteBehavior.Cascade);
         });
 
 		modelBuilder.Entity<CLASurchargeEntry>(entity =>

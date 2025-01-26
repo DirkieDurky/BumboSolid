@@ -4,6 +4,7 @@ using BumboSolid.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BumboSolid.Data.Migrations
 {
     [DbContext(typeof(BumboDbContext))]
-    partial class BumboDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250124231211_DeleteAbsenceWhenDeletingEmployee")]
+    partial class DeleteAbsenceWhenDeletingEmployee
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -92,6 +95,23 @@ namespace BumboSolid.Data.Migrations
                     b.ToTable("AvailabilityRule", (string)null);
                 });
 
+            modelBuilder.Entity("BumboSolid.Data.Models.CLABreakEntry", b =>
+                {
+                    b.Property<int>("CLAEntryId")
+                        .HasColumnType("int")
+                        .HasColumnName("CLAEntryId");
+
+                    b.Property<int>("WorkDuration")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("MinBreakDuration")
+                        .HasColumnType("int");
+
+                    b.HasKey("CLAEntryId", "WorkDuration");
+
+                    b.ToTable("CLABreakEntry", (string)null);
+                });
+
             modelBuilder.Entity("BumboSolid.Data.Models.CLAEntry", b =>
                 {
                     b.Property<int>("Id")
@@ -110,8 +130,6 @@ namespace BumboSolid.Data.Migrations
                     b.Property<TimeOnly?>("EarliestWorkTime")
                         .HasColumnType("time");
 
-                    b.Property<int?>("HolidaySurcharge")
-                        .HasColumnType("int");
                     b.Property<TimeOnly?>("LatestWorkTime")
                         .HasColumnType("time");
 
@@ -127,37 +145,15 @@ namespace BumboSolid.Data.Migrations
                     b.Property<int?>("MaxWorkDurationPerDay")
                         .HasColumnType("int");
 
+                    b.Property<int?>("MaxWorkDurationPerHolidayWeek")
+                        .HasColumnType("int");
+
                     b.Property<int?>("MaxWorkDurationPerWeek")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
 
                     b.ToTable("CLAEntry", (string)null);
-                });
-
-            modelBuilder.Entity("BumboSolid.Data.Models.CLASurchargeEntry", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<TimeOnly?>("EndTime")
-                        .HasColumnType("time");
-
-                    b.Property<TimeOnly?>("StartTime")
-                        .HasColumnType("time");
-
-                    b.Property<int>("Surcharge")
-                        .HasColumnType("int");
-
-                    b.Property<byte?>("Weekday")
-                        .HasColumnType("tinyint");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("CLASurchargeEntry", (string)null);
                 });
 
             modelBuilder.Entity("BumboSolid.Data.Models.ClockedHours", b =>
@@ -1104,6 +1100,17 @@ namespace BumboSolid.Data.Migrations
                     b.Navigation("EmployeeNavigation");
                 });
 
+            modelBuilder.Entity("BumboSolid.Data.Models.CLABreakEntry", b =>
+                {
+                    b.HasOne("BumboSolid.Data.Models.CLAEntry", "CLAEntry")
+                        .WithMany("CLABreakEntries")
+                        .HasForeignKey("CLAEntryId")
+                        .IsRequired()
+                        .HasConstraintName("FK_CLABreakEntry_CLAEntry");
+
+                    b.Navigation("CLAEntry");
+                });
+
             modelBuilder.Entity("BumboSolid.Data.Models.ClockedHours", b =>
                 {
                     b.HasOne("BumboSolid.Data.Models.Department", "DepartmentNavigation")
@@ -1320,6 +1327,11 @@ namespace BumboSolid.Data.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("BumboSolid.Data.Models.CLAEntry", b =>
+                {
+                    b.Navigation("CLABreakEntries");
                 });
 
             modelBuilder.Entity("BumboSolid.Data.Models.Department", b =>

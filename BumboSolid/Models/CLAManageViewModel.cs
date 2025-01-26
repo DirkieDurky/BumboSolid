@@ -20,9 +20,6 @@ public class CLAManageViewModel
     [RegularExpression(@"^\d+([\,](?:\d|(25)|(75)))?$", ErrorMessage = "Invalide waarde. Graag maximaal 1 kommagetal, of kwarten.")]
     public decimal? MaxWorkDurationPerWeek { get; set; }
 
-    [RegularExpression(@"^\d+([\,](?:\d|(25)|(75)))?$", ErrorMessage = "Invalide waarde. Graag maximaal 1 kommagetal, of kwarten.")]
-    public decimal? MaxWorkDurationPerHolidayWeek { get; set; }
-
     public TimeOnly? EarliestWorkTime { get; set; }
 
     public TimeOnly? LatestWorkTime { get; set; }
@@ -33,23 +30,10 @@ public class CLAManageViewModel
     [RegularExpression(@"^\d+([\,](?:\d|(25)|(75)))?$", ErrorMessage = "Invalide waarde. Graag maximaal 1 kommagetal, of kwarten.")]
     public decimal? MaxAvgWeeklyWorkDurationOverFourWeeks { get; set; }
 
-    [RegularExpression(@"^\d+([\,](?:\d|(25)|(75)))?$", ErrorMessage = "Invalide waarde. Graag maximaal 1 kommagetal, of kwarten.")]
-    public decimal? BreakWorkDuration { get; set; }
-
-    [RegularExpression(@"^\d+([\,](?:\d|(25)|(75)))?$", ErrorMessage = "Invalide waarde. Graag maximaal 1 kommagetal, of kwarten.")]
-    public decimal? BreakMinBreakDuration { get; set; }
-
     public bool MaxDayDurationHours { get; set; } = true;
 
     public bool MaxWeekDurationHours { get; set; } = true;
 
-    public bool MaxHolidayDurationHours { get; set; } = true;
-
     public bool MaxAvgDurationHours { get; set; } = true;
 
     public bool MaxTotalShiftDurationHours { get; set; } = true;
-
-    public bool MaxUninterruptedShiftDurationHours { get; set; } = true;
-
-    public bool MinBreakTimeHours { get; set; } = false;
-}

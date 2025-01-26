@@ -31,7 +31,7 @@ public class AvailabilityController : Controller
         DateOnly startDate = weekStart;
 
         var availabilityRules = _context.AvailabilityRules
-                             .Where(rule => rule.Employee == userId)
+                             .Where(r => r.Employee == userId).OrderByDescending(r => r.Date).ThenBy(r => r.StartTime)
                              .ToList();
 
         return View(availabilityRules);

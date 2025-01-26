@@ -13,9 +13,7 @@ public class CLAViewModelNotEmptyLogic : ICLALogic
         var valueExemptFields = new List<string>
         {
             nameof(model.AgeStart), nameof(model.AgeEnd), nameof(model.MaxAvgDurationHours),
-            nameof(model.MaxDayDurationHours), nameof(model.MaxHolidayDurationHours),
-            nameof(model.MaxWeekDurationHours), nameof(model.MaxTotalShiftDurationHours),
-            nameof(model.MaxUninterruptedShiftDurationHours), nameof(model.MinBreakTimeHours), nameof(model.Id)
+            nameof(model.MaxDayDurationHours), nameof(model.MaxWeekDurationHours), nameof(model.MaxTotalShiftDurationHours),
         };
 
         bool hasValue = model.GetType()

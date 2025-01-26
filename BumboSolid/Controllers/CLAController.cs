@@ -38,9 +38,7 @@ public class CLAController : Controller
 			new CLATimeInDayLogic(),
 			new CLAValidTimePerWeekLogic(),
 			new CLAValidTimePerFourWeekAverageLogic(),
-			new CLAValidTimePerHolidayWeekLogic(),
 			new CLAViewModelNotEmptyLogic(),
-			new CLANoBreakWithoutWorkLimitLogic(),
 			new CLANoMinuteDecimalsLogic(),
 		];
 		return validateRules;
@@ -56,7 +54,6 @@ public class CLAController : Controller
 	public async Task<IActionResult> Index()
 	{
 		var entries = await _context.CLAEntries
-			.Include(e => e.CLABreakEntries)
 			.OrderBy(e => e.AgeStart)
 			.ToListAsync();
 
@@ -87,8 +84,6 @@ public class CLAController : Controller
 							rules.Add($"Mag maximaal {e.MaxWorkDaysPerWeek} dagen in een week werken.");
 						if (e.MaxWorkDurationPerWeek.HasValue)
 							rules.Add($"Mag maximaal {e.MaxWorkDurationPerWeek / 60.0} uur in een week werken.");
-						if (e.MaxWorkDurationPerHolidayWeek.HasValue)
-							rules.Add($"Mag maximaal {e.MaxWorkDurationPerHolidayWeek / 60.0} uur werken als het een vakantieweek is.");
 						if (e.MaxAvgWeeklyWorkDurationOverFourWeeks.HasValue)
 							rules.Add($"Gemiddelde uren per week verspreid over vier weken mag maximaal " +
 								$"{e.MaxAvgWeeklyWorkDurationOverFourWeeks / 60} uur zijn.");
@@ -97,19 +92,6 @@ public class CLAController : Controller
 						if (e.LatestWorkTime.HasValue)
 							rules.Add($"Mag maximaal tot {e.LatestWorkTime} werken.");
 
-						if (e.CLABreakEntries.IsNullOrEmpty())
-						{
-							return rules;
-						}
-						if (e.CLABreakEntries[0].MinBreakDuration.HasValue)
-						{
-							rules.Add($"Wanneer iemand langer dan {e.CLABreakEntries[0].WorkDuration / 60.0} uur werkt, " +
-								$"is er recht op een pauze van {e.CLABreakEntries[0].MinBreakDuration} minuten.");
-						}
-						else
-						{
-							rules.Add($"Moet pauze krijgen na {e.CLABreakEntries[0].WorkDuration / 60.0} uur werken.");
-						}
 						return rules;
 					}).ToList()
 				};
@@ -168,33 +150,9 @@ public class CLAController : Controller
 
 		if (existingEntry != null)
 		{
-			var breakEntry = await _context.CLABreakEntries
-				.FirstOrDefaultAsync(e => e.CLAEntryId == existingEntry.Id);
-
-			if (!_noOverwriteLogic.NoConflicts(existingEntry, claViewModel, ModelState, breakEntry)) return View(claViewModel);
+			if (!_noOverwriteLogic.NoConflicts(existingEntry, claViewModel, ModelState)) return View(claViewModel);
 
 			existingEntry = _claEntryConverter.ModelToEntry(claViewModel, existingEntry); // Can overwrite because there are no conflicts.
-
-			if (breakEntry == null && claViewModel.BreakWorkDuration.HasValue)
-			{
-				breakEntry = new CLABreakEntry();
-				breakEntry = _claEntryConverter.ModelToBreakEntry(claViewModel, existingEntry.Id, breakEntry);
-				_context.CLAEntries.Update(existingEntry);
-				_context.CLABreakEntries.Add(breakEntry);
-				_context.SaveChanges();
-
-				TempData["Message"] = "CAO regels zijn geupdated!";
-				return RedirectToAction(nameof(Index));
-			}
-
-			if (breakEntry != null && !breakEntry.MinBreakDuration.HasValue && claViewModel.BreakMinBreakDuration.HasValue)
-			{
-				int minBreakTimeMulti = claViewModel.MaxUninterruptedShiftDurationHours ? 60 : 1;
-				breakEntry.MinBreakDuration = (int?)(claViewModel.BreakMinBreakDuration * minBreakTimeMulti);
-
-				_context.CLABreakEntries.Update(breakEntry);
-				_context.SaveChanges();
-			}
 
 			_context.CLAEntries.Update(existingEntry);
 			_context.SaveChanges();
@@ -207,14 +165,6 @@ public class CLAController : Controller
 		claEntry = _claEntryConverter.ModelToEntry(claViewModel, claEntry);
 		_context.Add(claEntry);
 		await _context.SaveChangesAsync();
-
-		if (claViewModel.BreakWorkDuration.HasValue)
-		{
-			CLABreakEntry breakEntry = new CLABreakEntry();
-			_claEntryConverter.ModelToBreakEntry(claViewModel, claEntry.Id, breakEntry);
-			_context.Add(breakEntry);
-			await _context.SaveChangesAsync();
-		}
 
 		TempData["Message"] = "Nieuwe CAO regels succesvol toegevoegd!";
 
@@ -237,10 +187,7 @@ public class CLAController : Controller
 			return RedirectToAction(nameof(Index));
 		}
 
-		var breakEntry = await _context.CLABreakEntries
-			.FirstOrDefaultAsync(e => e.CLAEntryId == claEntry.Id);
-
-		CLAManageViewModel claViewModel = _claEntryConverter.EntryToModel(claEntry, breakEntry);
+		CLAManageViewModel claViewModel = _claEntryConverter.EntryToModel(claEntry);
 
 		return View(claViewModel);
 	}
@@ -259,8 +206,6 @@ public class CLAController : Controller
 
 		var claEntry = await _context.CLAEntries.
 			FirstOrDefaultAsync(e => e.Id == claViewModel.Id);
-		var breakEntry = await _context.CLABreakEntries.
-			FirstOrDefaultAsync(e => e.CLAEntryId == claViewModel.Id);
 
 		if (claEntry == null)
 		{
@@ -276,39 +221,7 @@ public class CLAController : Controller
 
 		if (!ModelState.IsValid) return View(claViewModel);
 
-		int maxUninterruptedShiftMulti = claViewModel.MaxUninterruptedShiftDurationHours ? 60 : 1;
-		int minBreakTimeMulti = claViewModel.MinBreakTimeHours ? 60 : 1;
-
 		_claEntryConverter.ModelToEntry(claViewModel, claEntry);
-
-		if (breakEntry != null && claViewModel.BreakWorkDuration.HasValue)
-		{
-			_context.CLABreakEntries.Remove(breakEntry); //apparently needed
-			var updatedBreakEntry = new CLABreakEntry
-			{
-				CLAEntryId = breakEntry.CLAEntryId,
-				WorkDuration = (int)(claViewModel.BreakWorkDuration.Value * maxUninterruptedShiftMulti),
-				MinBreakDuration = claViewModel.BreakMinBreakDuration.HasValue ?
-				(int)claViewModel.BreakMinBreakDuration * minBreakTimeMulti : null
-			};
-
-			_context.CLABreakEntries.Add(updatedBreakEntry);
-		}
-
-		if (breakEntry != null && !claViewModel.BreakWorkDuration.HasValue)
-			_context.CLABreakEntries.Remove(breakEntry);
-
-		if (breakEntry == null && claViewModel.BreakWorkDuration.HasValue)
-		{
-			breakEntry = new CLABreakEntry
-			{
-				CLAEntryId = claEntry.Id,
-				WorkDuration = (int)(claViewModel.BreakWorkDuration.Value * maxUninterruptedShiftMulti),
-				MinBreakDuration = claViewModel.BreakMinBreakDuration.HasValue ?
-					(int)(claViewModel.BreakMinBreakDuration * minBreakTimeMulti) : null
-			};
-			_context.CLABreakEntries.Add(breakEntry);
-		}
 
 		_context.CLAEntries.Update(claEntry);
 		_context.SaveChanges();
@@ -349,9 +262,6 @@ public class CLAController : Controller
 			return RedirectToAction(nameof(Index));
 		}
 
-		var breakEntry = await _context.CLABreakEntries.
-			FirstOrDefaultAsync(e => e.CLAEntryId == id);
-		if (breakEntry != null) _context.CLABreakEntries.Remove(breakEntry);
 		_context.CLAEntries.Remove(cLAEntry);
 
 		await _context.SaveChangesAsync();

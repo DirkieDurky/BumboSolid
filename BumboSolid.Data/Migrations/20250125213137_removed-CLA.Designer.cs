@@ -4,6 +4,7 @@ using BumboSolid.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BumboSolid.Data.Migrations
 {
     [DbContext(typeof(BumboDbContext))]
-    partial class BumboDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250125213137_removed-CLA")]
+    partial class removedCLA
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -112,6 +115,7 @@ namespace BumboSolid.Data.Migrations
 
                     b.Property<int?>("HolidaySurcharge")
                         .HasColumnType("int");
+
                     b.Property<TimeOnly?>("LatestWorkTime")
                         .HasColumnType("time");
 
@@ -1079,7 +1083,6 @@ namespace BumboSolid.Data.Migrations
                     b.HasOne("BumboSolid.Data.Models.User", "Employee")
                         .WithMany("Absences")
                         .HasForeignKey("EmployeeId")
-                        .OnDelete(DeleteBehavior.Cascade)
                         .HasConstraintName("FK_Absence_Employee");
 
                     b.HasOne("BumboSolid.Data.Models.Week", "Week")
