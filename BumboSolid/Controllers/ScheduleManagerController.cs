@@ -236,7 +236,7 @@ public class ScheduleManagerController(BumboDbContext context) : Controller
 		Week week = await _context.Weeks.Where(w => w.Id == weekId).FirstOrDefaultAsync();
 		string[] daysOfTheWeek = { "Zondag", "Maandag", "Dinsdag", "Woensdag", "Donderdag", "Vrijdag", "Zaterdag" };
 
-		List<AvailabilityRuleViewModel> availabilityRuleViewModels = new List<AvailabilityRuleViewModel>();
+		List<AvailabilityRuleViewModel> availabilityRuleViewModels = new();
 		foreach (var availabilityRule in _context.AvailabilityRules.ToList())
 		{
 			// Get correct day and week
@@ -262,6 +262,7 @@ public class ScheduleManagerController(BumboDbContext context) : Controller
 			}
 		}
 
+		availabilityRuleViewModels.OrderByDescending(r => r.Weekday).ThenBy(r => r.StartTime);
         ViewBag.StartDate = GetFirstDateOfWeek(week.Year, week.WeekNumber);
 		ViewBag.WeekId = week.Id;
 
