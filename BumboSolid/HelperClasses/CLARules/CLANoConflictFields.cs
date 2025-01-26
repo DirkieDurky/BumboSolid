@@ -6,9 +6,9 @@ namespace BumboSolid.HelperClasses;
 
 public class CLANoConflictFields : ICLANoConflictFields
 {
-    public bool NoConflicts(CLAEntry existingEntry, CLAManageViewModel model, ModelStateDictionary modelState)
-    {
-        if (existingEntry == null) return true;
+	public bool NoConflicts(CLAEntry existingEntry, CLAManageViewModel model, ModelStateDictionary modelState)
+	{
+		if (existingEntry == null) return true;
         var conflictFields = new List<string>();
 
         // Checks individual fields for having entries in filled in agerange
