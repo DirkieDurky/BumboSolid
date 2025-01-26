@@ -67,13 +67,19 @@
                             <input id="holiday-@i" name="holidays" type="number" class="form-control" value="@holidayValue" onchange="updateVisitorEstimate()">
 
                         </td>
-                        <td class="text-center align-items-center" style="width: 200px;">
-                            <div class="d-flex flex-row gap-4 justify-content-center">
-                                <img id="weather-icon-@i" src="/images/weather/3.svg" class="background-white" style="width: 50px; height: 50px;" />
-                                <select id="weather-select-@i" name="weather" class="form-control form-select" onchange="updateIcon(@i); updateVisitorEstimate();">
-                                    @foreach (var weather in Model.WeatherValues)
-                                    {
-                                        <option value="@weather.Impact">@weather.Impact</option>
+                        <td>
+                            <div class="d-flex flex-row gap-3">
+                                @{
+                                    String imageSrc = "/images/weather/3.svg";
+                                }
+                                <img id="@("weather-icon-" + i)" src=@imageSrc class="background-white" />
+
+                                <select id="@("weather-select-" + i)" name="weather" type="number" class="form-control form-select" onchange="@("updateIcon("+i+"); updateVisitorEstimate();")">
+                                    @{
+                                        for (int j = 0; j < 7; j++)
+                                        {
+                                            <option selected=@(j == 3) value=@j class=@Model.WeatherValues[j].Impact>@Model.WeatherValues[j].Impact</option>
+                                        }
                                     }
                                 </select>
                             </div>
@@ -147,8 +153,8 @@
     <br />
 
     <div class="d-flex justify-content-around align-items-center">
-        <button type="submit" class="btn bumbo-btn"><i class="fas fa-save"></i> Prognose Berekenen</button>
         <a class="btn bumbo-btn bumbo-btn-danger" asp-controller="Prognoses" asp-action="Index"><i class="fa-solid fa-ban"></i> Prognose Afbreken</a>
+        <button type="submit" class="btn bumbo-btn"><i class="fas fa-save"></i> Prognose Berekenen</button>
     </div>
 </form>
 

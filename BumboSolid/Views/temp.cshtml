@@ -1,159 +1,60 @@
-﻿@* @model BumboSolid.Models.CLAManageViewModel *@
+﻿@* <form asp-action="Aanmaken"> *@
+@*     <input type="hidden" asp-for="Prognosis.Id" /> *@
+@*     <input type="hidden" asp-for="Prognosis.Year" /> *@
+@*     <input type="hidden" asp-for="Prognosis.WeekNumber" /> *@
+@* <div class="d-flex justify-content-center"> *@
+@*     <table class="table"> *@
+@*         <thead> *@
+@*             <tr> *@
+@*                 <th class="table-corner-l">Dag</th> *@
+@*                 <th>Schatting<br />Bezoekersdrukte</th> *@
+@*                 <th>Feestdagen</th> *@
+@*                 <th>Weer</th> *@
+@*                 <th>Overig</th> *@
+@*                 <th class="table-corner-r">Totale<br />Schatting Bezoekersdrukte</th> *@
+@*             </tr> *@
+@*         </thead> *@
+@*         <tbody> *@
+@*             @foreach (var day in daysOfTheWeek) *@
+@*             { *@
+@*                 var i = Array.IndexOf(daysOfTheWeek, day); *@
+@*                 var visitorEstimate = Model.Prognosis.PrognosisDays[i].VisitorEstimate; *@
+@*                 var holidayValue = Model.Prognosis.PrognosisDays.First(x => x.Weekday == i).Factors.First(x => x.Type == "Feestdagen").Impact; *@
+@*                 var otherValue = Model.Prognosis.PrognosisDays.First(x => x.Weekday == i).Factors.First(x => x.Type == "Overig").Impact; *@
+@*                 <tr> *@
+@*                     <td>@day</td> *@
+@*                     <td> *@
+@*                         <input id="visitor-estimate-@i" name="visitorEstimates" type="number" class="form-control" value="@visitorEstimate" onchange="updateVisitorEstimate()"> *@
+@*                     </td> *@
+@*                     <td> *@
+@*                         <input id="holiday-@i" name="holidays" type="number" class="form-control" value="@holidayValue" onchange="updateVisitorEstimate()"> *@
 
-@* <header class="d-flex align-items-center gap-3 justify-content-center gap-3"> *@
-@* 	<div class="w-100 text-align text-end"> *@
-@* 		<a class="btn new-btn" asp-controller="CLA" asp-action="Index">Terug</a> *@
-@* 	</div> *@
-@* 	<div class="mx-3 text-center text-nowrap"> *@
-@* 		<h1>CAO Regel aanpassen voor:</h1> *@
-@* 		@if (Model.AgeStart.HasValue && Model.AgeEnd.HasValue) *@
-@* 		{ *@
-@* 			<h4>@Model.AgeStart tot @Model.AgeEnd jaar</h4> *@
-@* 		} *@
-@* 		else if (Model.AgeStart.HasValue && !Model.AgeEnd.HasValue) *@
-@* 		{ *@
-@* 			<h4>Vanaf @Model.AgeStart jaar</h4> *@
-@* 		} *@
-@* 		else if (!Model.AgeStart.HasValue && Model.AgeEnd.HasValue) *@
-@* 		{ *@
-@* 			<h4>Tot @Model.AgeEnd jaar</h4> *@
-@* 		} *@
-@* 		else if (!Model.AgeStart.HasValue && !Model.AgeEnd.HasValue) *@
-@* 		{ *@
-@* 			<h4>Algemene regels</h4> *@
-@* 		} *@
-@* 	</div> *@
-@* 	<div class="w-100"></div> *@
-@* </header> *@
+@*                     </td> *@
+@*                     <td> *@
+@*                         <div class="d-flex flex-row gap-3"> *@
+@*                             @{ *@
+@*                                 String imageSrc = "/images/weather/3.svg"; *@
+@*                             } *@
+@*                             <img id="@("weather-icon-" + i)" src=@imageSrc class="background-white" /> *@
 
+@*                             <select id="@("weather-select-" + i)" name="weather" type="number" class="form-control form-select" onchange="@("updateIcon("+i+"); updateVisitorEstimate();")"> *@
+@*                                 @{ *@
+@*                                     for (int j = 0; j < 7; j++) *@
+@*                                     { *@
+@*                                         <option selected=@(j == 3) value=@j class=@Model.WeatherValues[j].Impact>@Model.WeatherValues[j].Impact</option> *@
+@*                                     } *@
+@*                                 } *@
+@*                             </select> *@
+@*                         </div> *@
+@*                     </td> *@
+@*                     <td class="table-secondary text-center d-flex flex-row align-items-center gap-4"> *@
+@*                         <input id="other-@i" name="other" type="number" class="form-control" value="@otherValue" onchange="updateVisitorEstimate()"> *@
+@*                         <textarea name="description" class="factor-description" placeholder="Beschrijving"></textarea> *@
+@*                     </td> *@
+@*                     <td><p id="total-estimated-visitor-count-@i" class="background-light impact-unchangeable-dark">0</p></td> *@
+@*                 </tr> *@
+
+@*             } *@
+@*         </tbody> *@
+@*     </table> *@
 @* </div> *@
-
-@* <div class="row"> *@
-@*     <div class="col-md-1"></div> *@
-@*     <hr class="col-md-10" /> *@
-@* </div> *@
-
-@* <div class="col-md-12"> *@
-@*     <form asp-controller="CAO" asp-action="Bewerken"> *@
-@*         <div asp-validation-summary="ModelOnly" class="text-danger text-center"></div> *@
-@*         <input type="hidden" asp-for="Id" /> *@
-@*         <div class="row align-items-end"> *@
-@*             <div class="form-group col-11"> *@
-@*                 <label asp-for="MaxWorkDurationPerDay" class="control-label">Maximale werkduur per dag</label> *@
-@*                 <input asp-for="MaxWorkDurationPerDay" class="form-control" *@
-@*                        value="@Model.MaxWorkDurationPerDay?.ToString("G10")" /> *@
-@*                 <span asp-validation-for="MaxWorkDurationPerDay" class="text-danger"></span> *@
-@*             </div> *@
-@*             <div class="form-group col-1 p-2"> *@
-@*                 <select asp-for="MaxDayDurationHours" class="w-100"> *@
-@*                     <option value="true">Uren</option> *@
-@*                     <option value="false">Minuten</option> *@
-@*                 </select> *@
-@*             </div> *@
-@*         </div> *@
-@*         <div class="row align-items-end"> *@
-@*             <div class="form-group col-11"> *@
-@*                 <label asp-for="MaxShiftDuration" class="control-label">Maximale shiftduur</label> *@
-@*                 <input asp-for="MaxShiftDuration" class="form-control" *@
-@*                        value="@Model.MaxShiftDuration?.ToString("G10")" /> *@
-@*                 <span asp-validation-for="MaxShiftDuration" class="text-danger"></span> *@
-@*             </div> *@
-@*             <div class="form-group col-1 p-2"> *@
-@*                 <select asp-for="MaxTotalShiftDurationHours" class="w-100"> *@
-@*                     <option value="true">Uren</option> *@
-@*                     <option value="false">Minuten</option> *@
-@*                 </select> *@
-@*             </div> *@
-@*         </div> *@
-@*         <div class="form-group"> *@
-@*             <label asp-for="MaxWorkDaysPerWeek" class="control-label">Maximale werkdagen per week</label> *@
-@*             <input asp-for="MaxWorkDaysPerWeek" class="form-control" /> *@
-@*             <span asp-validation-for="MaxWorkDaysPerWeek" class="text-danger"></span> *@
-@*         </div> *@
-@*         <div class="row align-items-end"> *@
-@*             <div class="form-group col-11"> *@
-@*                 <label asp-for="MaxWorkDurationPerWeek" class="control-label">Maximale werkduur per week</label> *@
-@*                 <input asp-for="MaxWorkDurationPerWeek" class="form-control" *@
-@*                        value="@Model.MaxWorkDurationPerWeek?.ToString("G10")" /> *@
-@*                 <span asp-validation-for="MaxWorkDurationPerWeek" class="text-danger"></span> *@
-@*             </div> *@
-@*             <div class="form-group col-1 p-2"> *@
-@*                 <select asp-for="MaxWeekDurationHours" class="w-100"> *@
-@*                     <option value="true">Uren</option> *@
-@*                     <option value="false">Minuten</option> *@
-@*                 </select> *@
-@*             </div> *@
-@*         </div> *@
-@*         <div class="row align-items-end"> *@
-@*             <div class="form-group col-11"> *@
-@*                 <label asp-for="MaxWorkDurationPerHolidayWeek" class="control-label">Maximale werkduur per vakantieweek</label> *@
-@*                 <input asp-for="MaxWorkDurationPerHolidayWeek" class="form-control" *@
-@*                        value="@Model.MaxWorkDurationPerHolidayWeek?.ToString("G10")" /> *@
-@*                 <span asp-validation-for="MaxWorkDurationPerHolidayWeek" class="text-danger"></span> *@
-@*             </div> *@
-@*             <div class="form-group col-1 p-2"> *@
-@*                 <select asp-for="MaxHolidayDurationHours" class="w-100"> *@
-@*                     <option value="true">Uren</option> *@
-@*                     <option value="false">Minuten</option> *@
-@*                 </select> *@
-@*             </div> *@
-@*         </div> *@
-@*         <div class="row align-items-end"> *@
-
-@*             <div class="form-group col-11"> *@
-@*                 <label asp-for="MaxAvgWeeklyWorkDurationOverFourWeeks" class="control-label">Maximale gemiddelde werkduur per week over vier weken</label> *@
-@*                 <input asp-for="MaxAvgWeeklyWorkDurationOverFourWeeks" class="form-control" *@
-@*                        value="@Model.MaxAvgWeeklyWorkDurationOverFourWeeks?.ToString("G10")" /> *@
-@*                 <span asp-validation-for="MaxAvgWeeklyWorkDurationOverFourWeeks" class="text-danger"></span> *@
-@*             </div> *@
-@*             <div class="form-group col-1 p-2"> *@
-@*                 <select asp-for="MaxAvgDurationHours" class="w-100"> *@
-@*                     <option value="true">Uren</option> *@
-@*                     <option value="false">Minuten</option> *@
-@*                 </select> *@
-@*             </div> *@
-@*         </div> *@
-@*         <div class="row"> *@
-@*             <div class="form-group col-6"> *@
-@*                 <label asp-for="EarliestWorkTime" class="control-label">Vroegste toegestane werktijd</label> *@
-@*                 <input asp-for="EarliestWorkTime" class="form-control" /> *@
-@*                 <span asp-validation-for="EarliestWorkTime" class="text-danger"></span> *@
-@*             </div> *@
-@*             <div class="form-group col-6"> *@
-@*                 <label asp-for="LatestWorkTime" class="control-label">Laatste toegestane werktijd</label> *@
-@*                 <input asp-for="LatestWorkTime" class="form-control" /> *@
-@*                 <span asp-validation-for="LatestWorkTime" class="text-danger"></span> *@
-@*             </div> *@
-@*         </div> *@
-@*         <div class="row align-items-end"> *@
-@*             <div class="form-group col-5"> *@
-@*                 <label asp-for="BreakWorkDuration" class="control-label">Maximale werktijd zonder pauze</label> *@
-@*                 <input asp-for="BreakWorkDuration" class="form-control" *@
-@*                        value="@Model.BreakWorkDuration?.ToString("G10")" /> *@
-@*                 <span asp-validation-for="BreakWorkDuration" class="text-danger"></span> *@
-@*             </div> *@
-@*             <div class="form-group col-1 p-2"> *@
-@*                 <select asp-for="MaxUninterruptedShiftDurationHours" class="w-100"> *@
-@*                     <option value="true">Uren</option> *@
-@*                     <option value="false">Minuten</option> *@
-@*                 </select> *@
-@*             </div> *@
-@*             <div class="form-group col-5"> *@
-@*                 <label asp-for="BreakMinBreakDuration" class="control-label">Minimale pauzetijd hierbij</label> *@
-@*                 <input asp-for="BreakMinBreakDuration" class="form-control" *@
-@*                        value="@Model.BreakMinBreakDuration?.ToString("G10")" /> *@
-@*                 <span asp-validation-for="BreakMinBreakDuration" class="text-danger"></span> *@
-@*             </div> *@
-@*             <div class="form-group col-1 p-2"> *@
-@*                 <select asp-for="MinBreakTimeHours"> *@
-@*                     <option value="true">Uren</option> *@
-@*                     <option value="false">Minuten</option> *@
-@*                 </select> *@
-@*             </div> *@
-@*         </div> *@
-@*         <div class="form-group pt-2 col-12"> *@
-@*             <input type="submit" value="Opslaan" class="btn bumbo-btn w-100" /> *@
-@*         </div> *@
-@*     </form> *@
-@* </div> *@
-@*     </div> *@
