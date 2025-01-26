@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BumboSolid.Data.Migrations
 {
     [DbContext(typeof(BumboDbContext))]
-    [Migration("20250126190154_Initial")]
-    partial class Initial
+    [Migration("20250126201216_final")]
+    partial class final
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

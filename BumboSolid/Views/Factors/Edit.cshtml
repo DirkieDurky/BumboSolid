@@ -21,7 +21,9 @@
 <br />
 
 <form asp-controller="Factors" asp-action="Edit" asp-route-id="@Model.Prognosis.Id" method="post">
-    
+    <input type="hidden" asp-for="Prognosis" value="@Model.Prognosis" />
+    <input type="hidden" asp-for="Prognosis.Id" value="@Model.Prognosis.Id" />
+    <input type="hidden" asp-for="WeatherValues" value="@Model.WeatherValues" />
     <div class="d-flex justify-content-center">
         <table class="table">
             <thead>

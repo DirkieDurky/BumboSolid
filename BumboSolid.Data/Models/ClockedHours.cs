@@ -2,7 +2,7 @@
 
 namespace BumboSolid.Data.Models;
 
-public class ClockedHours
+public class ClockedHours : IValidatableObject
 {
     public int Id { get; set; }
 
@@ -32,4 +32,11 @@ public class ClockedHours
     public virtual Department? DepartmentNavigation { get; set; } = null!;
 
     public virtual Week? Week { get; set; } = null!;
+
+	public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
+	{
+		if (StartTime > EndTime) yield return new ValidationResult("Begintijd moet hetzelfde of later zijn dan eindtijd");
+
+		yield return ValidationResult.Success;
+	}
 }

@@ -100,7 +100,7 @@ public class ClockedHoursController : Controller
         var user = await _userManager.GetUserAsync(User);
         int userId = user!.Id;
 
-        //Clock out old clockedHour
+        // Clock out old clockedHour
         var currentClockedHour = await _context.ClockedHours
             .Where(ch => ch.EmployeeId == userId)
             .OrderByDescending(ch => ch.Id)
@@ -115,20 +115,20 @@ public class ClockedHoursController : Controller
 
         int year = DateTime.Now.Year;
         int weekNr = CultureInfo.CurrentCulture.Calendar.GetWeekOfYear(DateTime.Now, CalendarWeekRule.FirstDay, DayOfWeek.Monday);
-        DateOnly startDate = FirstDateOfWeek(year, weekNr);
 
-        if (selectedDepartments == null || !selectedDepartments.Any())
-        {
-            ModelState.AddModelError(string.Empty, "Kies eerst een afdeling.");
-            return View();
-        }
+		var departments = await _context.Departments
+			.Where(d => selectedDepartments.Contains(d.Name))
+			.ToListAsync();
 
-        var departments = await _context.Departments
-            .Where(d => selectedDepartments.Contains(d.Name))
-            .ToListAsync();
+		// Check if the employee is allowed to work the given department
+		if (selectedDepartments == null || !selectedDepartments.Any()) ModelState.AddModelError(string.Empty, "Kies eerst een afdeling.");
+		User employee = await _context.Employees.Where(e => e.Id == userId).Include(e => e.Departments).FirstOrDefaultAsync();
+		bool validDepartment = false;
+		foreach (var department in employee.Departments) if (department.Name.Equals(departments.FirstOrDefault()?.Name)) validDepartment = true;
+		if (validDepartment == false) ModelState.AddModelError("", "De medewerker mag niet werken bij deze afdeling");
+        if (!ModelState.IsValid) return RedirectToAction("Index");
 
-        var currentWeek = await _context.Weeks.Where(w => w.Year == year && w.WeekNumber == weekNr).FirstOrDefaultAsync();
-
+		var currentWeek = await _context.Weeks.Where(w => w.Year == year && w.WeekNumber == weekNr).FirstOrDefaultAsync();
         if (currentWeek == null)
         {
             currentWeek = new Week()

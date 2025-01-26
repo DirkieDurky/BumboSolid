@@ -1,12 +1,10 @@
-using BumboSolid.Controllers;
-using BumboSolid.Data.Models;
 using BumboSolid.HelperClasses;
 using BumboSolid.Models;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace UnitTests
 {
-    public class CLAValidationTests
+	public class CLAValidationTests
     {
         // Start age before end age should return true
         [Fact]
