@@ -147,15 +147,6 @@ public class EmployeesController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Edit(int id, EmployeesEditViewModel model)
     {
-		// Check if Email is already in use
-		if (await _userManager.FindByEmailAsync(model.Email) != null) ModelState.AddModelError(nameof(model.Email), $"De email '{model.Email}' is al in gebruik");
-
-		if (!ModelState.IsValid)
-        {
-            model.Departments = await _context.Departments.ToListAsync();
-            return View(model);
-        }
-
         var existingEmployee = await _context.Users
             .Include(u => u.Departments)
             .FirstOrDefaultAsync(u => u.Id == id);
@@ -163,6 +154,16 @@ public class EmployeesController : Controller
         if (existingEmployee == null)
         {
             return NotFound();
+        }
+
+        // Check if Email is already in use
+        if (await _userManager.FindByEmailAsync(model.Email) != null && existingEmployee.Email != model.Email)
+            ModelState.AddModelError(nameof(model.Email), $"De email '{model.Email}' is al in gebruik");
+
+        if (!ModelState.IsValid)
+        {
+            model.Departments = await _context.Departments.ToListAsync();
+            return View(model);
         }
 
         existingEmployee.FirstName = model.FirstName;

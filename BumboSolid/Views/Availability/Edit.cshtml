@@ -1,38 +1,51 @@
 ﻿@using System.Diagnostics
 @model BumboSolid.Data.Models.AvailabilityRule
 
-@{
-    ViewData["Title"] = "Beschikbaarheid bewerken";
-}
+<header class="d-flex flex-column align-items-center">
+    <div class="d-flex w-100 header-items">
+        <div class="d-flex justify-content-center align-items-center w-35">
+            <a class="btn bumbo-btn bumbo-btn-back" asp-action="Index">
+                <i class="fa-solid fa-arrow-left"></i> Terug
+            </a>
+        </div>
+        <div class="text-center d-flex flex-column align-items-center justify-content-center w-30">
+            <h1>Beschikbaarheid Bewerken</h1>
+        </div>
+        <div class="d-flex justify-content-center align-items-center w-35">
+            <a class="btn bumbo-btn bumbo-btn-danger" asp-controller="Availability" asp-action="Delete"
+               asp-route-AvailabilityId="@Model.Id" asp-route-weekNr="@ViewBag.weekNr" asp-route-year="@ViewBag.year">
+                <i class="fa-solid fa-trash-can"></i> Verwijder
+            </a>
+        </div>
+    </div>
+</header>
 
-<h1>Beschikbaarheid Bewerken</h1>
+<br />
 
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-controller="Availability" asp-action="Edit" method="post">
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <form asp-action="Create">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
             <input type="hidden" id="year" name="year" value="@ViewBag.Year" />
             <input type="hidden" id="weekNr" name="weekNr" value="@ViewBag.WeekNr" />
-            <input type="hidden" asp-for="Id" value="@Model.Id" />
 
             <div class="form-group">
                 <label asp-for="Date" class="control-label">Datum</label>
-                <input required asp-for="Date" id="date" class="form-control" type="date" value=@Model.Date />
+                <input required asp-for="Date" id="firstday" class="form-control" type="date" />
                 <span asp-validation-for="Date" class="text-danger"></span>
             </div>
 
-            <div class="d-flex flex-row">
-                <div class="form-group mb-3">
+            <div class="d-flex flex-wrap mb-3">
+                <div class="form-group col-md-6 pr-2">
                     <label asp-for="StartTime" class="control-label">Starttijd</label>
-                    <input required asp-for="StartTime" class="form-control" type="time" value="@Model.StartTime" />
+                    <input required asp-for="StartTime" class="form-control" type="time" />
                     <span asp-validation-for="StartTime" class="text-danger"></span>
                 </div>
 
-                <div class="form-group mb-3">
+                <div class="form-group col-md-6 pl-2">
                     <label asp-for="EndTime" class="control-label">Eindtijd</label>
-                    <input required asp-for="EndTime" class="form-control" type="time" value="@Model.EndTime" />
+                    <input required asp-for="EndTime" class="form-control" type="time" />
                     <span asp-validation-for="EndTime" class="text-danger"></span>
                 </div>
             </div>
@@ -40,15 +53,16 @@
             <div class="form-group">
                 <label for="Availability" class="control-label">Beschikbaarheid</label>
                 <select id="Availability" name="Availability" class="form-control">
-                    <option value="Available" selected="@(ViewBag.Availability == "Available" ? "selected" : null)">Beschikbaar</option>
-                    <option value="Unavailable" selected="@(ViewBag.Availability == "Unavailable" ? "selected" : null)">Niet beschikbaar</option>
-                    <option value="School" selected="@(ViewBag.Availability == "School" ? "selected" : null)">School</option>
+                    <option value="Available">Beschikbaar</option>
+                    <option value="Unavailable">Niet beschikbaar</option>
+                    <option value="School">School</option>
                 </select>
             </div>
 
-            <div class="form-group">
-                <button type="submit" class="btn early-btn btn-primary">Opslaan</button>
-                <a type="button" class="btn early-btn btn-secondary" asp-action="Index">Terug</a>
+            <br />
+
+            <div class="d-flex justify-content-center align-items-center">
+                <button type="submit" class="btn bumbo-btn w-50"><i class="fas fa-save"></i> Opslaan</button>
             </div>
         </form>
     </div>

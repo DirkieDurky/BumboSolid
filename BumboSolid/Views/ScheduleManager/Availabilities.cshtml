@@ -1,49 +1,51 @@
 ﻿@model IEnumerable<BumboSolid.Models.AvailabilityRuleViewModel>
 
-@{
-	ViewData["Title"] = "Beschikbaarheid";
-}
-
-
 <header class="d-flex flex-column align-items-center">
-    <div class="d-flex justify-content-between w-100 header-items">
-        <div></div>
-        <div>
-            <a class="btn new-btn" asp-action="OverviewSchedule" asp-route-id="@ViewBag.WeekId">
-                Rooster
+    <div class="d-flex w-100 header-items">
+        <div class="d-flex justify-content-between align-items-center w-35">
+            <a class="btn bumbo-btn bumbo-btn-back" asp-action="OverviewSchedule" asp-route-id="@ViewBag.WeekId">
+                <i class="fa-solid fa-arrow-left"></i> Terug
             </a>
         </div>
-        <div class="text-center d-flex flex-column align-items-center">
-            <h1 class="text-nowrap">Beschikbaarheid</h1>
-            <p>@ViewBag.StartDate.ToString("dd/MM/yyyy") - @ViewBag.StartDate.AddDays(6).ToString("dd/MM/yyyy")</p>
+        <div class="text-center d-flex flex-column align-items-center justify-content-center w-30">
+            <h1>Beschikbaarheid</h1>
+            <h6>@ViewBag.StartDate.ToString("dd/MM/yyyy") - @ViewBag.StartDate.AddDays(6).ToString("dd/MM/yyyy")</h6>
         </div>
-        <div></div>
-        <div></div>
     </div>
 </header>
 
-<table class="table">
-	<thead>
-		<tr>
-			<th>Medewerker</th>
-			<th>Dag</th>
-			<th>Starttijd</th>
-			<th>Eindtijd</th>
-            <th>Beschikbaar</th>
-			<th>School</th>
-		</tr>
-	</thead>
-	<tbody>
-        @foreach (var availabilityRule in Model)
-        {
+<br />
+@if (!Model.Any())
+{
+    <div class="text-center">
+        <p>Er zijn momenteel geen beschikbaarheden opgegeven.</p>
+    </div>
+}
+else
+{
+    <table class="table">
+        <thead>
             <tr>
-				<td>@availabilityRule.Employee</td>
-                <td>@availabilityRule.Weekday</td>
-                <td>@availabilityRule.StartTime</td>
-                <td>@availabilityRule.EndTime</td>
-                <td>@(availabilityRule.Available == 1 ? "Ja" : "Nee")</td>
-                <td>@(availabilityRule.School == 1 ? "Ja" : "Nee")</td>
+                <th class="table-corner-l">Medewerker</th>
+                <th>Dag</th>
+                <th>Starttijd</th>
+                <th>Eindtijd</th>
+                <th>Beschikbaar</th>
+                <th class="table-corner-r">School</th>
             </tr>
-        }
-	</tbody>
-</table>
+        </thead>
+        <tbody>
+            @foreach (var availabilityRule in Model)
+            {
+                <tr>
+                    <td>@availabilityRule.Employee</td>
+                    <td>@availabilityRule.Weekday</td>
+                    <td>@availabilityRule.StartTime</td>
+                    <td>@availabilityRule.EndTime</td>
+                    <td>@(availabilityRule.Available == 1 ? "Ja" : "Nee")</td>
+                    <td>@(availabilityRule.School == 1 ? "Ja" : "Nee")</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}

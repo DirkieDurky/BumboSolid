@@ -1,0 +1,142 @@
+﻿.schedule-agenda {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.days-header {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    text-align: center;
+}
+
+.day-header {
+    flex: 1;
+    background-color: #546174;
+    padding: 10px;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    color: white;
+}
+
+.shifts-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    font-weight: 500;
+}
+
+.shift-column {
+    flex: 1;
+    background-color: #babfc7;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+    .shift-column:nth-child(2n) {
+        background-color: #cbcfd5;
+    }
+
+.shift-list {
+    list-style-type: none;
+    padding: 0;
+}
+
+.shift-item {
+    background-color: #76808f;
+    border-radius: 5px;
+    padding: 15px;
+    margin-bottom: 15px;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.4);
+    color: white;
+    white-space: nowrap;
+}
+
+    .shift-item i{
+        color: white;
+    }
+
+.no-shifts {
+    color: #888;
+    text-align: center;
+}
+
+
+
+.dropdown-bar {
+    background-color: #3d4754;
+    padding: 10px;
+    cursor: pointer;
+    font-weight: bold;
+    border: 1px solid #ddd;
+    margin-block: 15px;
+    border-radius: 10px;
+    color: white;
+}
+
+    .dropdown-bar i {
+        color: white;
+    }
+
+.schedule-table th, .schedule-table td {
+    width: calc(100% / 9);
+}
+
+.hidden {
+    display: none;
+}
+
+.arrow {
+    transition: transform 0.5s ease;
+}
+
+.flipped {
+    transform: rotate(180deg);
+}
+
+.table {
+    border: transparent;
+    cursor: default;
+}
+
+    .table th, .table td {
+        text-align: center;
+        vertical-align: middle;
+    }
+
+        .table td:first-child {
+            font-weight: bold;
+        }
+
+    .table td {
+        font-weight: 500;
+    }
+
+    .table th {
+        background-color: #546174;
+        color: white;
+        border: none;
+    }
+
+    .table tbody tr:nth-child(2n+1) {
+        background-color: #babfc7;
+    }
+
+    .table tbody tr:nth-child(2n) {
+        background-color: #cbcfd5;
+    }
+
+.table-corner-l {
+    border-start-start-radius: .5rem;
+}
+
+.table-corner-r {
+    border-start-end-radius: .5rem;
+}
+
+
+/*color: #1f2b3f
+color: #546174*/

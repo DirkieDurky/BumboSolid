@@ -37,3 +37,4 @@ public class CLAManageViewModel
     public bool MaxAvgDurationHours { get; set; } = true;
 
     public bool MaxTotalShiftDurationHours { get; set; } = true;
+}

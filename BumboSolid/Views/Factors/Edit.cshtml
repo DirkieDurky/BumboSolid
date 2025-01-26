@@ -1,100 +1,90 @@
 ﻿@model BumboSolid.Models.EditPrognosisFactorsViewModel
 
 @{
-    ViewData["Title"] = "Factoren bewerken";
     string[] daysOfTheWeek = { "Maandag", "Dinsdag", "Woensdag", "Donderdag", "Vrijdag", "Zaterdag", "Zondag" };
     int value;
 }
 
-<form method="post" asp-controller="Factors" asp-action="Edit" asp-route-id="@Model.Prognosis.Id">
+<header class="d-flex flex-column align-items-center">
+    <div class="d-flex w-100 header-items">
+        <div class="d-flex justify-content-start align-items-center w-35">
+            <a asp-controller="Home" asp-action="Index" class="btn bumbo-btn bumbo-btn-back">
+                <i class="fa-solid fa-arrow-left"></i> Terug
+            </a>
+        </div>
+        <div class="text-center d-flex flex-column align-items-center justify-content-center w-30 text-nowrap">
+            <h1>Week @Model.Prognosis.WeekNumber</h1>
+        </div>
+    </div>
+</header>
+
+<br />
+
+<form asp-controller="Factors" asp-action="Edit" asp-route-id="@Model.Prognosis.Id" method="post">
     <input type="hidden" asp-for="Prognosis" value="@Model.Prognosis" />
     <input type="hidden" asp-for="Prognosis.Id" value="@Model.Prognosis.Id" />
     <input type="hidden" asp-for="WeatherValues" value="@Model.WeatherValues" />
-    <table class="table" cellspacing="0">
-        <tr>
-            <th></th>
-            <th scope="col" class="rounded-top table-gray">Schatting Bezoekersdrukte</th>
-            <th scope="col" class="rounded-top table-secondary">Feestdagen</th>
-            <th scope="col" class="rounded-top table-gray">
-                Weer
-                <a asp-controller="Weather" asp-action="Edit" class="remove-text-decoration p-2 bg-warning ms-2 rounded">
-                    <img src="/images/pencil-square.svg" alt="Edit Icon" width="16" height="16" />
-                </a>
-            </th>
-            <th scope="col" class="rounded-top table-secondary">Overig</th>
-            <th scope="col" class="rounded-top table-gray">Totale Schatting Bezoekersdrukte</th>
-        </tr>
-        @for (int i = 0; i < daysOfTheWeek.Length; i++)
-        {
-            String day = daysOfTheWeek[i];
-            var prognosisDay = Model.Prognosis.PrognosisDays.FirstOrDefault(p => p.Weekday == i);
-            var weatherId = prognosisDay?.Factors.FirstOrDefault(f => f.Type == "Weer")?.WeatherId;
+    <div class="d-flex justify-content-center">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th class="table-corner-l">Dag</th>
+                    <th>Schatting<br />Bezoekersdrukte</th>
+                    <th>Feestdagen</th>
+                    <th>Weer</th>
+                    <th>Overig</th>
+                    <th class="table-corner-r">Totale<br />Schatting Bezoekersdrukte</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var day in daysOfTheWeek)
+                {
+                    var i = Array.IndexOf(daysOfTheWeek, day);
+                    var visitorEstimate = Model.Prognosis.PrognosisDays[i].VisitorEstimate;
+                    var holidayValue = Model.Prognosis.PrognosisDays.First(x => x.Weekday == i).Factors.First(x => x.Type == "Feestdagen").Impact;
+                    var otherValue = Model.Prognosis.PrognosisDays.First(x => x.Weekday == i).Factors.First(x => x.Type == "Overig").Impact;
+                    <tr>
+                        <td>@day</td>
+                        <td>
+                            <input id="visitor-estimate-@i" name="visitorEstimates" type="number" class="form-control" value="@visitorEstimate" onchange="updateVisitorEstimate()">
+                        </td>
+                        <td>
+                            <input id="holiday-@i" name="holidays" type="number" class="form-control" value="@holidayValue" onchange="updateVisitorEstimate()">
 
-            var overigFactor = prognosisDay?.Factors.FirstOrDefault(f => f.Type == "Overig");
-            var description = overigFactor?.Description ?? "";
-
-            <tr>
-                <th scope="row">@day</th>
-                @{
-                    if (prognosisDay?.VisitorEstimate == null)
-                    {
-                        value = 0;
-                    }
-                    else
-                    {
-                        value = prognosisDay.VisitorEstimate;
-                    }
-                }
-                <td class="table-gray">
-                    <input required id="visitor-estimate-@i" name="VisitorEstimates[@i]" type="number" class="form-control" value="@value" onchange="updateVisitorEstimate()">
-                </td>
-
-                @{
-                    value = Model.Prognosis.PrognosisDays.First(x => x.Weekday == i).Factors.First(x => x.Type == "Feestdagen").Impact;
-                }
-                <td class="table-secondary">
-                    <input required id="holiday-@i" name="Holidays[@i]" type="number" class="form-control small-input" value="@value" onchange="updateVisitorEstimate()">
-                </td>
-
-                <td class="table-gray gap-2">
-                    <div class="d-flex flex-row">
-                        @{
-                            String imageSrc = weatherId != null ? $"/images/weather/{weatherId}.svg" : "/images/weather/3.svg";
-                        }
-                        <img id="@("weather-icon-" + i)" src=@imageSrc class="background-white me-1" width="40" height="40"/>
-
-                        <select id="@("weather-select-" + i)" name="WeatherIds[@i]" class="form-control small-input form-select" onchange="@("updateIcon("+i+"); updateVisitorEstimate();")">
-                            @{
-                                for (int j = 0; j < 7; j++)
-                                {
-                                    bool isSelected = j == weatherId;
-                                    <option selected="@(isSelected)" value="@j" class="@Model.WeatherValues[j].Impact">@Model.WeatherValues[j].Impact</option>
+                        </td>
+                        <td>
+                            <div class="d-flex flex-row gap-3">
+                                @{
+                                    String imageSrc = "/images/weather/3.svg";
                                 }
-                            }
-                        </select>
-                    </div>
-                </td>
+                                <img id="@("weather-icon-" + i)" src=@imageSrc class="background-white" />
 
-                @{
-                    value = Model.Prognosis.PrognosisDays.First(x => x.Weekday == i).Factors.First(x => x.Type == "Overig").Impact;
+                                <select id="@("weather-select-" + i)" name="WeatherIds[@i]" class="form-control form-select" onchange="@("updateIcon("+i+"); updateVisitorEstimate();")">
+                                    @{
+                                        for (int j = 0; j < 7; j++)
+                                        {
+                                            <option selected=@(j == 3) value=@j class=@Model.WeatherValues[j].Impact>@Model.WeatherValues[j].Impact</option>
+                                        }
+                                    }
+                                </select>
+                            </div>
+                        </td>
+                        <td class="table-secondary text-center d-flex flex-row align-items-center gap-4">
+                            <input id="other-@i" name="Others[@i]" type="number" class="form-control" value="@otherValue" onchange="updateVisitorEstimate()">
+                            <textarea name="Descriptions[@i]" class="factor-description" placeholder="Beschrijving"></textarea>
+                        </td>
+                        <td><p id="total-estimated-visitor-count-@i" class="background-light impact-unchangeable-dark">0</p></td>
+                    </tr>
+
                 }
-                <td class="table-secondary gap-2">
-                    <div class="d-flex flex-row">
-                        <input required id="other-@i" name="Others[@i]" type="number" class="form-control small-input" value="@value" onchange="updateVisitorEstimate()">
-                        <textarea name="Descriptions[@i]" class="factor-description" placeholder="Beschrijving" rows="2" cols="25">@description</textarea>
-                    </div>
-                </td>
+            </tbody>
+        </table>
+    </div>
 
-                <td class="table-gray">
-                    <p id="total-estimated-visitor-count-@i" class="background-light impact-unchangeable-dark">0</p>
-                </td>
-            </tr>
-        }
-    </table>
+    <br />
 
-    <div class="d-flex flex-row mt-3">
-        <a asp-controller="Prognoses" asp-action="" class="btn early-btn btn-secondary">Terug</a>
-        <button type="submit" class="btn early-btn btn-primary me-3">Opslaan</button>
+    <div>
+        <button type="submit" class="btn bumbo-btn"><i class="fas fa-save"></i> Opslaan</button>
     </div>
 </form>
 

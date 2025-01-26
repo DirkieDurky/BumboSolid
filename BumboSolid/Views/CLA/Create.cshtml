@@ -1,108 +1,108 @@
 ﻿@model BumboSolid.Models.CLAManageViewModel
 
-@{
-    ViewData["Title"] = "CAO-regel toevoegen";
-}
-
-<header class="d-flex align-items-center gap-3 justify-content-center gap-3">
-	<div class="w-100 text-align text-end">
-		<a class="btn new-btn" asp-controller="CLA" asp-action="Index">Terug</a>
-	</div>
-	<div class="mx-3 text-center text-nowrap">
-		<h1>CAO Regel Toevoegen</h1>
-	</div>
-	<div class="w-100"></div>
+<header class="d-flex flex-column align-items-center">
+    <div class="d-flex w-100 header-items">
+        <div class="d-flex justify-content-center align-items-center w-35">
+            <a class="btn bumbo-btn bumbo-btn-back" asp-controller="CLA" asp-action="Index"><i class="fa-solid fa-arrow-left"></i> Terug</a>
+        </div>
+        <div class="text-center d-flex flex-column align-items-center justify-content-center w-30 text-nowrap">
+            <h1>CAO Regel Toevoegen</h1>
+        </div>
+    </div>
 </header>
 
+<br />
+
 <div class="row justify-content-center">
-	<div class="col-md-10">
-		<form asp-controller="CAO" asp-action="Toevoegen">
-			<div asp-validation-summary="ModelOnly" class="text-danger text-center"></div>
-			<div class="row pb-2">
-				<div class="form-group col-md-6">
-					<label asp-for="AgeStart" class="control-label fw-bold">Begin leeftijd</label>
-					<input asp-for="AgeStart" class="form-control p-1 border-solid-black" />
-					<span asp-validation-for="AgeStart" class="text-danger"></span>
-				</div>
-				<div class="form-group col-md-6">
-					<label asp-for="AgeEnd" class="control-label fw-bold">Eind leeftijd</label>
-					<input asp-for="AgeEnd" class="form-control p-1 border-solid-black" />
-					<span asp-validation-for="AgeEnd" class="text-danger"></span>
-				</div>
-			</div>
-			<div class="row pb-2">
-				<div class="form-group col-md-4">
-					<label asp-for="MaxWorkDurationPerDay" class="control-label fw-bold">Maximale werkduur per dag</label>
-					<input asp-for="MaxWorkDurationPerDay" class="form-control p-1 border-solid-black" />
-					<span asp-validation-for="MaxWorkDurationPerDay" class="text-danger"></span>
-				</div>
-				<div class="form-group col-md-2 d-flex justify-content-end align-items-end">
-					<label class="control-label fw-bold invisible"></label>
-					<select asp-for="MaxDayDurationHours" class="p-1 border-solid-black">
-						<option value="true">Uren</option>
-						<option value="false">Minuten</option>
-					</select>
-				</div>
-				<div class="form-group col-md-4">
-					<label asp-for="MaxShiftDuration" class="control-label fw-bold">Maximale shiftduur</label>
-					<input asp-for="MaxShiftDuration" class="form-control p-1 border-solid-black" />
-					<span asp-validation-for="MaxShiftDuration" class="text-danger"></span>
-				</div>
-				<div class="form-group col-md-2 d-flex justify-content-end align-items-end">
-					<select asp-for="MaxTotalShiftDurationHours" class="p-1 border-solid-black">
-						<option value="true">Uren</option>
-						<option value="false">Minuten</option>
-					</select>
-				</div>
-			</div>
-			<div class="row pb-2">
-				<div class="form-group col-md-6">
-					<label asp-for="MaxWorkDaysPerWeek" class="control-label fw-bold">Maximale werkdagen per week</label>
-					<input asp-for="MaxWorkDaysPerWeek" class="form-control p-1 border-solid-black" oninput="this.value = this.value.replace(/[^0-9]/g, '');" />
-					<span asp-validation-for="MaxWorkDaysPerWeek" class="text-danger"></span>
-				</div>
-				<div class="form-group col-md-4">
-					<label asp-for="MaxWorkDurationPerWeek" class="control-label fw-bold">Maximale werkduur per week</label>
-					<input asp-for="MaxWorkDurationPerWeek" class="form-control p-1 border-solid-black" />
-					<span asp-validation-for="MaxWorkDurationPerWeek" class="text-danger"></span>
-				</div>
-				<div class="form-group col-md-2 d-flex justify-content-end align-items-end">
-					<select asp-for="MaxWeekDurationHours" class="p-1 border-solid-black">
-						<option value="true">Uren</option>
-						<option value="false">Minuten</option>
-					</select>
-				</div>
-			</div>
-			<div class="row pb-2">
-				<div class="form-group col-md-10">
-					<label asp-for="MaxAvgWeeklyWorkDurationOverFourWeeks" class="control-label fw-bold">Maximale gemiddelde werkduur per week over vier weken</label>
-					<input asp-for="MaxAvgWeeklyWorkDurationOverFourWeeks" class="form-control p-1 border-solid-black" />
-					<span asp-validation-for="MaxAvgWeeklyWorkDurationOverFourWeeks" class="text-danger"></span>
-				</div>
-				<div class="form-group col-md-2 d-flex justify-content-end align-items-end">
-					<select asp-for="MaxAvgDurationHours" class="p-1 border-solid-black">
-						<option value="true">Uren</option>
-						<option value="false">Minuten</option>
-					</select>
-				</div>
-			</div>
-			<div class="row pb-2">
-				<div class="form-group col-md-6">
-					<label asp-for="EarliestWorkTime" class="control-label fw-bold">Vroegste toegestane werktijd</label>
-					<input asp-for="EarliestWorkTime" class="form-control p-1 border-solid-black" />
-					<span asp-validation-for="EarliestWorkTime" class="text-danger"></span>
-				</div>
-				<div class="form-group col-md-6">
-					<label asp-for="LatestWorkTime" class="control-label fw-bold">Laatste toegestane werktijd</label>
-					<input asp-for="LatestWorkTime" class="form-control p-1 border-solid-black" />
-					<span asp-validation-for="LatestWorkTime" class="text-danger"></span>
-				</div>
-			</div>
-			<div class="form-group pt-2 col-12">
-				<input type="submit" value="Voeg Toe" class="btn new-btn w-100" />
-			</div>
-		</form>
-	</div>
+    <div class="col-md-10">
+        <form asp-controller="CAO" asp-action="Toevoegen">
+            <div asp-validation-summary="ModelOnly" class="text-danger text-center"></div>
+            <div class="row pb-2">
+                <div class="form-group col-md-6">
+                    <label asp-for="AgeStart" class="control-label">Begin leeftijd</label>
+                    <input asp-for="AgeStart" class="form-control" />
+                    <span asp-validation-for="AgeStart" class="text-danger"></span>
+                </div>
+                <div class="form-group col-md-6">
+                    <label asp-for="AgeEnd" class="control-label">Eind leeftijd</label>
+                    <input asp-for="AgeEnd" class="form-control" />
+                    <span asp-validation-for="AgeEnd" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="row pb-2">
+                <div class="form-group col-md-4">
+                    <label asp-for="MaxWorkDurationPerDay" class="control-label">Maximale werkduur per dag</label>
+                    <input asp-for="MaxWorkDurationPerDay" class="form-control" />
+                    <span asp-validation-for="MaxWorkDurationPerDay" class="text-danger"></span>
+                </div>
+                <div class="form-group col-md-2 d-flex justify-content-end align-items-end">
+                    <label class="control-label invisible"></label>
+                    <select asp-for="MaxDayDurationHours">
+                        <option value="true">Uren</option>
+                        <option value="false">Minuten</option>
+                    </select>
+                </div>
+                <div class="form-group col-md-4">
+                    <label asp-for="MaxShiftDuration" class="control-label">Maximale shiftduur</label>
+                    <input asp-for="MaxShiftDuration" class="form-control" />
+                    <span asp-validation-for="MaxShiftDuration" class="text-danger"></span>
+                </div>
+                <div class="form-group col-md-2 d-flex justify-content-end align-items-end">
+                    <select asp-for="MaxTotalShiftDurationHours">
+                        <option value="true">Uren</option>
+                        <option value="false">Minuten</option>
+                    </select>
+                </div>
+            </div>
+            <div class="row pb-2">
+                <div class="form-group col-md-6">
+                    <label asp-for="MaxWorkDaysPerWeek" class="control-label">Maximale werkdagen per week</label>
+                    <input asp-for="MaxWorkDaysPerWeek" class="form-control" oninput="this.value = this.value.replace(/[^0-9]/g, '');" />
+                    <span asp-validation-for="MaxWorkDaysPerWeek" class="text-danger"></span>
+                </div>
+                <div class="form-group col-md-4">
+                    <label asp-for="MaxWorkDurationPerWeek" class="control-label">Maximale werkduur per week</label>
+                    <input asp-for="MaxWorkDurationPerWeek" class="form-control" />
+                    <span asp-validation-for="MaxWorkDurationPerWeek" class="text-danger"></span>
+                </div>
+                <div class="form-group col-md-2 d-flex justify-content-end align-items-end">
+                    <select asp-for="MaxWeekDurationHours">
+                        <option value="true">Uren</option>
+                        <option value="false">Minuten</option>
+                    </select>
+                </div>
+            </div>
+            <div class="row pb-2">
+                <div class="form-group col-md-10">
+                    <label asp-for="MaxAvgWeeklyWorkDurationOverFourWeeks" class="control-label">Maximale gemiddelde werkduur per week over vier weken</label>
+                    <input asp-for="MaxAvgWeeklyWorkDurationOverFourWeeks" class="form-control" />
+                    <span asp-validation-for="MaxAvgWeeklyWorkDurationOverFourWeeks" class="text-danger"></span>
+                </div>
+                <div class="form-group col-md-2 d-flex justify-content-end align-items-end">
+                    <select asp-for="MaxAvgDurationHours">
+                        <option value="true">Uren</option>
+                        <option value="false">Minuten</option>
+                    </select>
+                </div>
+            </div>
+            <div class="row pb-2">
+                <div class="form-group col-md-6">
+                    <label asp-for="EarliestWorkTime" class="control-label">Vroegste toegestane werktijd</label>
+                    <input asp-for="EarliestWorkTime" class="form-control" />
+                    <span asp-validation-for="EarliestWorkTime" class="text-danger"></span>
+                </div>
+                <div class="form-group col-md-6">
+                    <label asp-for="LatestWorkTime" class="control-label">Laatste toegestane werktijd</label>
+                    <input asp-for="LatestWorkTime" class="form-control" />
+                    <span asp-validation-for="LatestWorkTime" class="text-danger"></span>
+                </div>
+            </div>
+            <br />
+            <div class="d-flex justify-content-center align-items-center">
+                <button type="submit" class="btn bumbo-btn w-50"><i class="fa-solid fa-plus"></i> Aanmaken</button>
+            </div>
+        </form>
+    </div>
 </div>
 
 @section Scripts {

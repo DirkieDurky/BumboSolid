@@ -1,0 +1,84 @@
+﻿input, select, .form-control {
+    box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.2) !important;
+    padding: .5rem !important;
+}
+
+.login-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    padding: 20px;
+}
+
+.login-form {
+    background-color: white;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border: 1px solid #ddd;
+    width: 100%;
+    max-width: 400px;
+    text-align: center;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+    .form-group label {
+        font-size: 14px;
+        font-weight: bold;
+        color: #333;
+        margin-bottom: .4rem;
+    }
+
+.form-control {
+    width: 100%;
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #ddd;
+    background-color: #f9f9f9;
+    font-size: 14px;
+    transition: all 0.3s ease;
+}
+
+.password-input-container {
+    position: relative;
+}
+
+.eye-btn {
+    position: absolute;
+    right: .5rem;
+    top: 2rem;
+    background: none;
+    border: none;
+    color: #6c757d;
+    cursor: pointer;
+    font-size: 1.2rem;
+}
+
+    .eye-btn:hover {
+        color: darkgray;
+    }
+
+.form-control {
+    background-color: #d0d0d0;
+    border: none;
+}
+
+    .form-control:focus {
+        background-color: #e5e5e5 !important;
+        -webkit-text-fill-color: black !important;
+    }
+
+    .form-control:-webkit-autofill {
+        background-color: #e5e5e5 !important;
+        -webkit-text-fill-color: black !important;
+        transition: background-color 50000s;
+    }
+
+        .form-control:-webkit-autofill:focus {
+            background-color: #e5e5e5 !important;
+            -webkit-text-fill-color: black !important;
+        }

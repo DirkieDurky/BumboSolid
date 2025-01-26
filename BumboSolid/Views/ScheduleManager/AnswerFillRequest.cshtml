@@ -4,54 +4,59 @@
 
 @model BumboSolid.Models.FillRequestViewModel
 
-<h3>Weet je zeker dat je dit invalsverzoek wilt @ViewBag.Answer?</h3>
-<div>
-    <hr />
-    <dl class="row">
-        <dt class="col-sm-2">
-            Datum
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Date)
-        </dd>
-        <dt class="col-sm-2">
-            Afdeling
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Shift.Department)
-        </dd>
-        <dt class="col-sm-2">
-            Starttijd
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Shift.StartTime)
-        </dd>
-        <dt class="col-sm-2">
-            Eindtijd
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Shift.EndTime)
-        </dd>
-        <dt class="col-sm-2">
-            Aanvrager
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Shift.Employee.FirstName)
-            @Html.DisplayFor(model => model.Shift.Employee.LastName)
-        </dd>
-        <dt class="col-sm-2">
-            Invaller
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.SubstituteEmployee.FirstName)
-            @Html.DisplayFor(model => model.SubstituteEmployee.LastName)
-        </dd>
-    </dl>
+<div class="d-flex flex-column align-items-center justify-content-center text-center">
+    <h3>Weet je zeker dat je dit invalsverzoek wilt @ViewBag.Answer?</h3>
+    <div class="w-50">
+        <hr />
+        <dl>
+            <dt>Datum</dt>
+            <dd>@Html.DisplayFor(model => model.Date)</dd>
 
-    <form asp-action="AnswerFillRequestConfirm" asp-route-id="@Model.Id" method="post">
-        <input type="hidden" asp-for="Id" />
-        <input type="hidden" asp-for="Status" />
-        <button type="submit" class="btn new-btn"> @ViewBag.Answer</button>
-        <a asp-action="FillRequests" class="btn early-btn new-btn">Annuleren</a>
-    </form>
+            <dt>Afdeling</dt>
+            <dd>@Html.DisplayFor(model => model.Shift.Department)</dd>
+
+            <dt>Starttijd</dt>
+            <dd>@Html.DisplayFor(model => model.Shift.StartTime)</dd>
+
+            <dt>Eindtijd</dt>
+            <dd>@Html.DisplayFor(model => model.Shift.EndTime)</dd>
+
+            <dt>Aanvrager</dt>
+            <dd>
+                @Html.DisplayFor(model => model.Shift.Employee.FirstName)
+                @Html.DisplayFor(model => model.Shift.Employee.LastName)
+            </dd>
+
+            <dt>Invaller</dt>
+            <dd>
+                @Html.DisplayFor(model => model.SubstituteEmployee.FirstName)
+                @Html.DisplayFor(model => model.SubstituteEmployee.LastName)
+            </dd>
+        </dl>
+
+        <div class="d-flex flex-row align-items-center justify-content-around w-100">
+            @if (ViewBag.Answer == "Accepteren")
+            {
+                <form asp-action="AnswerFillRequestConfirm" asp-route-id="@Model.Id" method="post">
+                    <input type="hidden" asp-for="Id" />
+                    <input type="hidden" asp-for="Status" />
+                    <button type="submit" class="btn bumbo-btn"><i class="fa-solid fa-check"></i> @ViewBag.Answer</button>
+                </form>
+            }
+            else if (ViewBag.Answer == "Weigeren")
+            {
+                <form asp-action="AnswerFillRequestConfirm" asp-route-id="@Model.Id" method="post">
+                    <input type="hidden" asp-for="Id" />
+                    <input type="hidden" asp-for="Status" />
+                    <button type="submit" class="btn bumbo-btn bumbo-btn-danger"><i class="fa-solid fa-xmark"></i> @ViewBag.Answer</button>
+                </form>
+            }
+            else
+            {
+                <a class="btn bumbo-btn disabled">Button not found</a>
+            }
+
+            <a asp-action="FillRequests" class="btn bumbo-btn bumbo-btn-back"><i class="fa-solid fa-arrow-left"></i> Annuleren</a>
+        </div>
+    </div>
 </div>

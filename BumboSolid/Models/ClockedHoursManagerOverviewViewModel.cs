@@ -12,11 +12,13 @@ public class ClockedHoursManagerOverviewViewModel
 
     public required Dictionary<byte, string> WeekdayDictionary { get; set; }
 
-    public int Year { get; set; }
-
-    public int WeekNumber { get; set; }
-
     public int? EmployeeId { get; set; }
 
     public string? EmployeeName { get; set; }
+
+    public int WeekId { get; set; }
+    public int? PreviousWeekId { get; set; }
+    public int? NextWeekId { get; set; }
+    public bool IsCurrentWeek { get; set; }
+    public bool HasSchedule { get; set; }
 }

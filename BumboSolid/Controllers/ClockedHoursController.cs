@@ -116,19 +116,18 @@ public class ClockedHoursController : Controller
         int year = DateTime.Now.Year;
         int weekNr = CultureInfo.CurrentCulture.Calendar.GetWeekOfYear(DateTime.Now, CalendarWeekRule.FirstDay, DayOfWeek.Monday);
 
-		var departments = await _context.Departments
-			.Where(d => selectedDepartments.Contains(d.Name))
-			.ToListAsync();
+        var departments = await _context.Departments
+            .Where(d => selectedDepartments.Contains(d.Name))
+            .ToListAsync();
 
-		// Check if the employee is allowed to work the given department
-		if (selectedDepartments == null || !selectedDepartments.Any()) ModelState.AddModelError(string.Empty, "Kies eerst een afdeling.");
-		User employee = await _context.Employees.Where(e => e.Id == userId).Include(e => e.Departments).FirstOrDefaultAsync();
-		bool validDepartment = false;
-		foreach (var department in employee.Departments) if (department.Name.Equals(departments.FirstOrDefault()?.Name)) validDepartment = true;
-		if (validDepartment == false) ModelState.AddModelError("", "De medewerker mag niet werken bij deze afdeling");
-        if (!ModelState.IsValid) return RedirectToAction("Index");
+        // Check if the employee is allowed to work the given department
+        if (selectedDepartments == null || !selectedDepartments.Any()) ModelState.AddModelError(string.Empty, "Kies eerst een afdeling.");
+        User employee = await _context.Employees.Where(e => e.Id == userId).Include(e => e.Departments).FirstOrDefaultAsync();
+        bool validDepartment = false;
+        foreach (var department in employee.Departments) if (department.Name.Equals(departments.FirstOrDefault()?.Name)) validDepartment = true;
+        if (validDepartment == false) ModelState.AddModelError("", "De medewerker mag niet werken bij deze afdeling");
 
-		var currentWeek = await _context.Weeks.Where(w => w.Year == year && w.WeekNumber == weekNr).FirstOrDefaultAsync();
+        var currentWeek = await _context.Weeks.Where(w => w.Year == year && w.WeekNumber == weekNr).FirstOrDefaultAsync();
         if (currentWeek == null)
         {
             currentWeek = new Week()
@@ -189,66 +188,63 @@ public class ClockedHoursController : Controller
     }
 
     [HttpGet("Overzicht/{year:int?}/{weekNumber:int?}")]
-    public async Task<IActionResult> Overview(int? year, int? weekNumber)
+    public async Task<IActionResult> Overview(int? weekId)
     {
         var user = await _userManager.GetUserAsync(User);
         int userId = user!.Id;
+        var currentWeek = await GetCurrentWeek(weekId);
 
-        if (year == null || weekNumber == null)
-        {
-            CultureInfo ci = CultureInfo.CurrentCulture;
-            Calendar calendar = ci.Calendar;
+        var culture = CultureInfo.CurrentCulture;
+        var today = DateTime.Now;
+        var currentYear = (short)today.Year;
+        var currentWeekNumber = (byte)culture.Calendar.GetWeekOfYear(today, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Monday);
 
-            year = (short)DateTime.Now.Year;
-            weekNumber = (byte)calendar.GetWeekOfYear(DateTime.Now, ci.DateTimeFormat.CalendarWeekRule, ci.DateTimeFormat.FirstDayOfWeek);
-        }
+        var previousWeek = await _context.Weeks
+        .Where(w =>
+        (w.Year == currentWeek.Year && w.WeekNumber == currentWeek.WeekNumber - 1) ||
+        (w.Year == currentWeek.Year - 1 && currentWeek.WeekNumber == 1 && w.WeekNumber == 52))
+        .OrderByDescending(w => w.Year)
+        .ThenByDescending(w => w.WeekNumber)
+        .FirstOrDefaultAsync();
 
-        var week = _context.Weeks.FirstOrDefault(w => w.Year == year && w.WeekNumber == weekNumber);
-        DateOnly startDate;
+        var nextWeek = await _context.Weeks
+        .Where(w =>
+        (w.Year == currentWeek.Year && w.WeekNumber == currentWeek.WeekNumber + 1) ||
+        (w.Year == currentWeek.Year + 1 && currentWeek.WeekNumber == 52 && w.WeekNumber == 1))
+        .OrderBy(w => w.Year)
+        .ThenBy(w => w.WeekNumber)
+        .FirstOrDefaultAsync();
 
-        if (week == null)
-        {
-            startDate = FirstDateOfWeek((int)year, (int)weekNumber);
-            ClockedHoursOverviewViewModel emptyOverviewViewModel = new ClockedHoursOverviewViewModel
-            {
-                StartDate = startDate,
-                EndDate = startDate.AddDays(6),
-                ClockedHours = new(),
-                WeekdayDictionary = new(),
-                Year = (int)year,
-                WeekNumber = (int)weekNumber,
-            };
-
-            return View(emptyOverviewViewModel);
-        }
+        var startDate = FirstDateOfWeek(currentWeek.Year, currentWeek.WeekNumber);
 
         var allClockedHours = await _context.ClockedHours
-            .Where(ch => ch.EmployeeId == userId && ch.WeekId == week.Id)
-            .OrderByDescending(ch => ch.WeekId)
-            .ThenByDescending(ch => ch.Weekday)
-            .ThenByDescending(ch => ch.StartTime)
-            .ToListAsync();
+        .Where(ch => ch.EmployeeId == userId && ch.WeekId == weekId)
+        .OrderByDescending(ch => ch.WeekId)
+        .ThenByDescending(ch => ch.Weekday)
+        .ThenByDescending(ch => ch.StartTime)
+        .ToListAsync();
 
         var weekdayDictionary = new Dictionary<byte, string>
         {
-            { 0, "Maandag" },
-            { 1, "Dinsdag" },
-            { 2, "Woensdag" },
-            { 3, "Donderdag" },
-            { 4, "Vrijdag" },
-            { 5, "Zaterdag" },
-            { 6, "Zondag" }
+        { 0, "Maandag" },
+        { 1, "Dinsdag" },
+        { 2, "Woensdag" },
+        { 3, "Donderdag" },
+        { 4, "Vrijdag" },
+        { 5, "Zaterdag" },
+        { 6, "Zondag" }
         };
 
-        startDate = FirstDateOfWeek(week.Year, week.WeekNumber);
         ClockedHoursOverviewViewModel overviewViewModel = new ClockedHoursOverviewViewModel
         {
             StartDate = startDate,
             EndDate = startDate.AddDays(6),
             ClockedHours = allClockedHours,
             WeekdayDictionary = weekdayDictionary,
-            Year = (int)year,
-            WeekNumber = (int)weekNumber,
+            WeekId = currentWeek.Id,
+            PreviousWeekId = previousWeek?.Id,
+            NextWeekId = nextWeek?.Id,
+            IsCurrentWeek = (currentWeek.Year == currentYear && currentWeek.WeekNumber == currentWeekNumber),
         };
 
         return View(overviewViewModel);
@@ -369,5 +365,30 @@ public class ClockedHoursController : Controller
     {
         dayOfWeek -= 1;
         return (byte)(dayOfWeek < 0 ? 6 : (byte)dayOfWeek);
+    }
+
+    private async Task<Week> GetCurrentWeek(int? id)
+    {
+        var culture = CultureInfo.CurrentCulture;
+        var today = DateTime.Now;
+        var currentYear = (short)today.Year;
+        var currentWeekNumber = (byte)culture.Calendar.GetWeekOfYear(today, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Monday);
+
+        var currentWeek = await _context.Weeks
+            .Include(w => w.Shifts)
+            .ThenInclude(s => s.Employee)
+            .FirstOrDefaultAsync(w => w.Id == id);
+
+        if (currentWeek == null)
+        {
+            currentWeek = await _context.Weeks
+                .Include(w => w.Shifts)
+                .ThenInclude(s => s.Employee)
+                .FirstOrDefaultAsync(w => w.Year == currentYear && w.WeekNumber == currentWeekNumber);
+
+            if (currentWeek == null) return null;
+        }
+
+        return currentWeek;
     }
 }

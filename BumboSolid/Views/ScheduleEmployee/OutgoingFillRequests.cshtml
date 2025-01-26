@@ -4,55 +4,63 @@
 
 @model IEnumerable<BumboSolid.Models.FillRequestViewModel>
 
-<header class="d-flex align-items-center gap-3 justify-content-center gap-3">
-	<div class="mx-3 text-center text-nowrap">
+<header class="d-flex flex-column align-items-center">
+	<div class="d-flex w-100 justify-content-center">
 		<h1>Invalsverzoeken</h1>
+	</div>
+	<div class="d-flex justify-content-around w-50">
+		<a class="btn bumbo-btn" asp-controller="ScheduleEmployee" asp-action="IncomingFillRequests">Inkomend</a>
+		<a class="btn bumbo-btn disabled">Uitgaand</a>
 	</div>
 </header>
 
-<a class="new-btn me-4 px-3" asp-controller="ScheduleEmployee" asp-action="IncomingFillRequests">Inkomend</a>
-<a class="new-btn selected-btn px-3 mb-3">Uitgaand</a>
+<br />
 
 @if (Model.Count() != 0)
 {
-	<div class="row">
-		<div class="col-md-2 fw-bold p-0 pe-3">Datum</div>
-		<div class="col-md-2 fw-bold p-0 pe-3">Dag</div>
-		<div class="col-md-2 fw-bold p-0 pe-3">Afdeling</div>
-		<div class="col-md-2 fw-bold p-0 pe-3">Starttijd</div>
-		<div class="col-md-2 fw-bold p-0 pe-3">Eindtijd</div>
-		<div class="col-md-2 fw-bold p-0 pe-3">Status</div>
-
-		<hr class="m-0 my-2" />
-
-		@foreach (var fillRequestViewModel in Model)
-		{
-			string weekday = fillRequestViewModel.Day switch
-			{
-				"Monday" => "Maandag",
-				"Tuesday" => "Dinsdag",
-				"Wednesday" => "Woensdag",
-				"Thursday" => "Donderdag",
-				"Friday" => "Vrijdag",
-				"Saturday" => "Zaterdag",
-				"Sunday" => "Zondag",
-				_ => "Onbekende Dag"
-			};
-
-			<div class="col-md-2 p-0 pe-3 left-center-text">@fillRequestViewModel.Date</div>
-			<div class="col-md-2 p-0 pe-3 left-center-text">@weekday</div>
-			<div class="col-md-2 p-0 pe-3 left-center-text">@fillRequestViewModel.Department</div>
-			<div class="col-md-2 p-0 pe-3 left-center-text">@fillRequestViewModel.StartTime</div>
-			<div class="col-md-2 p-0 pe-3 left-center-text">@fillRequestViewModel.EndTime</div>
-
-			<hr class="m-0 my-2" />
-		}
-	</div>
+    <div class="table-responsive">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th class="table-corner-l">Datum</th>
+                    <th>Dag</th>
+                    <th>Afdeling</th>
+                    <th>Starttijd</th>
+                    <th>Eindtijd</th>
+                    <th class="table-corner-r">Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var fillRequestViewModel in Model)
+                {
+                    string weekday = fillRequestViewModel.Day switch
+                    {
+                        "Monday" => "Maandag",
+                        "Tuesday" => "Dinsdag",
+                        "Wednesday" => "Woensdag",
+                        "Thursday" => "Donderdag",
+                        "Friday" => "Vrijdag",
+                        "Saturday" => "Zaterdag",
+                        "Sunday" => "Zondag",
+                        _ => "Onbekende Dag"
+                    };
+                    <tr>
+                        <td>@fillRequestViewModel.Date</td>
+                        <td>@weekday</td>
+                        <td>@fillRequestViewModel.Department</td>
+                        <td>@fillRequestViewModel.StartTime</td>
+                        <td>@fillRequestViewModel.EndTime</td>
+                        <td>@fillRequestViewModel.Status</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
 }
 else
 {
-	<div class="text-center pt-3">
-		<h1>Geen Invalsverzoeken</h1>
-		<p>Je hebt geen open invalverzoeken.</p>
-	</div>
+    <div class="text-center pt-3">
+        <h1>Geen Invalsverzoeken</h1>
+        <p>Je hebt geen open invalverzoeken.</p>
+    </div>
 }

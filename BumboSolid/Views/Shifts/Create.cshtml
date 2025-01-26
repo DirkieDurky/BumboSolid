@@ -21,16 +21,21 @@
     }
 }
 
-<header class="d-flex align-items-center gap-3 justify-content-center gap-3">
-    <div class="w-100 text-align text-end">
-        <a class="new-btn" asp-controller="ScheduleManager" asp-action="ManagerSchedule" asp-route-id="@Model.Week.Id">Terug</a>
+<header class="d-flex flex-column align-items-center">
+    <div class="d-flex w-100 header-items">
+        <div class="d-flex justify-content-center align-items-center w-35">
+            <a class="btn bumbo-btn bumbo-btn-back" asp-controller="ScheduleManager" asp-action="ManagerSchedule" asp-route-id="@Model.Week.Id">
+                <i class="fa-solid fa-arrow-left"></i> Terug
+            </a>
+        </div>
+        <div class="text-center d-flex flex-column align-items-center justify-content-center w-30">
+            <h1>Shift Inplannen</h1>
+            <h6>@startDate.ToString("dd/MM/yyyy") - @endDate.ToString("dd/MM/yyyy")</h6>
+        </div>
     </div>
-    <div class="mx-3 text-center text-nowrap">
-        <h1>Medewerker Inplannen</h1>
-        <p>@startDate.ToString("dd/MM/yyyy") - @endDate.ToString("dd/MM/yyyy")</p>
-    </div>
-    <div class="w-100"></div>
 </header>
+
+<br />
 
 <div class="row justify-content-center">
     <div class="col-md-8">
@@ -62,14 +67,14 @@
             <div class="row">
                 <div id="external-employee-container" class="form-group col-md-6 pb-2">
                     <label class="control-label fw-bold">Externe medewerker naam</label>
-                    <input id="external-employee-name" asp-for="Shift.ExternalEmployeeName" class="form-control p-1 border-solid-black" type="hidden" />
+                    <input id="external-employee-name" asp-for="Shift.ExternalEmployeeName" class="form-control p-1" type="hidden" />
                     <span asp-validation-for="Shift.ExternalEmployeeName" class="text-danger"></span>
                 </div>
             </div>
             <div class="row">
                 <div class="form-group col-md-6 pb-2">
                     <label class="control-label fw-bold">Afdeling</label>
-                    <select asp-for="Shift.Department" class="form-control p-1 border-solid-black" asp-items="ViewBag.Departments"></select>
+                    <select asp-for="Shift.Department" class="form-control p-1" asp-items="ViewBag.Departments"></select>
                 </div>
             </div>
             <div class="row">
@@ -95,8 +100,8 @@
                     <span asp-validation-for="Shift.EndTime" class="text-danger"></span>
                 </div>
             </div>
-            <div class="form-group">
-                <input type="submit" value="Inplannen" class="new-btn w-100" />
+            <div class="d-flex justify-content-center align-items-center">
+                <button type="submit" class="btn bumbo-btn w-50"><i class="fa-solid fa-plus"></i> Inplannen</button>
             </div>
             @if (!string.IsNullOrEmpty(ViewBag.Error))
             {

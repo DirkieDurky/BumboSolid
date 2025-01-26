@@ -1,35 +1,30 @@
 ﻿@model BumboSolid.Models.ClockedHoursOverviewViewModel
 
-@{
-    ViewData["Title"] = "Uren Overzicht";
-
-    int previousWeekYear = Model.Year;
-    int previousWeekNumber = Model.WeekNumber - 1;
-    if (previousWeekNumber < 1)
-    {
-        previousWeekYear -= 1;
-        previousWeekNumber = 52;
-    }
-
-    int nextWeekYear = Model.Year;
-    int nextWeekNumber = Model.WeekNumber + 1;
-    if (nextWeekNumber > 52)
-    {
-        nextWeekYear += 1;
-        nextWeekNumber = 1;
-    }
-}
-
-<header class="d-flex align-items-center gap-3 justify-content-center gap-3">
-    <div class="w-100">
-        <a class="new-btn" asp-controller="ClockedHours" asp-action="Overview" asp-route-year="@previousWeekYear" asp-route-weekNumber="@previousWeekNumber">Vorige Week</a>
-    </div>
-    <div class="mx-3 text-center text-nowrap">
-        <h1>Uren Overzicht</h1>
-        <p>@Model.StartDate - @Model.EndDate</p>
-    </div>
-    <div class="w-100 text-align text-end">
-        <a class="new-btn" asp-controller="ClockedHours" asp-action="Overview" asp-route-year="@nextWeekYear" asp-route-weekNumber="@nextWeekNumber">Volgende Week</a>
+<header class="d-flex flex-column align-items-center">
+    <div class="d-flex w-100 header-items">
+        <div class="d-flex justify-content-between align-items-center w-35">
+            <a class="btn bumbo-btn bumbo-btn-back" asp-action="Index">
+                <i class="fa-solid fa-arrow-left"></i> Terug
+            </a>
+            <a class="btn bumbo-btn @(!Model.PreviousWeekId.HasValue ? "disabled" : "")"
+               asp-action="Overview" asp-route-weekId="@Model.PreviousWeekId">
+                <i class="fa-solid fa-arrow-left"></i> Vorige Week
+            </a>
+        </div>
+        <div class="text-center d-flex flex-column align-items-center justify-content-center w-30">
+            <h1>Rooster</h1>
+            <h6>@Model.StartDate.ToString("dd/MM/yyyy") - @Model.EndDate.ToString("dd/MM/yyyy")</h6>
+        </div>
+        <div class="d-flex justify-content-between align-items-center w-35">
+            <a class="btn bumbo-btn @(!Model.NextWeekId.HasValue ? "disabled" : "")"
+               asp-action="Overview" asp-route-weekId="@Model.NextWeekId">
+                Volgende Week <i class="fa-solid fa-arrow-right"></i>
+            </a>
+            <a class="btn bumbo-btn @(Model.IsCurrentWeek ? "disabled" : "")"
+               asp-action="Overview">
+                <i class="fa-regular fa-circle-dot"></i> Huidige Week
+            </a>
+        </div>
     </div>
 </header>
 
@@ -44,11 +39,11 @@ else
     <table class="table">
         <thead>
             <tr>
-                <th>Datum</th>
+                <th class="table-corner-l">Datum</th>
                 <th>Weekdag</th>
                 <th>Afdeling</th>
                 <th>Starttijd</th>
-                <th>Eindtijd</th>
+                <th class="table-corner-r">Eindtijd</th>
             </tr>
         </thead>
         <tbody>

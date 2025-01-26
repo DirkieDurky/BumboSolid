@@ -4,9 +4,11 @@ namespace BumboSolid.Models;
 
 public class PrognosesViewModel
 {
-    public required List<Week> Prognoses { get; set; }
-
-    public int? Id { get; set; }
-
-    public List<PrognosisDepartment> PrognosisDepartments { get; set; } = new List<PrognosisDepartment>();
+    public required Week Prognose { get; set; }
+    public required List<Week> Weeks = [];
+    public int WeekId { get; set; }
+    public int? PreviousWeekId { get; set; }
+    public int? NextWeekId { get; set; }
+    public int CurrentWeekNumber { get; set; }
+    public bool IsCurrentWeek { get; set; }
 }

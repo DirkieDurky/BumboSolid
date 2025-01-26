@@ -1,0 +1,41 @@
+﻿::-webkit-scrollbar {
+    display: none;
+}
+
+p {
+    padding: 0;
+    margin: 0;
+}
+
+i {
+    color: #546174;
+}
+
+body {
+    padding-top: 5rem;
+    background-color: #dddddd;
+}
+
+.w-30 {
+    width: 30%;
+}
+
+.w-35 {
+    width: 35%;
+}
+
+.w-40 {
+    width: 40%;
+}
+
+.factor-description {
+    resize: none;
+    overflow-y: auto;
+    max-height: 5rem;
+    min-width: 10rem;
+}
+
+hr {
+    border-top: 1px solid #ddd;
+    margin-block: .2rem;
+}

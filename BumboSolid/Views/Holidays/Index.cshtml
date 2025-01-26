@@ -1,31 +1,49 @@
-﻿@{
-    ViewData["Title"] = "Feestdagen overzicht";
-}
+﻿@model IEnumerable<BumboSolid.Models.HolidayViewModel>
 
-@model IEnumerable<BumboSolid.Models.HolidayViewModel>
+<header class="d-flex flex-column align-items-center">
+    <div class="d-flex w-100 header-items">
+        <div class="d-flex justify-content-center align-items-center w-35">
+            <a asp-controller="Prognoses" asp-action="Index" class="btn bumbo-btn bumbo-btn-back"><i class="fa-solid fa-arrow-left"></i> Terug</a>
+        </div>
+        <div class="text-center d-flex flex-column align-items-center justify-content-center w-30">
+            <h1>Feestdagen</h1>
+        </div>
+        <div class="d-flex justify-content-center align-items-center w-35">
+            <a asp-controller="Holidays" asp-action="Create" class="btn bumbo-btn"><i class="fa-solid fa-plus"></i> Feestdag Toevoegen</a>
+        </div>
+    </div>
+</header>
 
-<script src="https://kit.fontawesome.com/981e782106.js" crossorigin="anonymous"></script>
+<br />
 
-<div class="d-flex flex-row">
-    <h6 class="holiday-title">Feest</h6>
-    <h6 class="holiday-title">Dagen</h6>
-    <h6 id="holiday-impact-title">Invloed</h6>
+<div>
+    <table class="table">
+        <thead>
+            <tr>
+                <th class="table-corner-l">Feestdagen</th>
+                <th>Startdatum</th>
+                <th>Einddatum</th>
+                <th class="table-corner-r">Invloed</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var holiday in Model)
+            {
+                <tr>
+                    <td>@holiday.Name</td>
+
+                    <td>@holiday.FirstDay.Day - @holiday.FirstDay.Month</td>
+
+                    <td>@holiday.LastDay.Day - @holiday.LastDay.Month</td>
+
+                    <td>
+                        <a class="btn btn-link" asp-controller="Holidays" asp-action="Edit" asp-route-id="@holiday.Name">
+                            <i class="fa-solid fa-chart-simple"></i>
+                        </a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
 </div>
-<div id="holidays-scrollbar">
-    <form>
-        @foreach (var holiday in Model)
-        {
-            <div class="d-flex flex-row">
-                <input class="p-2 form-control holiday-name" placeholder="Feest naam" value="@holiday.Name" readonly>
-                <input class="p-2 form-control holiday-date" placeholder="Begin" value="@holiday.FirstDay.Day-@holiday.FirstDay.Month" readonly>
-                <input class="p-2 form-control holiday-date" placeholder="Eind" value="@holiday.LastDay.Day-@holiday.LastDay.Month" readonly>
-                <a class="p-2 holiday-impact remove-text-decoration" asp-controller="Holidays" asp-action="Edit" asp-route-id=@holiday.Name><span class="fa-solid fa-chart-simple"></span></a>
-            </div>
-        }
-    </form>
-</div>
 
-<div class="col-4">
-    <a asp-controller="Holidays" asp-action="Create" type="button" class="btn early-btn btn-primary w-100">+</a>
-    <a asp-controller="Prognoses" asp-action="" type="button" class="btn early-btn btn-secondary w-100">Terug</a>
-</div>

@@ -1,59 +1,45 @@
-﻿@{
-    ViewData["Title"] = "Login";
-}
+﻿@model BumboSolid.Models.LoginViewModel
 
-@model BumboSolid.Models.LoginViewModel
-
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
-
-<div class="container mt-5">
-    <div class="row justify-content-center align-items-center">
-        <!-- Image Section -->
-        <div class="col-md-5 text-center d-none d-md-block">
-            <img src="~/images/bumbologo.png" alt="Login Illustration" class="login-image" />
-        </div>
-
-        <!-- Login Form Section -->
-        <div class="col-md-4">
-            <h2 class="text-center">Log in met je Bumbo account!</h2>
+<body>
+    <div class="login-container">
+        <div class="login-form">
+            <h2>Log in met je Bumbo account!</h2>
             <span class="text-danger">@ViewBag.Error</span>
             <form action="Login" method="post">
                 <hr />
-                <div class="form-group mb-3">
-                    <label asp-for="Email" class="form-label"></label>
+                <div class="form-group">
+                    <label asp-for="Email">Email</label>
                     <input asp-for="Email" class="form-control" />
                     <span asp-validation-for="Email" class="text-danger"></span>
                 </div>
-                <div class="form-group mb-3">
-                    <label asp-for="Password" class="form-label"></label>
-                    <div class="input-group">
-                        <input asp-for="Password" class="form-control" id="Password" />
-                        <button type="button" id="togglePassword" class="btn btn-outline-secondary">
-                            <i class="fas fa-eye"></i>
-                        </button>
-                    </div>
+                <div class="form-group password-input-container">
+                    <label asp-for="Password">Password</label>
+                    <input asp-for="Password" class="form-control" id="Password" />
+                    <button type="button" id="togglePassword" class="eye-btn">
+                        <i class="fas fa-eye"></i>
+                    </button>
                     <span asp-validation-for="Password" class="text-danger"></span>
                 </div>
-                <button type="submit" class="btn early-btn new-btn w-100 mt-3 bumbo-yellow">Login</button>
+                <button type="submit" class="btn bumbo-btn bumbo-btn-nav">Login</button>
             </form>
         </div>
     </div>
-</div>
+</body>
 
-@section Scripts {
-    <script>
-        document.getElementById("togglePassword").addEventListener("click", function () {
-            var passwordField = document.getElementById("Password");
-            var icon = this.querySelector("i");
-            if (passwordField.type === "password") {
-                passwordField.type = "text";
-                icon.classList.remove("fa-eye");
-                icon.classList.add("fa-eye-slash");
-            } else {
-                passwordField.type = "password";
-                icon.classList.remove("fa-eye-slash");
-                icon.classList.add("fa-eye");
-            }
-        });
-    </script>
-}
+
+<script>
+    document.getElementById("togglePassword").addEventListener("click", function () {
+        var passwordField = document.getElementById("Password");
+        var icon = this.querySelector("i");
+        if (passwordField.type === "password") {
+            passwordField.type = "text";
+            icon.classList.remove("fa-eye");
+            icon.classList.add("fa-eye-slash");
+        } else {
+            passwordField.type = "password";
+            icon.classList.remove("fa-eye-slash");
+            icon.classList.add("fa-eye");
+        }
+    });
+</script>
+
