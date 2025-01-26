@@ -1,8 +1,9 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using BumboSolid.HelperClasses;
+using System.ComponentModel.DataAnnotations;
 
 namespace BumboSolid.Models
 {
-    public class AbsenceViewModel
+    public class AbsenceViewModel : IValidatableObject
     {
         public int ShiftId { get; set; }
 
@@ -19,5 +20,12 @@ namespace BumboSolid.Models
         public TimeOnly EndTime { get; set; }
 
         public string? Description { get; set; }
-    }
+
+		public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
+		{
+            if (new OneBeforeOtherValidation().Validate(StartTime, EndTime) == true) yield return new ValidationResult("Begintijd moet hetzelfde of later zijn dan eindtijd.");
+
+            yield return ValidationResult.Success;
+		}
+	}
 }

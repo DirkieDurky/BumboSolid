@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
 using BumboSolid.HelperClasses.CLARules;
 using NuGet.Protocol.Core.Types;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace BumboSolid.Controllers;
 
@@ -290,11 +291,9 @@ public class ScheduleEmployeeController : Controller
         AbsenceViewModel absenceViewModel = new AbsenceViewModel()
         {
             ShiftId = id,
-
             Weekday = Weekday(shift.Week.Year, shift.Week.WeekNumber, shift.Weekday),
             StartTime = shift.StartTime,
             EndTime = shift.EndTime,
-
             Department = shift.Department
         };
 
@@ -304,16 +303,14 @@ public class ScheduleEmployeeController : Controller
     // Post: ScheduleEmployeeController/Absent/5
     [ValidateAntiForgeryToken]
     [HttpPost("Afmelden")]
-    public async Task<IActionResult> AbsentConfirmed(AbsenceViewModel absenceViewModel)
+    public async Task<IActionResult> Absent(AbsenceViewModel absenceViewModel)
     {
         var shift = _context.Shifts.FirstOrDefault(s => s.Id == absenceViewModel.ShiftId);
         if (shift == null) return NotFound();
 
-        // TODO: move these checks to custom validation!
-        // Check if the endtime is not earlier than the starttime
-        if (absenceViewModel.EndTime < absenceViewModel.StartTime) return RedirectToAction(nameof(EmployeeSchedule));
-        // Check if the start or endtime is within the allowed range
-        if (absenceViewModel.StartTime < shift.StartTime || absenceViewModel.EndTime > shift.EndTime) return RedirectToAction(nameof(EmployeeSchedule));
+		// Check if the start or endtime is within the allowed range
+		if (absenceViewModel.StartTime < shift.StartTime || absenceViewModel.EndTime > shift.EndTime) ModelState.AddModelError("", "De starttijd of eindtijd is buiten de shiftduur.");
+		if (!ModelState.IsValid) return View(absenceViewModel);
 
         // Check if the whole shift has to go or just a bit
         if (absenceViewModel.StartTime <= shift.StartTime && absenceViewModel.EndTime >= shift.EndTime)
@@ -323,6 +320,7 @@ public class ScheduleEmployeeController : Controller
                 _context.FillRequests.Remove(fillrequest);
             _context.Shifts.Remove(shift);
         }
+
         // Check if the shift has to be split
         else if (absenceViewModel.StartTime > shift.StartTime && absenceViewModel.EndTime < shift.EndTime)
         {

@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace BumboSolid.Data.Migrations
 {
     /// <inheritdoc />
-    public partial class NewPull : Migration
+    public partial class bestmigration : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
