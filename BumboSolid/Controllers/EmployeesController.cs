@@ -5,7 +5,6 @@ using BumboSolid.Data.Models;
 using BumboSolid.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authorization;
-using System.Text.RegularExpressions;
 
 namespace BumboSolid.Controllers;
 
@@ -70,25 +69,12 @@ public class EmployeesController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Create(EmployeesCreateViewModel input)
     {
-        if (await _userManager.FindByEmailAsync(input.Email) != null)
-        {
-            ModelState.AddModelError(nameof(input.Email), $"De email '{input.Email}' is al in gebruik.");
-        }
+        // Check if Email is already in use
+        if (await _userManager.FindByEmailAsync(input.Email) != null) ModelState.AddModelError(nameof(input.Email), $"De email '{input.Email}' is al in gebruik");
 
-        // Validate Age
-        if (!IsValidAge(input.BirthDate, out var ageErrorMessage))
+        foreach (var model in ModelState.Values)
         {
-            ModelState.AddModelError(nameof(input.BirthDate), ageErrorMessage);
-        }
-
-        if (input.Password != input.ConfirmPassword)
-        {
-            ModelState.AddModelError(nameof(input.Password), "De wachtwoorden komen niet overeen.");
-        }
-
-        if (!input.SelectedDepartments.Any())
-        {
-            ModelState.AddModelError("SelectedDepartments", "Kies minstens één afdeling.");
+            foreach (var error in model.Errors) Console.WriteLine(error.ErrorMessage);
         }
 
         if (ModelState.IsValid)
@@ -169,12 +155,6 @@ public class EmployeesController : Controller
         if (!model.SelectedDepartments.Any())
         {
             ModelState.AddModelError("SelectedDepartments", "Kies minstens één afdeling.");
-        }
-
-        // Validate Age
-        if (!IsValidAge(model.BirthDate, out var ageErrorMessage))
-        {
-            ModelState.AddModelError(nameof(model.BirthDate), ageErrorMessage);
         }
 
         if (!ModelState.IsValid)
@@ -288,22 +268,5 @@ public class EmployeesController : Controller
             await _context.SaveChangesAsync();
         }
         return RedirectToAction(nameof(Index));
-    }
-
-    private bool IsValidAge(DateOnly birthDate, out string errorMessage)
-    {
-        errorMessage = null;
-
-        var age = DateTime.Today.Year - birthDate.Year;
-        if (birthDate > DateOnly.FromDateTime(DateTime.Today.AddYears(-age)))
-            age--;
-
-        if (age < MinAge || age > MaxAge)
-        {
-            errorMessage = $"Leeftijd moet tussen {MinAge} en {MaxAge} jaar zijn. Huidige leeftijd: {age}.";
-            return false;
-        }
-
-        return true;
     }
 }

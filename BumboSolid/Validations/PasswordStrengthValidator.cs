@@ -18,7 +18,7 @@ namespace BumboSolid.Validations
 					"Minimaal 1 cijfer.\n" +
 					"Minimaal 1 kleine letter.\n" +
 					"Minimaal 1 hoofdletter.\n" +
-					"Minimaal 1 speciaal karakter. (Één van de volgende: !@#$%^&*()_+-=[]{}|`~)");
+					"Minimaal 1 speciaal karakter (Één van de volgende: !@#$%^&*()_+-=[]{}|`~)");
 				}
 			}
 

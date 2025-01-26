@@ -47,21 +47,34 @@ public class EmployeesCreateViewModel : IValidatableObject
 
     [Required(ErrorMessage = "Dit veld is vereist")]
     [DataType(DataType.Date)]
+	[DateRangeValidator]
     public DateOnly BirthDate { get; set; }
 
     [Required(ErrorMessage = "Dit veld is vereist")]
 	[DataType(DataType.Date)]
-    [YearsEmployedValidator]
+	[DateRangeValidator]
 	public DateOnly EmployedSince { get; set; }
 
     public List<Department> Departments { get; set; } = new List<Department>();
 
-    [Required(ErrorMessage = "Kies minstens één afdeling.")]
     public List<string> SelectedDepartments { get; set; } = new List<string>();
 
 	public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
 	{
-		if (EmployedSince < BirthDate) yield return new ValidationResult("De datum 'In dienst sinds' kan niet eerder zijn dan de geboortedatum.");
+		// Check if the EmployedSince date is not before BirthDate
+		if (EmployedSince < BirthDate) yield return new ValidationResult("De datum 'In dienst sinds' kan niet eerder zijn dan de geboortedatum");
+
+		// Check if Password is the same as ConfirmPassword
+		if (Password != ConfirmPassword)
+		{
+			yield return new ValidationResult("De wachtwoorden komen niet overeen");
+		}
+
+		// Check if any Department has been selected
+		if (!SelectedDepartments.Any())
+		{
+			yield return new ValidationResult("Kies minstens één afdeling.");
+		}
 
 		yield return ValidationResult.Success;
 	}
