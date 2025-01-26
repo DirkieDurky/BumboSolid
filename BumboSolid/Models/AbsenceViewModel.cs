@@ -19,7 +19,7 @@ namespace BumboSolid.Models
         [DataType(DataType.Time, ErrorMessage = "Dit is geen valide tijd")]
         public TimeOnly EndTime { get; set; }
 
-		[MaxLength(255)]
+		[MaxLength(256, ErrorMessage = "De ingevulde waarde is te lang")]
 		public string? Description { get; set; }
 
 		public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)

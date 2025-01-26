@@ -94,6 +94,7 @@ public class ScheduleEmployeeController : Controller
             CurrentWeekNumber = currentWeekNumber,
             IsCurrentWeek = (currentWeek.Year == currentYear && currentWeek.WeekNumber == currentWeekNumber)
         };
+
         return View(viewModel);
     }
 
