@@ -7,7 +7,6 @@ p {
     margin: 0;
 }
 
-
 i {
     color: #546174;
 }
@@ -17,20 +16,16 @@ body {
     background-color: #dddddd;
 }
 
-input[type="checkbox"] {
-    transform: scale(1.5);
-    position: relative;
-    left: .2rem;
-    bottom: .2rem;
-}
-
-
 .w-30 {
     width: 30%;
 }
 
 .w-35 {
     width: 35%;
+}
+
+.w-40 {
+    width: 40%;
 }
 
 .factor-description {
@@ -40,40 +35,6 @@ input[type="checkbox"] {
     min-width: 10rem;
 }
 
-
-/*.header-items {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    position: relative;
-}*/
-
-/*.header-title {
-    position: absolute;
-    left: 50%;
-    transform: translateX(-50%);
-    text-align: center;
-}
-*/
-
-/* Focus and hover states for inputs */
-/*input:focus, button:focus {
-    outline: none;
-    box-shadow: 0 0 5px rgba(0, 0, 255, 0.2);
-    background-color: white;  Make background white on focus 
-}*/
-
-/*input:hover, button:hover {
-    background-color: #f0f0f0;
-}*/
-
-/* Validation error messages */
-/*.text-danger {
-    font-size: 12px;
-    color: #ff0000;
-}*/
-
-/* Horizontal line style */
 hr {
     border-top: 1px solid #ddd;
     margin-block: .2rem;
