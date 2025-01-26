@@ -58,22 +58,28 @@ public class HolidaysController : Controller
     [HttpPost("Aanmaken")]
     public ActionResult Create(HolidayViewModel holidayViewModel)
     {
-        Holiday holiday = new Holiday();
-        holiday.Name = holidayViewModel.Name;
+		foreach (var model in ModelState.Values)
+		{
+			foreach (var error in model.Errors) Console.WriteLine(error.ErrorMessage);
+		}
 
-        // Making sure that the Holiday does not already exist
-        foreach (Holiday h in _context.Holidays)
-        {
-            if (h.Name.Equals(holiday.Name))
-            {
-                ModelState.AddModelError("Name", "Er bestaat al een feestdag met deze naam");
-                return View(holidayViewModel);
-            }
-        }
+		// Making sure that the Holiday does not already exist
+		foreach (Holiday holiday in _context.Holidays)
+		{
+			if (holiday.Name.Equals(holidayViewModel.Name))
+			{
+				ModelState.AddModelError("Name", "Er bestaat al een feestdag met deze naam");
+                break;
+			}
+		}
+		if (!ModelState.IsValid) return View(holidayViewModel);
 
         // Check if the model state is still valid before saving to the database
         if (ModelState.IsValid)
         {
+			Holiday holiday = new();
+			holiday.Name = holidayViewModel.Name;
+
 			// Adding HolidayDay for every day the holiday is active
 			for (int i = 0; i <= holidayViewModel.LastDay.DayNumber - holidayViewModel.FirstDay.DayNumber; i++)
 			{
@@ -117,11 +123,6 @@ public class HolidaysController : Controller
     [HttpPost("Bewerken/{id}")]
     public async Task<IActionResult> Edit(HolidayManageViewModel HolidayManageViewModel, DateOnly FirstDay, DateOnly LastDay)
     {
-		foreach (var model in ModelState.Values)
-		{
-			foreach (var error in model.Errors) Console.WriteLine(error.ErrorMessage);
-		}
-
 		if (!ModelState.IsValid)
         {
 			HolidayManageViewModel = CreateGraph(HolidayManageViewModel);
