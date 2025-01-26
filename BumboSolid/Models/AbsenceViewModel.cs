@@ -2,7 +2,7 @@
 
 namespace BumboSolid.Models
 {
-    public class AbsenceViewModel
+	public class AbsenceViewModel : IValidatableObject
     {
         public int ShiftId { get; set; }
 
@@ -18,6 +18,14 @@ namespace BumboSolid.Models
         [DataType(DataType.Time, ErrorMessage = "Dit is geen valide tijd")]
         public TimeOnly EndTime { get; set; }
 
-        public string? Description { get; set; }
-    }
+		[MaxLength(256, ErrorMessage = "De ingevulde waarde is te lang")]
+		public string? Description { get; set; }
+
+		public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
+		{
+			if (StartTime > EndTime) yield return new ValidationResult("De laatste dag moet hetzelfde of later zijn dan de eerste dag");
+
+			yield return ValidationResult.Success;
+		}
+	}
 }

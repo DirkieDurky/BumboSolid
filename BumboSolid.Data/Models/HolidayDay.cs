@@ -8,5 +8,5 @@ public partial class HolidayDay
 
     public short Impact { get; set; }
 
-    public virtual Holiday HolidayNameNavigation { get; set; } = null!;
+    public virtual Holiday? HolidayNameNavigation { get; set; } = null!;
 }

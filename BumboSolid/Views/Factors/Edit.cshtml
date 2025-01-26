@@ -1,15 +1,15 @@
-﻿@{
-    ViewData["Title"] = "Factoren bewerken";
-}
-
-@model BumboSolid.Models.EditPrognosisFactorsViewModel
+﻿@model BumboSolid.Models.EditPrognosisFactorsViewModel
 
 @{
-    String[] daysOfTheWeek = { "Maandag", "Dinsdag", "Woensdag", "Donderdag", "Vrijdag", "Zaterdag", "Zondag" };
+    ViewData["Title"] = "Factoren bewerken";
+    string[] daysOfTheWeek = { "Maandag", "Dinsdag", "Woensdag", "Donderdag", "Vrijdag", "Zaterdag", "Zondag" };
     int value;
 }
 
 <form method="post" asp-controller="Factors" asp-action="Edit" asp-route-id="@Model.Prognosis.Id">
+    <input type="hidden" asp-for="Prognosis" value="@Model.Prognosis" />
+    <input type="hidden" asp-for="Prognosis.Id" value="@Model.Prognosis.Id" />
+    <input type="hidden" asp-for="WeatherValues" value="@Model.WeatherValues" />
     <table class="table" cellspacing="0">
         <tr>
             <th></th>

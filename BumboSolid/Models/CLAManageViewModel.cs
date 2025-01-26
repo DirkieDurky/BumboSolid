@@ -31,7 +31,9 @@ public class CLAManageViewModel
     public decimal? MaxAvgWeeklyWorkDurationOverFourWeeks { get; set; }
 
     public bool MaxDayDurationHours { get; set; } = true;
+
     public bool MaxWeekDurationHours { get; set; } = true;
+
     public bool MaxAvgDurationHours { get; set; } = true;
+
     public bool MaxTotalShiftDurationHours { get; set; } = true;
-}

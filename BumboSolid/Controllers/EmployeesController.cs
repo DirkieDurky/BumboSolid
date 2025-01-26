@@ -5,7 +5,6 @@ using BumboSolid.Data.Models;
 using BumboSolid.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authorization;
-using System.Text.RegularExpressions;
 
 namespace BumboSolid.Controllers;
 
@@ -19,9 +18,6 @@ public class EmployeesController : Controller
 
     private const int MinAge = 13;
     private const int MaxAge = 128;
-
-    private const int MinEmployedYears = 0;
-    private const int MaxEmployedYears = 128;
 
     public EmployeesController(BumboDbContext context, UserManager<User> userManager, SignInManager<User> signInManager)
     {
@@ -73,37 +69,8 @@ public class EmployeesController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Create(EmployeesCreateViewModel input)
     {
-        if (await _userManager.FindByEmailAsync(input.Email) != null)
-        {
-            ModelState.AddModelError(nameof(input.Email), $"De email '{input.Email}' is al in gebruik.");
-        }
-
-        // Validate Age
-        if (!IsValidAge(input.BirthDate, out var ageErrorMessage))
-        {
-            ModelState.AddModelError(nameof(input.BirthDate), ageErrorMessage);
-        }
-
-        // Validate Employment Duration
-        if (!IsValidEmploymentDuration(input.EmployedSince, input.BirthDate, out var employmentErrorMessage))
-        {
-            ModelState.AddModelError(nameof(input.EmployedSince), employmentErrorMessage);
-        }
-
-        if (!PasswordIsStrongEnough(input.Password))
-        {
-            ModelState.AddModelError(nameof(input.Password), "Wachtwoord is niet sterk genoeg. Zorg dat uw wachtwoord voldoet aan de aangegeven regels. Het speciale karakter moet één van de volgende karakters zijn (!@#$%^&*()_+-=[]{}|`~)");
-        }
-
-        if (input.Password != input.ConfirmPassword)
-        {
-            ModelState.AddModelError(nameof(input.Password), "De wachtwoorden komen niet overeen.");
-        }
-
-        if (!input.SelectedDepartments.Any())
-        {
-            ModelState.AddModelError("SelectedDepartments", "Kies minstens één afdeling.");
-        }
+        // Check if Email is already in use
+        if (await _userManager.FindByEmailAsync(input.Email) != null) ModelState.AddModelError(nameof(input.Email), $"De email '{input.Email}' is al in gebruik");
 
         if (ModelState.IsValid)
         {
@@ -180,24 +147,10 @@ public class EmployeesController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Edit(int id, EmployeesEditViewModel model)
     {
-        if (!model.SelectedDepartments.Any())
-        {
-            ModelState.AddModelError("SelectedDepartments", "Kies minstens één afdeling.");
-        }
+		// Check if Email is already in use
+		if (await _userManager.FindByEmailAsync(model.Email) != null) ModelState.AddModelError(nameof(model.Email), $"De email '{model.Email}' is al in gebruik");
 
-        // Validate Age
-        if (!IsValidAge(model.BirthDate, out var ageErrorMessage))
-        {
-            ModelState.AddModelError(nameof(model.BirthDate), ageErrorMessage);
-        }
-
-        // Validate Employment Duration
-        if (!IsValidEmploymentDuration(model.EmployedSince, model.BirthDate, out var employmentErrorMessage))
-        {
-            ModelState.AddModelError(nameof(model.EmployedSince), employmentErrorMessage);
-        }
-
-        if (!ModelState.IsValid)
+		if (!ModelState.IsValid)
         {
             model.Departments = await _context.Departments.ToListAsync();
             return View(model);
@@ -241,16 +194,6 @@ public class EmployeesController : Controller
                 ModelState.AddModelError(nameof(model.Password), "De wachtwoorden komen niet overeen.");
                 model.Departments = await _context.Departments.ToListAsync();
                 return View(model);
-            }
-
-            if (!PasswordIsStrongEnough(model.Password))
-            {
-                ModelState.AddModelError(nameof(model.Password), "Wachtwoord is niet niet sterk genoeg. Zorg dat uw wachtwoord voldoet aan de volgende regels:\n" +
-                    "Minimaal 8 karakters.\n" +
-                    "Minimaal 1 cijfer.\n" +
-                    "Minimaal 1 kleine letter.\n" +
-                    "Minimaal 1 hoofdletter.\n" +
-                    "Minimaal 1 speciaal karakter. (Één van de volgende: !@#$%^&*()_+-=[]{}|`~)");
             }
 
             if (ModelState.IsValid)
@@ -319,51 +262,4 @@ public class EmployeesController : Controller
         }
         return RedirectToAction(nameof(Index));
     }
-
-    private bool IsValidAge(DateOnly birthDate, out string errorMessage)
-    {
-        errorMessage = null;
-
-        var age = DateTime.Today.Year - birthDate.Year;
-        if (birthDate > DateOnly.FromDateTime(DateTime.Today.AddYears(-age)))
-            age--;
-
-        if (age < MinAge || age > MaxAge)
-        {
-            errorMessage = $"Leeftijd moet tussen {MinAge} en {MaxAge} jaar zijn. Huidige leeftijd: {age}.";
-            return false;
-        }
-
-        return true;
-    }
-
-    private bool IsValidEmploymentDuration(DateOnly employedSince, DateOnly birthDate, out string errorMessage)
-    {
-        errorMessage = null;
-
-        if (employedSince < birthDate)
-        {
-            errorMessage = "De datum 'In dienst sinds' kan niet eerder zijn dan de geboortedatum.";
-            return false;
-        }
-
-        var yearsEmployed = DateTime.Today.Year - employedSince.Year;
-        if (employedSince > DateOnly.FromDateTime(DateTime.Today.AddYears(-yearsEmployed)))
-            yearsEmployed--;
-
-        if (yearsEmployed < MinEmployedYears || yearsEmployed > MaxEmployedYears)
-        {
-            errorMessage = $"Dienstjaren moeten tussen {MinEmployedYears} en {MaxEmployedYears} jaar zijn. Huidige dienstjaren: {yearsEmployed}.";
-            return false;
-        }
-
-        return true;
-    }
-
-    public bool PasswordIsStrongEnough(string password)
-    {
-        string passwordRegex = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[!@#$%^&*()_+\\-=\\[\\]{}\\|`~;:'\",.<>])[A-Za-z\\d!@#$%^&*()_+\\-=\\[\\]{}\\|`~;:'\",.<>]{8,}$";
-        return Regex.IsMatch(password, passwordRegex);
-    }
-
 }

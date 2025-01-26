@@ -29,10 +29,7 @@ public class AccountController : Controller
     [HttpPost]
     public async Task<IActionResult> Login(LoginViewModel Input)
     {
-        if (!ModelState.IsValid)
-        {
-            return View(Input);
-        }
+        if (!ModelState.IsValid) return View(Input);
 
         var result = await _signInManager.PasswordSignInAsync(Input.Email, Input.Password, true, false);
 
