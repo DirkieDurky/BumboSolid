@@ -94,7 +94,9 @@ namespace BumboSolid.Controllers
 			var viewModel = await GetSchedulesViewModel(currentWeek);
 
 			viewModel.Surcharges = await _context.CLASurchargeEntries.ToListAsync();
-			viewModel.ClockedHours = await _context.ClockedHours.Where(clockedHours => clockedHours.WeekId == viewModel.WeekId).ToListAsync();
+			viewModel.ClockedHours = await _context.ClockedHours.Where(clockedHours => clockedHours.WeekId == viewModel.WeekId)
+				.Include(c => c.Employee)
+				.ToListAsync();
 
 			return View(viewModel);
 		}
