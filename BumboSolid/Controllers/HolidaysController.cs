@@ -58,11 +58,6 @@ public class HolidaysController : Controller
     [HttpPost("Aanmaken")]
     public ActionResult Create(HolidayViewModel holidayViewModel)
     {
-		foreach (var model in ModelState.Values)
-		{
-			foreach (var error in model.Errors) Console.WriteLine(error.ErrorMessage);
-		}
-
 		// Making sure that the Holiday does not already exist
 		foreach (Holiday holiday in _context.Holidays)
 		{
