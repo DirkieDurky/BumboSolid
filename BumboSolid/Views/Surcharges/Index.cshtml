@@ -2,8 +2,6 @@
 @model BumboSolid.Models.SchedulesSurchargesViewModel
 
 @{
-	ViewData["Title"] = "Index";
-
 	string[] daysOfTheWeek = { "Maandag", "Dinsdag", "Woensdag", "Donderdag", "Vrijdag", "Zaterdag", "Zondag" };
 
 	var schedule = Model.Weeks.First(w => w.Id == Model.WeekId);
@@ -27,33 +25,32 @@
 	}
 }
 
-<header class="d-flex align-items-center gap-3 justify-content-center gap-3">
-	<div class="d-flex justify-content-between w-100 header-items">
-		<div></div>
-		<div>
-			<a class="btn new-btn @(!Model.PreviousWeekId.HasValue ? "disabled" : "")"
+<header class="d-flex flex-column align-items-center">
+	<div class="d-flex w-100 header-items">
+		<div class="d-flex justify-content-end align-items-center w-35">
+			<a class="btn bumbo-btn @(!Model.PreviousWeekId.HasValue ? "disabled" : "")"
 			   asp-action="Index" asp-route-id="@Model.PreviousWeekId">
-				Vorige Week
+				<i class="fa-solid fa-arrow-left"></i> Vorige Week
 			</a>
 		</div>
-		<div class="text-center d-flex flex-column align-items-center text-nowrap">
+		<div class="text-center d-flex flex-column align-items-center justify-content-center w-30">
 			<h1>Toeslagen</h1>
-			<p>@startDate.ToString("dd/MM/yyyy") - @endDate.ToString("dd/MM/yyyy")</p>
+			<h6>@startDate.ToString("dd/MM/yyyy") - @endDate.ToString("dd/MM/yyyy")</h6>
 		</div>
-		<div>
-			<a class="btn new-btn @(!Model.NextWeekId.HasValue ? "disabled" : "")"
+		<div class="d-flex justify-content-between align-items-center w-35">
+			<a class="btn bumbo-btn @(!Model.NextWeekId.HasValue ? "disabled" : "")"
 			   asp-action="Index" asp-route-id="@Model.NextWeekId">
-				Vorige Week
+				Vorige Week <i class="fa-solid fa-arrow-right"></i>
 			</a>
-		</div>
-		<div>
-			<a class="btn new-btn @(Model.IsCurrentWeek ? "disabled" : "")"
+			<a class="btn bumbo-btn @(Model.IsCurrentWeek ? "disabled" : "")"
 			   asp-action="Index" asp-route-id="">
-				Huidige Week
+				<i class="fa-regular fa-circle-dot"></i> Huidige Week
 			</a>
 		</div>
 	</div>
 </header>
+
+<br />
 
 @if (Model.ClockedHours == null || Model.ClockedHours.Count == 0)
 {
@@ -68,10 +65,10 @@ else
 	<table class="table">
 		<thead>
 			<tr>
-				<th>Naam</th>
+				<th class="table-corner-l">Naam</th>
 				<th>Dag</th>
 				<th>Tijd</th>
-				<th>Toeslag</th>
+				<th class="table-corner-r">Toeslag</th>
 			</tr>
 		</thead>
 		<tbody>
