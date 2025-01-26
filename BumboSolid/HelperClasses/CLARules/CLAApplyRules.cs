@@ -70,7 +70,11 @@ namespace BumboSolid.HelperClasses.CLARules
 		{
 			List<int> workDays = new List<int>();
 			workDays.Add(shift.Weekday);
-			foreach (Shift pastShift in shifts) if (workDays.Contains(pastShift.Weekday) == false) workDays.Add(pastShift.Weekday);
+			foreach (Shift pastShift in shifts)
+			{
+				if (pastShift.Id == shift.Id) continue;
+				if (workDays.Contains(pastShift.Weekday) == false) workDays.Add(pastShift.Weekday);
+			}
 			if (workDays.Count > CLA.MaxWorkDaysPerWeek) return false;
 			return true;
 		}
@@ -80,7 +84,11 @@ namespace BumboSolid.HelperClasses.CLARules
 		{
 			var todayShifts = shifts.Where(s => s.EmployeeId == userId && shift.Weekday == s.Weekday && shift.Week.WeekNumber == s.Week.WeekNumber && s.Week.Year == shift.Week.Year).ToList();
 			var todayTotalMinutes = (shift.EndTime - shift.StartTime).TotalMinutes;
-			foreach (Shift pastShift in todayShifts) todayTotalMinutes = todayTotalMinutes + (pastShift.EndTime - pastShift.StartTime).TotalMinutes;
+			foreach (Shift pastShift in todayShifts)
+			{
+				if (pastShift.Id == shift.Id) continue;
+				todayTotalMinutes = todayTotalMinutes + (pastShift.EndTime - pastShift.StartTime).TotalMinutes;
+			}
 			if (todayTotalMinutes > CLA.MaxWorkDurationPerDay) return false;
 			return true;
 		}
