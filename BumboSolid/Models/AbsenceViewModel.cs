@@ -24,7 +24,7 @@ namespace BumboSolid.Models
 
 		public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
 		{
-            if (new OneBeforeOtherValidation().Validate(StartTime, EndTime) == true) yield return new ValidationResult("Begintijd moet hetzelfde of later zijn dan eindtijd");
+			if (StartTime > EndTime) yield return new ValidationResult("Begintijd moet hetzelfde of later zijn dan eindtijd");
 
             yield return ValidationResult.Success;
 		}
