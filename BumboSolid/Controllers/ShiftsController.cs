@@ -84,8 +84,58 @@ public class ShiftsController : Controller
 
         shiftCreateViewModel.Week = week;
         shiftCreateViewModel.Shift.Week = week;
-        shiftCreateViewModel.Shift.WeekId = weekId;
-        shiftCreateViewModel.Employees = await _context.Employees.ToListAsync();
+        shiftCreateViewModel.Shift.WeekId = weekId;// Only show the users with the employee role, because the manager may not work a shift.
+
+        var employeeRole = await _context.Roles
+            .Where(r => r.Name == "Employee")
+            .Select(r => r.Id)
+            .FirstOrDefaultAsync();
+
+        if (employeeRole == 0)
+        {
+            throw new Exception("No employee role found");
+        }
+
+        var employeeRoleConnections = await _context.UserRoles
+            .Where(ur => ur.RoleId == employeeRole)
+            .Select(ur => ur.UserId)
+            .ToListAsync();
+
+        var employeeUsers = await _context.Users
+            .Where(u => employeeRoleConnections.Contains(u.Id))
+            .ToListAsync();
+
+        List<Shift> shifts = new();
+        //Exclude recursive columns to avoid infinite loop converting to JSON
+        foreach (Shift shift in _context.Shifts.ToList())
+        {
+            Shift newShift = new Shift()
+            {
+                StartTime = shift.StartTime,
+                EndTime = shift.EndTime,
+                WeekId = shift.WeekId,
+                EmployeeId = shift.EmployeeId,
+                Weekday = shift.Weekday,
+            };
+            shifts.Add(newShift);
+        }
+
+        shiftCreateViewModel.Shifts = shifts;
+
+        List<User> employees = new List<User>();
+        //Only include columns that I need to avoid infinite loop converting to JSON
+        foreach (User u in employeeUsers)
+        {
+            User newUser = new User()
+            {
+                Id = u.Id,
+                FirstName = u.FirstName,
+                LastName = u.LastName,
+                BirthDate = u.BirthDate,
+            };
+            employees.Add(newUser);
+        }
+        shiftCreateViewModel.Employees = employees;
 
         ViewBag.Departments = new SelectList(_context.Departments, "Name", "Name", shiftCreateViewModel.Shift.Department);
         ViewBag.WeekDays = new SelectList(new List<string> { "Maandag", "Dinsdag", "Woensdag", "Donderdag", "Vrijdag", "Zaterdag", "Zondag" });
@@ -150,7 +200,7 @@ public class ShiftsController : Controller
             };
             shifts.Add(newShift);
         }
-        
+
         // Only show the users with the employee role, because the manager may not work a shift.
         var employeeRole = await _context.Roles
             .Where(r => r.Name == "Employee")
@@ -210,7 +260,59 @@ public class ShiftsController : Controller
         shiftCreateViewModel.Week = week;
         shiftCreateViewModel.Shift.Week = week;
         shiftCreateViewModel.Shift.WeekId = week.Id;
-        shiftCreateViewModel.Employees = await _context.Employees.ToListAsync();
+
+        List<Shift> shifts = new List<Shift>();
+        //Only include columns that I need to avoid infinite loop converting to JSON
+        foreach (Shift s in _context.Shifts.ToList())
+        {
+            Shift newShift = new Shift()
+            {
+                StartTime = s.StartTime,
+                EndTime = s.EndTime,
+                WeekId = s.WeekId,
+                EmployeeId = s.EmployeeId,
+                Weekday = s.Weekday,
+            };
+            shifts.Add(newShift);
+        }
+
+        // Only show the users with the employee role, because the manager may not work a shift.
+        var employeeRole = await _context.Roles
+            .Where(r => r.Name == "Employee")
+            .Select(r => r.Id)
+            .FirstOrDefaultAsync();
+
+        if (employeeRole == 0)
+        {
+            throw new Exception("No employee role found");
+        }
+
+        var employeeRoleConnections = await _context.UserRoles
+            .Where(ur => ur.RoleId == employeeRole)
+            .Select(ur => ur.UserId)
+            .ToListAsync();
+
+        var employeeUsers = await _context.Users
+            .Where(u => employeeRoleConnections.Contains(u.Id))
+            .ToListAsync();
+
+        List<User> employees = new List<User>();
+        //Only include columns that I need to avoid infinite loop converting to JSON
+        foreach (User employeeUser in employeeUsers)
+        {
+            User newUser = new User()
+            {
+                Id = employeeUser.Id,
+                FirstName = employeeUser.FirstName,
+                LastName = employeeUser.LastName,
+                BirthDate = employeeUser.BirthDate,
+            };
+            employees.Add(newUser);
+        }
+
+        shiftCreateViewModel.Shifts = shifts;
+        shiftCreateViewModel.CLAEntries = _context.CLAEntries.ToList();
+        shiftCreateViewModel.Employees = employees;
 
         ViewBag.Departments = new SelectList(_context.Departments, "Name", "Name", shiftCreateViewModel.Shift.Department);
         ViewBag.WeekDays = new SelectList(new List<string> { "Maandag", "Dinsdag", "Woensdag", "Donderdag", "Vrijdag", "Zaterdag", "Zondag" });
