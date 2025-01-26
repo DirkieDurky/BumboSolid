@@ -19,11 +19,9 @@ public class EditPrognosisFactorsViewModel : IValidatableObject
     [Required(ErrorMessage = "Dit veld is vereist")]
     public int[] WeatherIds { get; set; } = null!;
 
-    [Required(ErrorMessage = "Dit veld is vereist")]
-    public int[] Others { get; set; } = null!;
+    public int[]? Others { get; set; } = null!;
 
-    [Required(ErrorMessage = "Dit veld is vereist")]
-	public string[] Descriptions { get; set; } = null!;
+	public string[]? Descriptions { get; set; } = null!;
 
 	public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
 	{

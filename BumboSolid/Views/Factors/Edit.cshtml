@@ -8,7 +8,7 @@
 <header class="d-flex flex-column align-items-center">
     <div class="d-flex w-100 header-items">
         <div class="d-flex justify-content-start align-items-center w-35">
-            <a asp-action="Index" class="btn bumbo-btn bumbo-btn-back">
+            <a asp-controller="Home" asp-action="Index" class="btn bumbo-btn bumbo-btn-back">
                 <i class="fa-solid fa-arrow-left"></i> Terug
             </a>
         </div>
@@ -59,7 +59,7 @@
                                 }
                                 <img id="@("weather-icon-" + i)" src=@imageSrc class="background-white" />
 
-                                <select id="@("weather-select-" + i)" name="weather" type="number" class="form-control form-select" onchange="@("updateIcon("+i+"); updateVisitorEstimate();")">
+                                <select id="@("weather-select-" + i)" name="WeatherIds[@i]" class="form-control form-select" onchange="@("updateIcon("+i+"); updateVisitorEstimate();")">
                                     @{
                                         for (int j = 0; j < 7; j++)
                                         {
@@ -70,8 +70,8 @@
                             </div>
                         </td>
                         <td class="table-secondary text-center d-flex flex-row align-items-center gap-4">
-                            <input id="other-@i" name="other" type="number" class="form-control" value="@otherValue" onchange="updateVisitorEstimate()">
-                            <textarea name="description" class="factor-description" placeholder="Beschrijving"></textarea>
+                            <input id="other-@i" name="Others[@i]" type="number" class="form-control" value="@otherValue" onchange="updateVisitorEstimate()">
+                            <textarea name="Descriptions[@i]" class="factor-description" placeholder="Beschrijving"></textarea>
                         </td>
                         <td><p id="total-estimated-visitor-count-@i" class="background-light impact-unchangeable-dark">0</p></td>
                     </tr>

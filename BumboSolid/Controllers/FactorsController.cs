@@ -54,7 +54,6 @@ public class FactorsController : Controller
 
 		if (ModelState.IsValid)
 		{
-			Console.WriteLine("test");
 			for (int i = 0; i < model.VisitorEstimates!.Length; i++)
 			{
 				var prognosisDay = prognosis.PrognosisDays.FirstOrDefault(pd => pd.Weekday == i);
