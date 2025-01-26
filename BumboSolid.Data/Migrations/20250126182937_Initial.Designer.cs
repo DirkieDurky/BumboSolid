@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BumboSolid.Data.Migrations
 {
     [DbContext(typeof(BumboDbContext))]
-    [Migration("20250126121253_best-migration")]
-    partial class bestmigration
+    [Migration("20250126182937_Initial")]
+    partial class Initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -95,23 +95,6 @@ namespace BumboSolid.Data.Migrations
                     b.ToTable("AvailabilityRule", (string)null);
                 });
 
-            modelBuilder.Entity("BumboSolid.Data.Models.CLABreakEntry", b =>
-                {
-                    b.Property<int>("CLAEntryId")
-                        .HasColumnType("int")
-                        .HasColumnName("CLAEntryId");
-
-                    b.Property<int>("WorkDuration")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("MinBreakDuration")
-                        .HasColumnType("int");
-
-                    b.HasKey("CLAEntryId", "WorkDuration");
-
-                    b.ToTable("CLABreakEntry", (string)null);
-                });
-
             modelBuilder.Entity("BumboSolid.Data.Models.CLAEntry", b =>
                 {
                     b.Property<int>("Id")
@@ -146,9 +129,6 @@ namespace BumboSolid.Data.Migrations
                         .HasColumnType("int");
 
                     b.Property<int?>("MaxWorkDurationPerDay")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("MaxWorkDurationPerHolidayWeek")
                         .HasColumnType("int");
 
                     b.Property<int?>("MaxWorkDurationPerWeek")
@@ -458,50 +438,6 @@ namespace BumboSolid.Data.Migrations
                     b.HasKey("PrognosisId", "Weekday");
 
                     b.ToTable("PrognosisDay", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            PrognosisId = 1,
-                            Weekday = (byte)0,
-                            VisitorEstimate = 1000
-                        },
-                        new
-                        {
-                            PrognosisId = 1,
-                            Weekday = (byte)1,
-                            VisitorEstimate = 1000
-                        },
-                        new
-                        {
-                            PrognosisId = 1,
-                            Weekday = (byte)2,
-                            VisitorEstimate = 1000
-                        },
-                        new
-                        {
-                            PrognosisId = 1,
-                            Weekday = (byte)3,
-                            VisitorEstimate = 1000
-                        },
-                        new
-                        {
-                            PrognosisId = 1,
-                            Weekday = (byte)4,
-                            VisitorEstimate = 1000
-                        },
-                        new
-                        {
-                            PrognosisId = 1,
-                            Weekday = (byte)5,
-                            VisitorEstimate = 1000
-                        },
-                        new
-                        {
-                            PrognosisId = 1,
-                            Weekday = (byte)6,
-                            VisitorEstimate = 1000
-                        });
                 });
 
             modelBuilder.Entity("BumboSolid.Data.Models.PrognosisDepartment", b =>
@@ -528,155 +464,6 @@ namespace BumboSolid.Data.Migrations
                     b.HasIndex(new[] { "PrognosisId", "Weekday" }, "IX_PrognosisDepartment_PrognosisID_Weekday");
 
                     b.ToTable("PrognosisDepartment", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            PrognosisId = 1,
-                            Department = "Kassa",
-                            Weekday = (byte)0,
-                            WorkHours = (short)4000
-                        },
-                        new
-                        {
-                            PrognosisId = 1,
-                            Department = "Vakkenvullen",
-                            Weekday = (byte)0,
-                            WorkHours = (short)4000
-                        },
-                        new
-                        {
-                            PrognosisId = 1,
-                            Department = "Vers",
-                            Weekday = (byte)0,
-                            WorkHours = (short)4000
-                        },
-                        new
-                        {
-                            PrognosisId = 1,
-                            Department = "Kassa",
-                            Weekday = (byte)1,
-                            WorkHours = (short)4000
-                        },
-                        new
-                        {
-                            PrognosisId = 1,
-                            Department = "Vakkenvullen",
-                            Weekday = (byte)1,
-                            WorkHours = (short)4000
-                        },
-                        new
-                        {
-                            PrognosisId = 1,
-                            Department = "Vers",
-                            Weekday = (byte)1,
-                            WorkHours = (short)4000
-                        },
-                        new
-                        {
-                            PrognosisId = 1,
-                            Department = "Kassa",
-                            Weekday = (byte)2,
-                            WorkHours = (short)4000
-                        },
-                        new
-                        {
-                            PrognosisId = 1,
-                            Department = "Vakkenvullen",
-                            Weekday = (byte)2,
-                            WorkHours = (short)4000
-                        },
-                        new
-                        {
-                            PrognosisId = 1,
-                            Department = "Vers",
-                            Weekday = (byte)2,
-                            WorkHours = (short)4000
-                        },
-                        new
-                        {
-                            PrognosisId = 1,
-                            Department = "Kassa",
-                            Weekday = (byte)3,
-                            WorkHours = (short)4000
-                        },
-                        new
-                        {
-                            PrognosisId = 1,
-                            Department = "Vakkenvullen",
-                            Weekday = (byte)3,
-                            WorkHours = (short)4000
-                        },
-                        new
-                        {
-                            PrognosisId = 1,
-                            Department = "Vers",
-                            Weekday = (byte)3,
-                            WorkHours = (short)4000
-                        },
-                        new
-                        {
-                            PrognosisId = 1,
-                            Department = "Kassa",
-                            Weekday = (byte)4,
-                            WorkHours = (short)4000
-                        },
-                        new
-                        {
-                            PrognosisId = 1,
-                            Department = "Vakkenvullen",
-                            Weekday = (byte)4,
-                            WorkHours = (short)4000
-                        },
-                        new
-                        {
-                            PrognosisId = 1,
-                            Department = "Vers",
-                            Weekday = (byte)4,
-                            WorkHours = (short)4000
-                        },
-                        new
-                        {
-                            PrognosisId = 1,
-                            Department = "Kassa",
-                            Weekday = (byte)5,
-                            WorkHours = (short)4000
-                        },
-                        new
-                        {
-                            PrognosisId = 1,
-                            Department = "Vakkenvullen",
-                            Weekday = (byte)5,
-                            WorkHours = (short)4000
-                        },
-                        new
-                        {
-                            PrognosisId = 1,
-                            Department = "Vers",
-                            Weekday = (byte)5,
-                            WorkHours = (short)4000
-                        },
-                        new
-                        {
-                            PrognosisId = 1,
-                            Department = "Kassa",
-                            Weekday = (byte)6,
-                            WorkHours = (short)4000
-                        },
-                        new
-                        {
-                            PrognosisId = 1,
-                            Department = "Vakkenvullen",
-                            Weekday = (byte)6,
-                            WorkHours = (short)4000
-                        },
-                        new
-                        {
-                            PrognosisId = 1,
-                            Department = "Vers",
-                            Weekday = (byte)6,
-                            WorkHours = (short)4000
-                        });
                 });
 
             modelBuilder.Entity("BumboSolid.Data.Models.Shift", b =>
@@ -902,50 +689,6 @@ namespace BumboSolid.Data.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Week", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            HasSchedule = (byte)0,
-                            WeekNumber = (byte)50,
-                            Year = (short)2024
-                        },
-                        new
-                        {
-                            Id = 2,
-                            HasSchedule = (byte)0,
-                            WeekNumber = (byte)1,
-                            Year = (short)2025
-                        },
-                        new
-                        {
-                            Id = 3,
-                            HasSchedule = (byte)0,
-                            WeekNumber = (byte)2,
-                            Year = (short)2025
-                        },
-                        new
-                        {
-                            Id = 4,
-                            HasSchedule = (byte)0,
-                            WeekNumber = (byte)3,
-                            Year = (short)2025
-                        },
-                        new
-                        {
-                            Id = 5,
-                            HasSchedule = (byte)0,
-                            WeekNumber = (byte)4,
-                            Year = (short)2025
-                        },
-                        new
-                        {
-                            Id = 6,
-                            HasSchedule = (byte)0,
-                            WeekNumber = (byte)5,
-                            Year = (short)2025
-                        });
                 });
 
             modelBuilder.Entity("Capability", b =>
@@ -1103,6 +846,7 @@ namespace BumboSolid.Data.Migrations
                     b.HasOne("BumboSolid.Data.Models.User", "Employee")
                         .WithMany("Absences")
                         .HasForeignKey("EmployeeId")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .HasConstraintName("FK_Absence_Employee");
 
                     b.HasOne("BumboSolid.Data.Models.Week", "Week")
@@ -1125,17 +869,6 @@ namespace BumboSolid.Data.Migrations
                         .HasConstraintName("FK_AvailabilityRule_Employee");
 
                     b.Navigation("EmployeeNavigation");
-                });
-
-            modelBuilder.Entity("BumboSolid.Data.Models.CLABreakEntry", b =>
-                {
-                    b.HasOne("BumboSolid.Data.Models.CLAEntry", "CLAEntry")
-                        .WithMany("CLABreakEntries")
-                        .HasForeignKey("CLAEntryId")
-                        .IsRequired()
-                        .HasConstraintName("FK_CLABreakEntry_CLAEntry");
-
-                    b.Navigation("CLAEntry");
                 });
 
             modelBuilder.Entity("BumboSolid.Data.Models.ClockedHours", b =>
@@ -1354,11 +1087,6 @@ namespace BumboSolid.Data.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-                });
-
-            modelBuilder.Entity("BumboSolid.Data.Models.CLAEntry", b =>
-                {
-                    b.Navigation("CLABreakEntries");
                 });
 
             modelBuilder.Entity("BumboSolid.Data.Models.Department", b =>

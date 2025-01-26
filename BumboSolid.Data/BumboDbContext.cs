@@ -444,48 +444,6 @@ public partial class BumboDbContext : IdentityDbContext<User, IdentityRole<int>,
             new Norm { Id = 3, Activity = "Vers", Duration = 45, AvgDailyPerformances = 8, Department = "Vers" }
         );
 
-        modelBuilder.Entity<Week>().HasData(
-            new Week { Id = 1, Year = 2024, WeekNumber = 50 },
-            new Week { Id = 2, Year = 2025, WeekNumber = 1 },
-            new Week { Id = 3, Year = 2025, WeekNumber = 2 },
-            new Week { Id = 4, Year = 2025, WeekNumber = 3 },
-            new Week { Id = 5, Year = 2025, WeekNumber = 4 },
-            new Week { Id = 6, Year = 2025, WeekNumber = 5 }
-        );
-
-        modelBuilder.Entity<PrognosisDay>().HasData(
-            new PrognosisDay { PrognosisId = 1, Weekday = 0, VisitorEstimate = 1000 },
-            new PrognosisDay { PrognosisId = 1, Weekday = 1, VisitorEstimate = 1000 },
-            new PrognosisDay { PrognosisId = 1, Weekday = 2, VisitorEstimate = 1000 },
-            new PrognosisDay { PrognosisId = 1, Weekday = 3, VisitorEstimate = 1000 },
-            new PrognosisDay { PrognosisId = 1, Weekday = 4, VisitorEstimate = 1000 },
-            new PrognosisDay { PrognosisId = 1, Weekday = 5, VisitorEstimate = 1000 },
-            new PrognosisDay { PrognosisId = 1, Weekday = 6, VisitorEstimate = 1000 }
-        );
-        modelBuilder.Entity<PrognosisDepartment>().HasData(
-            new PrognosisDepartment { PrognosisId = 1, Department = "Kassa", Weekday = 0, WorkHours = 4000 },
-            new PrognosisDepartment { PrognosisId = 1, Department = "Vakkenvullen", Weekday = 0, WorkHours = 4000 },
-            new PrognosisDepartment { PrognosisId = 1, Department = "Vers", Weekday = 0, WorkHours = 4000 },
-            new PrognosisDepartment { PrognosisId = 1, Department = "Kassa", Weekday = 1, WorkHours = 4000 },
-            new PrognosisDepartment { PrognosisId = 1, Department = "Vakkenvullen", Weekday = 1, WorkHours = 4000 },
-            new PrognosisDepartment { PrognosisId = 1, Department = "Vers", Weekday = 1, WorkHours = 4000 },
-            new PrognosisDepartment { PrognosisId = 1, Department = "Kassa", Weekday = 2, WorkHours = 4000 },
-            new PrognosisDepartment { PrognosisId = 1, Department = "Vakkenvullen", Weekday = 2, WorkHours = 4000 },
-            new PrognosisDepartment { PrognosisId = 1, Department = "Vers", Weekday = 2, WorkHours = 4000 },
-            new PrognosisDepartment { PrognosisId = 1, Department = "Kassa", Weekday = 3, WorkHours = 4000 },
-            new PrognosisDepartment { PrognosisId = 1, Department = "Vakkenvullen", Weekday = 3, WorkHours = 4000 },
-            new PrognosisDepartment { PrognosisId = 1, Department = "Vers", Weekday = 3, WorkHours = 4000 },
-            new PrognosisDepartment { PrognosisId = 1, Department = "Kassa", Weekday = 4, WorkHours = 4000 },
-            new PrognosisDepartment { PrognosisId = 1, Department = "Vakkenvullen", Weekday = 4, WorkHours = 4000 },
-            new PrognosisDepartment { PrognosisId = 1, Department = "Vers", Weekday = 4, WorkHours = 4000 },
-            new PrognosisDepartment { PrognosisId = 1, Department = "Kassa", Weekday = 5, WorkHours = 4000 },
-            new PrognosisDepartment { PrognosisId = 1, Department = "Vakkenvullen", Weekday = 5, WorkHours = 4000 },
-            new PrognosisDepartment { PrognosisId = 1, Department = "Vers", Weekday = 5, WorkHours = 4000 },
-            new PrognosisDepartment { PrognosisId = 1, Department = "Kassa", Weekday = 6, WorkHours = 4000 },
-            new PrognosisDepartment { PrognosisId = 1, Department = "Vakkenvullen", Weekday = 6, WorkHours = 4000 },
-            new PrognosisDepartment { PrognosisId = 1, Department = "Vers", Weekday = 6, WorkHours = 4000 }
-        );
-
         OnModelCreatingPartial(modelBuilder);
     }
 

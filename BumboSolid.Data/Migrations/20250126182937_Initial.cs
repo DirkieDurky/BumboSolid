@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace BumboSolid.Data.Migrations
 {
     /// <inheritdoc />
-    public partial class DeleteAbsenceWhenDeletingEmployee : Migration
+    public partial class Initial : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -39,15 +39,31 @@ namespace BumboSolid.Data.Migrations
                     MaxWorkDurationPerDay = table.Column<int>(type: "int", nullable: true),
                     MaxWorkDaysPerWeek = table.Column<int>(type: "int", nullable: true),
                     MaxWorkDurationPerWeek = table.Column<int>(type: "int", nullable: true),
-                    MaxWorkDurationPerHolidayWeek = table.Column<int>(type: "int", nullable: true),
                     EarliestWorkTime = table.Column<TimeOnly>(type: "time", nullable: true),
                     LatestWorkTime = table.Column<TimeOnly>(type: "time", nullable: true),
                     MaxAvgWeeklyWorkDurationOverFourWeeks = table.Column<int>(type: "int", nullable: true),
-                    MaxShiftDuration = table.Column<int>(type: "int", nullable: true)
+                    MaxShiftDuration = table.Column<int>(type: "int", nullable: true),
+                    HolidaySurcharge = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_CLAEntry", x => x.ID);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "CLASurchargeEntry",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Surcharge = table.Column<int>(type: "int", nullable: false),
+                    Weekday = table.Column<byte>(type: "tinyint", nullable: true),
+                    StartTime = table.Column<TimeOnly>(type: "time", nullable: true),
+                    EndTime = table.Column<TimeOnly>(type: "time", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_CLASurchargeEntry", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -162,24 +178,6 @@ namespace BumboSolid.Data.Migrations
                         principalTable: "AspNetRoles",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "CLABreakEntry",
-                columns: table => new
-                {
-                    CLAEntryId = table.Column<int>(type: "int", nullable: false),
-                    WorkDuration = table.Column<int>(type: "int", nullable: false),
-                    MinBreakDuration = table.Column<int>(type: "int", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_CLABreakEntry", x => new { x.CLAEntryId, x.WorkDuration });
-                    table.ForeignKey(
-                        name: "FK_CLABreakEntry_CLAEntry",
-                        column: x => x.CLAEntryId,
-                        principalTable: "CLAEntry",
-                        principalColumn: "ID");
                 });
 
             migrationBuilder.CreateTable(
@@ -586,19 +584,6 @@ namespace BumboSolid.Data.Migrations
                 });
 
             migrationBuilder.InsertData(
-                table: "Week",
-                columns: new[] { "Id", "HasSchedule", "WeekNumber", "Year" },
-                values: new object[,]
-                {
-                    { 1, (byte)0, (byte)50, (short)2024 },
-                    { 2, (byte)0, (byte)1, (short)2025 },
-                    { 3, (byte)0, (byte)2, (short)2025 },
-                    { 4, (byte)0, (byte)3, (short)2025 },
-                    { 5, (byte)0, (byte)4, (short)2025 },
-                    { 6, (byte)0, (byte)5, (short)2025 }
-                });
-
-            migrationBuilder.InsertData(
                 table: "Norm",
                 columns: new[] { "ID", "Activity", "AvgDailyPerformances", "Department", "Duration", "PerVisitor" },
                 values: new object[,]
@@ -606,48 +591,6 @@ namespace BumboSolid.Data.Migrations
                     { 1, "1 vak vullen", (byte)5, "Vakkenvullen", 300, false },
                     { 2, "Kassa", (byte)1, "Kassa", 120, true },
                     { 3, "Vers", (byte)8, "Vers", 45, false }
-                });
-
-            migrationBuilder.InsertData(
-                table: "PrognosisDay",
-                columns: new[] { "PrognosisID", "Weekday", "VisitorEstimate" },
-                values: new object[,]
-                {
-                    { 1, (byte)0, 1000 },
-                    { 1, (byte)1, 1000 },
-                    { 1, (byte)2, 1000 },
-                    { 1, (byte)3, 1000 },
-                    { 1, (byte)4, 1000 },
-                    { 1, (byte)5, 1000 },
-                    { 1, (byte)6, 1000 }
-                });
-
-            migrationBuilder.InsertData(
-                table: "PrognosisDepartment",
-                columns: new[] { "Department", "PrognosisID", "Weekday", "WorkHours" },
-                values: new object[,]
-                {
-                    { "Kassa", 1, (byte)0, (short)4000 },
-                    { "Kassa", 1, (byte)1, (short)4000 },
-                    { "Kassa", 1, (byte)2, (short)4000 },
-                    { "Kassa", 1, (byte)3, (short)4000 },
-                    { "Kassa", 1, (byte)4, (short)4000 },
-                    { "Kassa", 1, (byte)5, (short)4000 },
-                    { "Kassa", 1, (byte)6, (short)4000 },
-                    { "Vakkenvullen", 1, (byte)0, (short)4000 },
-                    { "Vakkenvullen", 1, (byte)1, (short)4000 },
-                    { "Vakkenvullen", 1, (byte)2, (short)4000 },
-                    { "Vakkenvullen", 1, (byte)3, (short)4000 },
-                    { "Vakkenvullen", 1, (byte)4, (short)4000 },
-                    { "Vakkenvullen", 1, (byte)5, (short)4000 },
-                    { "Vakkenvullen", 1, (byte)6, (short)4000 },
-                    { "Vers", 1, (byte)0, (short)4000 },
-                    { "Vers", 1, (byte)1, (short)4000 },
-                    { "Vers", 1, (byte)2, (short)4000 },
-                    { "Vers", 1, (byte)3, (short)4000 },
-                    { "Vers", 1, (byte)4, (short)4000 },
-                    { "Vers", 1, (byte)5, (short)4000 },
-                    { "Vers", 1, (byte)6, (short)4000 }
                 });
 
             migrationBuilder.CreateIndex(
@@ -808,7 +751,10 @@ namespace BumboSolid.Data.Migrations
                 name: "Capability");
 
             migrationBuilder.DropTable(
-                name: "CLABreakEntry");
+                name: "CLAEntry");
+
+            migrationBuilder.DropTable(
+                name: "CLASurchargeEntry");
 
             migrationBuilder.DropTable(
                 name: "ClockedHours");
@@ -830,9 +776,6 @@ namespace BumboSolid.Data.Migrations
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");
-
-            migrationBuilder.DropTable(
-                name: "CLAEntry");
 
             migrationBuilder.DropTable(
                 name: "FactorType");
