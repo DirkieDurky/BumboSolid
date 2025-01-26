@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace BumboSolid.Data.Migrations
 {
     /// <inheritdoc />
-    public partial class DeleteAbsenceWhenDeletingEmployee : Migration
+    public partial class Initial : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -39,15 +39,31 @@ namespace BumboSolid.Data.Migrations
                     MaxWorkDurationPerDay = table.Column<int>(type: "int", nullable: true),
                     MaxWorkDaysPerWeek = table.Column<int>(type: "int", nullable: true),
                     MaxWorkDurationPerWeek = table.Column<int>(type: "int", nullable: true),
-                    MaxWorkDurationPerHolidayWeek = table.Column<int>(type: "int", nullable: true),
                     EarliestWorkTime = table.Column<TimeOnly>(type: "time", nullable: true),
                     LatestWorkTime = table.Column<TimeOnly>(type: "time", nullable: true),
                     MaxAvgWeeklyWorkDurationOverFourWeeks = table.Column<int>(type: "int", nullable: true),
-                    MaxShiftDuration = table.Column<int>(type: "int", nullable: true)
+                    MaxShiftDuration = table.Column<int>(type: "int", nullable: true),
+                    HolidaySurcharge = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_CLAEntry", x => x.ID);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "CLASurchargeEntry",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Surcharge = table.Column<int>(type: "int", nullable: false),
+                    Weekday = table.Column<byte>(type: "tinyint", nullable: true),
+                    StartTime = table.Column<TimeOnly>(type: "time", nullable: true),
+                    EndTime = table.Column<TimeOnly>(type: "time", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_CLASurchargeEntry", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -162,24 +178,6 @@ namespace BumboSolid.Data.Migrations
                         principalTable: "AspNetRoles",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "CLABreakEntry",
-                columns: table => new
-                {
-                    CLAEntryId = table.Column<int>(type: "int", nullable: false),
-                    WorkDuration = table.Column<int>(type: "int", nullable: false),
-                    MinBreakDuration = table.Column<int>(type: "int", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_CLABreakEntry", x => new { x.CLAEntryId, x.WorkDuration });
-                    table.ForeignKey(
-                        name: "FK_CLABreakEntry_CLAEntry",
-                        column: x => x.CLAEntryId,
-                        principalTable: "CLAEntry",
-                        principalColumn: "ID");
                 });
 
             migrationBuilder.CreateTable(
@@ -808,7 +806,10 @@ namespace BumboSolid.Data.Migrations
                 name: "Capability");
 
             migrationBuilder.DropTable(
-                name: "CLABreakEntry");
+                name: "CLAEntry");
+
+            migrationBuilder.DropTable(
+                name: "CLASurchargeEntry");
 
             migrationBuilder.DropTable(
                 name: "ClockedHours");
@@ -830,9 +831,6 @@ namespace BumboSolid.Data.Migrations
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");
-
-            migrationBuilder.DropTable(
-                name: "CLAEntry");
 
             migrationBuilder.DropTable(
                 name: "FactorType");

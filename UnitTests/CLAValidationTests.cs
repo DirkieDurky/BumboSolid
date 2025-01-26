@@ -42,39 +42,6 @@ namespace UnitTests
             Assert.False(result);
         }
 
-        // If both breakminduration and breakworkduration are filled in return true
-        [Fact]
-        public void Compare_BothMinAndMaxBreakDuration_True()
-        {
-            CLAManageViewModel model = new()
-            {
-                BreakMinBreakDuration = 5,
-                BreakWorkDuration = 10
-            };
-            ModelStateDictionary modelState = new();
-            CLANoBreakWithoutWorkLimitLogic validator = new();
-
-            bool result = validator.ValidateModel(model, modelState);
-
-            Assert.True(result);
-        }
-
-        // If breakminduration is filled and breakworkduration is not return false
-        [Fact]
-        public void Compare_OnlyMinBreakDuration_False()
-        {
-            CLAManageViewModel model = new()
-            {
-                BreakMinBreakDuration = 5
-            };
-            ModelStateDictionary modelState = new();
-            CLANoBreakWithoutWorkLimitLogic validator = new();
-
-            bool result = validator.ValidateModel(model, modelState);
-
-            Assert.False(result);
-        }
-
         // 5 days in a week should return true
         [Fact]
         public void Set_WorkDaysInWeek_True()
@@ -270,74 +237,6 @@ namespace UnitTests
             };
             ModelStateDictionary modelState = new();
             CLAValidTimePerFourWeekAverageLogic validator = new();
-
-            bool result = validator.ValidateModel(model, modelState);
-
-            Assert.False(result);
-        }
-
-        // Ten minutes for maxworkdurationperholidayweek should return true
-        [Fact]
-        public void Set_MaxWorkDurationPerHolidayWeekMinutes_True()
-        {
-            CLAManageViewModel model = new()
-            {
-                MaxWorkDurationPerHolidayWeek = 10,
-                MaxHolidayDurationHours = false
-            };
-            ModelStateDictionary modelState = new();
-            CLAValidTimePerHolidayWeekLogic validator = new();
-
-            bool result = validator.ValidateModel(model, modelState);
-
-            Assert.True(result);
-        }
-
-        // Twenythousand minutes for maxworkdurationperholidayweek should return false
-        [Fact]
-        public void Set_TooManyMaxWorkDurationPerHolidayWeekMinutes_False()
-        {
-            CLAManageViewModel model = new()
-            {
-                MaxWorkDurationPerHolidayWeek = 20000,
-                MaxHolidayDurationHours = false
-            };
-            ModelStateDictionary modelState = new();
-            CLAValidTimePerHolidayWeekLogic validator = new();
-
-            bool result = validator.ValidateModel(model, modelState);
-
-            Assert.False(result);
-        }
-
-        // Five hours for maxworkdurationperholidayweek should return true
-        [Fact]
-        public void Set_MaxWorkDurationPerHolidayWeekHours_True()
-        {
-            CLAManageViewModel model = new()
-            {
-                MaxWorkDurationPerHolidayWeek = 5,
-                MaxHolidayDurationHours = true
-            };
-            ModelStateDictionary modelState = new();
-            CLAValidTimePerHolidayWeekLogic validator = new();
-
-            bool result = validator.ValidateModel(model, modelState);
-
-            Assert.True(result);
-        }
-
-        // Twohundred hours for maxworkdurationperholidayweek should return false
-        [Fact]
-        public void Set_TooManyMaxWorkDurationPerHolidayWeekHours_False()
-        {
-            CLAManageViewModel model = new()
-            {
-                MaxWorkDurationPerHolidayWeek = 200,
-                MaxHolidayDurationHours = true
-            };
-            ModelStateDictionary modelState = new();
-            CLAValidTimePerHolidayWeekLogic validator = new();
 
             bool result = validator.ValidateModel(model, modelState);
 

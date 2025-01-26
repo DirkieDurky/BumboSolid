@@ -112,6 +112,7 @@ namespace BumboSolid.Data.Migrations
 
                     b.Property<int?>("HolidaySurcharge")
                         .HasColumnType("int");
+
                     b.Property<TimeOnly?>("LatestWorkTime")
                         .HasColumnType("time");
 
