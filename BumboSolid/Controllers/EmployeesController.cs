@@ -152,12 +152,10 @@ public class EmployeesController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Edit(int id, EmployeesEditViewModel model)
     {
-        if (!model.SelectedDepartments.Any())
-        {
-            ModelState.AddModelError("SelectedDepartments", "Kies minstens één afdeling.");
-        }
+		// Check if Email is already in use
+		if (await _userManager.FindByEmailAsync(model.Email) != null) ModelState.AddModelError(nameof(model.Email), $"De email '{model.Email}' is al in gebruik");
 
-        if (!ModelState.IsValid)
+		if (!ModelState.IsValid)
         {
             model.Departments = await _context.Departments.ToListAsync();
             return View(model);

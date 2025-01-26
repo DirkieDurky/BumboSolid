@@ -41,8 +41,6 @@ public class EmployeesCreateViewModel : IValidatableObject
     public string? StreetName { get; set; }
 
     [Range(0, 9999, ErrorMessage = "Het huisnummer moet een getal tussen 0 en 9999 zijn.")]
-	[MaxLength(10, ErrorMessage = "De ingevulde waarde is te lang")]
-	[RegularExpression("^[a-zA-Z0-9\\s':/]*$", ErrorMessage = "Alleen letters en cijfers zijn toegestaan")]
 	public int? StreetNumber { get; set; }
 
     [Required(ErrorMessage = "Dit veld is vereist")]
@@ -57,7 +55,7 @@ public class EmployeesCreateViewModel : IValidatableObject
 
     public List<Department> Departments { get; set; } = new List<Department>();
 
-    public List<string> SelectedDepartments { get; set; } = new List<string>();
+	public List<string> SelectedDepartments { get; set; } = new List<string>();
 
 	public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
 	{
