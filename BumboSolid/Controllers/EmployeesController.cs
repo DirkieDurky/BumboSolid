@@ -72,11 +72,6 @@ public class EmployeesController : Controller
         // Check if Email is already in use
         if (await _userManager.FindByEmailAsync(input.Email) != null) ModelState.AddModelError(nameof(input.Email), $"De email '{input.Email}' is al in gebruik");
 
-        foreach (var model in ModelState.Values)
-        {
-            foreach (var error in model.Errors) Console.WriteLine(error.ErrorMessage);
-        }
-
         if (ModelState.IsValid)
         {
             var user = new User
