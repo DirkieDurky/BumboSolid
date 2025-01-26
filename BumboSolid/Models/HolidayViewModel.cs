@@ -1,5 +1,4 @@
-﻿using BumboSolid.Data.Models;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace BumboSolid.Models;
 

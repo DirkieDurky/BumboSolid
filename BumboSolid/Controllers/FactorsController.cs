@@ -40,6 +40,8 @@ public class FactorsController : Controller
     [HttpPost("Bewerken/{id:int}")]
     public async Task<IActionResult> Edit(int id, EditPrognosisFactorsViewModel model)
     {
+        if (!ModelState.IsValid) return View(model);
+
         var prognosis = await _context.Weeks
             .Include(p => p.PrognosisDays)
             .ThenInclude(pd => pd.Factors)
@@ -91,5 +93,4 @@ public class FactorsController : Controller
 
         return RedirectToAction("Index", "Prognoses", new { id = prognosis.Id });
     }
-
 }

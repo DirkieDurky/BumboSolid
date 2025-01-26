@@ -40,10 +40,16 @@ public class CLAManageViewModel
     public decimal? BreakMinBreakDuration { get; set; }
 
     public bool MaxDayDurationHours { get; set; } = true;
+
     public bool MaxWeekDurationHours { get; set; } = true;
+
     public bool MaxHolidayDurationHours { get; set; } = true;
+
     public bool MaxAvgDurationHours { get; set; } = true;
+
     public bool MaxTotalShiftDurationHours { get; set; } = true;
+
     public bool MaxUninterruptedShiftDurationHours { get; set; } = true;
+
     public bool MinBreakTimeHours { get; set; } = false;
 }

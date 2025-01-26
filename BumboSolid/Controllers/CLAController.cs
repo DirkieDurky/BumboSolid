@@ -6,8 +6,6 @@ using BumboSolid.Models;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.Authorization;
 using BumboSolid.HelperClasses;
-using Microsoft.CodeAnalysis.Options;
-using Newtonsoft.Json.Linq;
 
 namespace BumboSolid.Controllers;
 

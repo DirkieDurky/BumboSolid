@@ -7,8 +7,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
 using BumboSolid.HelperClasses.CLARules;
-using NuGet.Protocol.Core.Types;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace BumboSolid.Controllers;
 

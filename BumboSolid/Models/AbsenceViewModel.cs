@@ -1,9 +1,8 @@
-﻿using BumboSolid.HelperClasses;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace BumboSolid.Models
 {
-    public class AbsenceViewModel : IValidatableObject
+	public class AbsenceViewModel : IValidatableObject
     {
         public int ShiftId { get; set; }
 
