@@ -356,7 +356,7 @@ public class ScheduleManagerController(BumboDbContext context) : Controller
         if (fillRequest == null) return NotFound();
 
         // Accept FillRequest
-        if (Status.Equals("accepteren"))
+        if (Status.Equals("Accepteren"))
         {
             Shift shift = fillRequest.Shift;
             shift.Employee = fillRequest.SubstituteEmployee;
