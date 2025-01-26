@@ -151,7 +151,7 @@ public class ShiftsController : Controller
 		// Checking if this shift does not break any CAO rules
 		var CLAs = _context.CLAEntries.Where(a => (a.AgeStart <= employeeAge && a.AgeEnd >= employeeAge) || (a.AgeStart <= employeeAge && a.AgeEnd == null) || (a.AgeStart == null && a.AgeEnd >= employeeAge) || (a.AgeStart == null && a.AgeEnd == null)).ToList();
 		var allShifts = _context.Shifts.Include(w => w.Week).ToList();
-		if (new CLAApplyRules().ApplyCLARules(shiftCreateViewModel.Shift, CLAs, allShifts) == false) ModelState.AddModelError("", "Er worden CLA regels overtreden");
+		if (new CLAApplyRules().ApplyCLARules(shiftCreateViewModel.Shift, CLAs, allShifts) == false) ModelState.AddModelError("", "Er worden CAO regels overtreden");
 		if (!ModelState.IsValid) return View(shiftCreateViewModel);
 
 		_context.Add(shiftCreateViewModel.Shift);
@@ -312,7 +312,7 @@ public class ShiftsController : Controller
 		// Checking if this shift does not break any CAO rules
 		var CLAs = _context.CLAEntries.Where(a => (a.AgeStart <= employeeAge && a.AgeEnd >= employeeAge) || (a.AgeStart <= employeeAge && a.AgeEnd == null) || (a.AgeStart == null && a.AgeEnd >= employeeAge) || (a.AgeStart == null && a.AgeEnd == null)).ToList();
         var allShifts = _context.Shifts.Include(w => w.Week).ToList();
-		if (new CLAApplyRules().ApplyCLARules(shiftCreateViewModel.Shift, CLAs, allShifts) == false) ModelState.AddModelError("", "Er worden CLA regels overtreden");
+		if (new CLAApplyRules().ApplyCLARules(shiftCreateViewModel.Shift, CLAs, allShifts) == false) ModelState.AddModelError("", "Er worden CAO regels overtreden");
         if (!ModelState.IsValid) return RedirectToAction(nameof(Edit), new { id });
 
         try
