@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace BumboSolid.Data.Migrations
 {
     /// <inheritdoc />
-    public partial class NewPull : Migration
+    public partial class removedCLA : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -39,7 +39,6 @@ namespace BumboSolid.Data.Migrations
                     MaxWorkDurationPerDay = table.Column<int>(type: "int", nullable: true),
                     MaxWorkDaysPerWeek = table.Column<int>(type: "int", nullable: true),
                     MaxWorkDurationPerWeek = table.Column<int>(type: "int", nullable: true),
-                    MaxWorkDurationPerHolidayWeek = table.Column<int>(type: "int", nullable: true),
                     EarliestWorkTime = table.Column<TimeOnly>(type: "time", nullable: true),
                     LatestWorkTime = table.Column<TimeOnly>(type: "time", nullable: true),
                     MaxAvgWeeklyWorkDurationOverFourWeeks = table.Column<int>(type: "int", nullable: true),
@@ -179,24 +178,6 @@ namespace BumboSolid.Data.Migrations
                         principalTable: "AspNetRoles",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "CLABreakEntry",
-                columns: table => new
-                {
-                    CLAEntryId = table.Column<int>(type: "int", nullable: false),
-                    WorkDuration = table.Column<int>(type: "int", nullable: false),
-                    MinBreakDuration = table.Column<int>(type: "int", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_CLABreakEntry", x => new { x.CLAEntryId, x.WorkDuration });
-                    table.ForeignKey(
-                        name: "FK_CLABreakEntry_CLAEntry",
-                        column: x => x.CLAEntryId,
-                        principalTable: "CLAEntry",
-                        principalColumn: "ID");
                 });
 
             migrationBuilder.CreateTable(
@@ -824,7 +805,7 @@ namespace BumboSolid.Data.Migrations
                 name: "Capability");
 
             migrationBuilder.DropTable(
-                name: "CLABreakEntry");
+                name: "CLAEntry");
 
             migrationBuilder.DropTable(
                 name: "CLASurchargeEntry");
@@ -849,9 +830,6 @@ namespace BumboSolid.Data.Migrations
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");
-
-            migrationBuilder.DropTable(
-                name: "CLAEntry");
 
             migrationBuilder.DropTable(
                 name: "FactorType");
