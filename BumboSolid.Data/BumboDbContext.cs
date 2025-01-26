@@ -99,7 +99,8 @@ public partial class BumboDbContext : IdentityDbContext<User, IdentityRole<int>,
 
             entity.HasOne(d => d.Employee).WithMany(p => p.Absences)
                 .HasForeignKey(d => d.EmployeeId)
-                .HasConstraintName("FK_Absence_Employee");
+                .HasConstraintName("FK_Absence_Employee")
+                .OnDelete(DeleteBehavior.Cascade);
         });
 
         modelBuilder.Entity<CLABreakEntry>(entity =>
